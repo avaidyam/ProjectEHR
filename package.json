@@ -20,7 +20,9 @@
     "@mui/material": "5.14.8",
     "@mui/x-data-grid": "6.13.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "draft-js": "0.11.7",
+    "react-draft-wysiwyg": "1.15.0"
   },
   "devDependencies": {
     "react-scripts": "5.0.1"

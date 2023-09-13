@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { Button } from "@mui/material";
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { StyledEngineProvider } from "@mui/material/styles";
+import Notewriter from "./Notewriter";
+import "./style.css";
 
-function App() {
-  return (
-    <Button variant="contained" color="primary">
-      Hello World
-    </Button>
-  );
-}
-
-ReactDOM.render(<App />, document.querySelector("#app"));
+ReactDOM.createRoot(document.querySelector("#root")).render(
+  <React.StrictMode>
+    <StyledEngineProvider injectFirst>
+      <Notewriter />
+    </StyledEngineProvider>
+  </React.StrictMode>,
+);
