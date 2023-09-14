@@ -17,7 +17,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // date
-function dateLocal() {
+/*function dateLocal() {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DemoContainer components={['DatePicker']}>
@@ -25,7 +25,7 @@ function dateLocal() {
       </DemoContainer>
     </LocalizationProvider>
   );
-}
+}*/
 
 // display circle
 function StatusBadge() {
