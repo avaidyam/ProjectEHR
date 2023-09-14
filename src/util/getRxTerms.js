@@ -1,19 +1,11 @@
-async function getRxTerms(searchTerm) {
-    try {
-        const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
-        const rxtermsResponse = await fetch(rxtermsApiUrl);
-
-        const rxtermsData = await rxtermsResponse.json();
-        
-        results = formatRxTerms(rxtermsData);
-
-        return results;
-    } catch (error) {
-        throw error;
-    }
+export async function getRxTerms(searchTerm) {
+    const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
+    const rxtermsResponse = await fetch(rxtermsApiUrl);
+    const rxtermsData = await rxtermsResponse.json();
+    return formatRxTerms(rxtermsData);
 }
 
-function formatRxTerms(data) {
+export function formatRxTerms(data) {
     const formattedResult = data[1].map((drug, index) => {
         const id = data[2]["RXCUIS"][index];
         const name = drug;
@@ -41,7 +33,7 @@ function formatRxTerms(data) {
 
 
 // Function to extract the route from the dose
-function getRouteFromDose(dose) {
+export function getRouteFromDose(dose) {
     const uniqueRoutes = new Set();
 
     dose.forEach(doseItem => {
