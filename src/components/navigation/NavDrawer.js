@@ -46,6 +46,22 @@ const NavDrawer = ({ open, anchor, onClose }) => {
               <ListItemText primary="NoteWriter" />
             </ListItemButton>
           </ListItem>
+          <ListItem key="schedule" disablePadding>
+            <ListItemButton onClick={() => onRoute("schedule")}>
+              <ListItemIcon>
+                <EditNoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Schedule" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="orders" disablePadding>
+            <ListItemButton onClick={() => onRoute("orders")}>
+              <ListItemIcon>
+                <EditNoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Orders" />
+            </ListItemButton>
+          </ListItem>
         </List>
       </div>
     </Drawer>

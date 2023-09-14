@@ -10,7 +10,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import "./NoteWriter.css";
 
-export default function Notewriter() {
+export default function NoteWriter() {
   const [submitOption, setAge] = React.useState("");
 
   const handleChange = (event) => {
