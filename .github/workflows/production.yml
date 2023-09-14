@@ -1,7 +1,7 @@
 name: Build Image
 on: 
   push:
-    branches: [master]
+    branches: [main]
     tags: '*'
 jobs:
   build_pages:
