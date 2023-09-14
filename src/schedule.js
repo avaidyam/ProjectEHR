@@ -1,20 +1,4 @@
-/*import React from "react";
-import ReactDOM from "react-dom";
-import { Button } from "@mui/material";
-import appt from "./schedule.json";
-
-function App() {
-  return (
-    <div>
-    </div>
-  );
-};
-
-
- ReactDOM.render(<App />, document.querySelector("#schedjs"));
- */
-
- import React from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { Table } from "@mui/material";
 import { Button } from "@mui/material";
@@ -157,6 +141,5 @@ function App() {
     DataTable()
   );
 }
-
 
 ReactDOM.render(<App />, document.querySelector("#schedjs"));
