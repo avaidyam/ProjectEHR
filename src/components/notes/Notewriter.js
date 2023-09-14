@@ -1,11 +1,14 @@
-import * as React from "react";
+import React from "react";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { Editor } from "react-draft-wysiwyg";
+
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
+import "./NoteWriter.css";
 
 export default function Notewriter() {
   const [submitOption, setAge] = React.useState("");
@@ -15,7 +18,7 @@ export default function Notewriter() {
   };
 
   return (
-    <form>
+    <form className="notewriter">
       <Editor
         wrapperClassName="wrapper"
         editorClassName="editor"

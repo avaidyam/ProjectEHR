@@ -1,13 +1,27 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { StyledEngineProvider } from "@mui/material/styles";
-import Notewriter from "./Notewriter";
-import "./style.css";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-ReactDOM.createRoot(document.querySelector("#root")).render(
+import RootRouter from "./RootRouter.js";
+
+import "./index.css";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
+const rootContainer = document.getElementById("root");
+const rootNode = ReactDOM.createRoot(rootContainer);
+
+rootNode.render(
   <React.StrictMode>
-    <StyledEngineProvider injectFirst>
-      <Notewriter />
-    </StyledEngineProvider>
-  </React.StrictMode>,
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <RootRouter />
+    </ThemeProvider>
+  </React.StrictMode>
 );
