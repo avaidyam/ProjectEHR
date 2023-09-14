@@ -1,0 +1,13 @@
+.notewriter {
+  .wrapper {
+    border: 1px solid grey;
+  }
+  .editor {
+    background-color: grey;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .button {
+    padding: 10px;
+  }
+}
