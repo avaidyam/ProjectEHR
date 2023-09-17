@@ -1,46 +1,55 @@
-export async function getRxTerms(searchTerm) {
-    const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
-    const rxtermsResponse = await fetch(rxtermsApiUrl);
-    const rxtermsData = await rxtermsResponse.json();
-    return formatRxTerms(rxtermsData);
+async function getRxTerms(searchTerm) {
+    try {
+        const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
+        const rxtermsResponse = await fetch(rxtermsApiUrl);
+
+        const rxtermsData = await rxtermsResponse.json();
+        
+        results = formatRxTerms(rxtermsData);
+
+        return results;
+    } catch (error) {
+        throw error;
+    }
 }
 
-export function formatRxTerms(data) {
-    const formattedResult = data[1].map((drug, index) => {
-        const id = data[2]["RXCUIS"][index];
-        const name = drug;
+function formatRxTerms(data) {
+     const formattedResult = new Map()
+
+    data[1].forEach((drug, index) => {
+        const drugAndRoute = drug.split(" (");
+        
+        const name = drugAndRoute[0];
+        const route = drugAndRoute[1];
+
+        const id = data[2]["SXDG_RXCUI"][index];
         const dose = data[2]["STRENGTHS_AND_FORMS"][index];
-        const route = getRouteFromDose(dose);
         const frequency = "string"; // Set frequency as needed
         const refills = 0; // Set refills as needed
 
-        const formattedEntry = {
-            id,
+        if (formattedResult.has(name)){
+            entry = formattedResult.get(name);
+            entry.id.push(id);
+            entry.fields.dose.push(dose);
+            entry.fields.route.push(route);
+        }else{
+           const formattedEntry = {
+            id: [id],
             name,
             fields: {
-                dose,
-                route,
+                dose: [dose],
+                route: [route],
                 frequency,
                 refills,
             },
-        };
+            };
 
-        return formattedEntry;
+
+            formattedResult.set(name,formattedEntry);
+        }
+
     });
 
-    return formattedResult;
+    return Array.from(formattedResult.values());;
 }
 
-
-// Function to extract the route from the dose
-export function getRouteFromDose(dose) {
-    const uniqueRoutes = new Set();
-
-    dose.forEach(doseItem => {
-        const words = doseItem.split(" ");
-        const route = words[words.length - 1];
-        uniqueRoutes.add(route);
-    });
-
-    return Array.from(uniqueRoutes);
-}
