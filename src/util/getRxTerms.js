@@ -1,4 +1,4 @@
-async function getRxTerms(searchTerm) {
+export async function getRxTerms(searchTerm) {
     try {
         const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
         const rxtermsResponse = await fetch(rxtermsApiUrl);
@@ -17,7 +17,7 @@ function formatRxTerms(data) {
      const formattedResult = new Map()
 
     data[1].forEach((drug, index) => {
-        const drugAndRoute = drug.split(" (");
+        const drugAndRoute = drug.split(/\s+\(|\)\s*/);;
         
         const name = drugAndRoute[0];
         const route = drugAndRoute[1];
@@ -31,7 +31,7 @@ function formatRxTerms(data) {
             entry = formattedResult.get(name);
             entry.id.push(id);
             entry.fields.dose.push(dose);
-            entry.fields.route.push(route);
+            entry.fields.route.push(route.replace(")", ""));
         }else{
            const formattedEntry = {
             id: [id],
