@@ -9,17 +9,16 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 
 import "./Navigation.css";
 
 const NavDrawer = ({ open, anchor, onClose }) => {
   const navigator = useNavigate();
-  const useLocation = useLocation();
 
   const onRoute = (location) => {
-    onClose();
     navigator(`/${location}`);
+    onClose();
   };
 
   return (
