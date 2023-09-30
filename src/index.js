@@ -1,20 +1,19 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { StyledEngineProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-import RootRouter from "./RootRouter.js";
+import RootRouter from './RootRouter.js';
 
-import "./index.css";
+import './index.css';
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: 'dark',
   },
 });
 
-const rootContainer = document.getElementById("root");
+const rootContainer = document.getElementById('root');
 const rootNode = ReactDOM.createRoot(rootContainer);
 
 rootNode.render(

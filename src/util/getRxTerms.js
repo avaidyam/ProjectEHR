@@ -1,4 +1,6 @@
-/*SAMPLE OUTPUT for search term: Aspirin
+import _ from 'lodash';
+
+/* SAMPLE OUTPUT for search term: Aspirin
 
 Format is as follows 
 id: This is the SX_RXCUI which is unique for each Name+Route combination of a drug on the RxTerms database.
@@ -46,34 +48,29 @@ fields.refills: placeholder
       "frequency": "string",
       "refills": 0
     }
-  },*/
-export async function getRxTerms(searchTerm) {
-  try {
-    const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
-    const rxtermsResponse = await fetch(rxtermsApiUrl);
-
-    const rxtermsData = await rxtermsResponse.json();
-
-    const results = formatRxTerms(rxtermsData);
-
-    return results;
-  } catch (error) {
-    throw error;
-  }
-}
+  }, */
 
 function formatRxTerms(data) {
   const formattedResult = new Map();
 
-  data[1].forEach((drug, index) => {
+  const [, drugNames] = data;
+
+  (drugNames || []).forEach((drug, index) => {
     const drugAndRoute = drug.split(/\s+\(|\)\s*/);
 
-    const name = drugAndRoute[0];
-    const route = drugAndRoute[1];
+    const [name, route] = drugAndRoute;
 
-    const id = data[2]["SXDG_RXCUI"][index];
-    const dose = data[2]["STRENGTHS_AND_FORMS"][index];
-    const frequency = "string"; // Set frequency as needed
+    /**
+     * TODO: this line frequently throws, not sure what correct
+     * behavior should be.
+     *
+     * I added lodash `_.get` here to just avoid throwing while
+     * i'm testing the routing stuff - AJB 9/30
+     */
+    const id = _.get(data[2], ['SXDG_RXCUI', index]);
+
+    const dose = data[2].STRENGTHS_AND_FORMS[index];
+    const frequency = 'string'; // Set frequency as needed
     const refills = 0; // Set refills as needed
     let entry = null;
 
@@ -81,7 +78,7 @@ function formatRxTerms(data) {
       entry = formattedResult.get(name);
       entry.id.push(id);
       entry.fields.dose.push(dose);
-      entry.fields.route.push(route.replace(")", ""));
+      entry.fields.route.push(route.replace(')', ''));
     } else {
       const formattedEntry = {
         id: [id],
@@ -99,4 +96,20 @@ function formatRxTerms(data) {
   });
 
   return Array.from(formattedResult.values());
+}
+
+export async function getRxTerms(searchTerm) {
+  /** disabled nonfunctional try-catch to make eslint happy */
+  // try {
+  const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
+  const rxtermsResponse = await fetch(rxtermsApiUrl);
+
+  const rxtermsData = await rxtermsResponse.json();
+
+  const results = formatRxTerms(rxtermsData);
+
+  return results;
+  // } catch (error) {
+  //   throw error;
+  // }
 }
