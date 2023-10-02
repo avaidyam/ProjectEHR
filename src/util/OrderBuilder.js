@@ -1,4 +1,4 @@
-import { getRxTerms } from "./getRxTerms.js";
+import { getRxTerms } from './getRxTerms.js';
 
 export class OrderBuilder {
   constructor() {
@@ -9,7 +9,7 @@ export class OrderBuilder {
     try {
       // Fetch data from APIs, format and aggregate the results here
       const apiResults = await this.fetchDataFromAPIs(searchTerm);
-      
+
       return apiResults;
     } catch (error) {
       // Handle errors appropriately
@@ -20,13 +20,10 @@ export class OrderBuilder {
   async fetchDataFromAPIs(searchTerm) {
     // Implement logic to fetch data from different APIs
     const results = [];
-    rxTerms = getRxTerms(searchTerm);
+    const rxTerms = getRxTerms(searchTerm);
 
     results.push(...rxTerms);
 
     return results;
-
   }
-
-  
 }

@@ -12,7 +12,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "homepage": "https://codesandbox.io/s/4j7m47vlm4",
   "main": "index.js",
   "dependencies": {
     "@emotion/react": "11.11.1",
@@ -24,13 +23,28 @@
     "dayjs": "^1.11.9",
     "draft-js": "0.11.7",
     "immutable": "^4.3.4",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-draft-wysiwyg": "1.15.0",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.22.15",
+    "@babel/preset-react": "^7.22.15",
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-formatter-table": "^7.32.1",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "^2.5.1"
   },
   "browserslist": {
     "production": [
