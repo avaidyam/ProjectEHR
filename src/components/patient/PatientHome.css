@@ -1,0 +1,21 @@
+.patient-home-container {
+    margin: -1em; /** override the root-defined interior padding */
+    flex: 1; 
+    max-height: calc(100vh - 48px); /** windowHeight - navbar height */
+
+    .patient-info {
+        width: 250px;
+        border-right: 1px solid lightgrey;
+        padding: 1em;
+    }
+
+    .demographic-overview-container {
+        border-bottom: 1px solid rgba(255,255,255,0.25);
+        padding-bottom: 1em;
+        margin-bottom: 1em;
+    }
+
+    .tab-content-container {
+        padding: 1em;
+    }
+}
