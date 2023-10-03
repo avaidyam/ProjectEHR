@@ -6,6 +6,8 @@ import Tooltip from '@mui/material/Tooltip';
 import { DataGrid } from '@mui/x-data-grid';
 import React from 'react';
 
+import { useRouter } from '../../util/urlHelpers.js';
+
 // json data
 import appt from './schedule.json';
 
@@ -102,12 +104,19 @@ const columns = [
 
 // takes rows from json file and set columns to make table
 export default function Schedule() {
+  const onHandleClickRoute = useRouter();
+
   return (
     <div style={{ height: 400, width: '100%' }}>
       <DataGrid
         getRowHeight={() => 'auto'}
         rows={appt.appts}
         columns={columns}
+        onRowDoubleClick={({
+          row: {
+            patient: { mrn: selectedMRN },
+          },
+        }) => onHandleClickRoute(`patient/${selectedMRN}`)}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 10 },
