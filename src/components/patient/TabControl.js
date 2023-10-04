@@ -1,36 +1,15 @@
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import React, { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 
+import ChartReviewTabContent from './tabContent/ChartReviewTabContent.js';
 import PreChartingTabContent from './tabContent/PreChartingTabContent.js';
-
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
+import RoomingTabContent from './tabContent/RoomingTabContent.js';
+import SnapshotTabContent from './tabContent/SnapshotTabContent.js';
 
 const TabControl = () => {
-  // const [searchParams, setSearchParams] = useSearchParams();
   const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  const handleChange = (event, newValue) => setValue(newValue);
 
   return (
     <>
@@ -43,15 +22,9 @@ const TabControl = () => {
         </Tabs>
       </Box>
       <PreChartingTabContent value={value} index={0} />
-      <CustomTabPanel value={value} index={1}>
-        Item One
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        Item Two
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={3}>
-        Item Three
-      </CustomTabPanel>
+      <SnapshotTabContent value={value} index={1} />
+      <ChartReviewTabContent value={value} index={2} />
+      <RoomingTabContent value={value} index={3} />
     </>
   );
 };
