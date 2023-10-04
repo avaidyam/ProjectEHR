@@ -18,7 +18,7 @@ const getPatientPreChartingData = () => ({
   ],
 });
 
-const PreChartingTabContent = ({ children, value, index, ...other }) => {
+const PreChartingTabContent = ({ children, value, index, patientMRN, ...other }) => {
   const { currentMedications, patientAllergies, medicalHistory } = getPatientPreChartingData();
 
   return (

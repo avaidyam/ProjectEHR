@@ -14,7 +14,7 @@ const PatientHome = () => {
     <div className="flex patient-home-container">
       <PatientInfo patientMRN={mrn} />
       <div className="flex flex-col" style={{ flex: 3 }}>
-        <TabControl />
+        <TabControl patientMRN={mrn} />
       </div>
     </div>
   );

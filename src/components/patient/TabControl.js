@@ -6,7 +6,7 @@ import PreChartingTabContent from './tabContent/PreChartingTabContent.js';
 import RoomingTabContent from './tabContent/RoomingTabContent.js';
 import SnapshotTabContent from './tabContent/SnapshotTabContent.js';
 
-const TabControl = () => {
+const TabControl = ({ patientMRN }) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => setValue(newValue);
@@ -21,10 +21,10 @@ const TabControl = () => {
           <Tab label="Rooming" />
         </Tabs>
       </Box>
-      <PreChartingTabContent value={value} index={0} />
-      <SnapshotTabContent value={value} index={1} />
-      <ChartReviewTabContent value={value} index={2} />
-      <RoomingTabContent value={value} index={3} />
+      <PreChartingTabContent value={value} index={0} patientMRN={patientMRN} />
+      <SnapshotTabContent value={value} index={1} patientMRN={patientMRN} />
+      <ChartReviewTabContent value={value} index={2} patientMRN={patientMRN} />
+      <RoomingTabContent value={value} index={3} patientMRN={patientMRN} />
     </>
   );
 };
