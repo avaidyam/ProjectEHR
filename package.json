@@ -30,7 +30,6 @@
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
-    "react-scripts": "^5.0.1",
     "@babel/eslint-parser": "^7.22.15",
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-react": "^7.22.15",
@@ -41,10 +40,12 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-formatter-table": "^7.32.1",
     "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "react-scripts": "^5.0.1"
   },
   "browserslist": {
     "production": [

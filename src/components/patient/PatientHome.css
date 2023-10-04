@@ -1,0 +1,37 @@
+.patient-home-container {
+    margin: -1em; /** override the root-defined interior padding */
+    flex: 1; 
+    max-height: calc(100vh - 48px); /** windowHeight - navbar height */
+
+    .patient-info {
+        width: 250px;
+        border-right: 1px solid lightgrey;
+
+        .overview-card {
+            font-size: 0.75em;
+            padding: 1em 0 1em 0;
+            padding: 1em;
+            border-top: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .overview-card:hover {
+            background-color: rgba(255,255,255,0.10);
+        }
+    }
+
+    .demographic-overview-container {
+        margin-bottom: 1em;
+        padding: 1em 1em 0 1em;
+    }
+
+    .tab-content-container {
+        padding: 1em;
+        margin-bottom: 1em;
+
+        .sub-content-container {
+            padding-left: 1em;
+            border-left: 1px solid rgba(255,255,255,0.25);
+            height: 5em; /** testing, just to force some height here */ 
+        }
+    }
+}

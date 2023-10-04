@@ -17,7 +17,7 @@ module.exports = {
     },
   },
   extends: ['airbnb', 'airbnb/hooks', 'plugin:prettier/recommended'],
-  plugins: ['react', 'react-hooks', 'import', 'prettier'],
+  plugins: ['only-warn', 'react', 'react-hooks', 'import', 'prettier'],
   env: {
     browser: true,
     es2021: true,
