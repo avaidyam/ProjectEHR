@@ -13,7 +13,7 @@ jobs:
         with:
           node-version: 14.x
       - run: |
-          npm install
+          CI=false npm install
           npm run build
       - uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
