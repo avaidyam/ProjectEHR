@@ -13,8 +13,10 @@ jobs:
         with:
           node-version: 14.x
       - run: |
-          CI=false npm install
+          npm install
           npm run build
+        env:
+         CI: ""
       - uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages
