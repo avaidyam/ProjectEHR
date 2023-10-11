@@ -47,6 +47,14 @@ const NavDrawer = ({ open, anchor, onClose }) => {
               <ListItemText primary="Orders" />
             </ListItemButton>
           </ListItem>
+          <ListItem key="radiology" disablePadding>
+            <ListItemButton onClick={() => onSetNewRoute('radiology')}>
+              <ListItemIcon>
+                <EditNoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Radiology" />
+            </ListItemButton>
+          </ListItem>
         </List>
       </div>
     </Drawer>
