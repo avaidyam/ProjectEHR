@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleRowClick = (row) => {
+    setSelectedRow(row);
+    setDialogOpen(true);
+  };
+
   // Filter data based on selectedTabLabel
   const filteredData = data.filter(item => item.kind === selectedTabLabel);
 
   // Retrieve columns dynamically from the properties of the objects in filteredData
   const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data) : [];
 
-  // Filter out columns where all rows have data, WARNING if column names are spelled wrong it will be removed!!
+  // Filter out columns where all rows have data
   const visibleColumns = columns.filter(column =>
     filteredData.every(row => row.data[column] !== undefined && row.data[column] !== null && row.data[column] !== '')
   );
@@ -29,7 +39,7 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </TableHead>
         <tbody>
           {filteredData.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} onClick={() => handleRowClick(row.data)}>
               {visibleColumns.map((column, columnIndex) => (
                 <TableCell key={columnIndex}>{row.data[column]}</TableCell>
               ))}
@@ -37,6 +47,16 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
           ))}
         </tbody>
       </Table>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogContent>
+          {selectedRow && Object.keys(selectedRow).map((key, index) => (
+            <div key={index}>
+              <strong>{key}:</strong> {selectedRow[key]}
+            </div>
+          ))}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
