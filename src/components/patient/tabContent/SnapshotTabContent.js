@@ -64,7 +64,7 @@ const SnapshotTabContent = ({ children, value, index, patientMRN, ...other }) =>
   const ptInfo = TEST_PATIENT_INFO(patientMRN);
 
   return (
-    <div>
+    <div hidden={value !== index}>
       <TitledCard title="Patient Info">
         <b>Name:</b> {ptInfo.firstName + ' ' + ptInfo.lastName}<br/>
         <b>Age:</b> {ptInfo.age}<br/>
@@ -75,6 +75,34 @@ const SnapshotTabContent = ({ children, value, index, patientMRN, ...other }) =>
         <ul>
           {ptInfo.allergies.map((allergy) => {
             return(<li>{allergy.allergen} ({allergy.reaction})</li>)
+          })}
+        </ul>
+      </TitledCard>
+      <TitledCard title="Medical History">
+        <ul>
+          {ptInfo.medicalHistory.map((condition) => {
+            return(<li>{condition}</li>)
+          })}
+        </ul>
+      </TitledCard>
+      <TitledCard title="Medications">
+        <ul>
+          {ptInfo.medications.map((medication) => {
+            return(<li>{medication.name} {medication.dosage} {medication.frequency}</li>)
+          })}
+        </ul>
+      </TitledCard>
+      <TitledCard title="Surgical History">
+        <ul>
+          {ptInfo.surgicalHistory.map((procedure) => {
+            return(<li>{procedure.name} ({(new Date(procedure.date)).toLocaleDateString("en-US")})</li>)
+          })}
+        </ul>
+      </TitledCard>
+      <TitledCard title="Family History">
+        <ul>
+          {ptInfo.familyHistory.map((relative) => {
+            return(<li>{relative.relation} ({relative.conditions.join(' ')})</li>)
           })}
         </ul>
       </TitledCard>
