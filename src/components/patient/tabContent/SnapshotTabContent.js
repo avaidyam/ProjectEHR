@@ -12,8 +12,16 @@ const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   gender: 'Male',
   address: '42 Wallaby Way, Sydney, Australia',
   phone: '1 (205) 867-5309',
-  allergies: [{allergen: 'Peanuts', reaction: 'Death'}],
-  medicalHistory: ['Opioid Use Disorder', 'Heart Failure with preserved ejection fraction'],
+  allergies: [{id: 'uiduid', allergen: 'Peanuts', reaction: 'Death'}],
+  medicalHistory: [{
+      id: 'jakjak',
+      name: 'Opioid Use Disorder'
+    },
+    {
+      id: 'whywhy', 
+      name: 'Heart Failure with preserved ejection fraction'
+    }
+  ],
   medications: [{
       id: '123123',
       name: 'Metoprolol',
@@ -41,6 +49,7 @@ const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   ],
   familyHistory: [
     {
+      id: 'xyzxyz',
       relation: 'Brother',
       alive: true,
       conditions: ['Autobrewery Syndrome']
@@ -54,7 +63,7 @@ const SnapshotTabContent = ({ children, value, index, patientMRN, ...other }) =>
     // At some point I will need to use a URLBuilder to link the title to corresponding pages
     // Leaving it for now because I don't know if that's within scope
     return(
-      <div index={index} class="titledCard">
+      <div index={index} className="titledCard">
         <h3>{title}</h3>
         <div>{children}</div>
       </div>
@@ -74,35 +83,35 @@ const SnapshotTabContent = ({ children, value, index, patientMRN, ...other }) =>
       <TitledCard title="Allergies">
         <ul>
           {ptInfo.allergies.map((allergy) => {
-            return(<li>{allergy.allergen} ({allergy.reaction})</li>)
+            return(<li key={allergy.id}>{allergy.allergen} ({allergy.reaction})</li>)
           })}
         </ul>
       </TitledCard>
       <TitledCard title="Medical History">
         <ul>
           {ptInfo.medicalHistory.map((condition) => {
-            return(<li>{condition}</li>)
+            return(<li key={condition.id}>{condition.name}</li>)
           })}
         </ul>
       </TitledCard>
       <TitledCard title="Medications">
         <ul>
           {ptInfo.medications.map((medication) => {
-            return(<li>{medication.name} {medication.dosage} {medication.frequency}</li>)
+            return(<li key={medication.id}>{medication.name} {medication.dosage} {medication.frequency}</li>)
           })}
         </ul>
       </TitledCard>
       <TitledCard title="Surgical History">
         <ul>
           {ptInfo.surgicalHistory.map((procedure) => {
-            return(<li>{procedure.name} ({(new Date(procedure.date)).toLocaleDateString("en-US")})</li>)
+            return(<li key={procedure.id}>{procedure.name} ({(new Date(procedure.date)).toLocaleDateString("en-US")})</li>)
           })}
         </ul>
       </TitledCard>
       <TitledCard title="Family History">
         <ul>
           {ptInfo.familyHistory.map((relative) => {
-            return(<li>{relative.relation} ({relative.conditions.join(' ')})</li>)
+            return(<li key={relative.id}>{relative.relation} ({relative.conditions.join(' ')})</li>)
           })}
         </ul>
       </TitledCard>
