@@ -1,14 +1,21 @@
-import React, { useState } from "react";
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
-import { GridMenuIcon } from "@mui/x-data-grid";
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { GridMenuIcon } from '@mui/x-data-grid';
+import React, { useState } from 'react';
 
-import NavDrawer from "./NavDrawer.js";
+import NavDrawer from './NavDrawer.js';
 
 const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+      }}
+    >
       <Toolbar variant="dense">
         <IconButton
           edge="start"

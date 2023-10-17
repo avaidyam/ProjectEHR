@@ -1,45 +1,30 @@
-import React from "react";
-import Drawer from "@mui/material/Drawer";
-import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  ListItemIcon,
-} from "@mui/material";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EditNoteIcon from "@mui/icons-material/EditNote";
-import { useNavigate } from "react-router-dom";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import EditNoteIcon from '@mui/icons-material/EditNote';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
+import React from 'react';
 
-import "./Navigation.css";
+import { useRouter } from '../../util/urlHelpers.js';
+
+import './Navigation.css';
 
 const NavDrawer = ({ open, anchor, onClose }) => {
-  const navigator = useNavigate();
-
-  const onRoute = (location) => {
-    onClose();
-    navigator(`/${location}`);
-  };
+  const onSetNewRoute = useRouter({ onAfterRoute: onClose });
 
   return (
-    <Drawer
-      anchor={anchor}
-      open={open}
-      onClose={onClose}
-      className="nav-drawer"
-    >
+    <Drawer anchor={anchor} open={open} onClose={onClose} className="nav-drawer">
       <div className="flex flex-col flex-grow inner">
         <List>
           <ListItem key="schedule" disablePadding>
-            <ListItemButton onClick={() => onRoute("")}>
+            <ListItemButton onClick={() => onSetNewRoute('')}>
               <ListItemIcon>
-                <CalendarMonthIcon />
+                <EditNoteIcon />
               </ListItemIcon>
-              <ListItemText primary="Schedule" />
+              <ListItemText primary="Home" />
             </ListItemButton>
           </ListItem>
           <ListItem key="notewriter" disablePadding>
-            <ListItemButton onClick={() => onRoute("notes")}>
+            <ListItemButton onClick={() => onSetNewRoute('notes')}>
               <ListItemIcon>
                 <EditNoteIcon />
               </ListItemIcon>
@@ -47,19 +32,27 @@ const NavDrawer = ({ open, anchor, onClose }) => {
             </ListItemButton>
           </ListItem>
           <ListItem key="schedule" disablePadding>
-            <ListItemButton onClick={() => onRoute("schedule")}>
+            <ListItemButton onClick={() => onSetNewRoute('schedule')}>
               <ListItemIcon>
-                <EditNoteIcon />
+                <CalendarMonthIcon />
               </ListItemIcon>
               <ListItemText primary="Schedule" />
             </ListItemButton>
           </ListItem>
           <ListItem key="orders" disablePadding>
-            <ListItemButton onClick={() => onRoute("orders")}>
+            <ListItemButton onClick={() => onSetNewRoute('orders')}>
               <ListItemIcon>
                 <EditNoteIcon />
               </ListItemIcon>
               <ListItemText primary="Orders" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem key="radiology" disablePadding>
+            <ListItemButton onClick={() => onSetNewRoute('radiology')}>
+              <ListItemIcon>
+                <EditNoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="Radiology" />
             </ListItemButton>
           </ListItem>
         </List>
