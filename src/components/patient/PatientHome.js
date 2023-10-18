@@ -1,9 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-import { usePatientMRN } from '../../util/urlHelpers.js';
-import PatientInfo from './PatientInfo.js';
 import TabControl from './TabControl.js';
+import PatientSidebar from './sidebar/PatientSidebar.js';
 
 import './PatientHome.css';
 
@@ -12,7 +11,7 @@ const PatientHome = () => {
 
   return (
     <div className="flex patient-home-container">
-      <PatientInfo patientMRN={mrn} />
+      <PatientSidebar patientMRN={mrn} />
       <div className="flex flex-col" style={{ flex: 3 }}>
         <TabControl patientMRN={mrn} />
       </div>
