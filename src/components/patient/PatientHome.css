@@ -6,6 +6,7 @@
     .patient-info {
         width: 250px;
         border-right: 1px solid lightgrey;
+        font-size: 0.9em;
 
         .overview-card {
             font-size: 0.75em;
@@ -16,6 +17,17 @@
 
         .overview-card:hover {
             background-color: rgba(255,255,255,0.10);
+        }
+
+        .vitals-badge {
+            border-radius: 0.28em;
+            padding: 0.25em;
+            border: 1px solid transparent;
+            margin-right: auto;
+        }
+        .vitals-badge.bad {
+            background-color: rgba(219, 40, 40, 0.33);
+            border: 1px solid rgba(219, 40, 40, 1);;
         }
     }
 
@@ -30,8 +42,24 @@
 
         .sub-content-container {
             padding-left: 1em;
-            border-left: 1px solid rgba(255,255,255,0.25);
+            border-left: 1px solid rgba(255, 255, 255, 0.25);
             height: 5em; /** testing, just to force some height here */ 
         }
     }
 }
+
+.historical-vitals-container > * {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    transition: background-color 60ms ease-in;
+}
+
+.historical-vitals-container > *:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.historical-vitals-container > *:last-child {
+    border-bottom: 1px solid transparent;
+}
+

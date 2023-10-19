@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Grid from "@mui/material/Grid";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Carousel from "react-elastic-carousel";
-import Box from "@mui/material/Box";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Carousel from 'react-elastic-carousel';
 
 import { usePatientMRN } from '../../util/urlHelpers.js';
 
 // import { getPatientMRN } from "../../util/urlHelpers.js";
 const getPatientMRN = () => {
-  return "4206942069";
+  return '4206942069';
 };
 
-var scans = [1298822400000, 1303490940000];
-var numImages = [28, 1];
+const scans = [1298822400000, 1303490940000];
+const numImages = [28, 1];
 
 const ImageViewer = () => {
   const wheeling = useRef(false);
@@ -90,17 +90,17 @@ const ImageViewer = () => {
       return null;
     }
     const sliderContainerCurrent = sliderContainer.current;
-    sliderContainerCurrent.addEventListener("wheel", scroll, true);
+    sliderContainerCurrent.addEventListener('wheel', scroll, true);
 
     return () => {
-      sliderContainerCurrent.removeEventListener("wheel", scroll, false);
+      sliderContainerCurrent.removeEventListener('wheel', scroll, false);
     };
   }, [scroll, stopWheeling]);
 
-  var imageHTML = []
+  const imageHTML = [];
   for (let i = 1; i <= 28; i++) {
-    var temp = "img/4206942069/1298822400000/" + i + ".png";
-    imageHTML.push(<img src={ temp } />);
+    const temp = `img/4206942069/1298822400000/${i}.png`;
+    imageHTML.push(<img src={temp} />);
   }
 
   return (
@@ -110,7 +110,7 @@ const ImageViewer = () => {
           onScroll={scroll}
           verticalMode
           itemsToShow={1}
-          enableSwipe={true}
+          enableSwipe
           ref={slider}
           showArrows={false}
           pagination={false}
@@ -124,27 +124,19 @@ const ImageViewer = () => {
 };
 
 const ResultList = () => {
-  if (getPatientMRN() !== "null") {
+  if (getPatientMRN() !== 'null') {
     return (
       <List>
         <ListItem alignItems="flex-start" sx={{ border: 1 }}>
-          <ListItemText
-            primary="10-10-2023"
-            secondary="CT Brain"
-          />
+          <ListItemText primary="10-10-2023" secondary="CT Brain" />
         </ListItem>
         <ListItem alignItems="flex-start" sx={{ border: 1 }}>
-          <ListItemText
-            primary="10-10-2023"
-            secondary="Chest X-Ray"
-          />
+          <ListItemText primary="10-10-2023" secondary="Chest X-Ray" />
         </ListItem>
       </List>
     );
   }
-  return(
-    <p>No MRN</p>
-  );
+  return <p>No MRN</p>;
 };
 
 const RadiologyViewer = () => {
@@ -154,7 +146,7 @@ const RadiologyViewer = () => {
       <Box container sx={{ border: 1 }}>
         <Box sx={{ m: 2 }}>
           <h1>Patient Name</h1>
-          <h2>MRN: { patientMRN }</h2>
+          <h2>MRN: {patientMRN}</h2>
         </Box>
       </Box>
       <Grid container spacing={2}>
