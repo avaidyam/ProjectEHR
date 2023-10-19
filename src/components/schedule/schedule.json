@@ -1,65 +1,128 @@
 {
-    "appts": [
-      {
-        "id": 1,
-        "apptTime": "6:00 PM", 
-        "notes": "TEAM A: test",
-        "type": "OFFICE VISIT",
-        "checkinTime": null,
-        "checkoutTime": null,
-        "ptStatus": "No Show",
-        "officeStatus": "Not Seen",
-        "eventStatus": "No Show",
-        "patient": {
-          "mrn": 6547, 
-          "lastName": "Smith", 
-          "firstName": "James",
-          "middleName": null,
-          "age": 37, 
-          "gender": "M",
-          "insurName": "BLUE CROSS BLUE SHIELD BCBS"
-        },
-        "provider": {
-          "lastName": "Team", 
-          "firstName": "CICOM Clinic",
-          "middleName": null
-        },
-        "pcp": {
-          "lastName": "James", 
-          "firstName": "Stern",
-          "middleName": "Chris"
-        }
+  "appts": [
+    {
+      "id": 1,
+      "apptTime": "6:00 PM",
+      "notes": "test note",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": 6547,
+        "lastName": "Smith",
+        "firstName": "James",
+        "middleName": null,
+        "age": 37,
+        "gender": "M",
+        "insurName": "BLUE CROSS BLUE SHIELD BCBS"
       },
-      {
-        "id": 2,
-        "apptTime": "5:00 PM", 
-        "notes": "TEAM B: test",
-        "type": "ED FOLLOWUP VISIT",
-        "checkinTime": null,
-        "checkoutTime": null,
-        "ptStatus": "No Show",
-        "officeStatus": "Not Seen",
-        "eventStatus": "No Show",
-        "patient": {
-          "mrn": 12345, 
-          "lastName": "Williams", 
-          "firstName": "Mary",
-          "middleName": null,
-          "age": 37, 
-          "gender": "M",
-          "insurName": "AETNA COMMERCIAL"
-        },
-        "provider": {
-          "lastName": "Team", 
-          "firstName": "CICOM Clinic",
-          "middleName": null
-        },
-        "pcp": {
-          "lastName": "Johnson", 
-          "firstName": "Emily",
-          "middleName": "May"
-        }
+      "provider": {
+        "lastName": "James",
+        "firstName": "Stern",
+        "middleName": "Chris"
+      },
+      "pcp": {
+        "lastName": "James",
+        "firstName": "Stern",
+        "middleName": "Chris"
       }
-    ]
-  }
-  
+    },
+    {
+      "id": 2,
+      "apptTime": "5:00 PM",
+      "notes": "test note",
+      "type": "ED FOLLOWUP VISIT",
+      "checkinTime": "4:59 PM",
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Arrived",
+      "eventStatus": "",
+      "room": 1,
+      "patient": {
+        "mrn": 12345,
+        "lastName": "Williams",
+        "firstName": "Mary",
+        "middleName": null,
+        "age": 37,
+        "gender": "",
+        "insurName": "AETNA COMMERCIAL"
+      },
+      "provider": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      },
+      "pcp": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      }
+    },
+    {
+      "id": 3,
+      "apptTime": "4:00 PM",
+      "notes": "test note",
+      "type": "FOLLOWUP",
+      "checkinTime": "4:05 PM",
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Rooming in Progress",
+      "eventStatus": "",
+      "room": 5,
+      "patient": {
+        "mrn": 1324,
+        "lastName": "Shen",
+        "firstName": "Julia",
+        "middleName": null,
+        "age": 18,
+        "gender": "F",
+        "insurName": "AETNA COMMERCIAL"
+      },
+      "provider": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      },
+      "pcp": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      }
+    },
+    {
+      "id": 4,
+      "apptTime": "3:00 PM",
+      "notes": "test note",
+      "type": "FOLLOWUP",
+      "checkinTime": "2:41 PM",
+      "checkoutTime": "3:51 PM",
+      "ptStatus": "",
+      "officeStatus": "Checked Out",
+      "eventStatus": "",
+      "room": 3,
+      "patient": {
+        "mrn": 65189,
+        "lastName": "Burnham",
+        "firstName": "Jennifer",
+        "middleName": null,
+        "age": 24,
+        "gender": "F",
+        "insurName": "AETNA COMMERCIAL"
+      },
+      "provider": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      },
+      "pcp": {
+        "lastName": "Johnson",
+        "firstName": "Emily",
+        "middleName": "May"
+      }
+    }
+  ]
+}
