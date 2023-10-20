@@ -55,7 +55,7 @@ const PatientSidebar = ({ patientMRN }) => {
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
 
   return (
-    <div className="flex flex-col patient-info">
+    <div style={{ display: 'flex', flexDirection: "column" }} className="patient-info">
       <PatientSidebarHeader
         avatarUrl={avatarUrl}
         firstName={firstName}
@@ -66,7 +66,7 @@ const PatientSidebar = ({ patientMRN }) => {
         patientMRN={patientMRN}
         preferredLanguage={preferredLanguage}
       />
-      <div className="flex flex-col" style={{ overflowY: 'auto' }}>
+      <div style={{ display: 'flex', flexDirection: "column", overflowY: 'auto' }}>
         <PatientSidebarCareOverview primaryProvider={primaryProvider} insurance={insurance} />
         <PatientSidebarVitalsOverview patientMRN={patientMRN} />
         <PatientSidebarCareGapsOverview patientMRN={patientMRN} />

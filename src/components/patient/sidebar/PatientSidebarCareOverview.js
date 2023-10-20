@@ -10,15 +10,15 @@ const PatientSidebarCareOverview = ({ primaryProvider, insurance }) => {
   const { carrierName } = insurance;
 
   return (
-    <div className="flex flex-col overview-card">
-      <div className="flex" style={{ marginBottom: '0.5em' }}>
+    <div style={{ display: 'flex', flexDirection: "column" }} className="overview-card">
+      <div style={{ display: 'flex', marginBottom: '0.5em' }}>
         <Avatar
           source={providerAvatarUrl}
           sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
         >
           {`${_.first(providerFirstName)}${_.first(providerLastName)}`}
         </Avatar>
-        <div className="flex flex-col" style={{ margin: 'auto 0 auto 0' }}>
+        <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
           <span>
             {providerFirstName} {providerLastName}, {providerTitle}
           </span>

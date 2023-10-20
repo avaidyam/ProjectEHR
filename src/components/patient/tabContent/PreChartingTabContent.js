@@ -23,11 +23,11 @@ const PreChartingTabContent = ({ children, value, index, patientMRN, ...other })
 
   return (
     <div hidden={value !== index} className="tab-content-container">
-      <div className="flex flex-col" style={{ marginBottom: '1em' }}>
+      <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
         <Typography variant="h6" color="inherit" component="div">
           History
         </Typography>
-        <div className="flex flex-col sub-content-container">
+        <div style={{ display: 'flex', flexDirection: "column" }} className="sub-content-container">
           {medicalHistory.map(({ id, name, date }) => (
             <li key={id}>
               {name} / {date}
@@ -35,17 +35,17 @@ const PreChartingTabContent = ({ children, value, index, patientMRN, ...other })
           ))}
         </div>
       </div>
-      <div className="flex flex-col" style={{ marginBottom: '1em' }}>
+      <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
         <Typography variant="h6" color="inherit" component="div">
           Allergies
         </Typography>
         <div className="sub-content-container">NKDA</div>
       </div>
-      <div className="flex flex-col" style={{ marginBottom: '1em' }}>
+      <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
         <Typography variant="h6" color="inherit" component="div">
           Medications
         </Typography>
-        <div className="flex flex-col sub-content-container">
+        <div style={{ display: 'flex', flexDirection: "column" }} className="sub-content-container">
           {currentMedications.map(({ id, name, dosage, frequency }) => (
             <li key={id}>
               {name} - {dosage} / {frequency}

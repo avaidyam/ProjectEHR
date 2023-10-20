@@ -10,9 +10,9 @@ const PatientHome = () => {
   const { mrn } = useParams();
 
   return (
-    <div className="flex patient-home-container">
+    <div style={{ display: "flex" }} className="patient-home-container">
       <PatientSidebar patientMRN={mrn} />
-      <div className="flex flex-col" style={{ flex: 3 }}>
+      <div style={{ display: 'flex', flexDirection: "column", flex: 3 }}>
         <TabControl patientMRN={mrn} />
       </div>
     </div>

@@ -6,14 +6,12 @@ import React from 'react';
 
 import { useRouter } from '../../util/urlHelpers.js';
 
-import './Navigation.css';
-
 const NavDrawer = ({ open, anchor, onClose }) => {
   const onSetNewRoute = useRouter({ onAfterRoute: onClose });
 
   return (
     <Drawer anchor={anchor} open={open} onClose={onClose} className="nav-drawer">
-      <div className="flex flex-col flex-grow inner">
+      <div style={{ minWidth: 250, display: 'flex', flexDirection: "column", flex: 1 }}>
         <List>
           <ListItem key="schedule" disablePadding>
             <ListItemButton onClick={() => onSetNewRoute('')}>

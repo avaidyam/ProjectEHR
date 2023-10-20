@@ -84,7 +84,7 @@ const VitalsDisplay = ({ mostRecentVitals, olderVitals }) => {
   } = mostRecentVitals;
 
   return (
-    <div className="flex flex-col" onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
+    <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
       <span
         className={classNames('vitals-badge', {
           bad: _isBPProblematic({
@@ -109,25 +109,25 @@ const VitalsDisplay = ({ mostRecentVitals, olderVitals }) => {
           <Fade {...TransitionProps} timeout={100}>
             <Paper
               style={{
+                display: "flex",
                 border: '1px solid',
                 padding: '1em',
                 fontSize: '0.9em',
               }}
-              className="flex"
             >
-              <div className="flex flex-col historical-vitals-container">
+              <div style={{ display: 'flex', flexDirection: "column" }} className="historical-vitals-container">
                 <span style={{ visibility: 'hidden' }}>hidden</span>
                 <span>BP</span>
                 <span>HR</span>
                 <span>Resp</span>
                 <span>BMI</span>
               </div>
-              <div className="flex" style={{ flex: 1 }}>
+              <div style={{ display: "flex", flex: 1 }}>
                 {olderVitals.map((vitals) => (
                   <div
                     key={vitals.id}
-                    className="flex flex-col historical-vitals-container"
-                    style={{ textAlign: 'right' }}
+                    style={{ display: 'flex', flexDirection: "column", textAlign: "right" }} 
+                    className="historical-vitals-container"
                   >
                     <span>
                       {DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/yy')}
@@ -159,7 +159,7 @@ const PatientSidebarVitalsOverview = ({ patientMRN }) => {
   );
 
   return (
-    <div className="flex flex-col overview-card">
+    <div style={{ display: 'flex', flexDirection: "column" }} className="overview-card">
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
         Vitals {DateHelpers.standardFormat(mostRecentVitals.measurementDate)}
       </Typography>

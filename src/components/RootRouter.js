@@ -1,22 +1,29 @@
 import React from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-
-import NavBar from './components/navigation/NavBar.js';
-import NoteWriter from './components/notes/NoteWriter.js';
-import Orders from './components/orders/Orders.js';
-import PatientHome from './components/patient/PatientHome.js';
-import Schedule from './components/schedule/Schedule.js';
-import RadiologyViewer from './components/radiology/RadiologyViewer.js';
-
-const home = () => <div>EHR home</div>;
+import NavBar from './navigation/NavBar.js';
+import NoteWriter from './notes/NoteWriter.js';
+import Orders from './orders/Orders.js';
+import PatientHome from './patient/PatientHome.js';
+import Schedule from './schedule/Schedule.js';
+import RadiologyViewer from './radiology/RadiologyViewer.js';
 
 const RootRouter = () => (
   <HashRouter>
-    <div className="flex flex-col app-root">
+    <div style={{
+      display: "flex !important", 
+      flexDirection: "column",
+      minHeight: "100vh"
+    }}>
       <NavBar />
-      <div className="flex flex-col flex-grow content">
+      <div style={{
+        display: "flex !important", 
+        flexDirection: "column",
+        flexGrow: 1,
+        padding: "1em"
+      }}
+      >
         <Routes>
-          <Route path="/" Component={home} />
+          <Route path="/" Component={Schedule} />
           <Route path="/notes/:mrn?" Component={NoteWriter} />
           <Route path="/schedule/" Component={Schedule} />
           <Route path="/orders/:mrn?" Component={Orders} />

@@ -14,14 +14,14 @@ const PatientSidebarHeader = ({
   patientMRN,
   preferredLanguage,
 }) => (
-  <div className="flex flex-col demographic-overview-container">
+  <div style={{ display: 'flex', flexDirection: "column" }} className="demographic-overview-container">
     <Avatar
       source={avatarUrl}
       sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
     >
       AB
     </Avatar>
-    <div className="flex flex-col" style={{ textAlign: 'center', marginBottom: '1em' }}>
+    <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
       <strong>
         {firstName} {lastName}
       </strong>
