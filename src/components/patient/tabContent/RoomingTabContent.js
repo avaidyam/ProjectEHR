@@ -1,8 +1,10 @@
 import React from 'react';
+import { usePatientMRN } from '../../../util/urlHelpers.js';
 
-const RoomingTabContent = ({ children, value, index, patientMRN, ...other }) => {
+const RoomingTabContent = ({ children, ...other }) => {
+  const [patientMRN, setPatientMRN] = usePatientMRN()
   return (
-    <div hidden={value !== index} className="tab-content-container">
+    <div className="tab-content-container">
       rooming stuff goes here for {patientMRN}
     </div>
   );

@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import React from 'react';
+import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 const getPatientPreChartingData = () => ({
   currentMedications: [
@@ -18,11 +19,12 @@ const getPatientPreChartingData = () => ({
   ],
 });
 
-const PreChartingTabContent = ({ children, value, index, patientMRN, ...other }) => {
+const PreChartingTabContent = ({ children, ...other }) => {
   const { currentMedications, patientAllergies, medicalHistory } = getPatientPreChartingData();
+  const [patientMRN, setPatientMRN] = usePatientMRN();
 
   return (
-    <div hidden={value !== index} className="tab-content-container">
+    <div className="tab-content-container">
       <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
         <Typography variant="h6" color="inherit" component="div">
           History

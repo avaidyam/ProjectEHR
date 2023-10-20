@@ -20,7 +20,7 @@ import React from 'react';
 import { useRouter } from '../../util/urlHelpers.js';
 
 // json data
-import appt from './schedule.json';
+import appt from '../../util/data/schedule.json';
 
 // get today's date and display in text box
 function dateLocal() {

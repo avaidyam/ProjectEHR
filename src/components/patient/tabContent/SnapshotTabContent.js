@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import './SnapshotTabContent.css';
 import React from 'react';
+import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   firstName: 'Patient',
@@ -57,23 +57,28 @@ const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   ],
 });
 
-const SnapshotTabContent = ({ children, value, index, patientMRN, ...other }) => {
+const SnapshotTabContent = ({ children, ...other }) => {
+  const [patientMRN, setPatientMRN] = usePatientMRN();
 
-  const TitledCard = ({ children, index, title}) => {
+  const TitledCard = ({ children, title}) => {
     // At some point I will need to use a URLBuilder to link the title to corresponding pages
     // Leaving it for now because I don't know if that's within scope
     return(
-      <div index={index} className="titledCard">
-        <h3>{title}</h3>
-        <div>{children}</div>
+      <div style={{ 
+        margin: "1em 1em 1em 1em", 
+        padding: "0.5em 1em 0.5em 1em", 
+        border: "1px solid rgba(255,255,255,0.25)" 
+      }}>
+        <h3 style={{ fontSize: "1.5em", margin: 0 }}>{title}</h3>
+        <div style={{ margin: 0 }}>{children}</div>
       </div>
     )
   }
 
-  const ptInfo = TEST_PATIENT_INFO(patientMRN);
+  const ptInfo = TEST_PATIENT_INFO({ patientMRN });
 
   return (
-    <div hidden={value !== index}>
+    <div>
       <TitledCard title="Patient Info">
         <b>Name:</b> {ptInfo.firstName + ' ' + ptInfo.lastName}<br/>
         <b>Age:</b> {ptInfo.age}<br/>

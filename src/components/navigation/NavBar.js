@@ -1,12 +1,10 @@
 import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import { GridMenuIcon } from '@mui/x-data-grid';
 import React, { useState } from 'react';
-
-import NavDrawer from './NavDrawer.js';
+import { useRouter } from '../../util/urlHelpers.js';
 
 const NavBar = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const onHandleClickRoute = useRouter();
   return (
     <AppBar
       position="static"
@@ -22,11 +20,10 @@ const NavBar = () => {
           color="inherit"
           aria-label="menu"
           sx={{ mr: 2 }}
-          onClick={() => setDrawerOpen(true)}
+          onClick={() => onHandleClickRoute(`schedule`)}
         >
           <GridMenuIcon />
         </IconButton>
-        <NavDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
         <Typography variant="h6" color="inherit" component="div">
           EHR
         </Typography>

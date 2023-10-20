@@ -1,11 +1,11 @@
 import React from 'react';
-
 import DateHelpers from '../../../util/DateHelpers.js';
 import PatientSidebarCareGapsOverview from './PatientSidebarCareGapsOverview.js';
 import PatientSidebarCareOverview from './PatientSidebarCareOverview.js';
 import PatientSidebarHeader from './PatientSidebarHeader.js';
 import PatientSidebarProblemList from './PatientSidebarProblemList.js';
 import PatientSidebarVitalsOverview from './PatientSidebarVitalsOverview.js';
+import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 const PROVIDER_ROLE_TYPES = {
   PCP: 'PCP',
@@ -38,7 +38,8 @@ const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   },
 });
 
-const PatientSidebar = ({ patientMRN }) => {
+const PatientSidebar = () => {
+  const [patientMRN, setPatientMRN] = usePatientMRN();
   const {
     firstName,
     lastName,

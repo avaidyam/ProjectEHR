@@ -1,19 +1,18 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-
 import TabControl from './TabControl.js';
 import PatientSidebar from './sidebar/PatientSidebar.js';
-
+import Orders from './Orders.js'
 import './PatientHome.css';
 
 const PatientHome = () => {
-  const { mrn } = useParams();
-
   return (
     <div style={{ display: "flex" }} className="patient-home-container">
-      <PatientSidebar patientMRN={mrn} />
+      <PatientSidebar />
       <div style={{ display: 'flex', flexDirection: "column", flex: 3 }}>
-        <TabControl patientMRN={mrn} />
+        <TabControl />
+        <div style={{ display: "flex", flexDirection: "row", height: 80, alignItems: 'center', justifyContent: "left", backgroundColor: "gray", width: "100%", zIndex: 100 }}>
+          <Orders />
+        </div>
       </div>
     </div>
   );

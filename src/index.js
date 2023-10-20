@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import RootRouter from './components/RootRouter.js'
+import RootRouter from './components/navigation/RootRouter.js'
 
 const darkTheme = createTheme({
   palette: {

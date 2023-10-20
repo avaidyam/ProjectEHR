@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Tab, Tabs, Chip } from '@mui/material';
-
 import ChartReviewDataContent from './ChartReviewDataContent.js';
+import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 const dummyData = [
   {
@@ -306,9 +306,10 @@ const dummyData = [
 
 ];
 
-const ChartReviewTabContent = ({ children, value, index, patientMRN, ...other }) => {
+const ChartReviewTabContent = ({ children, ...other }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
+  const [patientMRN, setPatientMRN] = usePatientMRN();
 
   const handleClick = (newValue, label) => {
     setValue(newValue);
@@ -329,7 +330,7 @@ const ChartReviewTabContent = ({ children, value, index, patientMRN, ...other })
   ];
 
   return (
-    <div hidden={value !== index}>
+    <div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         {tabLabels.map((label, idx) => (
           <Chip
