@@ -17,8 +17,12 @@
          ]
      }
   },
+  "waitFor": "onCreateCommand",
   "updateContentCommand": "npm install",
-  "postAttachCommand": "npm start",
+  "postCreateCommand": "",
+  "postAttachCommand": {
+    "server": "npm start"
+  },
   "forwardPorts": [3000],
   "portsAttributes": {
       "3000": {
