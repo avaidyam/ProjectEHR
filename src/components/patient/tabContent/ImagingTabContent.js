@@ -4,7 +4,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Carousel from 'react-elastic-carousel';
+//import Carousel from 'react-elastic-carousel'; // FIXME
 import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 const scans = [1298822400000, 1303490940000];
@@ -100,7 +100,7 @@ const ImageViewer = () => {
   return (
     <div className="tenants-container">
       <div ref={sliderContainer} className="tenants-middle">
-        <Carousel
+        {/*<Carousel
           onScroll={scroll}
           verticalMode
           itemsToShow={1}
@@ -109,9 +109,9 @@ const ImageViewer = () => {
           showArrows={false}
           pagination={false}
           transitionMs={0}
-        >
+  >*/}
           {imageHTML}
-        </Carousel>
+        {/*</Carousel> FIXME!! */}
       </div>
     </div>
   );

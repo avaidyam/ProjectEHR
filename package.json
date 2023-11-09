@@ -8,10 +8,11 @@
     "material"
   ],
   "scripts": {
-    "start": "npm install && react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "serve -s build"
   },
   "main": "index.js",
   "dependencies": {
@@ -33,7 +34,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "1.15.0",
-    "react-elastic-carousel": "^0.11.5",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
@@ -52,7 +52,8 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.5.1",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "serve": "^14.2.1"
   },
   "browserslist": {
     "production": [
