@@ -3,15 +3,7 @@
   "hostRequirements": {
        "cpus": 2
    },
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "lts"
-    },
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {
-        "version": "latest",
-        "moby": true
-    }
-  },
+  "features": {},
   "customizations": {
      "codespaces": {
          "openFiles": []
