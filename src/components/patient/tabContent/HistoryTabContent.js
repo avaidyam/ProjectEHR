@@ -50,7 +50,7 @@ const HistoryTabContent = ({ children, ...other }) => {
     selectedSubcategory = socialSubcategories[selectedTabIndex - generalSubcategories.length];
   }
   return (
-    <Box sx={{ flexGrow:1, bgcolor: 'background.paper', display: 'flex', height: 224 }}>
+    <Box sx={{ flexGrow:1, bgcolor: 'background.paper', display: 'flex' }}>
       <Tabs
         value={selectedTabIndex}
         onChange={handleCategoryChange}
