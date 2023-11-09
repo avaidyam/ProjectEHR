@@ -17,10 +17,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 
-import SocialSchema from '../../../util/data/SocialHistory.json'
-import GeneralSchema from '../../../util/data/GeneralHistory.json'
+import GeneralSchema from '../../../util/history_schema.json'
 import Form from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
+const SocialSchema = GeneralSchema['Social']
 
 const categories = [
   {

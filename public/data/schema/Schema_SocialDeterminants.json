@@ -1,9 +1,0 @@
-{
-    "type": "object",
-    "properties": {
-      "socialDeterminants": {
-        "type": "string",
-        "title": "Social Determinants"
-      }
-    }
-}
