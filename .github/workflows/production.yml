@@ -1,4 +1,4 @@
-name: Build Image
+name: Production Build
 on: 
   push:
     branches: [main]
@@ -21,3 +21,5 @@ jobs:
         with:
           branch: gh-pages
           folder: build
+          clean-exclude: pr-preview/
+          force: false
