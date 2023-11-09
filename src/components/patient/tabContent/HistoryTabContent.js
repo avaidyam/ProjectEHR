@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Dialog from '@mui/material/Dialog';
@@ -15,7 +16,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
 
 import GeneralSchema from '../../../util/history_schema.json'
 import Form from '@rjsf/mui';
@@ -50,12 +50,13 @@ const HistoryTabContent = ({ children, ...other }) => {
     selectedSubcategory = socialSubcategories[selectedTabIndex - generalSubcategories.length];
   }
   return (
-    <div className="tab-content-container">
+    <Box sx={{ flexGrow:1, bgcolor: 'background.paper', display: 'flex', height: 224 }}>
       <Tabs
         value={selectedTabIndex}
         onChange={handleCategoryChange}
-        orientation="horizontal"
+        orientation="vertical"
         variant="scrollable"
+        sx={{ borderRight: 1, borderColor: 'divider' }}
       >
         {[...generalSubcategories, ...socialSubcategories].map((subcategory, index) => (
           <Tab key={index} label={subcategory} />
@@ -65,7 +66,7 @@ const HistoryTabContent = ({ children, ...other }) => {
       {/* Render content based on the selected subcategory */}
       {selectedCategory === 'General' && <GeneralContent key={selectedSubcategory} subcategory={selectedSubcategory} />}
       {selectedCategory === 'Social' && <SocialContent key={selectedSubcategory} subcategory={selectedSubcategory} />}
-    </div>
+    </Box>
   );
 };
 
