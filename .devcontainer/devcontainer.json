@@ -1,5 +1,8 @@
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "hostRequirements": {
+       "cpus": 2
+   },
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
@@ -8,5 +11,27 @@
         "version": "latest",
         "moby": true
     }
-  }
+  },
+  "customizations": {
+     "codespaces": {
+         "openFiles": []
+     },
+     "vscode": {
+         "extensions": [
+             "dbaeumer.vscode-eslint",
+             "github.vscode-pull-request-github",
+             "eamodio.gitlens",
+             "christian-kohler.npm-intellisense"
+         ]
+     }
+  },
+  "updateContentCommand": "npm install",
+  "postAttachCommand": "npm start",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+      "3000": {
+         "label": "Preview",
+         "onAutoForward": "openPreview"
+       }
+   }
 }
