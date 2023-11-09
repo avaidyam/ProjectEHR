@@ -1,0 +1,17 @@
+{
+    "Medical": {
+        "schema":{
+            "$ref": "http://localhost:3000/data/schema/Schema_FamilyHistory.json"
+        }
+    },
+    "Surgical":{
+        "schema": {
+            "$ref": "http://localhost:3000/data/schema/Schema_SurgicalHistory.json"
+        }    
+    },
+    "Family":{
+        "schema": {
+            "$ref": "http://localhost:3000/data/schema/Schema_FamilyHistory.json"
+        }    }
+
+}
