@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: npm instal && npm run build
+      - run: npm install && npm run build
         env:
          CI: ""
       - uses: JamesIves/github-pages-deploy-action@4.1.0
