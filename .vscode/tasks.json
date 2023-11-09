@@ -19,7 +19,10 @@
 		{
 			"type": "npm",
 			"script": "build",
-			"group": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"problemMatcher": [],
 			"label": "npm: build",
 			"detail": "react-scripts build"
