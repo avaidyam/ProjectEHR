@@ -1,0 +1,37 @@
+{
+    "currentOccupation": {},
+    "occupationHistory":{
+      "ui:options": {
+        "orderable": false
+      },
+      "items": {
+        "occupation": {
+        },
+        "employer": {
+        }
+      }
+    },
+    "demographics": {
+      "maritalStatus": {
+        "ui:widget": "radio"
+      },
+      "numberOfChildren": {
+        "ui:widget": "updown"
+      },
+      "yearsOfEducation": {
+        "ui:widget": "updown"
+      },
+      "highestEducationLevel": {
+        "ui:widget": "select"
+      },
+      "preferredLanguage": {
+        "ui:placeholder": "Enter preferred language..."
+      },
+      "ethnicGroup": {
+        "ui:placeholder": "Enter ethnic group..."
+      },
+      "race": {
+        "ui:placeholder": "Enter race..."
+      }
+    }
+  }

@@ -7,6 +7,7 @@ import RoomingTabContent from './tabContent/RoomingTabContent.js';
 import SnapshotTabContent from './tabContent/SnapshotTabContent.js';
 import ImagingTabContent from './tabContent/ImagingTabContent.js';
 import NotesTabContent from './tabContent/NotesTabContent.js';
+import HistoryTabContent from './tabContent/HistoryTabContent.js';
 
 const TabControl = () => {
   const [value, setValue] = useState(0);
@@ -23,6 +24,7 @@ const TabControl = () => {
           <Tab label="Rooming" />
           <Tab label="Imaging" />
           <Tab label="Notes" />
+          <Tab label="History" />
         </Tabs>
       </Box>
       {value === 0 && <PreChartingTabContent />}
@@ -31,6 +33,7 @@ const TabControl = () => {
       {value === 3 && <RoomingTabContent />}
       {value === 4 && <ImagingTabContent />}
       {value === 5 && <NotesTabContent />}
+      {value === 6 && <HistoryTabContent />}
     </>
   );
 };

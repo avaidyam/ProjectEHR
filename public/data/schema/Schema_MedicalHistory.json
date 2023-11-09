@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+      "diagnosis": {
+        "type": "string",
+        "title": "Diagnosis"
+      },
+      "date": {
+        "type": "string",
+        "title": "Date"
+      },
+      "age": {
+        "type": "string",
+        "title": "Age"
+      },
+      "comment": {
+        "type": "string",
+        "title": "Comment"
+      }
+    }
+}
+  
