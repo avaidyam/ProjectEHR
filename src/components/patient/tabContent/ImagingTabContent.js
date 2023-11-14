@@ -18,29 +18,41 @@ const scans = ['/img/4206942069/1298822400000/', '/img/4206942069/1303490940000/
 const numImages = [28, 1];
 
 let loadImages = (scanID) => {
+  // Load images into an array given the index of the scan from the array `scans`:
   let paths = Array(numImages[scanID]).fill(scans[scanID]).map((prefix, i) => (prefix + (i+1) + '.png'))
   return paths.map(path => {let img = new Image; img.src = path; return(img)})
 }
 
 const RadiologyCanvas = (props) => {
   
-  const imageSeq = props.img;
+  // Internalize images:
+  const imageSeq = props.images;
 
-  console.log(imageSeq);
-
+  // Canvas & scroll setup:
   const canvasRef = useRef(null);
   const [imgIndex, setimgIndex] = useState(0);
 
+  // Scroll logic - may need calibration to work with different kinds of mice
   function handleScroll(e) {
     setimgIndex(clamp(imgIndex + Math.sign(e.deltaY), 0, imageSeq.length - 1));
   }
 
-  useEffect(() => {
+  // Update viewer when imgIndex is changed.
+  function updateCanvas() {
+    // Canvas setup - may be useRef-able but it was giving me a headache
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
 
-    context.drawImage(imageSeq[imgIndex], 0, 0)
-  }, [imgIndex])
+    // Draw image. No filters or scaling applied yet.
+    let img = imageSeq[imgIndex];
+    context.drawImage(img, 0, 0);
+  }
+
+  // Run once before any interaction to make sure we're displaying an image:
+  useEffect(updateCanvas, [])
+
+  // Run every time the image Index is updated (by scrolling)
+  useEffect(updateCanvas, [imgIndex])
   
   return <canvas ref={canvasRef} height={props.height} width={props.width} onWheel={(e) => {handleScroll(e)}}/>
 }
@@ -48,7 +60,7 @@ const RadiologyCanvas = (props) => {
 const ImageViewer = (props) => {
   return(
     <Box>
-      <RadiologyCanvas {...props} img={props.images}></RadiologyCanvas>
+      <RadiologyCanvas {...props}></RadiologyCanvas>
     </Box>
   )
 }
