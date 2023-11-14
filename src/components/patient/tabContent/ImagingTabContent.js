@@ -3,119 +3,55 @@ import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
 import Carousel from 'react-elastic-carousel';
 import { usePatientMRN } from '../../../util/urlHelpers.js';
 
-const scans = [1298822400000, 1303490940000];
+
+let clamp = (num, lowerbound, upperbound) => {
+  if (num < lowerbound) return(lowerbound)
+  else if (num > upperbound) return(upperbound)
+  else return(num)
+}
+
+const scans = ['/img/4206942069/1298822400000/', '/img/4206942069/1303490940000/'];
 const numImages = [28, 1];
 
-const ImageViewer = () => {
-  const wheeling = useRef(false);
-  const wheelingTimeout = useRef(false);
-  const slider = useRef(null);
-  const sliderContainer = useRef(null);
-  const currentIndex = useRef(0);
-  const IMAGES_LENGTH = 28;
+let loadImages = (scanID) => {
+  let paths = Array(numImages[scanID]).fill(scans[scanID]).map((prefix, i) => (prefix + (i+1) + '.png'))
+  return paths.map(path => {let img = new Image; img.src = path; return(img)})
+}
 
-  const getNextCurrentIndex = (index) => {
-    if (index === IMAGES_LENGTH) {
-      return index;
-    }
+const RadiologyCanvas = (props) => {
+  
+  const imageSeq = props.img;
 
-    return index + 1;
-  };
+  console.log(imageSeq);
 
-  const getPrevCurrentIndex = (index) => {
-    if (index === 0) {
-      return index;
-    }
+  const canvasRef = useRef(null);
+  const [imgIndex, setimgIndex] = useState(0);
 
-    return index - 1;
-  };
-
-  const shouldPreventDefault = useCallback(({ isNext }) => {
-    if (!isNext && currentIndex.current > 0) {
-      return true;
-    }
-
-    if (isNext && currentIndex.current < IMAGES_LENGTH) {
-      return true;
-    }
-
-    return false;
-  }, []);
-
-  const scroll = useCallback(
-    (e) => {
-      const isNext = e.wheelDelta > 0;
-      if (shouldPreventDefault({ isNext })) {
-        e.preventDefault();
-      }
-      if (slider === null) return null;
-
-      clearTimeout(wheelingTimeout.current);
-      wheelingTimeout.current = setTimeout(function () {
-        wheeling.current = false;
-      }, 100);
-
-      if (wheeling.current === true) {
-        return null;
-      }
-
-      if (isNext) {
-        slider.current.slideNext();
-        currentIndex.current = getNextCurrentIndex(currentIndex.current);
-      } else {
-        slider.current.slidePrev();
-        currentIndex.current = getPrevCurrentIndex(currentIndex.current);
-      }
-      wheeling.current = true;
-    },
-    [slider]
-  );
-
-  const stopWheeling = useCallback(() => {
-    wheeling.current = false;
-  }, []);
-
-  useEffect(() => {
-    if (!sliderContainer.current) {
-      return null;
-    }
-    const sliderContainerCurrent = sliderContainer.current;
-    sliderContainerCurrent.addEventListener('wheel', scroll, true);
-
-    return () => {
-      sliderContainerCurrent.removeEventListener('wheel', scroll, false);
-    };
-  }, [scroll, stopWheeling]);
-
-  const imageHTML = [];
-  for (let i = 1; i <= 28; i++) {
-    const temp = `img/4206942069/1298822400000/${i}.png`;
-    imageHTML.push(<img src={temp} />);
+  function handleScroll(e) {
+    setimgIndex(clamp(imgIndex + Math.sign(e.deltaY), 0, imageSeq.length - 1));
   }
 
-  return (
-    <div className="tenants-container">
-      <div ref={sliderContainer} className="tenants-middle">
-        <Carousel
-          onScroll={scroll}
-          verticalMode
-          itemsToShow={1}
-          enableSwipe
-          ref={slider}
-          showArrows={false}
-          pagination={false}
-          transitionMs={0}
-        >
-          {imageHTML}
-        </Carousel>
-      </div>
-    </div>
-  );
-};
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    context.drawImage(imageSeq[imgIndex], 0, 0)
+  }, [imgIndex])
+  
+  return <canvas ref={canvasRef} height={props.height} width={props.width} onWheel={(e) => {handleScroll(e)}}/>
+}
+
+const ImageViewer = (props) => {
+  return(
+    <Box>
+      <RadiologyCanvas {...props} img={props.images}></RadiologyCanvas>
+    </Box>
+  )
+}
 
 const ResultList = () => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
@@ -150,7 +86,7 @@ const ImagingTabContent = () => {
         </Grid>
         <Grid item xs={9}>
           <Box sx={{ border: 1 }}>
-            <ImageViewer />
+            <ImageViewer height={400} width={400} images={loadImages(0)}/>
           </Box>
         </Grid>
       </Grid>
