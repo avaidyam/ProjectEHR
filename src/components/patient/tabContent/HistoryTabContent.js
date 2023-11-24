@@ -1,5 +1,4 @@
 import React, { useState,useEffect } from 'react';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
 import { Box } from '@mui/material';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -17,17 +16,19 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-import GeneralSchema from '../../../util/history_schema.json'
 import Form from '@rjsf/mui';
 import validator from '@rjsf/validator-ajv8';
-const SocialSchema = GeneralSchema['Social']
+import { usePatientMRN } from '../../../util/urlHelpers.js';
+import GeneralSchema from '../../../util/history_schema.json'
 
+const SocialSchema = GeneralSchema.Social
 const categories = [
   {
     general: ['Medical', 'Surgical', 'Family'],
     social: ['SubstanceSexualHealth', 'Socioeconomic', 'SocialDeterminants'],
   },
 ];
+
 const HistoryTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Default selected tab index
@@ -50,7 +51,7 @@ const HistoryTabContent = ({ children, ...other }) => {
     selectedSubcategory = socialSubcategories[selectedTabIndex - generalSubcategories.length];
   }
   return (
-    <Box sx={{ flexGrow:1, bgcolor: 'background.paper', display: 'flex', height: 224 }}>
+    <Box sx={{ flexGrow:1, bgcolor: 'background.paper', display: 'flex' }}>
       <Tabs
         value={selectedTabIndex}
         onChange={handleCategoryChange}
@@ -110,8 +111,7 @@ const GeneralContent = ({ subcategory }) => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resolvedSchema = await resolveRefs(GeneralSchema[subcategory]);
-        setResolvedSchema(resolvedSchema);
+        setResolvedSchema(await resolveRefs(GeneralSchema[subcategory]));
       } catch (error) {
         console.error('Error resolving schemas:', error);
       }
@@ -123,7 +123,7 @@ const GeneralContent = ({ subcategory }) => {
     return null;
   }
 
-  const schema = resolvedSchema.schema;
+  const {schema} = resolvedSchema;
   const columns = Object.keys(schema.properties);
 
   return (
@@ -134,7 +134,7 @@ const GeneralContent = ({ subcategory }) => {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>Add New Entry</DialogTitle>
         <DialogContent>
-          <Form validator={validator} schema={schema} formData={formData} onChange={({ formData }) => setFormData(formData)} onSubmit={handleAddCondition}/>
+          <Form validator={validator} schema={schema} formData={formData} onChange={({ formData2 }) => setFormData(formData2)} onSubmit={handleAddCondition}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
@@ -193,8 +193,7 @@ const onFormDataSubmit = (formState) => {
   setFormData(formState.formData)
 }
 
-  let schema = resolvedSchema.schema;
-  let UISchema = resolvedSchema.uiSchema;
+  const {schema, UISchema} = resolvedSchema;
 
   return (
     <div>
