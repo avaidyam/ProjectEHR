@@ -4,21 +4,27 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
-import Carousel from 'react-elastic-carousel';
 import { usePatientMRN } from '../../../util/urlHelpers.js';
 
+// The following are nice utilities but should be cleaned up eventually.
 
+// Clamp: Math.js doesn't have a clamp for some reason; fill it in
 let clamp = (num, lowerbound, upperbound) => {
   if (num < lowerbound) return(lowerbound)
   else if (num > upperbound) return(upperbound)
   else return(num)
 }
 
+// put in paths to the scans and scan lengths. Eventually this should all come
+// from the patient data object, but until then we'll have it hardcoded in for
+// demo purposes.
 const scans = ['/img/4206942069/1298822400000/', '/img/4206942069/1303490940000/'];
 const numImages = [28, 1];
 
+// Load images into an array given the index of the scan from the array `scans`;
+// Also for demo purposes only. The patient data object might include a filepath
+// or have it built in as a base64 formatted image depending on how large that gets
 let loadImages = (scanID) => {
-  // Load images into an array given the index of the scan from the array `scans`:
   let paths = Array(numImages[scanID]).fill(scans[scanID]).map((prefix, i) => (prefix + (i+1) + '.png'))
   return paths.map(path => {let img = new Image; img.src = path; return(img)})
 }
@@ -27,34 +33,66 @@ const RadiologyCanvas = (props) => {
   
   // Internalize images:
   const imageSeq = props.images;
+  console.log('rerender')
 
-  // Canvas & scroll setup:
+  // Canvas setup:
   const canvasRef = useRef(null);
+  // Scroll setup:
   const [imgIndex, setimgIndex] = useState(0);
+  // Mouse state tracking setup:
+  const [mouseState, setmouseState] = useState('up');
+  // Zoom setup:
+  const [imgScale, setimgScale] = useState(1);
+  // Pan setup:
+  const [imgX, setimgX] = useState(0);
+  const [imgY, setimgY] = useState(0);
+  // Windowing setup:
+  const [windowWidth, setwindowWidth] = useState(1);
+  const [windowLevel, setwindowLevel] = useState(0);
 
   // Scroll logic - may need calibration to work with different kinds of mice
-  function handleScroll(e) {
-    setimgIndex(clamp(imgIndex + Math.sign(e.deltaY), 0, imageSeq.length - 1));
+  let handleScroll = (e) => {
+    let direction = Math.sign(e.deltaY);
+    setimgIndex(x => clamp(x + direction, 0, imageSeq.length - 1));
   }
 
-  // Update viewer when imgIndex is changed.
-  function updateCanvas() {
-    // Canvas setup - may be useRef-able but it was giving me a headache
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-
-    // Draw image. No filters or scaling applied yet.
-    let img = imageSeq[imgIndex];
-    context.drawImage(img, 0, 0);
+  // Mouse State logic for detecting drags:
+  let handleMouseStateChange = (e) => {
+    if (e.type == 'mousedown') {
+      setmouseState('down');
+    }
+    else if (e.type == 'mouseup') {
+      setmouseState('up');
+    }
   }
 
-  // Run once before any interaction to make sure we're displaying an image:
-  useEffect(updateCanvas, [])
+  // Drag logic
+  let handleMouseMotion = (e) => {
+    if (mouseState == 'down') {
+      pan(e.movementX, e.movementY)
+    }
+  }
+
+  let pan = (deltaX, deltaY) => {
+    setimgX(x => x + deltaX);
+    setimgY(y => y + deltaY);
+  }
 
   // Run every time the image Index is updated (by scrolling)
-  useEffect(updateCanvas, [imgIndex])
-  
-  return <canvas ref={canvasRef} height={props.height} width={props.width} onWheel={(e) => {handleScroll(e)}}/>
+  useEffect(() => {
+    // Canvas setup:
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    // Image update logic:
+    let img = imageSeq[imgIndex];
+    ctx.drawImage(img, imgX, imgY, imgScale * img.width, imgScale * img.height);
+
+    console.log('drew imgIndex ' + imgIndex)
+    return(() => {ctx.clearRect(0, 0, canvas.width, canvas.height); console.log('erased imgIndex ' + imgIndex)})
+  }, [imgIndex, imgX, imgY]);
+
+  return <canvas ref={canvasRef} height={props.height} width={props.width} onMouseDown={(e) => handleMouseStateChange(e)} onMouseUp={(e) => handleMouseStateChange(e)} onMouseMove={(e) => handleMouseMotion(e)} onWheel={(e) => {handleScroll(e)}}/>
 }
 
 const ImageViewer = (props) => {
