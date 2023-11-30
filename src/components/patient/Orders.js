@@ -11,7 +11,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import HomeIcon from '@mui/icons-material/Home';
 import HotelIcon from '@mui/icons-material/Hotel';
-
+ 
 import { getRxTerms } from '../../util/getRxTerms.js';
 
 function dateLocal(addDay) {
@@ -346,8 +346,6 @@ export default function Orders() {
                 {createToggleButton(12, '12')}
               </ToggleButtonGroup>
               </>)}
-
-
 
               {status==='future' && (<><p>Expected date: </p>
               <ToggleButtonGroup
