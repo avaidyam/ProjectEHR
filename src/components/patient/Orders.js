@@ -40,7 +40,7 @@ export default function Orders() {
   const [value, setValue] = useState('acetaminophen')
   const [route, setRoute] = useState('') 
   const [dose, setDose] = useState('') 
-  const [freq, setFreq] = useState('') 
+  const [freq, setFreq] = useState('daily') 
   const [refill, setRefill] = useState(0) 
 
   // for ordering labs i.e. CBC
@@ -118,7 +118,7 @@ export default function Orders() {
                   {setTempMed(m); 
                   setRoute(m.fields.route ? m.fields.route[0] : route); 
                   setDose(m.fields.dose ? m.fields.dose[0][0] : dose); 
-                  setFreq(m.fields.frequency ? m.fields.frequency : freq); 
+                  setFreq('daily');
                   setRefill(m.fields.refills ? m.fields.refills : refill); 
                   setOpenDose(!openDose); 
                   setOpenMed(false);}}>
@@ -168,13 +168,7 @@ export default function Orders() {
               </ToggleButtonGroup>
 
               <p>Frequency: </p> 
-                <ToggleButtonGroup
-                  value={freq}
-                  exclusive
-                  onChange={(event, val) => setFreq(val)}
-                >
-                  <ToggleButton value={tempMed ? tempMed.fields.frequency : ''}>{tempMed ? tempMed.fields.frequency : ''}</ToggleButton>
-              </ToggleButtonGroup>
+                <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}/>
 
               <p>Refills: </p> 
                 <ToggleButtonGroup
