@@ -14,20 +14,17 @@ import HotelIcon from '@mui/icons-material/Hotel';
  
 import { getRxTerms } from '../../util/getRxTerms.js';
 
+// display + add # days on date picker
 function dateLocal(addDay) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
-        defaultValue={dayjs(
+        value={dayjs(
           `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
         ).add(addDay, 'day')}
       />
     </LocalizationProvider>
   );
-}
-
-function createToggleButton(value, text){
-    return (<ToggleButton sx={{ whiteSpace: 'nowrap' }} value={value}>{text}</ToggleButton>);
 }
 
 
@@ -37,8 +34,8 @@ export default function Orders() {
   const [tempMed, setTempMed] = useState(null)
 
   // for ordering meds (?combine "ADD ORDERS" button w/ meds + labs as 1 button for the future)
-  const [openMed, setOpenMed] = useState(false)
-  const [openDose, setOpenDose] = useState(false)
+  const [openMed, setOpenMed] = useState(false) 
+  const [openDose, setOpenDose] = useState(false) 
   const [data, setData] = useState([])
   const [value, setValue] = useState('acetaminophen')
   const [route, setRoute] = useState('') 
@@ -64,32 +61,17 @@ export default function Orders() {
   // list of orders that are pending/waiting to be signed
   const [orderList, setOrderList] = useState([]);
 
-  // add medication to list of orders
-  const orderListMed = () => {
-    orderList.push(`${value} ${dose} ${route} ${freq}`);
-  }
-
-  // add lab to list of orders
-  const orderListLab = () => {
-    orderList.push('CBC w/ DIFF');
-  }
-
-  // empty the temp list of orders 
-  const emptyOrderList = () => {
-    setOrderList([]);
-  }
-
   // action for signing orders
   const submitOrder = () => {
     // some code on submitting order (will fill this in the future), then empty the templist
-    emptyOrderList();
+    setOrderList([]);
   }
 
   // close lab order dialog. if "accept" clicked, add lab to order list
   const closeLab = (save) => {
     setOpenLab(false);
     if (save){
-      orderListLab();
+      orderList.push('CBC w/ DIFF');
     }
   };
 
@@ -97,83 +79,7 @@ export default function Orders() {
   const closeDose = (save) => {
     setOpenDose(false);
     if (save){
-      orderListMed();
-    }
-  };
-
-  const typeChange = (event, newType) => {
-    if (newType !== null) {
-      setType(newType);
-    }
-  };
-
-  const tempMedChange = (newTempMed) => {
-    setTempMed(newTempMed);
-  };
-
-  const routeChange = (event, newRoute) => {
-    if (newRoute!== null) {
-      setRoute(newRoute);
-    }
-  };
-
-  const doseChange = (event, newDose) => {
-    if (newDose !== null) {
-      setDose(newDose);
-    }
-  };
-
-  const freqChange = (event, newFreq) => {
-    if (newFreq !== null) {
-      setFreq(newFreq);
-    }
-  };
-
-  const refillChange = (event, newRefill) => {
-    if (newRefill !== null) {
-      setRefill(newRefill);
-    }
-  };
-
-  const statusChange = (event, newStatus) => {
-    if (newStatus !== null) {
-      setStatus(newStatus);
-    }
-  };
-
-  const expectDateChange = (event, newExpectDate) => {
-    if (newExpectDate !== null) {
-      setExpectDate(newExpectDate);
-    }
-  };
-
-  const expireDateChange = (event, newExpireDate) => {
-    if (newExpireDate !== null) {
-      setExpireDate(newExpireDate);
-    }
-  };
-
-  const intervalChange = (event, newInterval) => {
-    if (newInterval !== null) {
-      setInterval(newInterval);
-    }
-  };
-
-  const countChange = (event, newCount) => {
-    if (newCount !== null) {
-      setCount(newCount);
-    }
-  };
-
-  const priorityChange = (event, newPriority) => {
-    if (newPriority !== null) {
-      setPriority(newPriority);
-    }
-  };
-
-  const classChange = (event, newClass) => {
-    if (newClass !== null) {
-      setClass(newClass);
+      orderList.push(`${value} ${dose} ${route} ${freq}`);
     }
   };
 
@@ -209,7 +115,7 @@ export default function Orders() {
               {data.map((m) => (
                 <ListItem disablePadding>
                 <ListItemButton onClick={() => 
-                  {tempMedChange(m); 
+                  {setTempMed(m); 
                   setRoute(m.fields.route ? m.fields.route[0] : route); 
                   setDose(m.fields.dose ? m.fields.dose[0][0] : dose); 
                   setFreq(m.fields.frequency ? m.fields.frequency : freq); 
@@ -238,11 +144,11 @@ export default function Orders() {
                 <ToggleButtonGroup
                   value={route}
                   exclusive
-                  onChange={routeChange}
+                  onChange={(event, val) => setRoute(val)}
                 >
                 {
                 tempMed ? tempMed.fields.route.map((m) => (
-                  createToggleButton(m, m)
+                  <ToggleButton value={m}>{m}</ToggleButton>
                 )) : ''
                 }
               </ToggleButtonGroup>
@@ -251,11 +157,12 @@ export default function Orders() {
                 <ToggleButtonGroup
                   value={dose}
                   exclusive
-                  onChange={doseChange}
+                  onChange={(event, val) => setDose(val)}
+                  sx={{ whiteSpace: 'nowrap' }}
                 >
                 {tempMed ? tempMed.fields.dose.map((d) => (
                   d.map((sub) => (
-                    createToggleButton(sub, sub)
+                    <ToggleButton value={sub}>{sub}</ToggleButton>
                   ))
                 )) : ''}
               </ToggleButtonGroup>
@@ -264,18 +171,18 @@ export default function Orders() {
                 <ToggleButtonGroup
                   value={freq}
                   exclusive
-                  onChange={freqChange}
+                  onChange={(event, val) => setFreq(val)}
                 >
-                {createToggleButton(tempMed ? tempMed.fields.frequency : '', tempMed ? tempMed.fields.frequency : '')}
+                  <ToggleButton value={tempMed ? tempMed.fields.frequency : ''}>{tempMed ? tempMed.fields.frequency : ''}</ToggleButton>
               </ToggleButtonGroup>
 
               <p>Refills: </p> 
                 <ToggleButtonGroup
                   value={refill}
                   exclusive
-                  onChange={refillChange}
+                  onChange={(event, val) => setRefill(val)}
                 >
-                {createToggleButton(tempMed ? tempMed.fields.refills : 0, tempMed ? (tempMed.fields.refills) : refill)}
+                  <ToggleButton value={tempMed ? tempMed.fields.refills : refill}>{tempMed ? tempMed.fields.refills : refill}</ToggleButton>
               </ToggleButtonGroup>
 
           <div style={{backgroundColor: "blue", height: '40px'}}>
@@ -300,35 +207,35 @@ export default function Orders() {
                 <ToggleButtonGroup
                   value={type}
                   exclusive
-                  onChange={typeChange}
+                  onChange={(event, val) => setType(val)}
                 >
-                  {createToggleButton('outpatient', (<HomeIcon/>))}
-                  {createToggleButton('inpatient', (<HotelIcon/>))}
+                  <ToggleButton value='outpatient'><HomeIcon/></ToggleButton>
+                  <ToggleButton value='inpatient'><HotelIcon/></ToggleButton>
                 </ToggleButtonGroup>
 
               <p>Status: </p> 
               <ToggleButtonGroup
                 value={status}
                 exclusive
-                onChange={statusChange}
+                onChange={(event, val) => setStatus(val)}
               >
-                {createToggleButton('normal', 'Normal')}
-                {createToggleButton('standing', 'Standing')}
-                {createToggleButton('future', 'Future')}
+                <ToggleButton value='normal'>Normal</ToggleButton>
+                <ToggleButton value='standing'>Standing</ToggleButton>
+                <ToggleButton value='future'>Future</ToggleButton>
               </ToggleButtonGroup>
 
               {status==='standing' && (<><p>Interval: </p>
               <ToggleButtonGroup
                 value={interval}
                 exclusive
-                onChange={intervalChange}
+                onChange={(event, val) => setInterval(val)}
               >
-                {createToggleButton(30, '1 Month')}
-                {createToggleButton(60, '2 Months')}
-                {createToggleButton(90, '3 Months')}
-                {createToggleButton(120, '4 Months')}
-                {createToggleButton(180, '6 Months')}
-                {createToggleButton(365, '1 Year')}
+                <ToggleButton value={30}>1 Month</ToggleButton>
+                <ToggleButton value={60}>2 Months</ToggleButton>
+                <ToggleButton value={90}>3 Months</ToggleButton>
+                <ToggleButton value={120}>4 Months</ToggleButton>
+                <ToggleButton value={180}>6 Months</ToggleButton>
+                <ToggleButton value={365}>1 Year</ToggleButton>
               </ToggleButtonGroup>
               </>)}
 
@@ -336,14 +243,14 @@ export default function Orders() {
               <ToggleButtonGroup
                 value={count}
                 exclusive
-                onChange={countChange}
+                onChange={(event, val) => setCount(val)}
               >
-                {createToggleButton(1, '1')}
-                {createToggleButton(2, '2')}
-                {createToggleButton(3, '3')}
-                {createToggleButton(4, '4')}
-                {createToggleButton(6, '6')}
-                {createToggleButton(12, '12')}
+                <ToggleButton value={1}>1</ToggleButton>
+                <ToggleButton value={2}>2</ToggleButton>
+                <ToggleButton value={3}>3</ToggleButton>
+                <ToggleButton value={4}>4</ToggleButton>
+                <ToggleButton value={6}>6</ToggleButton>
+                <ToggleButton value={12}>12</ToggleButton>
               </ToggleButtonGroup>
               </>)}
 
@@ -351,34 +258,38 @@ export default function Orders() {
               <ToggleButtonGroup
                 value={expectDate}
                 exclusive
-                onChange={expectDateChange}
+                onChange={(event, val) => setExpectDate(val)}
+                sx={{ whiteSpace: 'nowrap' }}
               >
                 <div>{dateLocal(expectDate)}</div>
-                {createToggleButton(0, 'Today')}
-                {createToggleButton(1, 'Tomorrow')}
-                {createToggleButton(7, '1 Week')}
-                {createToggleButton(14, '2 Weeks')}
-                {createToggleButton(30, '1 Month')}
-                {createToggleButton(60, '2 Months')}
-                {createToggleButton(90, '3 Months')}
-                {createToggleButton(180, '6 Months')}
+                <ToggleButton value={0}>Today</ToggleButton>
+                <ToggleButton value={1}>Tomorrow</ToggleButton>
+                <ToggleButton value={7}>1 Week</ToggleButton>
+                <ToggleButton value={14}>2 Weeks</ToggleButton>
+                <ToggleButton value={30}>1 Month</ToggleButton>
+                <ToggleButton value={60}>2 Months</ToggleButton>
+                <ToggleButton value={90}>3 Months</ToggleButton>
+                <ToggleButton value={180}>6 Months</ToggleButton>
               </ToggleButtonGroup></>
               )}
 
               {status==='future' && (<><p>Expires: </p>
+
+
               <ToggleButtonGroup
                 value={expireDate}
                 exclusive
-                onChange={expireDateChange}
+                onChange={(event, val) => setExpireDate(val)}
+                sx={{ whiteSpace: 'nowrap' }}
               >
-                <div>{dateLocal(expireDate)}</div>
-                {createToggleButton(30, '1 Month')}
-                {createToggleButton(60, '2 Months')}
-                {createToggleButton(90, '3 Months')}
-                {createToggleButton(120, '4 Months')}
-                {createToggleButton(180, '6 Months')}
-                {createToggleButton(365, '1 Year')}
-                {createToggleButton(547, '18 Months')}
+               <div>{dateLocal(expireDate)}</div>
+                <ToggleButton value={30}>1 Month</ToggleButton>
+                <ToggleButton value={60}>2 Months</ToggleButton>
+                <ToggleButton value={90}>3 Months</ToggleButton>
+                <ToggleButton value={120}>4 Months</ToggleButton>
+                <ToggleButton value={180}>6 Months</ToggleButton>
+                <ToggleButton value={365}>1 Year</ToggleButton>
+                <ToggleButton value={547}>18 Months</ToggleButton>
               </ToggleButtonGroup>
               </>)}
 
@@ -386,23 +297,23 @@ export default function Orders() {
               <ToggleButtonGroup
                 value={priority}
                 exclusive
-                onChange={priorityChange}
+                onChange={(event, val) => setPriority(val)}
               >
-                {createToggleButton('routine', 'Routine')}
-                {createToggleButton('stat', 'STAT')}
-                {createToggleButton('timed', 'Timed')}
-                {createToggleButton('urgent', 'Urgent')}
+                <ToggleButton value='routine'>Routine</ToggleButton>
+                <ToggleButton value='stat'>STAT</ToggleButton>
+                <ToggleButton value='timed'>Timed</ToggleButton>
+                <ToggleButton value='urgent'>Urgent</ToggleButton>
               </ToggleButtonGroup>
             
               <p>Class: </p>
               <ToggleButtonGroup
                 value={classCollect}
                 exclusive
-                onChange={classChange}
+                onChange={(event, val) => setClass(val)}
               >
-                {createToggleButton('lab', 'Lab Collect')}
-                {createToggleButton('clinic', 'Clinic Collect')}
-                {createToggleButton('external', 'External Collect')}
+                <ToggleButton value='lab'>Lab Collect</ToggleButton>
+                <ToggleButton value='clinic'>Clinic Collect</ToggleButton>
+                <ToggleButton value='external'>External Collect</ToggleButton>
               </ToggleButtonGroup>
 
           </div>
