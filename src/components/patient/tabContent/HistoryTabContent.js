@@ -160,7 +160,7 @@ const HistoryTabContent = ({ children, ...other }) => {
       ],
       "demographics": {
         "maritalStatus": "Married",
-        "spouseName": "John's wife",
+        "spouseName": "Unknown",
         "numberOfChildren": 2,
         "yearsOfEducation": 0,
         "highestEducationLevel": "Some College",
@@ -170,13 +170,13 @@ const HistoryTabContent = ({ children, ...other }) => {
       }
     },
     "SocialDocumentation": {
-      "SocialDocumentation": "- John Hanson was a floor manager at a printing facility in Mattoon, IL, where he worked for 22 years before the factory shut down and he lost his job. \n- He currently works as a part-time delivery truck driver for a local furniture store. \n- He also works odd jobs at a local construction company and a concrete laying company. \n- He lives with his wife of 35 years who has multiple sclerosis. She is unable to walk and uses a wheelchair for mobility. \n- He is her primary caregiver. \n- They have two sons who do not live in the area. \n- He has smoked since he was a teenager and currently smokes a pack per day. \n- He has 3-4 beers a week. \n- He denies recreational drug use. \n- Since his fall and right foot fracture 5 years ago, he has gained 70 lbs., which he attributes to lack of exercise since his injury and resultant chronic right foot and knee pain. \n- His diet is mostly take-out fast food. \n- He remembers to take his medications. However, it is hard for him to take them regularly, given his odd shift hours including night shifts."
+      "textbox":"- John Hanson was a floor manager at a printing facility in Mattoon, IL, where he worked for 22 years before the factory shut down and he lost his job. \n- He currently works as a part-time delivery truck driver for a local furniture store. \n- He also works odd jobs at a local construction company and a concrete laying company. \n- He lives with his wife of 35 years who has multiple sclerosis. She is unable to walk and uses a wheelchair for mobility. \n- He is her primary caregiver. \n- They have two sons who do not live in the area. \n- He has smoked since he was a teenager and currently smokes a pack per day. \n- He has 3-4 beers a week. \n- He denies recreational drug use. \n- Since his fall and right foot fracture 5 years ago, he has gained 70 lbs., which he attributes to lack of exercise since his injury and resultant chronic right foot and knee pain. \n- His diet is mostly take-out fast food. \n- He remembers to take his medications. However, it is hard for him to take them regularly, given his odd shift hours including night shifts."
+
     }
   }
   );
 
   const schema = histschema;
-
   const uischema = histuischema;
 
 const theme = createTheme({
@@ -192,9 +192,8 @@ const theme = createTheme({
     MuiAppBar: {
       defaultProps: {
         sx: {
-          width: 'inherit',
-          marginRight: '16px'
-        }
+          width: 'inherit'       
+         }
       }
     }
   },
@@ -202,8 +201,9 @@ const theme = createTheme({
 
   return (
    
-<div style={{display: 'flex'}}>    
+<div style={{display: 'flex'}}>   
     <ThemeProvider theme={theme}>
+      
       <JsonForms
         schema={schema}
         uischema={uischema}
@@ -211,8 +211,8 @@ const theme = createTheme({
         renderers={materialRenderers}
         cells={materialCells}
       />
-      </ThemeProvider>
-    </div>  
+    </ThemeProvider>
+  </div>  
   );
 };
 

@@ -241,9 +241,9 @@
             "elements": [
               {
                 "type": "Control",
-                "scope": "#/properties/SocialDocumentation",
+                "scope": "#/properties/SocialDocumentation/properties/textbox",
                 "options": {
-                  "custom": true
+                  "multi": true
                 }
               }
             ]
