@@ -7,8 +7,11 @@ import {
   materialCells,
 } from '@jsonforms/material-renderers';
 
+import SurgicalHistoryTableRenderer from './SurgicalHistoryTabRenderer.js';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import { registerRenderer } from '@jsonforms/core';
 
 import { JsonForms } from '@jsonforms/react';
 
@@ -179,39 +182,29 @@ const HistoryTabContent = ({ children, ...other }) => {
   const schema = histschema;
   const uischema = histuischema;
 
-const theme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-  components: {
-    MuiTabs: {
-      defaultProps: {
-        orientation: 'vertical',
-      },
-    },
-    MuiAppBar: {
-      defaultProps: {
-        sx: {
-          width: 'inherit'       
-         }
-      }
-    }
-  },
+
+// Register the custom renderer with JSONForms
+registerRenderer({
+  tester: (uischema) => uischema.type === 'Control' && uischema.scope.$ref === '#/properties/surgical',
+  renderer: SurgicalHistoryTableRenderer
 });
+
+const renderers = [
+  ...materialRenderers,
+  { tester: (uischema) => uischema.type === 'Control' && uischema.scope.$ref === '#/properties/surgical', renderer: SurgicalHistoryTableRenderer }
+];
 
   return (
    
-<div style={{display: 'flex'}}>   
-    <ThemeProvider theme={theme}>
-      
+<div >   
+   
       <JsonForms
         schema={schema}
         uischema={uischema}
         data={data}
-        renderers={materialRenderers}
+        renderers={renderers}
         cells={materialCells}
       />
-    </ThemeProvider>
   </div>  
   );
 };
