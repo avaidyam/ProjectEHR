@@ -12,11 +12,8 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleRowClick = (row) => {
-    if (row.kind === 'Lab') {BasicTable();}
-    else {
-      setSelectedRow(row.data);
-      setDialogOpen(true);
-    }
+    setSelectedRow(row);
+    setDialogOpen(true);
   };
 
   // Filter data based on selectedTabLabel
@@ -43,7 +40,7 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </TableHead>
         <tbody>
           {filteredData.map((row, index) => (
-            <TableRow key={index} onClick={() => handleRowClick(row)}>
+            <TableRow key={index} onClick={() => handleRowClick(row.data)}>
               {visibleColumns.map((column, columnIndex) => (
                 <TableCell key={columnIndex}>{row.data[column]}</TableCell>
               ))}
