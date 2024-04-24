@@ -5,14 +5,18 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import BasicTable from './LabReportTab.js';
 
 const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleRowClick = (row) => {
-    setSelectedRow(row);
-    setDialogOpen(true);
+    if (row.kind === 'Lab') {BasicTable();}
+    else {
+      setSelectedRow(row.data);
+      setDialogOpen(true);
+    }
   };
 
   // Filter data based on selectedTabLabel
@@ -39,7 +43,7 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </TableHead>
         <tbody>
           {filteredData.map((row, index) => (
-            <TableRow key={index} onClick={() => handleRowClick(row.data)}>
+            <TableRow key={index} onClick={() => handleRowClick(row)}>
               {visibleColumns.map((column, columnIndex) => (
                 <TableCell key={columnIndex}>{row.data[column]}</TableCell>
               ))}
