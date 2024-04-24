@@ -13,7 +13,10 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
 
   const handleRowClick = (row) => {
     setSelectedRow(row);
-    setDialogOpen(true);
+    // Show the dialog if the selected tab is not 'Lab'
+    if (selectedTabLabel !== 'Lab') {
+      setDialogOpen(true);
+    }
   };
 
   // Filter data based on selectedTabLabel
@@ -49,15 +52,21 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </tbody>
       </Table>
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogContent>
-          {selectedRow && Object.keys(selectedRow).map((key, index) => (
-            <div key={index}>
-              <strong>{key}:</strong> {selectedRow[key]}
-            </div>
-          ))}
-        </DialogContent>
-      </Dialog>
+      {/* Render the dialog if the selected tab is not 'Lab' */}
+      {selectedTabLabel !== 'Lab' && (
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <DialogContent>
+            {selectedRow && Object.keys(selectedRow).map((key, index) => (
+              <div key={index}>
+                <strong>{key}:</strong> {selectedRow[key]}
+              </div>
+            ))}
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Render the BasicTable if the selected tab is 'Lab' */}
+      {selectedTabLabel === 'Lab' && selectedRow && <BasicTable data={selectedRow} />}
     </div>
   );
 };
