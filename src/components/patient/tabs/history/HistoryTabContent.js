@@ -7,12 +7,6 @@ import {
   materialCells,
 } from '@jsonforms/material-renderers';
 
-import SurgicalHistoryTableRenderer from './SurgicalHistoryTabRenderer.js';
-
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-import { registerRenderer } from '@jsonforms/core';
-
 import { JsonForms } from '@jsonforms/react';
 
 import histschema from '../../../../util/data/historyschema.json';
@@ -183,18 +177,7 @@ const HistoryTabContent = ({ children, ...other }) => {
   const uischema = histuischema;
 
 
-// Register the custom renderer with JSONForms
-registerRenderer({
-  tester: (uischema) => uischema.type === 'Control' && uischema.scope.$ref === '#/properties/surgical',
-  renderer: SurgicalHistoryTableRenderer
-});
-
-const renderers = [
-  ...materialRenderers,
-  { tester: (uischema) => uischema.type === 'Control' && uischema.scope.$ref === '#/properties/surgical', renderer: SurgicalHistoryTableRenderer }
-];
-
-  return (
+return (
    
 <div >   
    
@@ -202,7 +185,7 @@ const renderers = [
         schema={schema}
         uischema={uischema}
         data={data}
-        renderers={renderers}
+        renderers={materialRenderers}
         cells={materialCells}
       />
   </div>  
