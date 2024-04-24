@@ -22,9 +22,9 @@ export const PatientHome = ({ ...props }) => {
       </Box>
       <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}>
         <Tabs value={tab} onChange={(event, newValue) => setTab(newValue)}>
-          <Tab label="Pre-Charting" />
           <Tab label="SnapShot" />
           <Tab label="Chart Review" />
+          <Tab label="Pre-Charting" />
           <Tab label="Rooming" />
           <Tab label="Imaging" />
           <Tab label="NoteWriter" />
@@ -32,9 +32,9 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="Orders" />
         </Tabs>
         <Divider />
-        {tab === 0 && <PreChartingTabContent />}
-        {tab === 1 && <SnapshotTabContent />}
-        {tab === 2 && <ChartReview />}
+        {tab === 0 && <SnapshotTabContent />}
+        {tab === 1 && <ChartReview />}
+        {tab === 2 && <PreChartingTabContent />}
         {tab === 3 && <RoomingTabContent />}
         {tab === 4 && <ImagingTabContent />}
         {tab === 5 && <NotesTabContent />}
