@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
 
 import { Storyboard } from './Storyboard.js'
-import ChartReviewTabContent from './tabContent/ChartReviewTabContent.js';
-import PreChartingTabContent from './tabContent/PreChartingTabContent.js';
-import RoomingTabContent from './tabContent/RoomingTabContent.js';
-import SnapshotTabContent from './tabContent/SnapshotTabContent.js';
-import ImagingTabContent from './tabContent/ImagingTabContent.js';
-import NotesTabContent from './tabContent/NotesTabContent.js';
-import HistoryTabContent from './tabContent/HistoryTabContent.js';
-import Orders from './tabContent/Orders.js';
+import { ChartReview } from './tabs/chartreview/ChartReviewTabContent.js';
+import PreChartingTabContent from './tabs/snapshot/PreChartingTabContent.js';
+import RoomingTabContent from './tabs/snapshot/RoomingTabContent.js';
+import SnapshotTabContent from './tabs/snapshot/SnapshotTabContent.js';
+import ImagingTabContent from './tabs/chartreview/ImagingTabContent.js';
+import NotesTabContent from './tabs/notewriter/NotesTabContent.js';
+import HistoryTabContent from './tabs/history/HistoryTabContent.js';
+import Orders from './tabs/orders/Orders.js';
 
 export const PatientHome = ({ ...props }) => {
   const drawerWidth = 250
@@ -34,7 +34,7 @@ export const PatientHome = ({ ...props }) => {
         <Divider />
         {tab === 0 && <PreChartingTabContent />}
         {tab === 1 && <SnapshotTabContent />}
-        {tab === 2 && <ChartReviewTabContent />}
+        {tab === 2 && <ChartReview />}
         {tab === 3 && <RoomingTabContent />}
         {tab === 4 && <ImagingTabContent />}
         {tab === 5 && <NotesTabContent />}

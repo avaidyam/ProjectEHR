@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 import {
   materialRenderers,
@@ -15,9 +15,9 @@ import { registerRenderer } from '@jsonforms/core';
 
 import { JsonForms } from '@jsonforms/react';
 
-import histschema from '../../../util/data/historyschema.json';
+import histschema from '../../../../util/data/historyschema.json';
 
-import histuischema from '../../../util/data/historyuischema.json';
+import histuischema from '../../../../util/data/historyuischema.json';
 
 const HistoryTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN()

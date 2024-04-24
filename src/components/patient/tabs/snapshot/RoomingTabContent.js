@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 const RoomingTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN()

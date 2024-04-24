@@ -2,9 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { RootRouter } from './components/navigation/RootRouter.js'
+import { App } from './components/App.js'
 
-const darkTheme = createTheme({
+const theme = createTheme({
   palette: {
     //mode: 'dark',
   },
@@ -12,9 +12,9 @@ const darkTheme = createTheme({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RootRouter />
+      <App />
     </ThemeProvider>
   </React.StrictMode>
 )

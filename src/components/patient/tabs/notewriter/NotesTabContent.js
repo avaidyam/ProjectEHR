@@ -6,7 +6,7 @@ import Select from '@mui/material/Select';
 import { ContentState, EditorState } from 'draft-js';
 import React, { useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './NoteWriter.css';
 

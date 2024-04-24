@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 import React from 'react';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 const getPatientPreChartingData = () => ({
   currentMedications: [

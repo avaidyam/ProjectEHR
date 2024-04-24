@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { AppBar, IconButton, Toolbar, Typography, Box } from '@mui/material';
 import { GridMenuIcon } from '@mui/x-data-grid';
-import { useRouter } from '../../util/urlHelpers.js';
+import { useRouter } from '../util/urlHelpers.js';
 
-import { Schedule } from '../schedule/Schedule.js';
-import { PatientHome } from '../patient/PatientHome.js';
+import { Schedule } from './schedule/Schedule.js';
+import { PatientHome } from './patient/PatientHome.js';
 
 export const NavBar = ({ ...props }) => {
   const onHandleClickRoute = useRouter()
@@ -29,7 +29,7 @@ export const NavBar = ({ ...props }) => {
   )
 }
 
-export const RootRouter = ({ ...props }) => {
+export const App = ({ ...props }) => {
   return (
     <HashRouter>
       <Box sx={{ minHeight: "100vh" }}>
