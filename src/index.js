@@ -6,7 +6,7 @@ import RootRouter from './components/navigation/RootRouter.js'
 
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    //mode: 'dark',
   },
 })
 
