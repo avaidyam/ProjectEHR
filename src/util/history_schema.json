@@ -1,0 +1,628 @@
+{
+  "Medical": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "diagnosis": {
+          "type": "string",
+          "title": "Diagnosis"
+        },
+        "date": {
+          "type": "string",
+          "title": "Date"
+        },
+        "age": {
+          "type": "string",
+          "title": "Age"
+        },
+        "comment": {
+          "type": "string",
+          "title": "Comment"
+        }
+      }
+    }
+  },
+  "Surgical": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "procedure": {
+          "type": "string",
+          "title": "Procedure"
+        },
+        "laterality": {
+          "type": "string",
+          "title": "Laterality"
+        },
+        "date": {
+          "type": "string",
+          "title": "Date"
+        },
+        "age": {
+          "type": "string",
+          "title": "Age"
+        },
+        "comment": {
+          "type": "string",
+          "title": "Comment"
+        },
+        "chartLink": {
+          "type": "string",
+          "title": "Link to Chart"
+        }
+      }
+    }
+  },
+  "Family": {
+    "schema": {
+      "type": "object",
+      "required": [
+        "relationship"
+      ],
+      "properties": {
+        "relationship": {
+          "type": "string",
+          "title": "Relationship"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status"
+        },
+        "age": {
+          "type": "integer",
+          "title": "Age"
+        },
+        "problems": {
+          "type": "array",
+          "title": "Problems",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "title": "Problem Description"
+              },
+              "ageOfOnset": {
+                "type": "string",
+                "title": "Age of Onset"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Social": {
+    "SubstanceSexualHealth": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "smokingStatus": {
+            "type": "string",
+            "title": "Smoking Status",
+            "enum": [
+              "None",
+              "Former",
+              "Everyday",
+              "Some Days",
+              "Unknown"
+            ]
+          },
+          "smokingDetails": {
+            "type": "object",
+            "title": "Smoking Details",
+            "properties": {
+              "types": {
+                "type": "array",
+                "title": "Types",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Cigarette",
+                    "Pipe",
+                    "Cigar"
+                  ]
+                }
+              },
+              "startDate": {
+                "type": "string",
+                "title": "Start Date",
+                "format": "date"
+              },
+              "endDate": {
+                "type": "string",
+                "title": "End Date",
+                "format": "date"
+              },
+              "packsPerDay": {
+                "type": "number",
+                "title": "Packs/Day"
+              },
+              "packYears": {
+                "type": "number",
+                "title": "Pack Years"
+              }
+            },
+            "dependencies": {
+              "smokingStatus": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "smokingStatus": {
+                        "enum": [
+                          "Former",
+                          "Everyday",
+                          "Some Days"
+                        ]
+                      },
+                      "types": {
+                        "contains": {
+                          "enum": [
+                            "Cigarette",
+                            "Pipe",
+                            "Cigar"
+                          ]
+                        }
+                      },
+                      "startDate": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "endDate": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "packsPerDay": {
+                        "type": "number"
+                      },
+                      "packYears": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "smokelessStatus": {
+            "type": "object",
+            "title": "Smokeless Status",
+            "properties": {
+              "smokelessStatus": {
+                "type": "string",
+                "title": "Smokeless Status",
+                "enum": [
+                  "Never",
+                  "Former",
+                  "Current",
+                  "Unknown"
+                ]
+              },
+              "comments": {
+                "type": "string",
+                "title": "Comments"
+              }
+            }
+          },
+          "alcoholStatus": {
+            "type": "object",
+            "title": "Alcohol",
+            "properties": {
+              "alcoholStatus": {
+                "type": "string",
+                "title": "Alcohol Status",
+                "enum": [
+                  "Yes",
+                  "Not Currently",
+                  "Never"
+                ]
+              },
+              "drinksPerWeek": {
+                "type": "object",
+                "title": "Drinks Per Week",
+                "properties": {
+                  "wineGlasses": {
+                    "type": "integer",
+                    "title": "Glasses of Wine"
+                  },
+                  "beerCans": {
+                    "type": "integer",
+                    "title": "Cans of Beer"
+                  },
+                  "liquorShots": {
+                    "type": "integer",
+                    "title": "Shots of Liquor"
+                  },
+                  "drinksContainingAlcohol": {
+                    "type": "integer",
+                    "title": "Drinks Containing .5oz of Alcohol"
+                  },
+                  "standardDrinks": {
+                    "type": "integer",
+                    "title": "Standard Drinks or Equivalent"
+                  }
+                }
+              }
+            },
+            "dependencies": {
+              "alcoholStatus": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "alcoholStatus": {
+                        "enum": [
+                          "Yes"
+                        ]
+                      },
+                      "drinksPerWeek": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "drugStatus": {
+            "type": "object",
+            "properties": {
+              "drugStatus": {
+                "type": "string",
+                "title": "Drug Use",
+                "enum": [
+                  "Yes",
+                  "Not Currently",
+                  "Never"
+                ]
+              },
+              "drugTypes": {
+                "type": "array",
+                "title": "Types of Drugs Used",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Anabolic Steroids",
+                    "Barbiturates",
+                    "Benzodiazepine",
+                    "Cannabinoids",
+                    "Hallucinogens",
+                    "Inhalants",
+                    "Opioids",
+                    "Stimulants",
+                    "Other"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "usePerWeek": {
+                "type": "integer",
+                "title": "Use per Week"
+              },
+              "comments": {
+                "type": "string",
+                "title": "Comments"
+              }
+            }
+          },
+          "sexualActivity": {
+            "type": "object",
+            "properties": {
+              "sexualActivityStatus": {
+                "type": "string",
+                "title": "Sexual Activity",
+                "enum": [
+                  "Yes",
+                  "Not Currently",
+                  "Never"
+                ]
+              },
+              "birthControlMethods": {
+                "type": "array",
+                "title": "Birth Control Methods",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "Abstinence",
+                    "Coitus Interruptus",
+                    "Condom",
+                    "Diaphragm",
+                    "I.U.D",
+                    "Implant",
+                    "Injection",
+                    "Inserts",
+                    "None",
+                    "Patch",
+                    "Pill",
+                    "Progesterone Only Pill",
+                    "Rhythm",
+                    "Ring",
+                    "Spermicide",
+                    "Sponge",
+                    "Partner w/ Vasectomy"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "partners": {
+                "type": "string",
+                "title": "Partners",
+                "enum": [
+                  "Female",
+                  "Male",
+                  "Other"
+                ]
+              },
+              "comments": {
+                "type": "string",
+                "title": "Comments"
+              }
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "smokingStatus": {
+          "smokingStatus": {
+            "ui:widget": "radio"
+          },
+          "smokingDetails": {
+            "ui:widget": "object",
+            "ui:order": [
+              "types",
+              "startDate",
+              "endDate",
+              "packsPerDay",
+              "packYears"
+            ],
+            "types": {
+              "ui:widget": "checkboxes"
+            },
+            "startDate": {
+              "ui:widget": "date"
+            },
+            "endDate": {
+              "ui:widget": "date"
+            },
+            "packsPerDay": {
+              "ui:widget": "updown"
+            },
+            "packYears": {
+              "ui:widget": "updown"
+            },
+            "ui:options": {
+              "hidden": true
+            },
+            "ui:dependencies": {
+              "smokingStatus": {
+                "oneOf": [
+                  {
+                    "properties": {
+                      "smokingStatus": {
+                        "enum": [
+                          "Former",
+                          "Everyday",
+                          "Some Days"
+                        ]
+                      },
+                      "ui:options": {
+                        "hidden": false
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "smokelessStatus": {
+          "smokelessStatus": {
+            "ui:widget": "radio"
+          },
+          "comments": {
+            "ui:widget": "textarea"
+          }
+        },
+        "alcoholStatus": {
+          "alcoholStatus": {
+            "ui:widget": "radio"
+          },
+          "drinksPerWeek": {
+            "wineGlasses": {
+              "ui:widget": "updown"
+            },
+            "beerCans": {
+              "ui:widget": "updown"
+            },
+            "liquorShots": {
+              "ui:widget": "updown"
+            },
+            "drinksContainingAlcohol": {
+              "ui:widget": "updown"
+            },
+            "standardDrinks": {
+              "ui:widget": "updown"
+            }
+          },
+          "ui:options": {
+            "dependencies": {
+              "alcoholStatus": {
+                "oneOf": [
+                  "Yes"
+                ]
+              }
+            }
+          }
+        },
+        "drugStatus": {
+          "drugStatus": {
+            "ui:widget": "radio"
+          },
+          "drugTypes": {
+            "ui:widget": "checkboxes"
+          },
+          "usePerWeek": {
+            "ui:widget": "updown"
+          },
+          "comments": {
+            "ui:widget": "textarea"
+          }
+        },
+        "sexualActivity": {
+          "sexualActivityStatus": {
+            "ui:widget": "radio"
+          },
+          "birthControlMethods": {
+            "ui:widget": "checkboxes"
+          },
+          "partners": {
+            "ui:widget": "radio"
+          },
+          "comments": {
+            "ui:widget": "textarea"
+          }
+        }
+      }
+    },
+    "Socioeconomic": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "occupation": {
+            "type": "string",
+            "title": "Occupation"
+          },
+          "employer": {
+            "type": "string",
+            "title": "Employer"
+          },
+          "occupationalHistory": {
+            "type": "array",
+            "title": "Occupation History",
+            "items": {
+              "type": "object",
+              "properties": {
+                "occupation": {
+                  "type": "string",
+                  "title": "Occupation"
+                },
+                "employer": {
+                  "type": "string",
+                  "title": "Employer"
+                }
+              }
+            }
+          },
+          "demographics": {
+            "type": "object",
+            "properties": {
+              "maritalStatus": {
+                "type": "string",
+                "title": "Marital Status",
+                "enum": [
+                  "Divorced",
+                  "Legally Separated",
+                  "Life Partner",
+                  "Married",
+                  "Single",
+                  "Unknown",
+                  "Widow/Widower"
+                ]
+              },
+              "spouseName": {
+                "type": "string",
+                "title": "Spouse Name"
+              },
+              "numberOfChildren": {
+                "type": "integer",
+                "title": "Number of Children"
+              },
+              "yearsOfEducation": {
+                "type": "integer",
+                "title": "Years of Education"
+              },
+              "highestEducationLevel": {
+                "type": "string",
+                "title": "Highest Education Level",
+                "enum": [
+                  "Less than high school diploma",
+                  "High School or Equivalent",
+                  "Some College",
+                  "Associate's degree",
+                  "Bachelor's degree",
+                  "Advanced Degree"
+                ]
+              },
+              "preferredLanguage": {
+                "type": "string",
+                "title": "Preferred Language"
+              },
+              "ethnicGroup": {
+                "type": "string",
+                "title": "Ethnic Group"
+              },
+              "race": {
+                "type": "string",
+                "title": "Race"
+              }
+            }
+          }
+        }
+      },
+      "uiSchema": {
+        "currentOccupation": {},
+        "occupationHistory": {
+          "ui:options": {
+            "orderable": false
+          },
+          "items": {
+            "occupation": {},
+            "employer": {}
+          }
+        },
+        "demographics": {
+          "maritalStatus": {
+            "ui:widget": "radio"
+          },
+          "numberOfChildren": {
+            "ui:widget": "updown"
+          },
+          "yearsOfEducation": {
+            "ui:widget": "updown"
+          },
+          "highestEducationLevel": {
+            "ui:widget": "select"
+          },
+          "preferredLanguage": {
+            "ui:placeholder": "Enter preferred language..."
+          },
+          "ethnicGroup": {
+            "ui:placeholder": "Enter ethnic group..."
+          },
+          "race": {
+            "ui:placeholder": "Enter race..."
+          }
+        }
+      }
+    },
+    "SocialDeterminants": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "socialDeterminants": {
+            "type": "string",
+            "title": "Social Determinants"
+          }
+        }
+      },
+      "uiSchema": {
+        "socialDeterminants": {
+          "ui:widget": "textarea"
+        }
+      }
+    }
+  }
+}

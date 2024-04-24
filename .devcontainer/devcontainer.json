@@ -1,0 +1,33 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "hostRequirements": {
+       "cpus": 2
+   },
+  "features": {},
+  "customizations": {
+     "codespaces": {
+         "openFiles": []
+     },
+     "vscode": {
+         "extensions": [
+             "dbaeumer.vscode-eslint",
+             "github.vscode-pull-request-github",
+             "eamodio.gitlens",
+             "christian-kohler.npm-intellisense"
+         ]
+     }
+  },
+  "waitFor": "onCreateCommand",
+  "updateContentCommand": "npm install",
+  "postCreateCommand": "",
+  "postAttachCommand": {
+    "server": "npm start"
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+      "3000": {
+         "label": "Preview",
+         "onAutoForward": "openPreview"
+       }
+   }
+}

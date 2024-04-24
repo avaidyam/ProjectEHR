@@ -1,0 +1,17 @@
+{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry":[
+        {
+            "fullUrl": "urn:uuid:Debug",
+            "request": {
+                "method": "POST",
+                "url": "Debug"
+            },
+            "resource":{
+                "id": "Debug",
+                "testing": "abc"
+            }
+        }
+    ]
+}

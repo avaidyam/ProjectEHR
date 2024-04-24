@@ -1,0 +1,256 @@
+{
+    "type": "Categorization",
+    "elements": [
+      {
+        "type": "Category",
+        "label": "Medical",
+        "elements": [
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/medical"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Category",
+        "label": "Surgical",
+        "elements": [
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/surgical"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Category",
+        "label": "Family",
+        "elements": [
+          {
+            "type": "HorizontalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/family"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Category",
+        "label": "Substance & Sexual Activity",
+        "elements": [
+          {
+            "type": "Group",
+            "label": "Tobacco",
+            "elements": [
+              {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/smokingStatus",
+                    "options": {
+                      "format": "radio"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/types"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/startDate",
+                    "options": {
+                      "format": "date"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/endDate",
+                    "options": {
+                      "format": "date"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/packsPerDay"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/packYears"
+                  },
+                  {
+                    "type": "Group",
+                    "label": "Smokeless",
+                    "elements": [
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/smokelessStatus/properties/smokelessStatus",
+                        "options": {
+                          "format": "radio"
+                        }
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/tobacco/properties/smokelessStatus/properties/comments"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Group",
+            "label": "Alcohol",
+            "elements": [
+              {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/alcoholStatus",
+                    "options": {
+                      "format": "radio"
+                    }
+                  },
+                  {
+                    "type": "Group",
+                    "label": "Drinks Per Week",
+                    "elements": [
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/drinksPerWeek/properties/wineGlasses"
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/drinksPerWeek/properties/beerCans"
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/drinksPerWeek/properties/liquorShots"
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/drinksPerWeek/properties/drinksContainingAlcohol"
+                      },
+                      {
+                        "type": "Control",
+                        "scope": "#/properties/SubstanceSexualHealth/properties/alcohol/properties/drinksPerWeek/properties/standardDrinks"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Group",
+            "label": "Drugs",
+            "elements": [
+              {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/drugs/properties/drugStatus",
+                    "options": {
+                      "format": "radio"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/drugs/properties/drugTypes"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/drugs/properties/usePerWeek"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/drugs/properties/comments"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Group",
+            "label": "Sexual Activity",
+            "elements": [
+              {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/sexualActivity/properties/sexuallyActiveStatus",
+                    "options": {
+                      "format": "radio"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/sexualActivity/properties/birthControlMethods"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/sexualActivity/properties/partners"
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/SubstanceSexualHealth/properties/sexualActivity/properties/comments"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Category",
+        "label": "Socieconomic",
+        "elements": [
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/Socioeconomic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Category",
+        "label": "Social Documentation",
+        "elements": [
+          {
+            "type": "VerticalLayout",
+            "elements": [
+              {
+                "type": "Control",
+                "scope": "#/properties/SocialDocumentation/properties/textbox",
+                "options": {
+                  "multi": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+
+}
+
