@@ -38,7 +38,6 @@ export const PatientSidebarHeader = ({
       <span>MRN: {patientMRN}</span>
       <strong>Preferred language: {preferredLanguage}</strong>
     </div>
-    <TextField id="outlined-basic" label="Search ..." variant="outlined" size="small" />
   </div>
 );
 
@@ -217,7 +216,7 @@ export const Storyboard = ({ ...props }) => {
   });
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
-    <div style={{ display: 'flex', flexDirection: "column" }}>
+    <>
       <PatientSidebarHeader
         avatarUrl={avatarUrl}
         firstName={firstName}
@@ -228,12 +227,14 @@ export const Storyboard = ({ ...props }) => {
         patientMRN={patientMRN}
         preferredLanguage={preferredLanguage}
       />
-      <div style={{ display: 'flex', flexDirection: "column", overflowY: 'auto' }}>
-        <PatientSidebarCareOverview primaryProvider={primaryProvider} insurance={insurance} />
-        <PatientSidebarVitalsOverview patientMRN={patientMRN} />
-        <PatientSidebarCareGapsOverview patientMRN={patientMRN} />
-        <PatientSidebarProblemList patientMRN={patientMRN} />
-      </div>
-    </div>
+      <Divider color="inherit" />
+      <PatientSidebarCareOverview primaryProvider={primaryProvider} insurance={insurance} />
+      <Divider color="inherit" />
+      <PatientSidebarVitalsOverview patientMRN={patientMRN} />
+      <Divider color="inherit" />
+      <PatientSidebarCareGapsOverview patientMRN={patientMRN} />
+      <Divider color="inherit" />
+      <PatientSidebarProblemList patientMRN={patientMRN} />
+    </>
   );
 };
