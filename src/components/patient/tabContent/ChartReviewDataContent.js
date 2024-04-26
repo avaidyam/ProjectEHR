@@ -5,23 +5,27 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
-import BasicTable from './LabReportTab.js';
+import LabReport from './LabReportTab.js';
 
 const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [labReportOpen, setLabReportOpen] = useState(false);
 
   const handleRowClick = (row) => {
     setSelectedRow(row);
     // Show the dialog if the selected tab is not 'Lab'
     if (selectedTabLabel !== 'Lab') {
       setDialogOpen(true);
+    } else {
+      setLabReportOpen(true);
     }
   };
 
   // Reset selectedRow when the tab changes
   useEffect(() => {
     setSelectedRow(null);
+    setLabReportOpen(false);
   }, [selectedTabLabel]);
 
   // Filter data based on selectedTabLabel
@@ -36,7 +40,7 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   );
 
   return (
-    <div className="tab-content-container">
+    <div className="tab-content-container" style={{ position: 'relative', overflow: labReportOpen ? 'hidden' : 'auto' }}>
       <h2>{selectedTabLabel} Data</h2>
       <Table>
         <TableHead>
@@ -70,8 +74,12 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </Dialog>
       )}
 
-      {/* Render the BasicTable if the selected tab is 'Lab' */}
-      {selectedTabLabel === 'Lab' && selectedRow && <BasicTable data={selectedRow} />}
+      {/* Render the LabReport if the selected tab is 'Lab' */}
+      {selectedTabLabel === 'Lab' && selectedRow && labReportOpen && (
+        <div style={{ position: 'absolute', top: 0, right: 0, height: '100%', overflowY: 'auto' }}>
+          <LabReport data={selectedRow} />
+        </div>
+      )}
     </div>
   );
 };
