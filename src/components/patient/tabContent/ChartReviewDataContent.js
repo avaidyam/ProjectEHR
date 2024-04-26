@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -18,6 +18,11 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
       setDialogOpen(true);
     }
   };
+
+  // Reset selectedRow when the tab changes
+  useEffect(() => {
+    setSelectedRow(null);
+  }, [selectedTabLabel]);
 
   // Filter data based on selectedTabLabel
   const filteredData = data.filter(item => item.kind === selectedTabLabel);
