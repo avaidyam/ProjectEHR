@@ -37,14 +37,15 @@ const RadiologyCanvas = (props) => {
 
   // Canvas setup:
   const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
   // Controls setup:
-  const [controlState, setcontrolState] = useState('pan/zoom');
+  const [controlState, setcontrolState] = useState('zoom');
   // Scroll setup:
   const [imgIndex, setimgIndex] = useState(0);
-  // Mouse state tracking setup:
-  const [mouseState, setmouseState] = useState('up');
   // Zoom setup:
   const [imgScale, setimgScale] = useState(1);
+  const [lastMouseDownX, setlastMouseDownX] = useState(0);
+  const [lastMouseDownY, setlastMouseDownY] = useState(0);
   // Pan setup:
   const [imgX, setimgX] = useState(0);
   const [imgY, setimgY] = useState(0);
@@ -56,30 +57,30 @@ const RadiologyCanvas = (props) => {
   // Basically, leave the Alpha channel untouched and map R,G,B to clamp(255*(x - level + width/2)/width, 0, 255)
   // https://www.kaggle.com/code/redwankarimsony/ct-scans-dicom-files-windowing-explained
 
-  // Scroll logic - may need calibration to work with different kinds of mice
+  // Scroll logic
   let handleScroll = (e) => {
-    //if 
     e.preventDefault();
-    e.stopPropagation();
-
     let direction = Math.sign(e.deltaY);
     setimgIndex(x => clamp(x + direction, 0, imageSeq.length - 1));
   }
 
-  // Mouse State logic for detecting drags:
-  let handleMouseStateChange = (e) => {
-    if (e.type == 'mousedown') {
-      setmouseState('down');
-    }
-    else if (e.type == 'mouseup') {
-      setmouseState('up');
-    }
+  let handleMouseDown = (e) => {
+    const targetRect = e.target.getBoundingClientRect();
+    setlastMouseDownX(e.clientX - targetRect.x);
+    setlastMouseDownY(e.clientY - targetRect.y);
   }
 
   // Drag logic
   let handleMouseMotion = (e) => {
-    if (mouseState == 'down') {
-      pan(e.movementX, e.movementY)
+    if (e.buttons !== 0) {
+      switch(controlState) {
+        case 'pan':
+          pan(e.movementX, e.movementY);
+          break;
+        case 'zoom':
+          scale(e.movementX, e.movementY);
+          break;
+      }
     }
   }
 
@@ -89,37 +90,57 @@ const RadiologyCanvas = (props) => {
   }
 
   let scale = (deltaX, deltaY) => {
-    setimgScale()
+    // Scaling: I would want to be able to scale a total of 4x in the window
+    let scaleRate = 2 / props.height;
+    setimgScale(scale => scale * (2 ** (scaleRate * -deltaY)));
+    console.log(lastMouseDownX, lastMouseDownY);
   };
+
+  let paint = (ctx, img) => {
+    ctx.drawImage(img, (imgX - lastMouseDownX) * imgScale + lastMouseDownX, (imgY - lastMouseDownY) * imgScale + lastMouseDownY, imgScale * img.width, imgScale * img.height)
+  }
   
-
-
-
-
-  // Run every time the image Index is updated (by scrolling)
+  // Run for event handlers & canvas initialization:
   useEffect(() => {
-    // Canvas setup:
+    console.log("Initialize RadiologyCanvas");
+    // Initialize canvas:
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    ctxRef.current = canvas.getContext('2d');
+    
+    // Draw in the first image:
+    let img = imageSeq[0];
+    paint(ctxRef.current, img);
 
-    const handleWheel = (e) => {
-      e.preventDefault();
-    };
+    // Add the event listeners:
+    canvas.addEventListener('wheel', handleScroll, {passive: false});
+    canvas.addEventListener('pointermove', handleMouseMotion);
+    canvas.addEventListener('pointerdown', handleMouseDown);
 
-    canvas.addEventListener('wheel', handleWheel, { passive: false });
+    // Clean up our event listeners when removing our RadiologyCanvas:
+    return(() => {
+      canvas.removeEventListener('wheel', handleScroll);
+      canvas.removeEventListener('mousemove', handleMouseMotion);
+      canvas.removeEventListener('pointerdown', handleMouseDown);
+      ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  }, [canvasRef]);
+
+  // Run every time the image index, scale, or window parameters are updated.
+  useEffect(() => {
+    const ctx = ctxRef.current;
 
     // Image update logic:
+    // Something is buggy here. The first image will draw only on component rerenders.
+    // 
     let img = imageSeq[imgIndex];
-    ctx.drawImage(img, imgX, imgY, imgScale * img.width, imgScale * img.height);
+    paint(ctxRef.current, img);
 
-    console.log('drew imgIndex ' + imgIndex);
     return(() => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height); console.log('erased imgIndex ' + imgIndex);
-      canvas.removeEventListener('wheel', handleWheel);
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     })
-  }, [imgIndex, imgX, imgY]);
+  }, [imgIndex, imgX, imgY, imgScale]);
 
-  return <canvas ref={canvasRef} height={props.height} width={props.width} onMouseDown={(e) => handleMouseStateChange(e)} onMouseUp={(e) => handleMouseStateChange(e)} onMouseMove={(e) => handleMouseMotion(e)} onWheel={(e) => {e.preventDefault(); e.stopPropagation(); handleScroll(e);}}/>
+  return <canvas ref={canvasRef} height={props.height} width={props.width} onLoad={() => {alert('test')}}/>
 }
 
 const ImageViewer = (props) => {
