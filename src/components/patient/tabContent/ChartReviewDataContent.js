@@ -85,3 +85,4 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
 };
 
 export default ChartReviewDataContent;
+
