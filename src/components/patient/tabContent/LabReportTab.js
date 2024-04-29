@@ -34,7 +34,7 @@ const LabReport = () => {
                   <div style={{ fontSize: '12px' }}>Subheader</div>
                 </div>
               </TableCell>
-              <TableCell align="right">Number</TableCell>
+              <TableCell align="right">Ranges</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
