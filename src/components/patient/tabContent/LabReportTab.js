@@ -17,7 +17,7 @@ const LabReport = () => {
   ];
 
   return (
-    <div style={{ float: 'right'}}> {/* Style for positioning */}
+    <div> {/* Style for positioning */}
       <TableContainer component={Paper}>
         <Table aria-label="simple table">
           <TableHead>

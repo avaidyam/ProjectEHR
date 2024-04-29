@@ -13,17 +13,14 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   const [labReportOpen, setLabReportOpen] = useState(false);
 
   const handleRowClick = (row) => {
-    // If the same row is clicked again, toggle labReportOpen
-    if (row === selectedRow) {
-      setLabReportOpen(!labReportOpen);
+    setSelectedRow(row);
+    // Always show the dialog
+    setDialogOpen(true);
+    // If the selected tab is 'Lab', toggle LabReport visibility
+    if (selectedTabLabel === 'Lab') {
+      setLabReportOpen(true);
     } else {
-      setSelectedRow(row);
-      // Show the dialog if the selected tab is not 'Lab'
-      if (selectedTabLabel !== 'Lab') {
-        setDialogOpen(true);
-      } else {
-        setLabReportOpen(true);
-      }
+      setLabReportOpen(false);
     }
   };
 
@@ -45,7 +42,7 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   );
 
   return (
-    <div className="tab-content-container" style={{ position: 'relative', overflow: labReportOpen ? 'hidden' : 'auto' }}>
+    <div className="tab-content-container" style={{ position: 'relative', overflow: 'auto' }}>
       <h2>{selectedTabLabel} Data</h2>
       <Table>
         <TableHead>
@@ -66,25 +63,20 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
         </tbody>
       </Table>
 
-      {/* Render the dialog if the selected tab is not 'Lab' */}
-      {selectedTabLabel !== 'Lab' && (
-        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-          <DialogContent>
-            {selectedRow && Object.keys(selectedRow).map((key, index) => (
-              <div key={index}>
-                <strong>{key}:</strong> {selectedRow[key]}
-              </div>
-            ))}
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Render the LabReport if the selected tab is 'Lab' */}
-      {selectedTabLabel === 'Lab' && selectedRow && labReportOpen && (
-        <div style={{ position: 'absolute', top: 0, right: 0, height: '100%', overflowY: 'auto' }}>
-          <LabReport data={selectedRow} />
-        </div>
-      )}
+      {/* Always render the dialog */}
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogContent>
+          {selectedRow && Object.keys(selectedRow).map((key, index) => (
+            <div key={index}>
+              <strong>{key}:</strong> {selectedRow[key]}
+            </div>
+          ))}
+          {/* Render the LabReport if the selected tab is 'Lab' */}
+          {selectedTabLabel === 'Lab' && selectedRow && labReportOpen && (
+            <LabReport data={selectedRow} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
