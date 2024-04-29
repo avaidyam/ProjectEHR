@@ -248,7 +248,7 @@ const columns = [
 ];
 
 // takes rows from json file and set columns to make table
-export default function Schedule() {
+export function Schedule() {
   const onHandleClickRoute = useRouter();
 
 

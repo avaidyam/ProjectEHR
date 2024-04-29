@@ -6,9 +6,8 @@ import Select from '@mui/material/Select';
 import { ContentState, EditorState } from 'draft-js';
 import React, { useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import './NoteWriter.css';
 
 const NotesTabContent = () => {
   const [submitOption, setAge] = useState('');
@@ -29,11 +28,11 @@ const NotesTabContent = () => {
   };
 
   return (
-    <form className="notewriter">
+    <form>
       <Editor
-        wrapperClassName="wrapper"
-        editorClassName="editor"
-        toolbarClassName="toolbar"
+        //wrapperClassName="wrapper"
+        //editorClassName="editor"
+        //toolbarClassName="toolbar"
         onEditorStateChange={setEditorState}
         editorState={editorState}
       />

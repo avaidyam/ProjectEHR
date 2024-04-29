@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 //import Carousel from 'react-elastic-carousel'; // FIXME
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 const scans = [1298822400000, 1303490940000];
 const numImages = [28, 1];
@@ -137,24 +137,13 @@ const ResultList = () => {
 const ImagingTabContent = () => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   return (
-    <>
-      <Box container sx={{ border: 1 }}>
-        <Box sx={{ m: 2 }}>
-          <h1>Patient Name</h1>
-          <h2>MRN: {patientMRN}</h2>
-        </Box>
-      </Box>
       <Grid container spacing={2}>
-        <Grid item xs={3}>
-          <ResultList />
-        </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={12}>
           <Box sx={{ border: 1 }}>
             <ImageViewer />
           </Box>
         </Grid>
       </Grid>
-    </>
   );
 };
 
