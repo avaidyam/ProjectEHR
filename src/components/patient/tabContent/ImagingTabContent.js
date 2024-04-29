@@ -8,7 +8,7 @@ import { usePatientMRN } from '../../../util/urlHelpers.js';
 
 // The following are nice utilities but should be cleaned up eventually.
 
-// Clamp: Math.js doesn't have a clamp for some reason; fill it in
+// Clamp: The default math library doesn't have a clamp for some reason; fill it in
 let clamp = (num, lowerbound, upperbound) => {
   if (num < lowerbound) return(lowerbound)
   else if (num > upperbound) return(upperbound)
@@ -37,6 +37,8 @@ const RadiologyCanvas = (props) => {
 
   // Canvas setup:
   const canvasRef = useRef(null);
+  // Controls setup:
+  const [controlState, setcontrolState] = useState('pan/zoom');
   // Scroll setup:
   const [imgIndex, setimgIndex] = useState(0);
   // Mouse state tracking setup:
@@ -49,9 +51,17 @@ const RadiologyCanvas = (props) => {
   // Windowing setup:
   const [windowWidth, setwindowWidth] = useState(1);
   const [windowLevel, setwindowLevel] = useState(0);
+  // Note to self: Windowing is an affine transform of the brightness in Hounsfield Units
+  // For greyscale images, think of the following: W:[level - width/2, level + width/2] -> [0, 255]
+  // Basically, leave the Alpha channel untouched and map R,G,B to clamp(255*(x - level + width/2)/width, 0, 255)
+  // https://www.kaggle.com/code/redwankarimsony/ct-scans-dicom-files-windowing-explained
 
   // Scroll logic - may need calibration to work with different kinds of mice
   let handleScroll = (e) => {
+    //if 
+    e.preventDefault();
+    e.stopPropagation();
+
     let direction = Math.sign(e.deltaY);
     setimgIndex(x => clamp(x + direction, 0, imageSeq.length - 1));
   }
@@ -78,21 +88,38 @@ const RadiologyCanvas = (props) => {
     setimgY(y => y + deltaY);
   }
 
+  let scale = (deltaX, deltaY) => {
+    setimgScale()
+  };
+  
+
+
+
+
   // Run every time the image Index is updated (by scrolling)
   useEffect(() => {
     // Canvas setup:
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
+    const handleWheel = (e) => {
+      e.preventDefault();
+    };
+
+    canvas.addEventListener('wheel', handleWheel, { passive: false });
+
     // Image update logic:
     let img = imageSeq[imgIndex];
     ctx.drawImage(img, imgX, imgY, imgScale * img.width, imgScale * img.height);
 
-    console.log('drew imgIndex ' + imgIndex)
-    return(() => {ctx.clearRect(0, 0, canvas.width, canvas.height); console.log('erased imgIndex ' + imgIndex)})
+    console.log('drew imgIndex ' + imgIndex);
+    return(() => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height); console.log('erased imgIndex ' + imgIndex);
+      canvas.removeEventListener('wheel', handleWheel);
+    })
   }, [imgIndex, imgX, imgY]);
 
-  return <canvas ref={canvasRef} height={props.height} width={props.width} onMouseDown={(e) => handleMouseStateChange(e)} onMouseUp={(e) => handleMouseStateChange(e)} onMouseMove={(e) => handleMouseMotion(e)} onWheel={(e) => {handleScroll(e)}}/>
+  return <canvas ref={canvasRef} height={props.height} width={props.width} onMouseDown={(e) => handleMouseStateChange(e)} onMouseUp={(e) => handleMouseStateChange(e)} onMouseMove={(e) => handleMouseMotion(e)} onWheel={(e) => {e.preventDefault(); e.stopPropagation(); handleScroll(e);}}/>
 }
 
 const ImageViewer = (props) => {
@@ -136,7 +163,7 @@ const ImagingTabContent = () => {
         </Grid>
         <Grid item xs={9}>
           <Box sx={{ border: 1 }}>
-            <ImageViewer height={400} width={400} images={loadImages(0)}/>
+            <ImageViewer height={600} width={600} images={loadImages(0)}/>
           </Box>
         </Grid>
       </Grid>
