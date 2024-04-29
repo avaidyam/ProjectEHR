@@ -10,6 +10,7 @@ import ImagingTabContent from './tabs/chartreview/ImagingTabContent.js'
 import NotesTabContent from './tabs/notewriter/NotesTabContent.js'
 import HistoryTabContent from './tabs/history/HistoryTabContent.js'
 import Orders from './tabs/orders/Orders.js';
+import Medications from './tabs/medications/Medications.js';
 
 export const PatientHome = ({ ...props }) => {
   const drawerWidth = 250
@@ -29,6 +30,7 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="NoteWriter" />
           <Tab label="History" />
           <Tab label="Orders" />
+          <Tab label="Medications" />
         </Tabs>
         <Divider />
         {tab === 0 && <SnapshotTabContent />}
@@ -39,6 +41,7 @@ export const PatientHome = ({ ...props }) => {
         {tab === 5 && <NotesTabContent />}
         {tab === 6 && <HistoryTabContent />}
         {tab === 7 && <Orders />}
+        {tab === 8 && <Medications />}
       </Box>
     </Box>
   )
