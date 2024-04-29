@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography } from '@mui/material'
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import LabReport from '../snapshot/LabReportTab.js';
 
 const tabLabels = [
   "Encounters",
@@ -91,6 +92,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
             eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
             posuere sollicitudin aliquam ultrices sagittis orci a.
           </Typography>
+          
+          {/* Render the LabReport only if selectedTabLabel is 'Lab' */}
+          {selectedTabLabel === 'Lab' && selectedRow && (
+            <LabReport selectedRow={selectedRow} />
+          )}
         </DialogContent>
       </Dialog>
     </Box>
