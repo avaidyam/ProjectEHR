@@ -13,12 +13,17 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
   const [labReportOpen, setLabReportOpen] = useState(false);
 
   const handleRowClick = (row) => {
-    setSelectedRow(row);
-    // Show the dialog if the selected tab is not 'Lab'
-    if (selectedTabLabel !== 'Lab') {
-      setDialogOpen(true);
+    // If the same row is clicked again, toggle labReportOpen
+    if (row === selectedRow) {
+      setLabReportOpen(!labReportOpen);
     } else {
-      setLabReportOpen(true);
+      setSelectedRow(row);
+      // Show the dialog if the selected tab is not 'Lab'
+      if (selectedTabLabel !== 'Lab') {
+        setDialogOpen(true);
+      } else {
+        setLabReportOpen(true);
+      }
     }
   };
 
@@ -85,4 +90,3 @@ const ChartReviewDataContent = ({ selectedTabLabel, data }) => {
 };
 
 export default ChartReviewDataContent;
-
