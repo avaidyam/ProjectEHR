@@ -1,0 +1,6 @@
+{
+    "editor.tabSize": 4,
+    "terminal.integrated.env.linux": {
+        "BROWSER": "none"
+    }
+}

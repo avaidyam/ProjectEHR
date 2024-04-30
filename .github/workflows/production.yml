@@ -1,4 +1,4 @@
-name: Build Image
+name: Production Build
 on: 
   push:
     branches: [main]
@@ -8,16 +8,13 @@ jobs:
     #if: github.event_name == 'tags' # uncomment this to generate new builds only with new GH releases
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-      - run: |
-          npm install
-          npm run build
+      - uses: actions/checkout@v3
+      - run: npm install && npm run build
         env:
          CI: ""
       - uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
           branch: gh-pages
           folder: build
+          clean-exclude: pr-preview/
+          force: false
