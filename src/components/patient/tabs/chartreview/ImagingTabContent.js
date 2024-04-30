@@ -4,7 +4,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useCallback, useEffect, useRef, useState, WheelEvent } from 'react';
-import { usePatientMRN } from '../../../util/urlHelpers.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 // The following are nice utilities but should be cleaned up eventually.
 
