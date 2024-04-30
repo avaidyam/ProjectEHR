@@ -1,7 +1,10 @@
-import { Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
+import { Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -11,6 +14,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import HomeIcon from '@mui/icons-material/Home';
 import HotelIcon from '@mui/icons-material/Hotel';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import EditIcon from '@mui/icons-material/Edit';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import AddIcon from '@mui/icons-material/Add';
+import ErrorIcon from '@mui/icons-material/Error';
  
 import { getRxTerms } from '../../../../util/getRxTerms.js';
 
@@ -37,7 +45,8 @@ export default function Orders() {
   const [openMed, setOpenMed] = useState(false) 
   const [openDose, setOpenDose] = useState(false) 
   const [data, setData] = useState([])
-  const [value, setValue] = useState('acetaminophen')
+  const [value, setValue] = useState('')
+  const [name, setName] = useState('')
   const [route, setRoute] = useState('') 
   const [dose, setDose] = useState('') 
   const [freq, setFreq] = useState('daily') 
@@ -79,7 +88,7 @@ export default function Orders() {
   const closeDose = (save) => {
     setOpenDose(false);
     if (save){
-      orderList.push(`${value} ${dose} ${route} ${freq}`);
+      orderList.push(`${name} ${dose} ${route} ${freq}`);
     }
   };
 
@@ -93,21 +102,40 @@ export default function Orders() {
   // previously used to display json med list: <pre>{JSON.stringify(data, null, 4)}</pre>
 
   return (
+    <div>
+      <Box>
+      <Button><PersonOutlineIcon/>Providers</Button>
+      <Button><EditIcon/>Edit Multiple</Button>
+      </Box>
     <Box>
       <div>
         <TextField
-          label="Search Medications"
+          label="Add orders or order sets"
+          size="small"
+          sx={{ minWidth: 300 }}
           variant="outlined"
           value={value}
           onChange={(x) => setValue(x.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter')
+              setOpenMed(!openMed)
+         }}
         />
         <Button variant="outlined" onClick={() => { setOpenMed(!openMed) }}>
-          Add Medication
+          <AddIcon color="success"/> New
         </Button>
-        <Button variant="outlined" onClick={() => { setOpenLab(!openLab) }}>
-          Add Lab
+      </div>
+      <div>
+        <FormControl sx={{ minWidth: 300 }} size="small">
+          <Select>
+            <MenuItem value='test'>Test</MenuItem>
+          </Select>
+        </FormControl>
+        <Button variant="outlined" disabled>
+          <ErrorIcon color="error" disabled/> Next
         </Button>
-
+      </div>
+      <div>
         <Dialog fullWidth maxWidth="md" onClose={() => { setOpenMed(false) }} open={openMed}>
 
           <nav>
@@ -116,6 +144,7 @@ export default function Orders() {
                 <ListItem disablePadding>
                 <ListItemButton onClick={() => 
                   {setTempMed(m); 
+                  setName(m.name ? m.name : name); 
                   setRoute(m.fields.route ? m.fields.route[0] : route); 
                   setDose(m.fields.dose ? m.fields.dose[0][0] : dose); 
                   setFreq('daily');
@@ -317,18 +346,30 @@ export default function Orders() {
               <Button onClick={() => { closeLab(false) }}><ClearIcon color="error"/>Cancel</Button></div>
           </div>
         </Dialog>
-          <Tooltip title= {
+        {
               orderList.map((o) => (
-                  <p>{o}</p>
+                  <Box
+                  width={400}
+                  sx={{ border: '1px solid grey', m: 0.5}}>
+                    <Box sx={{ bgcolor: '#d3f3d3'}}>
+                    <PostAddIcon/> 
+                      New Orders
+                    </Box>
+                    {o}
+                  </Box>
               ))
-            }
-          >
-          <Button variant="contained" onClick={submitOrder}>
-            Sign Orders
+        }
+        <div>
+          <Button variant="outlined" onClick={submitOrder}>
+            <ClearIcon color="error"/> Remove All
           </Button>
-        </Tooltip>
+          <Button variant="outlined" onClick={submitOrder}>
+            <CheckIcon color="success"/> Sign
+          </Button>
+        </div>
       </div>
 
     </Box>
+    </div>
   );
 }
