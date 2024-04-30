@@ -33,13 +33,10 @@ const RadiologyCanvas = (props) => {
   
   // Internalize images:
   const imageSeq = props.images;
-  console.log('rerender')
 
   // Canvas setup:
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  // Controls setup:
-  const [controlState, setcontrolState] = useState('zoom');
   // Scroll setup:
   const [imgIndex, setimgIndex] = useState(0);
   // Zoom setup:
@@ -50,8 +47,8 @@ const RadiologyCanvas = (props) => {
   const [imgX, setimgX] = useState(0);
   const [imgY, setimgY] = useState(0);
   // Windowing setup:
-  const [windowWidth, setwindowWidth] = useState(1);
-  const [windowLevel, setwindowLevel] = useState(0);
+  const [windowWidth, setwindowWidth] = useState(128);
+  const [windowLevel, setwindowLevel] = useState(75);
   // Note to self: Windowing is an affine transform of the brightness in Hounsfield Units
   // For greyscale images, think of the following: W:[level - width/2, level + width/2] -> [0, 255]
   // Basically, leave the Alpha channel untouched and map R,G,B to clamp(255*(x - level + width/2)/width, 0, 255)
@@ -66,38 +63,55 @@ const RadiologyCanvas = (props) => {
 
   let handleMouseDown = (e) => {
     const targetRect = e.target.getBoundingClientRect();
-    setlastMouseDownX(e.clientX - targetRect.x);
-    setlastMouseDownY(e.clientY - targetRect.y);
+    if (props.mode == 'zoom') {
+      setlastMouseDownX(e.clientX - targetRect.x);
+      setlastMouseDownY(e.clientY - targetRect.y);
+    }
   }
 
   // Drag logic
   let handleMouseMotion = (e) => {
     if (e.buttons !== 0) {
-      switch(controlState) {
+      switch(props.mode) {
         case 'pan':
-          pan(e.movementX, e.movementY);
+          pan(e);
           break;
         case 'zoom':
-          scale(e.movementX, e.movementY);
+          scale(e);
+          break;
+        case 'window':
+          window(e);
           break;
       }
     }
   }
 
-  let pan = (deltaX, deltaY) => {
-    setimgX(x => x + deltaX);
-    setimgY(y => y + deltaY);
+  let pan = (e) => {
+    setimgX(x => x + e.movementX);
+    setimgY(y => y + e.movementY);
   }
 
-  let scale = (deltaX, deltaY) => {
-    // Scaling: I would want to be able to scale a total of 4x in the window
+  let scale = (e) => {
     let scaleRate = 2 / props.height;
-    setimgScale(scale => scale * (2 ** (scaleRate * -deltaY)));
-    console.log(lastMouseDownX, lastMouseDownY);
+    setimgScale(scale => scale * (2 ** (scaleRate * -e.movementY)));
+  };
+
+  let window = (e) => {
+    const targetRect = e.target.getBoundingClientRect();
+    setwindowWidth((e.clientX - targetRect.x)/e.target.width * 500);
+    setwindowLevel((e.clientY - targetRect.y)/e.target.height * 500);
   };
 
   let paint = (ctx, img) => {
     ctx.drawImage(img, (imgX - lastMouseDownX) * imgScale + lastMouseDownX, (imgY - lastMouseDownY) * imgScale + lastMouseDownY, imgScale * img.width, imgScale * img.height)
+    let imageData = ctx.getImageData(0, 0, ctx.canvas.height, ctx.canvas.width);
+    for (let i = 0; i < imageData.data.length / 4; i +=1) {
+      for (let j = 0; j < 3; j++) {
+        let pixelData = imageData.data[i * 4 + j];
+        imageData.data[i * 4 + j] = clamp(255 * (pixelData - windowLevel + windowWidth / 2)/windowWidth, 0, 255);
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
   }
   
   // Run for event handlers & canvas initialization:
@@ -119,11 +133,11 @@ const RadiologyCanvas = (props) => {
     // Clean up our event listeners when removing our RadiologyCanvas:
     return(() => {
       canvas.removeEventListener('wheel', handleScroll);
-      canvas.removeEventListener('mousemove', handleMouseMotion);
+      canvas.removeEventListener('pointermove', handleMouseMotion);
       canvas.removeEventListener('pointerdown', handleMouseDown);
       ctxRef.current.clearRect(0, 0, canvas.width, canvas.height);
     });
-  }, [canvasRef]);
+  }, [props.mode]);
 
   // Run every time the image index, scale, or window parameters are updated.
   useEffect(() => {
@@ -131,22 +145,34 @@ const RadiologyCanvas = (props) => {
 
     // Image update logic:
     // Something is buggy here. The first image will draw only on component rerenders.
-    // 
     let img = imageSeq[imgIndex];
     paint(ctxRef.current, img);
 
     return(() => {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     })
-  }, [imgIndex, imgX, imgY, imgScale]);
+  }, [imgIndex, imgX, imgY, imgScale, windowWidth, windowLevel, props.mode]);
 
-  return <canvas ref={canvasRef} height={props.height} width={props.width} onLoad={() => {alert('test')}}/>
+  return <canvas ref={canvasRef} height={props.height} width={props.width} key={props.mode}/>
 }
 
 const ImageViewer = (props) => {
+  const [mode, setmode] = useState();
+
+  const handleRadioChange = (value) => {
+    setmode(value);
+    console.log('ImageViewer changed mode ', value);
+  };
+
   return(
     <Box>
-      <RadiologyCanvas {...props}></RadiologyCanvas>
+      <form>
+        Left Click Control:
+        <input type="radio" name="controlMode" value="pan" id="pan" onChange={() => handleRadioChange("pan")}/> <label for="pan">Pan</label>
+        <input type="radio" name="controlMode" value="zoom" id="zoom" onChange={() => handleRadioChange("zoom")}/> <label for="zoom">Zoom</label>
+        <input type="radio" name="controlMode" value="window" id="window" onChange={() => handleRadioChange("window")}/> <label for="window">Window</label>
+      </form>
+      <RadiologyCanvas {...props} mode={mode}></RadiologyCanvas>
     </Box>
   )
 }
