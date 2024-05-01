@@ -1,16 +1,10 @@
-import { Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import { ToggleButton, ToggleButtonGroup, Icon, Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
-import HomeIcon from '@mui/icons-material/Home';
-import HotelIcon from '@mui/icons-material/Hotel';
  
 import { getRxTerms } from '../../../../util/getRxTerms.js';
 
@@ -136,8 +130,8 @@ export default function Orders() {
         <div style={{backgroundColor: "blue", height: "40px"}}>
             {tempMed ? tempMed.name : ''}
             <DialogActions style={{float: "right"}}>
-              <Button onClick={() => { closeDose(true) }}><CheckIcon color="success"/>Accept</Button>
-              <Button onClick={() => { closeDose(false) }}><ClearIcon color="error"/>Cancel</Button>
+              <Button onClick={() => { closeDose(true) }}><Icon color="success">check</Icon>Accept</Button>
+              <Button onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button>
             </DialogActions>
         </div>
                 <p>Route: </p> 
@@ -181,8 +175,8 @@ export default function Orders() {
 
           <div style={{backgroundColor: "blue", height: '40px'}}>
             <div style={{float: "right"}}>
-              <Button onClick={() => { closeDose(true) }}><CheckIcon color="success"/>Accept</Button>
-              <Button onClick={() => { closeDose(false) }}><ClearIcon color="error"/>Cancel</Button></div>
+              <Button onClick={() => { closeDose(true) }}><Icon color="success">check</Icon>Accept</Button>
+              <Button onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
           </div>
 
         </Dialog>
@@ -191,8 +185,8 @@ export default function Orders() {
           <div style={{backgroundColor: "blue", height: "40px"}}>
             CBC w/ DIFF
             <DialogActions style={{float: "right"}}>
-              <Button onClick={() => { closeLab(true) }}><CheckIcon color="success"/>Accept</Button>
-              <Button onClick={() => { closeLab(false) }}><ClearIcon color="error"/>Cancel</Button>
+              <Button onClick={() => { closeLab(true) }}><Icon color="success">check</Icon>Accept</Button>
+              <Button onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button>
             </DialogActions>
           </div>
 
@@ -203,8 +197,8 @@ export default function Orders() {
                   exclusive
                   onChange={(event, val) => setType(val)}
                 >
-                  <ToggleButton value='outpatient'><HomeIcon/></ToggleButton>
-                  <ToggleButton value='inpatient'><HotelIcon/></ToggleButton>
+                  <ToggleButton value='outpatient'><Icon>home</Icon></ToggleButton>
+                  <ToggleButton value='inpatient'><Icon>hotel</Icon></ToggleButton>
                 </ToggleButtonGroup>
 
               <p>Status: </p> 
@@ -313,8 +307,8 @@ export default function Orders() {
           </div>
           <div style={{backgroundColor: "blue", height: '40px'}}>
             <div style={{float: "right"}}>
-              <Button onClick={() => { closeLab(true) }}><CheckIcon color="success"/>Accept</Button>
-              <Button onClick={() => { closeLab(false) }}><ClearIcon color="error"/>Cancel</Button></div>
+              <Button onClick={() => { closeLab(true) }}><Icon color="success">check</Icon>Accept</Button>
+              <Button onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
           </div>
         </Dialog>
           <Tooltip title= {
