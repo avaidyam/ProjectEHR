@@ -29,7 +29,7 @@ export const NavBar = ({ ...props }) => {
 export const App = ({ ...props }) => {
   return (
     <HashRouter>
-      <Box sx={{ minHeight: "100vh" }} {...props}>
+      <Box sx={{ minHeight: "100vh", overflow: 'none' }} {...props}>
         <NavBar />
         <Routes>
           <Route path="/" Component={Schedule} />

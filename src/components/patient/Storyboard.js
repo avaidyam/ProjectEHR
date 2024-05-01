@@ -10,53 +10,6 @@ import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js'
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
 
-export const PatientSidebarHeader = ({
-  avatarUrl,
-  firstName,
-  lastName,
-  dateOfBirth,
-  gender,
-  patientAgeInYears,
-  patientMRN,
-  preferredLanguage,
-  ...props
-}) => (
-  <div style={{ display: 'flex', flexDirection: "column" }}>
-    <Avatar
-      source={avatarUrl}
-      sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
-    >
-      AB
-    </Avatar>
-    <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
-      <strong>
-        {firstName} {lastName}
-      </strong>
-      <span>
-        {gender}, {patientAgeInYears} years old, {DateHelpers.standardFormat(dateOfBirth)}
-      </span>
-      <span>MRN: {patientMRN}</span>
-      <strong>Preferred language: {preferredLanguage}</strong>
-    </div>
-  </div>
-);
-
-export const PatientSidebarProblemList = ({ patientMRN, ...props }) => {
-  const { problems } = TEST_PATIENT_INFO({ patientMRN });
-  return (
-    <div style={{ display: 'flex', flexDirection: "column" }}>
-      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Problem List ({problems.length})
-      </Typography>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
-        {problems.map((p) => (
-          <div key={p.id}>{p.name}</div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
@@ -157,49 +110,6 @@ export const PatientSidebarVitalsOverview = ({ patientMRN, ...props }) => {
   );
 };
 
-export const PatientSidebarCareOverview = ({ primaryProvider, insurance, ...props }) => {
-  const { providerFirstName, providerLastName, providerTitle, providerAvatarUrl, providerRole } =
-    primaryProvider;
-  const { carrierName } = insurance;
-  return (
-    <div style={{ display: 'flex', flexDirection: "column" }}>
-      <div style={{ display: 'flex', marginBottom: '0.5em' }}>
-        <Avatar
-          source={providerAvatarUrl}
-          sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
-        >
-          {`${_.first(providerFirstName)}${_.first(providerLastName)}`}
-        </Avatar>
-        <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
-          <span>
-            {providerFirstName} {providerLastName}, {providerTitle}
-          </span>
-          <strong>{providerRole}</strong>
-        </div>
-      </div>
-      <span>
-        Coverage: <span style={{ textTransform: 'uppercase' }}>{carrierName}</span>
-      </span>
-    </div>
-  );
-};
-
-export const PatientSidebarCareGapsOverview = ({ patientMRN }) => {
-  const { careGaps } = TEST_PATIENT_INFO({ patientMRN });
-  return (
-    <div style={{ display: 'flex', flexDirection: "column" }}>
-      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Care Gaps ({careGaps.length})
-      </Typography>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
-        {careGaps.map((c) => (
-          <span key={c.id}>{c.name}</span>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const Storyboard = ({ ...props }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   const {
@@ -209,32 +119,74 @@ export const Storyboard = ({ ...props }) => {
     preferredLanguage,
     avatarUrl,
     gender,
-    primaryProvider,
+    PCP,
     insurance,
+    encounter,
+    careGaps,
+    problems
   } = TEST_PATIENT_INFO({
     patientMRN,
   });
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
     <>
-      <PatientSidebarHeader
-        avatarUrl={avatarUrl}
-        firstName={firstName}
-        lastName={lastName}
-        dateOfBirth={dateOfBirth}
-        gender={gender}
-        patientAgeInYears={patientAgeInYears}
-        patientMRN={patientMRN}
-        preferredLanguage={preferredLanguage}
-      />
+      <div style={{ display: 'flex', flexDirection: "column" }}>
+        <Avatar
+          source={avatarUrl}
+          sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
+        >
+          {[firstName, lastName].map(x => x.charAt(0)).join("")}
+        </Avatar>
+        <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
+          <strong>{firstName} {lastName}</strong>
+          <span>Sex: {gender}</span>
+          <span>Age: {patientAgeInYears} years old</span>
+          <span>DOB: {DateHelpers.standardFormat(dateOfBirth)}</span>
+          <span>MRN: {patientMRN}</span>
+          <strong>Preferred language: {preferredLanguage}</strong>
+        </div>
+      </div>
       <Divider color="inherit" />
-      <PatientSidebarCareOverview primaryProvider={primaryProvider} insurance={insurance} />
+      <div style={{ display: 'flex', flexDirection: "column" }} {...props}>
+      <div style={{ display: 'flex', marginBottom: '0.5em' }}>
+        <Avatar
+          source={PCP.avatarUrl}
+          sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+        >
+          {PCP.name.split(" ").map(x => x.charAt(0)).join("")}
+        </Avatar>
+        <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
+          <span>{PCP.name}, {PCP.title}</span>
+          <strong>{PCP.role}</strong>
+        </div>
+      </div>
+      <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance.carrierName}</span></span>
+    </div>
+      <Divider color="inherit" />
+      <Typography variant="h6">Encounter</Typography>
+      <Typography>Type: {encounter.type}</Typography>
+      <Typography>Date: {encounter.date}</Typography>
+      <Typography>Reason: {encounter.concerns.join(", ")}</Typography>
       <Divider color="inherit" />
       <PatientSidebarVitalsOverview patientMRN={patientMRN} />
       <Divider color="inherit" />
-      <PatientSidebarCareGapsOverview patientMRN={patientMRN} />
+      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
+        Care Gaps ({careGaps.length})
+      </Typography>
+      <div style={{ display: 'flex', flexDirection: "column" }}>
+        {careGaps.map((c) => (
+          <span key={c.id}>{c.name}</span>
+        ))}
+      </div>
       <Divider color="inherit" />
-      <PatientSidebarProblemList patientMRN={patientMRN} />
+      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
+        Problem List ({problems.length})
+      </Typography>
+      <div style={{ display: 'flex', flexDirection: "column" }}>
+        {problems.map((p) => (
+          <div key={p.id}>{p.name}</div>
+        ))}
+      </div>
     </>
   );
 };

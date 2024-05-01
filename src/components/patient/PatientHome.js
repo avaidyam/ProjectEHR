@@ -4,11 +4,9 @@ import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popp
 import { Storyboard } from './Storyboard.js'
 import { ChartReview } from './tabs/chartreview/ChartReviewTabContent.js'
 import PreChartingTabContent from './tabs/snapshot/PreChartingTabContent.js'
-import RoomingTabContent from './tabs/snapshot/RoomingTabContent.js'
 import SnapshotTabContent from './tabs/snapshot/SnapshotTabContent.js'
-import ImagingTabContent from './tabs/chartreview/ImagingTabContent.js'
 import NotesTabContent from './tabs/notewriter/NotesTabContent.js'
-import HistoryTabContent from './tabs/history/HistoryTabContent.js'
+import { HistoryTabContent } from './tabs/history/HistoryTabContent.js'
 import Orders from './tabs/orders/Orders.js';
 import Medications from './tabs/medications/Medications.js';
 
@@ -24,24 +22,20 @@ export const PatientHome = ({ ...props }) => {
         <Tabs value={tab} onChange={(event, newValue) => setTab(newValue)}>
           <Tab label="SnapShot" />
           <Tab label="Chart Review" />
-          <Tab label="Pre-Charting" />
-          <Tab label="Rooming" />
-          <Tab label="Imaging" />
-          <Tab label="NoteWriter" />
+          <Tab label="Problem List" />
           <Tab label="History" />
-          <Tab label="Orders" />
           <Tab label="Medications" />
+          <Tab label="Orders" />
+          <Tab label="NoteWriter" />
         </Tabs>
         <Divider />
         {tab === 0 && <SnapshotTabContent />}
         {tab === 1 && <ChartReview />}
         {tab === 2 && <PreChartingTabContent />}
-        {tab === 3 && <RoomingTabContent />}
-        {tab === 4 && <ImagingTabContent />}
-        {tab === 5 && <NotesTabContent />}
-        {tab === 6 && <HistoryTabContent />}
-        {tab === 7 && <Orders />}
-        {tab === 8 && <Medications />}
+        {tab === 3 && <HistoryTabContent />}
+        {tab === 4 && <Medications />}
+        {tab === 5 && <Orders />}
+        {tab === 6 && <NotesTabContent />}
       </Box>
     </Box>
   )

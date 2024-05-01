@@ -1,44 +1,22 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react'
+import { materialRenderers, materialCells } from '@jsonforms/material-renderers'
+import { JsonForms } from '@jsonforms/react'
+import { usePatientMRN } from '../../../../util/urlHelpers.js'
+import histschema from '../../../../util/data/historyschema.json'
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
 
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
-
-import {
-  materialRenderers,
-  materialCells,
-} from '@jsonforms/material-renderers';
-
-import { JsonForms } from '@jsonforms/react';
-
-import histschema from '../../../../util/data/historyschema.json';
-
-import histuischema from '../../../../util/data/historyuischema.json';
-
-import { TEST_PATIENT_HISTORY } from '../../../../util/data/PatientSample.js'
-
-
-const HistoryTabContent = ({ children, ...other }) => {
+export const HistoryTabContent = ({ children, ...props }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN()
-
-  const [data, setData] = useState(TEST_PATIENT_HISTORY({ patientMRN }));
-
-  const schema = histschema;
-  const uischema = histuischema;
-
-
-return (
-   
-<div >   
-   
-      <JsonForms
-        schema={schema}
-        uischema={uischema}
-        data={data}
-        renderers={materialRenderers}
-        cells={materialCells}
-      />
-  </div>  
-  );
-};
-
-
-export default HistoryTabContent;
+  const { history } = TEST_PATIENT_INFO({ patientMRN })
+  const { schema, uischema } = histschema
+  const [data, setData] = useState(history)
+  return (
+    <JsonForms
+      schema={schema}
+      uischema={uischema}
+      data={data}
+      renderers={materialRenderers}
+      cells={materialCells}
+    />
+  )
+}
