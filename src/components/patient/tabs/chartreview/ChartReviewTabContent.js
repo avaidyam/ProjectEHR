@@ -71,9 +71,9 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
               {selectedRow && (
                 <div>
                   {Object.keys(selectedRow.data).map((key, index) => (
-                  <Box key={index}>
+                  key !== 'content' && (<Box key={index}>
                     <strong>{key}:</strong> {selectedRow.data[key]}
-                </Box>
+                </Box>)
                   ))}
                   <Divider/>
                   <pre>
