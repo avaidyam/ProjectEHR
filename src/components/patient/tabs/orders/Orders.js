@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ToggleButton, ToggleButtonGroup, Icon, Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
+import { Card, Typography, ToggleButton, ToggleButtonGroup, Icon, Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -31,7 +31,7 @@ export default function Orders() {
   const [openMed, setOpenMed] = useState(false) 
   const [openDose, setOpenDose] = useState(false) 
   const [data, setData] = useState([])
-  const [value, setValue] = useState('acetaminophen')
+  const [value, setValue] = useState('aba')
   const [route, setRoute] = useState('') 
   const [dose, setDose] = useState('') 
   const [freq, setFreq] = useState('daily') 
@@ -96,10 +96,7 @@ export default function Orders() {
           onChange={(x) => setValue(x.target.value)}
         />
         <Button variant="outlined" onClick={() => { setOpenMed(!openMed) }}>
-          Add Medication
-        </Button>
-        <Button variant="outlined" onClick={() => { setOpenLab(!openLab) }}>
-          Add Lab
+        <Icon color="success">add_task</Icon>Add
         </Button>
 
         <Dialog fullWidth maxWidth="md" onClose={() => { setOpenMed(false) }} open={openMed}>
@@ -120,6 +117,11 @@ export default function Orders() {
                 </ListItemButton>
               </ListItem>
               ))}
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => {setOpenMed(false); setOpenLab(true)}}>
+                  <ListItemText primary="CBC W/DIFF"/>
+                </ListItemButton>
+              </ListItem>
             </List>
           </nav>
         </Dialog>
@@ -127,13 +129,13 @@ export default function Orders() {
 
         <Dialog fullWidth maxWidth="md" onClose={() => { setOpenDose(false) }} open={openDose}>
                 
-        <div style={{backgroundColor: "blue", height: "40px"}}>
+        <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             {tempMed ? tempMed.name : ''}
             <DialogActions style={{float: "right"}}>
-              <Button onClick={() => { closeDose(true) }}><Icon color="success">check</Icon>Accept</Button>
-              <Button onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button>
             </DialogActions>
-        </div>
+        </Box>
                 <p>Route: </p> 
                 <ToggleButtonGroup
                   value={route}
@@ -173,22 +175,22 @@ export default function Orders() {
                   <ToggleButton value={tempMed ? tempMed.fields.refills : refill}>{tempMed ? tempMed.fields.refills : refill}</ToggleButton>
               </ToggleButtonGroup>
 
-          <div style={{backgroundColor: "blue", height: '40px'}}>
+          <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             <div style={{float: "right"}}>
-              <Button onClick={() => { closeDose(true) }}><Icon color="success">check</Icon>Accept</Button>
-              <Button onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
-          </div>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
+          </Box>
 
         </Dialog>
         <Dialog fullWidth maxWidth="md" onClose={() => { setOpenLab(false) }} open={openLab}>
 
-          <div style={{backgroundColor: "blue", height: "40px"}}>
+          <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             CBC w/ DIFF
             <DialogActions style={{float: "right"}}>
-              <Button onClick={() => { closeLab(true) }}><Icon color="success">check</Icon>Accept</Button>
-              <Button onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button>
             </DialogActions>
-          </div>
+          </Box>
 
           <div>
               Order type: 
@@ -305,22 +307,22 @@ export default function Orders() {
               </ToggleButtonGroup>
 
           </div>
-          <div style={{backgroundColor: "blue", height: '40px'}}>
+          <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             <div style={{float: "right"}}>
-              <Button onClick={() => { closeLab(true) }}><Icon color="success">check</Icon>Accept</Button>
-              <Button onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
-          </div>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
+          </Box>
         </Dialog>
-          <Tooltip title= {
-              orderList.map((o) => (
-                  <p>{o}</p>
-              ))
-            }
-          >
-          <Button variant="contained" onClick={submitOrder}>
-            Sign Orders
-          </Button>
-        </Tooltip>
+          {orderList.map((o) => (
+            <Card sx={{m:1, p:1}}>
+              <Typography variant="overline" sx={{ color: "success.dark", fontWeight: 600 }}>NEW ORDER</Typography>
+              <br />
+              {o}
+            </Card>
+          ))}
+          {orderList.length > 0 &&
+            <Button variant="contained" sx={{ backgroundColor: 'success.dark' }} onClick={submitOrder}>Sign Orders</Button>
+          }
       </div>
 
     </Box>

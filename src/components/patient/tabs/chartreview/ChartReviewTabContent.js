@@ -3,7 +3,7 @@ import { Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, Dial
 import { useRouter,usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
-
+import ImagingTabContent from './ImagingTabContent.js'
 
 const tabLabels = [
   "Encounters",
@@ -70,19 +70,23 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
             <div style={{ padding: '16px' }}>
               {selectedRow && (
                 <div>
+                  <Button onClick={handleCloseWindow}>Close</Button>
                   {Object.keys(selectedRow.data).map((key, index) => (
-                  key !== 'content' && (<Box key={index}>
-                    <strong>{key}:</strong> {selectedRow.data[key]}
-                </Box>)
+                    (key !== 'content' && key !== 'image') && (
+                      <Box key={index}>
+                        <strong>{key}:</strong> {selectedRow.data[key]}
+                      </Box>
+                    )
                   ))}
                   <Divider/>
-                  <pre>
-                  {selectedRow.data.content}
-                  </pre>
+                  {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review"/>}
+                  <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
                   {selectedTabLabel === 'Lab' && selectedRow && (
                     <LabReport selectedRow={selectedRow} />
                   )}
-                  <Button onClick={handleCloseWindow}>Close</Button>
+                  {selectedTabLabel === 'Specialty Test' && selectedRow && (
+                    <ImagingTabContent selectedRow={selectedRow} />
+                  )}
                 </div>
               )}
             </div>
