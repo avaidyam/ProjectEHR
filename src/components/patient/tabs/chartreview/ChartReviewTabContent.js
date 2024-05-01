@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography } from '@mui/material'
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import React, { useState, useEffect } from 'react';
+import { Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button } from '@mui/material'
+import { useRouter,usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
+
 
 const tabLabels = [
   "Encounters",
@@ -19,89 +20,78 @@ const tabLabels = [
 
 export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => {
   const [selectedRow, setSelectedRow] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isWindowOpen, setIsWindowOpen] = useState(false);
+  const [tableWidth, setTableWidth] = useState('100%');
 
-  const handleRowClick = (row) => {
-    setSelectedRow(row);
-    setDialogOpen(true);
-  };
+  const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
-  // Filter data based on selectedTabLabel
-  const filteredData = data.filter(item => item.kind === selectedTabLabel);
+  const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data).filter(column => column !== 'id' && column !== 'content') : [];
 
-  // Retrieve columns dynamically from the properties of the objects in filteredData
-  const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data) : [];
-
-  // Filter out columns where all rows have data
   const visibleColumns = columns.filter(column =>
     filteredData.every(row => row.data[column] !== undefined && row.data[column] !== null && row.data[column] !== '')
   );
 
+  const handleRowClick = (row) => {
+    setSelectedRow(row);
+    setIsWindowOpen(true);
+    setTableWidth('50%');
+  };
+
+  const handleCloseWindow = () => {
+    setIsWindowOpen(false);
+    setTableWidth('100%');
+  };
+
   return (
-    <Box>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {visibleColumns.map((column, index) => (
-              <TableCell key={index}>{column}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <tbody>
-          {filteredData.map((row, index) => (
-            <TableRow key={index} onClick={() => handleRowClick(row.data)}>
-              {visibleColumns.map((column, columnIndex) => (
-                <TableCell key={columnIndex}>{row.data[column]}</TableCell>
+    <Box position="relative">
+      <div style={{ display: 'flex', overflowX: 'auto' }}>
+        <div style={{ flex: '1', maxWidth: tableWidth, transition: 'max-width 0.5s', overflow: 'auto' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {visibleColumns.map((column, index) => (
+                  <TableCell key={index}>{column}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <tbody>
+              {filteredData.map((row, index) => (
+                <TableRow key={index} onClick={() => handleRowClick(row)}>
+                  {visibleColumns.map((column, columnIndex) => (
+                    <TableCell key={columnIndex}>{row.data[column]}</TableCell> 
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          ))}
-        </tbody>
-      </Table>
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogContent>
-          {selectedRow && Object.keys(selectedRow).map((key, index) => (
-            <Box key={index}>
-              <strong>{key}:</strong> {selectedRow[key]}
-            </Box>
-          ))}
-          <Divider />
-          <Typography paragraph>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-            enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-            imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-            Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-            Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-            adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-            nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-            leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-            feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-            consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-            sapien faucibus et molestie ac.
-          </Typography>
-          <Typography paragraph>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-            eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-            neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-            tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-            sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-            tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-            gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-            et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-            tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-            eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-            posuere sollicitudin aliquam ultrices sagittis orci a.
-          </Typography>
-          
-          {/* Render the LabReport only if selectedTabLabel is 'Lab' */}
-          {selectedTabLabel === 'Lab' && selectedRow && (
-            <LabReport selectedRow={selectedRow} />
-          )}
-        </DialogContent>
-      </Dialog>
+            </tbody>
+          </Table>
+        </div>
+        {isWindowOpen && (
+          <div style={{ flex: '1', maxWidth: '50%', background: '#ffffff', borderLeft: '1px solid #ccc', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', transition: 'max-width 0.5s' }}>
+            <div style={{ padding: '16px' }}>
+              {selectedRow && (
+                <div>
+                  {Object.keys(selectedRow.data).map((key, index) => (
+                  <Box key={index}>
+                    <strong>{key}:</strong> {selectedRow.data[key]}
+                </Box>
+                  ))}
+                  <Divider/>
+                  <pre>
+                  {selectedRow.data.content}
+                  </pre>
+                  {selectedTabLabel === 'Lab' && selectedRow && (
+                    <LabReport selectedRow={selectedRow} />
+                  )}
+                  <Button onClick={handleCloseWindow}>Close</Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </Box>
   );
-}
+};
 
 export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
