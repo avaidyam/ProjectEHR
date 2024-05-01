@@ -4,6 +4,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -21,6 +22,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ErrorIcon from '@mui/icons-material/Error';
  
 import { getRxTerms } from '../../../../util/getRxTerms.js';
+
 
 // display + add # days on date picker
 function dateLocal(addDay) {
@@ -102,39 +104,55 @@ export default function Orders() {
   // previously used to display json med list: <pre>{JSON.stringify(data, null, 4)}</pre>
 
   return (
-    <div>
+  <Box width={500} sx={{ m: 1 }}>
+    <Box sx={{ border: '1px solid grey', p: 1 }}>
       <Box>
-      <Button><PersonOutlineIcon/>Providers</Button>
-      <Button><EditIcon/>Edit Multiple</Button>
-      </Box>
-    <Box>
-      <div>
-        <TextField
-          label="Add orders or order sets"
-          size="small"
-          sx={{ minWidth: 300 }}
-          variant="outlined"
-          value={value}
-          onChange={(x) => setValue(x.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter')
-              setOpenMed(!openMed)
-         }}
-        />
-        <Button variant="outlined" onClick={() => { setOpenMed(!openMed) }}>
-          <AddIcon color="success"/> New
-        </Button>
-      </div>
-      <div>
-        <FormControl sx={{ minWidth: 300 }} size="small">
-          <Select>
-            <MenuItem value='test'>Test</MenuItem>
-          </Select>
+        <ToggleButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
+              <ToggleButton><u>M</u>anage Orders</ToggleButton>
+              <ToggleButton>Or<u>d</u>er Sets</ToggleButton>
+        </ToggleButtonGroup>
+      
+        <FormControl sx={{ minWidth: 100 }} size="small">
+        <InputLabel>Options</InputLabel>
+        <Select>
+          <MenuItem>Test</MenuItem>
+        </Select>
         </FormControl>
-        <Button variant="outlined" disabled>
-          <ErrorIcon color="error" disabled/> Next
-        </Button>
-      </div>
+      </Box>
+      <Box sx={{ pt: 4 }}>
+        <Button><PersonOutlineIcon/>Providers</Button>
+        <Button><EditIcon/>Edit Multiple</Button>
+      </Box>
+      <Box>
+        <Box>
+          <TextField
+            label="Add orders or order sets"
+            size="small"
+            sx={{ minWidth: 300 }}
+            variant="outlined"
+            value={value}
+            onChange={(x) => setValue(x.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter')
+                setOpenMed(!openMed)
+          }}
+          />
+          <Button variant="outlined" onClick={() => { setOpenMed(!openMed) }}>
+            <AddIcon color="success"/> Ne<u>w</u>
+          </Button>
+        </Box>
+        <Box>
+          <FormControl sx={{ minWidth: 300 }} size="small">
+            <Select>
+              <MenuItem value='test'>Test</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="outlined" disabled>
+            <ErrorIcon color="error" disabled/> <u>N</u>ext
+          </Button>
+        </Box>
+      </Box>
+    </Box>
       <div>
         <Dialog fullWidth maxWidth="md" onClose={() => { setOpenMed(false) }} open={openMed}>
 
@@ -349,27 +367,26 @@ export default function Orders() {
         {
               orderList.map((o) => (
                   <Box
-                  width={400}
-                  sx={{ border: '1px solid grey', m: 0.5}}>
+                  sx={{ border: '1px solid grey', mt: 1}}>
                     <Box sx={{ bgcolor: '#d3f3d3'}}>
                     <PostAddIcon/> 
-                      New Orders
+                      New Order
                     </Box>
                     {o}
                   </Box>
               ))
         }
-        <div>
+        <Box sx={{pt: 1}}>
           <Button variant="outlined" onClick={submitOrder}>
             <ClearIcon color="error"/> Remove All
           </Button>
           <Button variant="outlined" onClick={submitOrder}>
             <CheckIcon color="success"/> Sign
           </Button>
-        </div>
+        </Box>
       </div>
 
+
     </Box>
-    </div>
   );
 }
