@@ -614,7 +614,27 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'Abnormal?': 'No',
             'Expected Date': '01-10-2023',
             'Expiration': 'N/A',
-            'Encounter Provider': 'Dr. Smith'
+            'Encounter Provider': 'Dr. Smith',
+            'LabResults': [
+              'Glucose: 65 - 99 mg/dL: 100 HIGH',
+              'BUN: 6 - 24 mg/dL: 25 HIGH',
+              'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
+              'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
+              'eGFR if Africn Am: >59 mL/min/1.73: 73',
+              'BUN/Creatinine Ratio: 9 - 20: 19',
+              'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
+              'Potassium: 3.5 - 5.2 mmol/L: 4.0',
+              'Chloride: 96 - 106 mmol/L: 110 HIGH',
+              'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
+              'Calcium: 8.7 - 10.2 mg/dL: 9.0',
+              'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
+              'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
+              'Globulin, Total: 1.5-4.5 g/dL: 2.0',
+              'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
+              'Alkaline Phosphatase: 39 - 117 IU/L: 41',
+              'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
+              'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
+            ]
           }
         },
         {
@@ -801,18 +821,38 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'File attached to': 'Encounter'
           }
         },
-          {
-        kind: 'Lab',
-        data: {
-          'Patient Sharing': 'Not Shared',
-          'Date/Time': '01-05-2023 10:45 AM',
-          'Test': 'Urine Test',
-          'Status': 'Pending',
-          'Abnormal?': 'Yes',
-          'Expected Date': '01-12-2023',
-          'Expiration': '01-15-2023',
-          'Encounter Provider': 'Dr. Martinez'
-        }
+        {
+          kind: 'Lab',
+          data: {
+            'Patient Sharing': 'Not Shared',
+            'Date/Time': '01-05-2023 10:45 AM',
+            'Test': 'Urine Test',
+            'Status': 'Pending',
+            'Abnormal?': 'Yes',
+            'Expected Date': '01-12-2023',
+            'Expiration': '01-15-2023',
+            'Encounter Provider': 'Dr. Martinez',
+            'LabResults': [
+              'Glucose: 65 - 99 mg/dL: 100 HIGH',
+              'BUN: 6 - 24 mg/dL: 25 HIGH',
+              'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
+              'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
+              'eGFR if Africn Am: >59 mL/min/1.73: 73',
+              'BUN/Creatinine Ratio: 9 - 20: 19',
+              'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
+              'Potassium: 3.5 - 5.2 mmol/L: 4.0',
+              'Chloride: 96 - 106 mmol/L: 110 HIGH',
+              'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
+              'Calcium: 8.7 - 10.2 mg/dL: 9.0',
+              'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
+              'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
+              'Globulin, Total: 1.5-4.5 g/dL: 2.0',
+              'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
+              'Alkaline Phosphatase: 39 - 117 IU/L: 41',
+              'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
+              'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
+            ]
+          }
       },
       {
         kind: 'Cardiac',
