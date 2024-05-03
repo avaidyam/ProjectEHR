@@ -28,12 +28,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data).filter(column => column !== 'id' && column !== 'content') : [];
 
   const visibleColumns = columns.filter(column =>
-    filteredData.every(row => 
-      row.data[column] !== undefined && 
-      row.data[column] !== null && 
-      row.data[column] !== '' &&
-      column !== 'LabResults' // Exclude 'LabResults' from visible columns
-    )
+    filteredData.every(row => row.data[column] !== undefined && row.data[column] !== null && row.data[column] !== '')
   );
 
   const handleRowClick = (row) => {
@@ -87,7 +82,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                   {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review"/>}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
                   {selectedTabLabel === 'Lab' && selectedRow && (
-                    <LabReport labReport = {selectedRow.data.LabResults} selectedRow={selectedRow} />
+                    <LabReport labReport = {selectedRow.labResults} selectedRow={selectedRow} />
                   )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
