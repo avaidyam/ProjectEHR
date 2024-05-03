@@ -82,7 +82,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                   {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review"/>}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
                   {selectedTabLabel === 'Lab' && selectedRow && (
-                    <LabReport selectedRow={selectedRow} />
+                    <LabReport labReport = {selectedRow.labResults} selectedRow={selectedRow} />
                   )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
