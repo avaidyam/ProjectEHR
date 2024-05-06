@@ -38,7 +38,7 @@ export default function Orders() {
   const [route, setRoute] = useState('') 
   const [dose, setDose] = useState('') 
   const [freq, setFreq] = useState('') 
-  const [refill, setRefill] = useState(0) 
+  const [refill, setRefill] = useState('') 
 
   // for ordering labs i.e. CBC
   const [type, setType] = useState('');
@@ -72,6 +72,7 @@ export default function Orders() {
     setName('');
     setRoute('');
     setDose('');
+    setRefill('');
     setType('');
     setStatus('');
     setPriority('');
@@ -153,7 +154,7 @@ export default function Orders() {
                   setRoute(m.fields.route ? m.fields.route[0] : route); 
                   setDose(m.fields.dose ? m.fields.dose[0][0] : dose); 
                   setFreq(m.fields.dose ? 'daily' : '');
-                  setRefill(m.fields.refills ? m.fields.refills : refill); 
+                  setRefill(m.fields.refills ? m.fields.refills[0] : refill); 
                   setType(m.fields.type ? m.fields.type[0] : type);
                   setStatus(m.fields.status ? m.fields.status[2] : status);
                   setPriority(m.fields.priority ? m.fields.priority[0] : priority);
@@ -167,7 +168,6 @@ export default function Orders() {
             ))
           )}
         </List>
-          
         </Dialog>
 
 
@@ -212,7 +212,6 @@ export default function Orders() {
 
               <p>Frequency: </p> 
                 <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}>daily</TextField>
-
           </>
         )}
 
@@ -224,7 +223,7 @@ export default function Orders() {
                   exclusive
                   onChange={(event, val) => setRefill(val)}
                 >
-                  <ToggleButton value={tempMed ? tempMed.fields.refills : refill}>{tempMed ? tempMed.fields.refills : refill}</ToggleButton>
+                  {tempMed.fields.refills.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
               </ToggleButtonGroup>
           </>
         )}
@@ -358,21 +357,24 @@ export default function Orders() {
 
         </Dialog>
         
-        {orderList.map((o) => (
-            <Card sx={{m:1, p:1}}>
-              <Typography variant="overline" sx={{ color: "success.dark", fontWeight: 600 }}><Icon>post_add</Icon> New Order</Typography>
-              <br />
-              {o}
-            </Card>
-          ))}
+        
+      {orderList.map((o) => (
+        <Card sx={{ m: 1, p: 1 }}>
+          <Typography variant="overline" sx={{ color: "success.dark", fontWeight: 600 }}>
+            <Icon>post_add</Icon> New Order
+          </Typography>
+          <br />
+          {o}
+        </Card>
+      ))}
 
         <Box sx={{p: 1}}>
-          <Button variant="outlined" onClick={submitOrder}>
-            <Icon color="error">clear</Icon>Remove All
+          <Button variant="outlined" color="error" onClick={submitOrder}>
+            <Icon>clear</Icon>Remove All
 
           </Button>
-          <Button variant="outlined" onClick={submitOrder}>
-            <Icon color="success">check</Icon> Sign
+          <Button variant="outlined" color="success" onClick={submitOrder}>
+            <Icon>check</Icon> Sign
           </Button>
         </Box>
       </div>

@@ -46,7 +46,7 @@ fields.refills: placeholder
         "Rectal"
       ],
       "frequency": "string",
-      "refills": 0
+      "refills": [0,1,2,3]
     }
   }, */
 
@@ -90,7 +90,7 @@ function formatRxTerms(data) {
 
     const dose = data[2].STRENGTHS_AND_FORMS[index];
     const frequency = 'string'; // Set frequency as needed
-    const refills = 0; // Set refills as needed
+    const refills = [0,1,2,3]; // Set refills as needed
     let entry = null;
 
     if (formattedResult.has(name)) {
@@ -123,11 +123,13 @@ function sortJson(results, par, firstLetter){
       const itemA = a[par].toLowerCase(); 
       const itemB = b[par].toLowerCase(); 
       let retVal = 0;
-      if (itemA.charAt(0) === firstLetter && itemB.charAt(0) !== firstLetter){
-        retVal = -1;
-      }
-      else if (itemB.charAt(0) === firstLetter && itemA.charAt(0) !== firstLetter){
-        retVal = 1;
+      if (firstLetter.length !== 0){
+        if (itemA.charAt(0) === firstLetter && itemB.charAt(0) !== firstLetter){
+          retVal = -1;
+        }
+        else if (itemB.charAt(0) === firstLetter && itemA.charAt(0) !== firstLetter){
+          retVal = 1;
+        }
       }
       else if (itemA < itemB) {
         retVal = -1;
@@ -142,7 +144,7 @@ function sortJson(results, par, firstLetter){
 export async function getRxTerms(searchTerm) {
   /** disabled nonfunctional try-catch to make eslint happy */
   // try 
-  const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS&maxList=100`;
+  const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS&maxList=500`;
   const rxtermsResponse = await fetch(rxtermsApiUrl);
 
   const rxtermsData = await rxtermsResponse.json();
