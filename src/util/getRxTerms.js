@@ -46,9 +46,28 @@ fields.refills: placeholder
         "Rectal"
       ],
       "frequency": "string",
-      "refills": 0
+      "refills": [0,1,2,3]
     }
   }, */
+
+const cbcjson = {
+    "id": "00000", 
+    "name": "CBC w/ DIFF",
+    "fields": {
+      "type": ["Outpatient", "Inpatient"],
+      "status": ["Normal", "Standing", "Future"],
+      "standing": {
+        "frequency": ["1 month", "2 months", "3 months", "4 months", "6 months", "1 year"],
+        "count": [1, 2, 3, 4, 6, 12]
+      },
+      "future": {
+        "expect_date": ["today", "tomorrow", "1 week", "1 month", "2 months", "3 months", "6 months"],
+        "expire_date": ["1 month", "2 months", "3 months", "4 months", "6 months", "1 year", "18 months"]
+      },
+      "priority": ["Routine", "STAT", "Timed", "Urgent"],
+      "class": ["External Collect", "Clinic Collect", "Lab Collect"]
+    }
+}
 
 function formatRxTerms(data) {
   const formattedResult = new Map();
@@ -71,7 +90,7 @@ function formatRxTerms(data) {
 
     const dose = data[2].STRENGTHS_AND_FORMS[index];
     const frequency = 'string'; // Set frequency as needed
-    const refills = 0; // Set refills as needed
+    const refills = [0,1,2,3]; // Set refills as needed
     let entry = null;
 
     if (formattedResult.has(name)) {
@@ -98,17 +117,45 @@ function formatRxTerms(data) {
   return Array.from(formattedResult.values());
 }
 
+// sort json list, also if first letter matches first letter of search phrase, will push to top of list
+function sortJson(results, par, firstLetter){
+  return results.sort((a, b) => {
+      const itemA = a[par].toLowerCase(); 
+      const itemB = b[par].toLowerCase(); 
+      let retVal = 0;
+      if (firstLetter.length !== 0){
+        if (itemA.charAt(0) === firstLetter && itemB.charAt(0) !== firstLetter){
+          retVal = -1;
+        }
+        else if (itemB.charAt(0) === firstLetter && itemA.charAt(0) !== firstLetter){
+          retVal = 1;
+        }
+      }
+      else if (itemA < itemB) {
+        retVal = -1;
+      }
+      else if (itemA > itemB) {
+        retVal = 1;
+      }
+      return retVal;
+   })
+}
+
 export async function getRxTerms(searchTerm) {
   /** disabled nonfunctional try-catch to make eslint happy */
-  // try {
-  const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS`;
+  // try 
+  const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS&maxList=500`;
   const rxtermsResponse = await fetch(rxtermsApiUrl);
 
   const rxtermsData = await rxtermsResponse.json();
-
   const results = formatRxTerms(rxtermsData);
 
-  return results;
+  // appending CBC w/ DIFF lab to list of possible orders
+  if ("cbc w/ diff".includes(searchTerm.toLowerCase())){
+    results.push(cbcjson); 
+  }     
+
+  return sortJson(results, 'name', searchTerm.charAt(0).toLowerCase());
   // } catch (error) {
   //   throw error;
   // }

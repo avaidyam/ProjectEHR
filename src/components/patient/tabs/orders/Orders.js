@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, ToggleButton, ToggleButtonGroup, Icon, Box, TextField, Button, Dialog, DialogActions, List, ListItem, ListItemText, ListItemButton, Tooltip} from '@mui/material';
+import { Box, Button, Card, Dialog, DialogActions, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
+  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select} from '@mui/material';
+
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import {DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
- 
+
+ // import json orders master list
 import { getRxTerms } from '../../../../util/getRxTerms.js';
 
 // display + add # days on date picker
@@ -27,22 +29,22 @@ export default function Orders() {
   // temp med = info of chosen med i.e. route, etc. 
   const [tempMed, setTempMed] = useState(null)
 
-  // for ordering meds (?combine "ADD ORDERS" button w/ meds + labs as 1 button for the future)
-  const [openMed, setOpenMed] = useState(false) 
-  const [openDose, setOpenDose] = useState(false) 
+  // many variables down the line- will consider adding this into a map laer
+  const [openSearchList, setOpenSearchList] = useState(false) 
+  const [openOrder, setOpenOrder] = useState(false) 
   const [data, setData] = useState([])
-  const [value, setValue] = useState('aba')
+  const [value, setValue] = useState('')
+  const [name, setName] = useState('')
   const [route, setRoute] = useState('') 
   const [dose, setDose] = useState('') 
-  const [freq, setFreq] = useState('daily') 
-  const [refill, setRefill] = useState(0) 
+  const [freq, setFreq] = useState('') 
+  const [refill, setRefill] = useState('') 
 
   // for ordering labs i.e. CBC
-  const [openLab, setOpenLab] = useState(false) 
-  const [type, setType] = useState('outpatient');
-  const [status, setStatus] = useState('future');
-  const [priority, setPriority] = useState('routine');
-  const [classCollect, setClass] = useState('lab');
+  const [type, setType] = useState('');
+  const [status, setStatus] = useState('');
+  const [priority, setPriority] = useState('');
+  const [classCollect, setClass] = useState('');
 
   // for future labs only: expected date & expired date of lab order
   const [expectDate, setExpectDate] = useState(0);
@@ -61,94 +63,139 @@ export default function Orders() {
     setOrderList([]);
   }
 
-  // close lab order dialog. if "accept" clicked, add lab to order list
-  const closeLab = (save) => {
-    setOpenLab(false);
+  // close med order dialog & reset variables. if "accept" clicked, add med to order list
+  const closeOrder = (save) => {
+    setOpenOrder(false);
     if (save){
-      orderList.push('CBC w/ DIFF');
+      orderList.push(`${name} ${dose} ${route} ${freq}`);
     }
-  };
-
-  // close med order dialog. if "accept" clicked, add med to order list
-  const closeDose = (save) => {
-    setOpenDose(false);
-    if (save){
-      orderList.push(`${value} ${dose} ${route} ${freq}`);
-    }
+    setName('');
+    setRoute('');
+    setDose('');
+    setRefill('');
+    setType('');
+    setStatus('');
+    setPriority('');
+    setClass('');
   };
 
   useEffect(() => {
     getRxTerms(value).then(setData);
-  }, [openMed]);
+  }, [openSearchList]);
   // [value] can provide instant updates, but this is not necessary for us
-  // instead, use [openMed] to only update when dialog is hidden or shown
-  // can even further be optimized to check if openMed == true, ONLY then update
+  // instead, use [openSearchList] to only update when dialog is hidden or shown
+  // can even further be optimized to check if openSearchList == true, ONLY then update
 
   // previously used to display json med list: <pre>{JSON.stringify(data, null, 4)}</pre>
 
   return (
-    <Box>
+  <Box sx={{ m: 1 }}>
+    <Card sx={{m:1, p:1}}>
+      <Box>
+        <ToggleButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
+              <ToggleButton><u>M</u>anage Orders</ToggleButton>
+              <ToggleButton>Or<u>d</u>er Sets</ToggleButton>
+        </ToggleButtonGroup>
+      
+        <FormControl sx={{ minWidth: 100 }} size="small">
+        <InputLabel>Options</InputLabel>
+        <Select>
+          <MenuItem>Test</MenuItem>
+        </Select>
+        </FormControl>
+      </Box>
+      <Box sx={{ pt: 4 }}>
+        <Button><Icon>person_outline</Icon>Providers</Button>
+        <Button><Icon>edit</Icon>Edit Multiple</Button>
+      </Box>
+      <Box>
+        <Box>
+          <TextField
+            label="Add orders or order sets"
+            size="small"
+            sx={{ minWidth: 300 }}
+            variant="outlined"
+            value={value}
+            onChange={(x) => setValue(x.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter')
+                setOpenSearchList(!openSearchList)
+          }}
+          />
+          <Button variant="outlined" onClick={() => { setOpenSearchList(!openSearchList) }}>
+            <Icon color="success">add</Icon> Ne<u>w</u>
+          </Button>
+        </Box>
+        <Box>
+          <FormControl sx={{ minWidth: 300 }} size="small">
+            <Select>
+              <MenuItem value='test'>Test</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="outlined" disabled>
+            <Icon color="error" disabled>error</Icon> <u>N</u>ext
+          </Button>
+        </Box>
+      </Box>
+    </Card>
+
       <div>
-        <TextField
-          label="Search Medications"
-          variant="outlined"
-          value={value}
-          onChange={(x) => setValue(x.target.value)}
-        />
-        <Button variant="outlined" onClick={() => { setOpenMed(!openMed) }}>
-        <Icon color="success">add_task</Icon>Add
-        </Button>
-
-        <Dialog fullWidth maxWidth="md" onClose={() => { setOpenMed(false) }} open={openMed}>
-
-          <nav>
-            <List>
-              {data.map((m) => (
-                <ListItem disablePadding>
-                <ListItemButton onClick={() => 
-                  {setTempMed(m); 
+        <Dialog fullWidth maxWidth="md" onClose={() => { setOpenSearchList(false) }} open={openSearchList}>
+          
+          <List>
+            {(!data || data.length === 0) ? (
+              <p>No Results. Try again.</p>
+            ) : (
+            data.map((m) => (
+              <ListItem disablePadding>
+                <ListItemButton onClick={() => {
+                  setTempMed(m); 
+                  setName(m.name ? m.name : name); 
                   setRoute(m.fields.route ? m.fields.route[0] : route); 
                   setDose(m.fields.dose ? m.fields.dose[0][0] : dose); 
-                  setFreq('daily');
-                  setRefill(m.fields.refills ? m.fields.refills : refill); 
-                  setOpenDose(!openDose); 
-                  setOpenMed(false);}}>
+                  setFreq(m.fields.dose ? 'daily' : '');
+                  setRefill(m.fields.refills ? m.fields.refills[0] : refill); 
+                  setType(m.fields.type ? m.fields.type[0] : type);
+                  setStatus(m.fields.status ? m.fields.status[2] : status);
+                  setPriority(m.fields.priority ? m.fields.priority[0] : priority);
+                  setClass(m.fields.class ? m.fields.class[0] : classCollect);
+                  setOpenOrder(!openOrder); 
+                  setOpenSearchList(false);
+                }}>
                   <ListItemText primary={m.name}/>
                 </ListItemButton>
               </ListItem>
-              ))}
-              <ListItem disablePadding>
-                <ListItemButton onClick={() => {setOpenMed(false); setOpenLab(true)}}>
-                  <ListItemText primary="CBC W/DIFF"/>
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </nav>
+            ))
+          )}
+        </List>
         </Dialog>
 
 
-        <Dialog fullWidth maxWidth="md" onClose={() => { setOpenDose(false) }} open={openDose}>
+        <Dialog fullWidth maxWidth="md" onClose={() => { setOpenOrder(false) }} open={openOrder}>
                 
         <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             {tempMed ? tempMed.name : ''}
             <DialogActions style={{float: "right"}}>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(true) }}><Icon color="success.light">check</Icon>Accept</Button>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeOrder(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeOrder(false) }}><Icon color="error">clear</Icon>Cancel</Button>
             </DialogActions>
         </Box>
-                <p>Route: </p> 
-                <ToggleButtonGroup
-                  value={route}
-                  exclusive
-                  onChange={(event, val) => setRoute(val)}
-                >
-                {
-                tempMed ? tempMed.fields.route.map((m) => (
-                  <ToggleButton value={m}>{m}</ToggleButton>
-                )) : ''
-                }
-              </ToggleButtonGroup>
 
+        {tempMed && tempMed.fields.route && (
+          <>
+            <p>Route: </p> 
+            <ToggleButtonGroup
+              value={route}
+              exclusive
+              onChange={(event, val) => setRoute(val)}
+            >
+            {tempMed.fields.route.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </>
+        )}
+
+        {tempMed && tempMed.fields.dose && (
+          <>
               <p>Dose: </p> 
                 <ToggleButtonGroup
                   value={dose}
@@ -156,65 +203,58 @@ export default function Orders() {
                   onChange={(event, val) => setDose(val)}
                   sx={{ whiteSpace: 'nowrap' }}
                 >
-                {tempMed ? tempMed.fields.dose.map((d) => (
+                {tempMed.fields.dose.map((d) => (
                   d.map((sub) => (
                     <ToggleButton value={sub}>{sub}</ToggleButton>
                   ))
-                )) : ''}
+                ))}
               </ToggleButtonGroup>
 
               <p>Frequency: </p> 
-                <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}/>
+                <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}>daily</TextField>
+          </>
+        )}
 
+        {tempMed && tempMed.fields.refills && (
+          <>
               <p>Refills: </p> 
                 <ToggleButtonGroup
                   value={refill}
                   exclusive
                   onChange={(event, val) => setRefill(val)}
                 >
-                  <ToggleButton value={tempMed ? tempMed.fields.refills : refill}>{tempMed ? tempMed.fields.refills : refill}</ToggleButton>
+                  {tempMed.fields.refills.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
               </ToggleButtonGroup>
+          </>
+        )}
 
-          <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
-            <div style={{float: "right"}}>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(true) }}><Icon color="success.light">check</Icon>Accept</Button>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeDose(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
-          </Box>
+        {tempMed && tempMed.fields.type && (
+            <>
+                Order type: 
+                  <ToggleButtonGroup
+                    value={type}
+                    exclusive
+                    onChange={(event, val) => setType(val)}
+                  >
+                    <ToggleButton value='Outpatient'><Icon>home</Icon></ToggleButton>
+                    <ToggleButton value='Inpatient'><Icon>hotel</Icon></ToggleButton>
+                  </ToggleButtonGroup>
+            </>
+        )}
 
-        </Dialog>
-        <Dialog fullWidth maxWidth="md" onClose={() => { setOpenLab(false) }} open={openLab}>
-
-          <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
-            CBC w/ DIFF
-            <DialogActions style={{float: "right"}}>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(true) }}><Icon color="success.light">check</Icon>Accept</Button>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button>
-            </DialogActions>
-          </Box>
-
-          <div>
-              Order type: 
-                <ToggleButtonGroup
-                  value={type}
-                  exclusive
-                  onChange={(event, val) => setType(val)}
-                >
-                  <ToggleButton value='outpatient'><Icon>home</Icon></ToggleButton>
-                  <ToggleButton value='inpatient'><Icon>hotel</Icon></ToggleButton>
-                </ToggleButtonGroup>
-
+        {tempMed && tempMed.fields.status && (
+            <>
               <p>Status: </p> 
               <ToggleButtonGroup
                 value={status}
                 exclusive
                 onChange={(event, val) => setStatus(val)}
               >
-                <ToggleButton value='normal'>Normal</ToggleButton>
-                <ToggleButton value='standing'>Standing</ToggleButton>
-                <ToggleButton value='future'>Future</ToggleButton>
+              {tempMed.fields.status.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
               </ToggleButtonGroup>
+              </>)}
 
-              {status==='standing' && (<><p>Interval: </p>
+              {status==='Standing' && (<><p>Interval: </p>
               <ToggleButtonGroup
                 value={interval}
                 exclusive
@@ -229,7 +269,7 @@ export default function Orders() {
               </ToggleButtonGroup>
               </>)}
 
-              {status==='standing' && (<><p>Count: </p>
+              {status==='Standing' && (<><p>Count: </p>
               <ToggleButtonGroup
                 value={count}
                 exclusive
@@ -244,7 +284,7 @@ export default function Orders() {
               </ToggleButtonGroup>
               </>)}
 
-              {status==='future' && (<><p>Expected date: </p>
+              {status==='Future' && (<><p>Expected date: </p>
               <ToggleButtonGroup
                 value={expectDate}
                 exclusive
@@ -263,7 +303,7 @@ export default function Orders() {
               </ToggleButtonGroup></>
               )}
 
-              {status==='future' && (<><p>Expires: </p>
+              {status==='Future' && (<><p>Expires: </p>
 
 
               <ToggleButtonGroup
@@ -283,46 +323,60 @@ export default function Orders() {
               </ToggleButtonGroup>
               </>)}
 
-              <p>Priority: </p>
-              <ToggleButtonGroup
-                value={priority}
-                exclusive
-                onChange={(event, val) => setPriority(val)}
-              >
-                <ToggleButton value='routine'>Routine</ToggleButton>
-                <ToggleButton value='stat'>STAT</ToggleButton>
-                <ToggleButton value='timed'>Timed</ToggleButton>
-                <ToggleButton value='urgent'>Urgent</ToggleButton>
-              </ToggleButtonGroup>
-            
+              {tempMed && tempMed.fields.priority && (
+                <>
+                  <p>Priority: </p>
+                  <ToggleButtonGroup
+                    value={priority}
+                    exclusive
+                    onChange={(event, val) => setPriority(val)}
+                  >
+                    {tempMed.fields.priority.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
+                  </ToggleButtonGroup>
+                </>
+          )}
+
+          {tempMed && tempMed.fields.class && (
+            <>
               <p>Class: </p>
               <ToggleButtonGroup
                 value={classCollect}
                 exclusive
                 onChange={(event, val) => setClass(val)}
               >
-                <ToggleButton value='lab'>Lab Collect</ToggleButton>
-                <ToggleButton value='clinic'>Clinic Collect</ToggleButton>
-                <ToggleButton value='external'>External Collect</ToggleButton>
+                {tempMed.fields.class.map((m) => (<ToggleButton value={m}>{m}</ToggleButton>))}
               </ToggleButtonGroup>
+            </>
+          )}
 
-          </div>
           <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
             <div style={{float: "right"}}>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(true) }}><Icon color="success.light">check</Icon>Accept</Button>
-              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeLab(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeOrder(true) }}><Icon color="success.light">check</Icon>Accept</Button>
+              <Button sx={{color: "primary.contrastText"}} onClick={() => { closeOrder(false) }}><Icon color="error">clear</Icon>Cancel</Button></div>
           </Box>
+
         </Dialog>
-          {orderList.map((o) => (
-            <Card sx={{m:1, p:1}}>
-              <Typography variant="overline" sx={{ color: "success.dark", fontWeight: 600 }}>NEW ORDER</Typography>
-              <br />
-              {o}
-            </Card>
-          ))}
-          {orderList.length > 0 &&
-            <Button variant="contained" sx={{ backgroundColor: 'success.dark' }} onClick={submitOrder}>Sign Orders</Button>
-          }
+        
+        
+      {orderList.map((o) => (
+        <Card sx={{ m: 1, p: 1 }}>
+          <Typography variant="overline" sx={{ color: "success.dark", fontWeight: 600 }}>
+            <Icon>post_add</Icon> New Order
+          </Typography>
+          <br />
+          {o}
+        </Card>
+      ))}
+
+        <Box sx={{p: 1}}>
+          <Button variant="outlined" color="error" onClick={submitOrder}>
+            <Icon>clear</Icon>Remove All
+
+          </Button>
+          <Button variant="outlined" color="success" onClick={submitOrder}>
+            <Icon>check</Icon> Sign
+          </Button>
+        </Box>
       </div>
 
     </Box>
