@@ -34,7 +34,7 @@
     {
       "id": 2,
       "apptTime": "5:00 PM",
-      "notes": "test note",
+      "notes": "CC chest pain",
       "type": "ED FOLLOWUP VISIT",
       "checkinTime": "4:59 PM",
       "checkoutTime": null,
@@ -44,22 +44,22 @@
       "room": 1,
       "patient": {
         "mrn": 12345,
-        "lastName": "Williams",
-        "firstName": "Mary",
+        "lastName": "Hanson",
+        "firstName": "John",
         "middleName": null,
-        "age": 37,
-        "gender": "F",
-        "insurName": "AETNA COMMERCIAL"
+        "age": 66,
+        "gender": "M",
+        "insurName": "UNITED HEALTHCARE"
       },
       "provider": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
+        "lastName": "Nelson",
+        "firstName": "Chris",
+        "middleName": "Topher"
       },
       "pcp": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
+        "lastName": "Nelson",
+        "firstName": "Chris",
+        "middleName": "Topher"
       }
     },
     {
