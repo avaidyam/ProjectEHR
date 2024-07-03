@@ -616,24 +616,132 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'Encounter Provider': 'Dr. Smith',
           },
         labResults: [
-          'Glucose: 65 - 99 mg/dL: 100 HIGH',
-          'BUN: 6 - 24 mg/dL: 25 HIGH',
-          'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
-          'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
-          'eGFR if Africn Am: >59 mL/min/1.73: 73',
-          'BUN/Creatinine Ratio: 9 - 20: 19',
-          'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
-          'Potassium: 3.5 - 5.2 mmol/L: 4.0',
-          'Chloride: 96 - 106 mmol/L: 110 HIGH',
-          'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
-          'Calcium: 8.7 - 10.2 mg/dL: 9.0',
-          'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
-          'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
-          'Globulin, Total: 1.5-4.5 g/dL: 2.0',
-          'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
-          'Alkaline Phosphatase: 39 - 117 IU/L: 41',
-          'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
-          'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
+          {
+            "name": "Glucose",
+            "low": 65,
+            "high": 99,
+            "value": "100 HIGH",
+            "comment": null
+          },
+          {
+            "name": "BUN",
+            "low": 6,
+            "high": 24,
+            "value": "25 HIGH",
+            "comment": null
+          },
+          {
+            "name": "Creatinine",
+            "low": 0.76,
+            "high": 1.27,
+            "value": "1.35 HIGH",
+            "comment": null
+          },
+          {
+            "name": "eGFR if NonAfricn Am",
+            "low": 59,
+            "high": null,
+            "value": 63,
+            "comment": null
+          },
+          {
+            "name": "eGFR if Africn Am",
+            "low": 59,
+            "high": null,
+            "value": 73,
+            "comment": null
+          },
+          {
+            "name": "BUN/Creatinine Ratio",
+            "low": 9,
+            "high": 20,
+            "value": 19,
+            "comment": null
+          },
+          {
+            "name": "Sodium",
+            "low": 134,
+            "high": 144,
+            "value": "21 CRITICAL",
+            "comment": null
+          },
+          {
+            "name": "Potassium",
+            "low": 3.5,
+            "high": 5.2,
+            "value": 4.0,
+            "comment": null
+          },
+          {
+            "name": "Chloride",
+            "low": 96,
+            "high": 106,
+            "value": "110 HIGH",
+            "comment": null
+          },
+          {
+            "name": "Carbon Dioxide, total",
+            "low": 20,
+            "high": 29,
+            "value": 20,
+            "comment": null
+          },
+          {
+            "name": "Calcium",
+            "low": 8.7,
+            "high": 10.2,
+            "value": 9.0,
+            "comment": null
+          },
+          {
+            "name": "Protein, Total",
+            "low": 6.0,
+            "high": 8.5,
+            "value": "5.9 LOW",
+            "comment": null
+          },
+          {
+            "name": "Albumin",
+            "low": 4.0,
+            "high": 5.0,
+            "value": "3.9 LOW",
+            "comment": null
+          },
+          {
+            "name": "Globulin, Total",
+            "low": 1.5,
+            "high": 4.5,
+            "value": 2.0,
+            "comment": null
+          },
+          {
+            "name": "Bilirubin, Total",
+            "low": 0.0,
+            "high": 1.2,
+            "value": "1.5 HIGH",
+            "comment": null
+          },
+          {
+            "name": "Alkaline Phosphatase",
+            "low": 39,
+            "high": 117,
+            "value": 41,
+            "comment": null
+          },
+          {
+            "name": "AST (SGOT)",
+            "low": 0,
+            "high": 40,
+            "value": "50 HIGH",
+            "comment": null
+          },
+          {
+            "name": "ALT (SGPT)",
+            "low": 0,
+            "high": 44,
+            "value": "51 HIGH",
+            "comment": null
+          }
         ]
         },
         {
@@ -832,24 +940,132 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'Encounter Provider': 'Dr. Martinez'
           },
           labResults: [
-            'Glucose: 65 - 99 mg/dL: 100 HIGH',
-            'BUN: 6 - 24 mg/dL: 25 HIGH',
-            'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
-            'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
-            'eGFR if Africn Am: >59 mL/min/1.73: 73',
-            'BUN/Creatinine Ratio: 9 - 20: 19',
-            'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
-            'Potassium: 3.5 - 5.2 mmol/L: 4.0',
-            'Chloride: 96 - 106 mmol/L: 110 HIGH',
-            'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
-            'Calcium: 8.7 - 10.2 mg/dL: 9.0',
-            'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
-            'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
-            'Globulin, Total: 1.5-4.5 g/dL: 2.0',
-            'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
-            'Alkaline Phosphatase: 39 - 117 IU/L: 41',
-            'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
-            'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
+            {
+              "name": "Glucose",
+              "low": 65,
+              "high": 99,
+              "value": "100 HIGH",
+              "comment": null
+            },
+            {
+              "name": "BUN",
+              "low": 6,
+              "high": 24,
+              "value": "25 HIGH",
+              "comment": null
+            },
+            {
+              "name": "Creatinine",
+              "low": 0.76,
+              "high": 1.27,
+              "value": "1.35 HIGH",
+              "comment": null
+            },
+            {
+              "name": "eGFR if NonAfricn Am",
+              "low": 59,
+              "high": null,
+              "value": 63,
+              "comment": null
+            },
+            {
+              "name": "eGFR if Africn Am",
+              "low": 59,
+              "high": null,
+              "value": 73,
+              "comment": null
+            },
+            {
+              "name": "BUN/Creatinine Ratio",
+              "low": 9,
+              "high": 20,
+              "value": 19,
+              "comment": null
+            },
+            {
+              "name": "Sodium",
+              "low": 134,
+              "high": 144,
+              "value": "21 CRITICAL",
+              "comment": null
+            },
+            {
+              "name": "Potassium",
+              "low": 3.5,
+              "high": 5.2,
+              "value": 4.0,
+              "comment": null
+            },
+            {
+              "name": "Chloride",
+              "low": 96,
+              "high": 106,
+              "value": "110 HIGH",
+              "comment": null
+            },
+            {
+              "name": "Carbon Dioxide, total",
+              "low": 20,
+              "high": 29,
+              "value": 20,
+              "comment": null
+            },
+            {
+              "name": "Calcium",
+              "low": 8.7,
+              "high": 10.2,
+              "value": 9.0,
+              "comment": null
+            },
+            {
+              "name": "Protein, Total",
+              "low": 6.0,
+              "high": 8.5,
+              "value": "5.9 LOW",
+              "comment": null
+            },
+            {
+              "name": "Albumin",
+              "low": 4.0,
+              "high": 5.0,
+              "value": "3.9 LOW",
+              "comment": null
+            },
+            {
+              "name": "Globulin, Total",
+              "low": 1.5,
+              "high": 4.5,
+              "value": 2.0,
+              "comment": null
+            },
+            {
+              "name": "Bilirubin, Total",
+              "low": 0.0,
+              "high": 1.2,
+              "value": "1.5 HIGH",
+              "comment": null
+            },
+            {
+              "name": "Alkaline Phosphatase",
+              "low": 39,
+              "high": 117,
+              "value": 41,
+              "comment": null
+            },
+            {
+              "name": "AST (SGOT)",
+              "low": 0,
+              "high": 40,
+              "value": "50 HIGH",
+              "comment": null
+            },
+            {
+              "name": "ALT (SGPT)",
+              "low": 0,
+              "high": 44,
+              "value": "51 HIGH",
+              "comment": null
+            }
           ]
         }
         ,

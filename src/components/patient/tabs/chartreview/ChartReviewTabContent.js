@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button } from '@mui/material'
-import { useRouter,usePatientMRN } from '../../../../util/urlHelpers.js';
+import React, { useState } from 'react';
+import {
+  Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
+} from '@mui/material';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
-import ImagingTabContent from './ImagingTabContent.js'
+import ImagingTabContent from './ImagingTabContent.js';
 
 const tabLabels = [
   "Encounters",
@@ -66,7 +68,10 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
           </Table>
         </div>
         {isWindowOpen && (
-          <div style={{ flex: '1', maxWidth: '50%', background: '#ffffff', borderLeft: '1px solid #ccc', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', transition: 'max-width 0.5s' }}>
+          <div style={{
+            flex: '1', maxWidth: '50%', background: '#ffffff', borderLeft: '1px solid #ccc',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', transition: 'max-width 0.5s'
+          }}>
             <div style={{ padding: '16px' }}>
               {selectedRow && (
                 <div>
@@ -78,11 +83,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                       </Box>
                     )
                   ))}
-                  <Divider/>
-                  {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review"/>}
+                  <Divider />
+                  {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
                   {selectedTabLabel === 'Lab' && selectedRow && (
-                    <LabReport labReport = {selectedRow.labResults} selectedRow={selectedRow} />
+                    <LabReport labReport={selectedRow} />
                   )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
@@ -101,7 +106,8 @@ export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const { documents } = TEST_PATIENT_INFO({ patientMRN })
+  const { documents } = TEST_PATIENT_INFO({ patientMRN });
+
   return (
     <div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -109,7 +115,7 @@ export const ChartReview = ({ ...props }) => {
           <Chip
             key={idx}
             label={label}
-            onClick={(idx2, label2) => {
+            onClick={() => {
               setValue(idx);
               setSelectedTabLabel(label);
             }}
@@ -122,4 +128,4 @@ export const ChartReview = ({ ...props }) => {
       <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={documents} />
     </div>
   );
-}
+};
