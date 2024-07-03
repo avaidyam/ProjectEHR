@@ -607,7 +607,6 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
         {
           kind: 'Lab',
           data: {
-            'Patient Sharing': 'Shared',
             'Date/Time': '01-03-2023 09:30 AM',
             'Test': 'Blood Test',
             'Status': 'Completed',
@@ -824,7 +823,6 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
         {
           kind: 'Lab',
           data: {
-            'Patient Sharing': 'Not Shared',
             'Date/Time': '01-05-2023 10:45 AM',
             'Test': 'Urine Test',
             'Status': 'Pending',
