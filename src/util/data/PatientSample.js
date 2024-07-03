@@ -620,6 +620,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Glucose",
             "low": 65,
             "high": 99,
+            "units": "mg/dL",
             "value": "100 HIGH",
             "comment": null
           },
@@ -627,6 +628,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "BUN",
             "low": 6,
             "high": 24,
+            "units": "mg/dL",
             "value": "25 HIGH",
             "comment": null
           },
@@ -634,6 +636,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Creatinine",
             "low": 0.76,
             "high": 1.27,
+            "units": "mg/dL",
             "value": "1.35 HIGH",
             "comment": null
           },
@@ -641,6 +644,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "eGFR if NonAfricn Am",
             "low": 59,
             "high": null,
+            "units": "mL/min/1.73",
             "value": 63,
             "comment": null
           },
@@ -648,6 +652,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "eGFR if Africn Am",
             "low": 59,
             "high": null,
+            "units": "mL/min/1.73",
             "value": 73,
             "comment": null
           },
@@ -655,6 +660,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "BUN/Creatinine Ratio",
             "low": 9,
             "high": 20,
+            "units": null,
             "value": 19,
             "comment": null
           },
@@ -662,6 +668,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Sodium",
             "low": 134,
             "high": 144,
+            "units": "mmol/L",
             "value": "21 CRITICAL",
             "comment": null
           },
@@ -669,6 +676,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Potassium",
             "low": 3.5,
             "high": 5.2,
+            "units": "mmol/L",
             "value": 4.0,
             "comment": null
           },
@@ -676,6 +684,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Chloride",
             "low": 96,
             "high": 106,
+            "units": "mmol/L",
             "value": "110 HIGH",
             "comment": null
           },
@@ -683,6 +692,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Carbon Dioxide, total",
             "low": 20,
             "high": 29,
+            "units": "mmol/L",
             "value": 20,
             "comment": null
           },
@@ -690,6 +700,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Calcium",
             "low": 8.7,
             "high": 10.2,
+            "units": "mg/dL",
             "value": 9.0,
             "comment": null
           },
@@ -697,6 +708,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Protein, Total",
             "low": 6.0,
             "high": 8.5,
+            "units": "g/dL",
             "value": "5.9 LOW",
             "comment": null
           },
@@ -704,6 +716,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Albumin",
             "low": 4.0,
             "high": 5.0,
+            "units": "g/dL",
             "value": "3.9 LOW",
             "comment": null
           },
@@ -711,6 +724,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Globulin, Total",
             "low": 1.5,
             "high": 4.5,
+            "units": null,
             "value": 2.0,
             "comment": null
           },
@@ -718,6 +732,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Bilirubin, Total",
             "low": 0.0,
             "high": 1.2,
+            "units": "mg/dL",
             "value": "1.5 HIGH",
             "comment": null
           },
@@ -725,6 +740,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "Alkaline Phosphatase",
             "low": 39,
             "high": 117,
+            "units": "IU/L",
             "value": 41,
             "comment": null
           },
@@ -732,6 +748,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "AST (SGOT)",
             "low": 0,
             "high": 40,
+            "units": "IU/L",
             "value": "50 HIGH",
             "comment": null
           },
@@ -739,6 +756,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "name": "ALT (SGPT)",
             "low": 0,
             "high": 44,
+            "units": "IU/L",
             "value": "51 HIGH",
             "comment": null
           }
@@ -944,6 +962,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Glucose",
               "low": 65,
               "high": 99,
+              "units": "mg/dL",
               "value": "100 HIGH",
               "comment": null
             },
@@ -951,6 +970,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "BUN",
               "low": 6,
               "high": 24,
+              "units": "mg/dL",
               "value": "25 HIGH",
               "comment": null
             },
@@ -958,6 +978,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Creatinine",
               "low": 0.76,
               "high": 1.27,
+              "units": "mg/dL",
               "value": "1.35 HIGH",
               "comment": null
             },
@@ -965,6 +986,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "eGFR if NonAfricn Am",
               "low": 59,
               "high": null,
+              "units": "mL/min/1.73",
               "value": 63,
               "comment": null
             },
@@ -972,6 +994,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "eGFR if Africn Am",
               "low": 59,
               "high": null,
+              "units": "mL/min/1.73",
               "value": 73,
               "comment": null
             },
@@ -979,6 +1002,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "BUN/Creatinine Ratio",
               "low": 9,
               "high": 20,
+              "units": null,
               "value": 19,
               "comment": null
             },
@@ -986,6 +1010,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Sodium",
               "low": 134,
               "high": 144,
+              "units": "mmol/L",
               "value": "21 CRITICAL",
               "comment": null
             },
@@ -993,6 +1018,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Potassium",
               "low": 3.5,
               "high": 5.2,
+              "units": "mmol/L",
               "value": 4.0,
               "comment": null
             },
@@ -1000,6 +1026,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Chloride",
               "low": 96,
               "high": 106,
+              "units": "mmol/L",
               "value": "110 HIGH",
               "comment": null
             },
@@ -1007,6 +1034,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Carbon Dioxide, total",
               "low": 20,
               "high": 29,
+              "units": "mmol/L",
               "value": 20,
               "comment": null
             },
@@ -1014,6 +1042,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Calcium",
               "low": 8.7,
               "high": 10.2,
+              "units": "mg/dL",
               "value": 9.0,
               "comment": null
             },
@@ -1021,6 +1050,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Protein, Total",
               "low": 6.0,
               "high": 8.5,
+              "units": "g/dL",
               "value": "5.9 LOW",
               "comment": null
             },
@@ -1028,6 +1058,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Albumin",
               "low": 4.0,
               "high": 5.0,
+              "units": "g/dL",
               "value": "3.9 LOW",
               "comment": null
             },
@@ -1035,6 +1066,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Globulin, Total",
               "low": 1.5,
               "high": 4.5,
+              "units": null,
               "value": 2.0,
               "comment": null
             },
@@ -1042,6 +1074,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Bilirubin, Total",
               "low": 0.0,
               "high": 1.2,
+              "units": "mg/dL",
               "value": "1.5 HIGH",
               "comment": null
             },
@@ -1049,6 +1082,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "Alkaline Phosphatase",
               "low": 39,
               "high": 117,
+              "units": "IU/L",
               "value": 41,
               "comment": null
             },
@@ -1056,6 +1090,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "AST (SGOT)",
               "low": 0,
               "high": 40,
+              "units": "IU/L",
               "value": "50 HIGH",
               "comment": null
             },
@@ -1063,6 +1098,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "name": "ALT (SGPT)",
               "low": 0,
               "high": 44,
+              "units": "IU/L",
               "value": "51 HIGH",
               "comment": null
             }

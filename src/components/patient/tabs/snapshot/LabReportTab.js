@@ -10,51 +10,30 @@ import Paper from '@mui/material/Paper';
 const LabReport = ({ labReport }) => {
   const { data, labResults } = labReport;
 
-  const formatReferenceInterval = (low, high) => {
+  const formatReferenceInterval = (low, high, units) => {
+    let interval = '';
+
     if (low !== null && high !== null) {
-      return `${low} — ${high}`;
+      interval = `${low} — ${high}`;
     } else if (low !== null) {
-      return `> ${low}`;
+      interval = `> ${low}`;
     } else if (high !== null) {
-      return `< ${high}`;
+      interval = `< ${high}`;
     }
-    return null; // No reference interval provided
+
+    return interval ? `${interval} ${units ? units : ''}` : null;
   };
 
   return (
-    <div> {/* Style for positioning */}
+    <div>
       <TableContainer component={Paper}>
-        <Table aria-label="simple table">
+        <Table aria-label="lab results table">
           <TableHead>
             <TableRow>
               <TableCell colSpan={2} align="left">
                 <h3>Results</h3>
                 <h4>{data.Test}</h4>
               </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Date/Time</TableCell>
-              <TableCell align="right">{data['Date/Time']}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">{data.Status}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Abnormal?</TableCell>
-              <TableCell align="right">{data['Abnormal?']}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Expected Date</TableCell>
-              <TableCell align="right">{data['Expected Date']}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Expiration</TableCell>
-              <TableCell align="right">{data.Expiration}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Encounter Provider</TableCell>
-              <TableCell align="right">{data['Encounter Provider']}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Test</TableCell>
@@ -67,7 +46,7 @@ const LabReport = ({ labReport }) => {
                 return null; // Skip this item if value or name is null
               }
 
-              const referenceInterval = formatReferenceInterval(item.low, item.high);
+              const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
 
               return (
                 <TableRow key={index}>
