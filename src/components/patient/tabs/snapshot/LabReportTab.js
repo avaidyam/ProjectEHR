@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 const LabReport = ({ labReport }) => {
-  const { data, labResults } = labReport;
+  const { data, labResults, collected, resulted, resultingAgency } = labReport;
 
   // Extract the test name
   const testName = data?.Test;
@@ -121,6 +121,22 @@ const LabReport = ({ labReport }) => {
                 </TableRow>
               );
             })}
+            <TableRow>
+              <TableCell style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
+                Resulting Agency
+              </TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
+                {resultingAgency}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
+                Specimen Collected: {collected}
+              </TableCell>
+              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
+                Last Resulted: {resulted}
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

@@ -622,7 +622,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "high": 11,
             "units": "K/uL",
             "value": "5.4",
-            "comment": "sample lab value comment"
+            "comment": "This is a sample lab value comment"
           },
           {
             "name": "RBC",
@@ -646,7 +646,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "high": 52.0,
             "units": "%",
             "value": 47.2,
-            "comment": "sample lab value comment"
+            "comment": "This is a sample lab value comment"
           },
           {
             "name": "MCV",
@@ -768,7 +768,11 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "value": "0.0",
             "comment": null
           }
-        ]
+        ],
+        collected: "2024-01-01 05:00:00",
+        resulted: null,
+        labReportComment: "This is an example lab report comment.",
+        resultingAgency: "Carle Foundational Hospital"
         },
         {
           kind: 'Cardiac',
@@ -1110,7 +1114,11 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "value": "51",
               "comment": null
             }
-          ]
+          ], 
+          collected: "2024-01-01 05:00:00",
+          resulted: "2024-01-01 05:00:00",
+          labReportComment: null,
+          resultingAgency: "Carle Foundational Hospital"
         }
         ,
       {
