@@ -6,9 +6,14 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 const LabReport = ({ labReport }) => {
   const { data, labResults } = labReport;
+
+  // Extract the test name
+  const testName = data?.Test;
 
   // Format the reference interval
   const formatReferenceInterval = (low, high, units) => {
@@ -50,6 +55,13 @@ const LabReport = ({ labReport }) => {
 
   return (
     <div>
+      {testName && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" component="div" gutterBottom>
+            {testName}
+          </Typography>
+        </Box>
+      )}
       <TableContainer component={Paper}>
         <Table
           aria-label="lab results table"
@@ -57,7 +69,10 @@ const LabReport = ({ labReport }) => {
         >
           <TableHead>
             <TableRow>
-              <TableCell>Test</TableCell>
+              <TableCell>
+                <div>Component</div>
+                <div style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>Ref Range & Units</div>
+              </TableCell>
               <TableCell align="right">Result</TableCell>
             </TableRow>
           </TableHead>

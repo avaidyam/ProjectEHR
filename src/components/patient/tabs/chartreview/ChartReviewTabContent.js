@@ -76,7 +76,10 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
               {selectedRow && (
                 <div>
                   <Button onClick={handleCloseWindow}>Close</Button>
-                  {Object.keys(selectedRow.data).map((key, index) => (
+                  {selectedTabLabel === 'Lab' && (
+                    <LabReport labReport={selectedRow} />
+                  )}
+                  {selectedTabLabel !== 'Lab' && Object.keys(selectedRow.data).map((key, index) => (
                     (key !== 'content' && key !== 'image') && (
                       <Box key={index}>
                         <strong>{key}:</strong> {selectedRow.data[key]}
@@ -86,9 +89,6 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                   <Divider />
                   {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
-                  {selectedTabLabel === 'Lab' && selectedRow && (
-                    <LabReport labReport={selectedRow} />
-                  )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
                   )}
