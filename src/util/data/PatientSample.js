@@ -621,7 +621,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 65,
             "high": 99,
             "units": "mg/dL",
-            "value": "100 HIGH",
+            "value": "100",
             "comment": null
           },
           {
@@ -629,7 +629,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 6,
             "high": 24,
             "units": "mg/dL",
-            "value": "25 HIGH",
+            "value": "25",
             "comment": null
           },
           {
@@ -637,7 +637,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 0.76,
             "high": 1.27,
             "units": "mg/dL",
-            "value": "1.35 HIGH",
+            "value": "1.35",
             "comment": null
           },
           {
@@ -669,7 +669,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 134,
             "high": 144,
             "units": "mmol/L",
-            "value": "21 CRITICAL",
+            "value": "21",
             "comment": null
           },
           {
@@ -685,7 +685,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 96,
             "high": 106,
             "units": "mmol/L",
-            "value": "110 HIGH",
+            "value": "110",
             "comment": null
           },
           {
@@ -709,7 +709,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 6.0,
             "high": 8.5,
             "units": "g/dL",
-            "value": "5.9 LOW",
+            "value": "5.9",
             "comment": null
           },
           {
@@ -717,7 +717,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 4.0,
             "high": 5.0,
             "units": "g/dL",
-            "value": "3.9 LOW",
+            "value": "3.9",
             "comment": null
           },
           {
@@ -733,7 +733,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 0.0,
             "high": 1.2,
             "units": "mg/dL",
-            "value": "1.5 HIGH",
+            "value": "1.5",
             "comment": null
           },
           {
@@ -749,7 +749,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 0,
             "high": 40,
             "units": "IU/L",
-            "value": "50 HIGH",
+            "value": "50",
             "comment": null
           },
           {
@@ -757,7 +757,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "low": 0,
             "high": 44,
             "units": "IU/L",
-            "value": "51 HIGH",
+            "value": "51",
             "comment": null
           }
         ]
@@ -963,7 +963,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 65,
               "high": 99,
               "units": "mg/dL",
-              "value": "100 HIGH",
+              "value": "100",
               "comment": null
             },
             {
@@ -971,7 +971,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 6,
               "high": 24,
               "units": "mg/dL",
-              "value": "25 HIGH",
+              "value": "25",
               "comment": null
             },
             {
@@ -979,7 +979,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 0.76,
               "high": 1.27,
               "units": "mg/dL",
-              "value": "1.35 HIGH",
+              "value": "1.35",
               "comment": null
             },
             {
@@ -1011,7 +1011,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 134,
               "high": 144,
               "units": "mmol/L",
-              "value": "21 CRITICAL",
+              "value": "21",
               "comment": null
             },
             {
@@ -1027,7 +1027,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 96,
               "high": 106,
               "units": "mmol/L",
-              "value": "110 HIGH",
+              "value": "110",
               "comment": null
             },
             {
@@ -1051,7 +1051,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 6.0,
               "high": 8.5,
               "units": "g/dL",
-              "value": "5.9 LOW",
+              "value": "5.9",
               "comment": null
             },
             {
@@ -1059,7 +1059,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 4.0,
               "high": 5.0,
               "units": "g/dL",
-              "value": "3.9 LOW",
+              "value": "3.9",
               "comment": null
             },
             {
@@ -1075,7 +1075,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 0.0,
               "high": 1.2,
               "units": "mg/dL",
-              "value": "1.5 HIGH",
+              "value": "1.5",
               "comment": null
             },
             {
@@ -1091,7 +1091,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 0,
               "high": 40,
               "units": "IU/L",
-              "value": "50 HIGH",
+              "value": "50",
               "comment": null
             },
             {
@@ -1099,7 +1099,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
               "low": 0,
               "high": 44,
               "units": "IU/L",
-              "value": "51 HIGH",
+              "value": "51",
               "comment": null
             }
           ]

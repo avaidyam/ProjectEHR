@@ -65,6 +65,17 @@ const LabReport = ({ labReport }) => {
               const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
               const isOutOfRange = isValueOutsideRange(item.value, item.low, item.high);
 
+              // Determine symbol and color based on value compared to reference range
+              let symbol = '';
+              let symbolStyle = { color: 'inherit' };
+              if (isOutOfRange) {
+                const numericValue = parseFloat(item.value);
+                if (!isNaN(numericValue)) {
+                  symbol = numericValue > item.high ? '⌃' : '⌄';
+                  symbolStyle = { color: 'red' };
+                }
+              }
+
               return (
                 <TableRow key={index} style={{ borderLeft: isOutOfRange ? '3px solid yellow' : 'none' }}>
                   <TableCell component="th" scope="row">
@@ -77,7 +88,8 @@ const LabReport = ({ labReport }) => {
                   </TableCell>
                   <TableCell align="right">
                     <span style={{ backgroundColor: isOutOfRange ? 'yellow' : 'inherit', padding: '2px 5px', borderRadius: '3px' }}>
-                      {item.value}
+                      <span style={{ color: isOutOfRange ? 'red' : 'inherit' }}>{item.value}</span>
+                      <span style={{ ...symbolStyle, marginLeft: '5px' }}>{symbol}</span>
                     </span>
                   </TableCell>
                 </TableRow>
