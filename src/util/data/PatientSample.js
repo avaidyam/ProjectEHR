@@ -622,7 +622,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "high": 11,
             "units": "K/uL",
             "value": "5.4",
-            "comment": "sample lab result value comment"
+            "comment": "sample lab value comment"
           },
           {
             "name": "RBC",
@@ -646,7 +646,7 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             "high": 52.0,
             "units": "%",
             "value": 47.2,
-            "comment": null
+            "comment": "sample lab value comment"
           },
           {
             "name": "MCV",

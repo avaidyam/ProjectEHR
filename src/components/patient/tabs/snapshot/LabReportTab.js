@@ -10,15 +10,16 @@ import Paper from '@mui/material/Paper';
 const LabReport = ({ labReport }) => {
   const { data, labResults } = labReport;
 
+  // Format the reference interval
   const formatReferenceInterval = (low, high, units) => {
     let interval = '';
 
     if (low !== null && high !== null) {
       interval = `${low} — ${high}`;
     } else if (low !== null) {
-      interval = `> ${low}`;
+      interval = `< ${low}`;
     } else if (high !== null) {
-      interval = `< ${high}`;
+      interval = `> ${high}`;
     }
 
     return interval ? `${interval} ${units ? units : ''}` : null;
@@ -44,12 +45,16 @@ const LabReport = ({ labReport }) => {
     return false;
   };
 
+  // Check if there are any values outside the reference range
   const shouldHighlightBorder = hasLowOrHighValues(labResults);
 
   return (
     <div>
       <TableContainer component={Paper}>
-        <Table aria-label="lab results table" style={{ borderLeft: shouldHighlightBorder ? '3px solid yellow' : 'none' }}>
+        <Table
+          aria-label="lab results table"
+          style={{ borderLeft: shouldHighlightBorder ? '3px solid yellow' : 'none' }}
+        >
           <TableHead>
             <TableRow>
               <TableCell>Test</TableCell>
@@ -85,7 +90,10 @@ const LabReport = ({ labReport }) => {
                     <div>
                       {item.name}
                       {referenceInterval && (
-                        <div style={{ fontSize: '12px' }}>{referenceInterval}</div>
+                        <div style={{ fontSize: '12px', marginBottom: '8px' }}>{referenceInterval}</div>
+                      )}
+                      {item.comment && (
+                        <div style={{ fontSize: '12px', color: 'gray' }}>{item.comment}</div>
                       )}
                     </div>
                   </TableCell>
