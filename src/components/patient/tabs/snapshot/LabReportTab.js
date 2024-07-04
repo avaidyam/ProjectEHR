@@ -24,6 +24,16 @@ const LabReport = ({ labReport }) => {
     return interval ? `${interval} ${units ? units : ''}` : null;
   };
 
+  // Function to check if a value is outside the reference range
+  const isValueOutsideRange = (value, low, high) => {
+    const numericValue = parseFloat(value);
+    if (!isNaN(numericValue)) {
+      if (low !== null && numericValue < low) return true;
+      if (high !== null && numericValue > high) return true;
+    }
+    return false;
+  };
+
   return (
     <div>
       <TableContainer component={Paper}>
@@ -47,6 +57,7 @@ const LabReport = ({ labReport }) => {
               }
 
               const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
+              const isOutOfRange = isValueOutsideRange(item.value, item.low, item.high);
 
               return (
                 <TableRow key={index}>
@@ -59,7 +70,9 @@ const LabReport = ({ labReport }) => {
                     </div>
                   </TableCell>
                   <TableCell align="right">
-                    {item.value}
+                    <span style={{ backgroundColor: isOutOfRange ? 'yellow' : 'inherit', padding: '2px 5px', borderRadius: '3px' }}>
+                      {item.value}
+                    </span>
                   </TableCell>
                 </TableRow>
               );
