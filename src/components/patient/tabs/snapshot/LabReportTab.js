@@ -24,27 +24,33 @@ const LabReport = ({ labReport }) => {
     return interval ? `${interval} ${units ? units : ''}` : null;
   };
 
+  // Function to check if there are any low or high values
+  const hasLowOrHighValues = (labResults) => {
+    return labResults.some(item => {
+      const numericValue = parseFloat(item.value);
+      if (!isNaN(numericValue)) {
+        return (item.low !== null && numericValue < item.low) || (item.high !== null && numericValue > item.high);
+      }
+      return false;
+    });
+  };
+
   // Function to check if a value is outside the reference range
   const isValueOutsideRange = (value, low, high) => {
     const numericValue = parseFloat(value);
     if (!isNaN(numericValue)) {
-      if (low !== null && numericValue < low) return true;
-      if (high !== null && numericValue > high) return true;
+      return (low !== null && numericValue < low) || (high !== null && numericValue > high);
     }
     return false;
   };
 
+  const shouldHighlightBorder = hasLowOrHighValues(labResults);
+
   return (
     <div>
       <TableContainer component={Paper}>
-        <Table aria-label="lab results table">
+        <Table aria-label="lab results table" style={{ borderLeft: shouldHighlightBorder ? '3px solid yellow' : 'none' }}>
           <TableHead>
-            <TableRow>
-              <TableCell colSpan={2} align="left">
-                <h3>Results</h3>
-                <h4>{data.Test}</h4>
-              </TableCell>
-            </TableRow>
             <TableRow>
               <TableCell>Test</TableCell>
               <TableCell align="right">Result</TableCell>
@@ -60,7 +66,7 @@ const LabReport = ({ labReport }) => {
               const isOutOfRange = isValueOutsideRange(item.value, item.low, item.high);
 
               return (
-                <TableRow key={index}>
+                <TableRow key={index} style={{ borderLeft: isOutOfRange ? '3px solid yellow' : 'none' }}>
                   <TableCell component="th" scope="row">
                     <div>
                       {item.name}
