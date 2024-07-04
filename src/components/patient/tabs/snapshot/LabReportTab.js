@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 const LabReport = ({ labReport }) => {
-  const { data, labResults, collected, resulted, resultingAgency } = labReport;
+  const { data, labResults, collected, resulted, resultingAgency, labReportComment } = labReport;
 
   // Extract the test name
   const testName = data?.Test;
@@ -53,12 +53,27 @@ const LabReport = ({ labReport }) => {
   // Check if there are any values outside the reference range
   const shouldHighlightBorder = hasLowOrHighValues(labResults);
 
+  // Determine final result subtitle
+  let finalResultSubtitle = null;
+  if (resulted !== null) {
+    finalResultSubtitle = <Typography variant="subtitle1" gutterBottom>Final Result: Yes</Typography>;
+  } else {
+    finalResultSubtitle = <Typography variant="subtitle1" gutterBottom>Final Result: No</Typography>;
+  }
+
+  // Determine Result Notes section
+  let resultNotes = labReportComment ? `Result Notes: ${labReportComment}` : '0 Result Notes';
+
   return (
     <div>
       {testName && (
         <Box sx={{ mb: 2 }}>
           <Typography variant="h6" component="div" gutterBottom>
             {testName}
+          </Typography>
+          {finalResultSubtitle}
+          <Typography variant="subtitle1" gutterBottom>
+            {resultNotes}
           </Typography>
         </Box>
       )}
@@ -129,7 +144,7 @@ const LabReport = ({ labReport }) => {
                 {resultingAgency}
               </TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow style={{ borderTop: 'none' }}>
               <TableCell style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
                 Specimen Collected: {collected}
               </TableCell>
