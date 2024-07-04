@@ -68,11 +68,14 @@ const LabReport = ({ labReport }) => {
               // Determine symbol and color based on value compared to reference range
               let symbol = '';
               let symbolStyle = { color: 'inherit' };
+              let valueStyle = { fontWeight: 'normal' }; // Default style for value
+
               if (isOutOfRange) {
                 const numericValue = parseFloat(item.value);
                 if (!isNaN(numericValue)) {
                   symbol = numericValue > item.high ? '⌃' : '⌄';
                   symbolStyle = { color: 'red' };
+                  valueStyle = { fontWeight: 'bold', color: 'red' }; // Bold and red if outside range
                 }
               }
 
@@ -88,7 +91,7 @@ const LabReport = ({ labReport }) => {
                   </TableCell>
                   <TableCell align="right">
                     <span style={{ backgroundColor: isOutOfRange ? 'yellow' : 'inherit', padding: '2px 5px', borderRadius: '3px' }}>
-                      <span style={{ color: isOutOfRange ? 'red' : 'inherit' }}>{item.value}</span>
+                      <span style={valueStyle}>{item.value}</span>
                       <span style={{ ...symbolStyle, marginLeft: '5px' }}>{symbol}</span>
                     </span>
                   </TableCell>
