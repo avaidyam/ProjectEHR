@@ -1,8 +1,8 @@
 {
-  "name": "cimed-ehr-project",
-  "version": "3.0.0",
-  "description": "hello world starter",
-  "homepage": "https://ehr.aditya.vaidyam.me",
+  "name": "project-ehr",
+  "version": "1.0.0",
+  "description": ".",
+  "homepage": ".",
   "keywords": [
     "react",
     "material"
