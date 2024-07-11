@@ -4,6 +4,7 @@ import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popp
 import { Storyboard } from './Storyboard.js'
 import { ChartReview } from './tabs/chartreview/ChartReviewTabContent.js'
 import PreChartingTabContent from './tabs/snapshot/PreChartingTabContent.js'
+import ProblemListTabContent from './tabs/problemlist/ProblemListTabContent.js'
 import SnapshotTabContent from './tabs/snapshot/SnapshotTabContent.js'
 import NotesTabContent from './tabs/notewriter/NotesTabContent.js'
 import { HistoryTabContent } from './tabs/history/HistoryTabContent.js'
@@ -31,7 +32,7 @@ export const PatientHome = ({ ...props }) => {
         <Divider />
         {tab === 0 && <SnapshotTabContent />}
         {tab === 1 && <ChartReview />}
-        {tab === 2 && <PreChartingTabContent />}
+        {tab === 2 && <ProblemListTabContent />}
         {tab === 3 && <HistoryTabContent />}
         {tab === 4 && <Medications />}
         {tab === 5 && <Orders />}
