@@ -28,7 +28,23 @@ export const TEST_PATIENT_INFO = ({ patientMRN }) => ({
         "chest pain"
       ]
     },
-    problems: [],
+    problems: [
+      {
+        diagnosis: "Asthma"
+      },
+      {
+        diagnosis: "Diabetes"
+      },
+      { 
+        diagnosis: "Hypertension"
+      },
+      {
+        diagnosis: "Arthritis"
+      },
+      {
+        diagnosis: "Hypothyroidism"
+      }
+    ],
     vitals: [
       {
         id: '123456789',
