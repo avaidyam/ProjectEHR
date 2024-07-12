@@ -14,7 +14,10 @@ const ProblemListTabContent = ({ children, ...other }) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredDiagnoses, setFilteredDiagnoses] = useState(diagnosesArray);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [problems, setProblems] = useState(patientData.problems); // State to hold problems array
 
   useEffect(() => {
     setFilteredDiagnoses(
@@ -30,6 +33,22 @@ const ProblemListTabContent = ({ children, ...other }) => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setSelectedDiagnosis(null); // Clear selected diagnosis on modal close
+  };
+
+  const handleDiagnosisClick = (diagnosis) => {
+    setSelectedDiagnosis(diagnosis === selectedDiagnosis ? null : diagnosis);
+  };
+
+  const handleAccept = () => {
+    if (selectedDiagnosis) {
+      const newProblem = {
+        diagnosis: selectedDiagnosis,
+        // Add other properties as needed for the new problem row
+      };
+      setProblems([...problems, newProblem]);
+    }
+    handleCloseModal();
   };
 
   return (
@@ -65,17 +84,17 @@ const ProblemListTabContent = ({ children, ...other }) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Diagnosis</TableCell>
-                <TableCell>Notes</TableCell>
-                <TableCell>Hospital</TableCell>
-                <TableCell>Principal</TableCell>
-                <TableCell>Change Dx</TableCell>
-                <TableCell>Resolved</TableCell>
-                <TableCell></TableCell>
+                <TableCell style={{ width: '60%' }}>Diagnosis</TableCell>
+                <TableCell style={{ width: '13%' }}>Notes</TableCell>
+                <TableCell style={{ width: '5%' }}>Hospital</TableCell>
+                <TableCell style={{ width: '5%' }}>Principal</TableCell>
+                <TableCell style={{ width: '7%' }}>Change Dx</TableCell>
+                <TableCell style={{ width: '5%' }}>Resolved</TableCell>
+                <TableCell style={{ width: '5%' }}></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {patientData.problems.map((problem, index) => (
+              {problems.map((problem, index) => ( // Use problems state for rendering
                 <TableRow key={index}>
                   <TableCell>{problem.diagnosis}</TableCell>
                   <TableCell>
@@ -103,77 +122,81 @@ const ProblemListTabContent = ({ children, ...other }) => {
         </TableContainer>
       </div>
       <Modal
-  open={isModalOpen}
-  onClose={handleCloseModal}
-  aria-labelledby="search-modal-title"
-  aria-describedby="search-modal-description"
->
-  <Box
-    sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: 600,
-      height: 600,
-      bgcolor: 'background.paper',
-      border: '2px solid #000',
-      boxShadow: 24,
-      p: 4,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-    }}
-  >
-    <div>
-      <TextField
-        label="Search for problem"
-        variant="outlined"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: '1em' }}
-      />
-      <Button
+        open={isModalOpen}
+        onClose={handleCloseModal}
+        aria-labelledby="search-modal-title"
+        aria-describedby="search-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 600,
+            height: 600,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <TextField
+              label="Search for problem"
+              variant="outlined"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ marginBottom: '1em' }}
+            />
+            <Button
               variant="outlined"
               style={{ height: '56px', marginLeft: '-1px' }} // Adjust marginLeft to remove space
             >
               <Icon color="success">add_task</Icon>Add
             </Button>
-      <TableContainer component={Paper} style={{ maxHeight: '400px', overflowY: 'auto' }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Diagnosis</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredDiagnoses.map((diagnosis, index) => (
-              <TableRow key={index}>
-                <TableCell>{diagnosis}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCloseModal}
-        style={{ marginRight: '1em' }}
-      >
-        Accept
-      </Button>
-      <Button
-        variant="outlined"
-        onClick={handleCloseModal}
-      >
-        Cancel
-      </Button>
-    </div>
-  </Box>
-</Modal>
+            <TableContainer component={Paper} style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Diagnosis</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredDiagnoses.map((diagnosis, index) => (
+                    <TableRow
+                      key={index}
+                      onClick={() => handleDiagnosisClick(diagnosis)}
+                      style={{ cursor: 'pointer', backgroundColor: selectedDiagnosis === diagnosis ? '#e0f7fa' : 'inherit' }}
+                    >
+                      <TableCell>{diagnosis}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAccept}
+              style={{ marginRight: '1em' }}
+            >
+              Accept
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleCloseModal}
+            >
+              Cancel
+            </Button>
+          </div>
+        </Box>
+      </Modal>
     </div>
   );
 };
