@@ -607,9 +607,8 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
         {
           kind: 'Lab',
           data: {
-            'Patient Sharing': 'Shared',
             'Date/Time': '01-03-2023 09:30 AM',
-            'Test': 'Blood Test',
+            'Test': 'Complete Blood Count',
             'Status': 'Completed',
             'Abnormal?': 'No',
             'Expected Date': '01-10-2023',
@@ -617,25 +616,163 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'Encounter Provider': 'Dr. Smith',
           },
         labResults: [
-          'Glucose: 65 - 99 mg/dL: 100 HIGH',
-          'BUN: 6 - 24 mg/dL: 25 HIGH',
-          'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
-          'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
-          'eGFR if Africn Am: >59 mL/min/1.73: 73',
-          'BUN/Creatinine Ratio: 9 - 20: 19',
-          'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
-          'Potassium: 3.5 - 5.2 mmol/L: 4.0',
-          'Chloride: 96 - 106 mmol/L: 110 HIGH',
-          'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
-          'Calcium: 8.7 - 10.2 mg/dL: 9.0',
-          'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
-          'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
-          'Globulin, Total: 1.5-4.5 g/dL: 2.0',
-          'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
-          'Alkaline Phosphatase: 39 - 117 IU/L: 41',
-          'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
-          'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
-        ]
+          {
+            "name": "WBC",
+            "low": 4.0,
+            "high": 11,
+            "units": "K/uL",
+            "value": "5.4",
+            "comment": "This is a sample lab value comment"
+          },
+          {
+            "name": "RBC",
+            "low": 4.40,
+            "high": 6.00,
+            "units": "M/uL",
+            "value": "5.20",
+            "comment": null
+          },
+          {
+            "name": "Hemoglobin",
+            "low": 13.5,
+            "high": 18,
+            "units": "g/dL",
+            "value": "16",
+            "comment": null
+          },
+          {
+            "name": "Hematocrit",
+            "low": 40.0,
+            "high": 52.0,
+            "units": "%",
+            "value": 47.2,
+            "comment": "This is a sample lab value comment"
+          },
+          {
+            "name": "MCV",
+            "low": 80,
+            "high": 100,
+            "units": "fL",
+            "value": 88,
+            "comment": null
+          },
+          {
+            "name": "MCH",
+            "low": 27.0,
+            "high": 33.0,
+            "units": "pg",
+            "value": 30.8,
+            "comment": null
+          },
+          {
+            "name": "MCHC",
+            "low": 31.0,
+            "high": 36.0,
+            "units": "g/dL",
+            "value": "33.9",
+            "comment": null
+          },
+          {
+            "name": "RDW",
+            "low": null,
+            "high": 16.4,
+            "units": "%",
+            "value": 12.7,
+            "comment": null
+          },
+          {
+            "name": "Platelet Count",
+            "low": 150,
+            "high": 400,
+            "units": "K/uL",
+            "value": "160",
+            "comment": null
+          },
+          {
+            "name": "Neutrophil %",
+            "low": 49.0,
+            "high": 74.0,
+            "units": "%",
+            "value": 56,
+            "comment": null
+          },
+          {
+            "name": "Lymphocyte %",
+            "low": 26.0,
+            "high": 46.0,
+            "units": "%",
+            "value": 27.8,
+            "comment": null
+          },
+          {
+            "name": "Monocyte %",
+            "low": 2.0,
+            "high": 12.0,
+            "units": "%",
+            "value": "10.0",
+            "comment": null
+          },
+          {
+            "name": "Eosinophil %",
+            "low": 0.0,
+            "high": 5.0,
+            "units": "%",
+            "value": "3.9",
+            "comment": null
+          },
+          {
+            "name": "Basophil %",
+            "low": 0.0,
+            "high": 2.0,
+            "units": "%",
+            "value": 1.0,
+            "comment": null
+          },
+          {
+            "name": "Abs Neutrophil",
+            "low": 2.0,
+            "high": 8.0,
+            "units": "K/uL",
+            "value": "3.1",
+            "comment": null
+          },
+          {
+            "name": "Abs. Lymphocyte",
+            "low": 1.0,
+            "high": 5.1,
+            "units": "K/uL",
+            "value": 1.2,
+            "comment": null
+          },
+          {
+            "name": "Abs. Monocyte",
+            "low": 0.0,
+            "high": 0.8,
+            "units": "K/uL",
+            "value": "0.7",
+            "comment": null
+          },
+          {
+            "name": "Abs. Eosinophil",
+            "low": 0.0,
+            "high": 0.5,
+            "units": "K/uL",
+            "value": "0.4",
+            "comment": null
+          },
+          {
+            "name": "Abs. Basophil",
+            "low": 0.0,
+            "high": 0.2,
+            "units": "K/uL",
+            "value": "0.0",
+            "comment": null
+          }
+        ],
+        collected: "2024-01-01 05:00:00",
+        resulted: null,
+        labReportComment: "This is an example lab report comment.",
+        resultingAgency: "Carle Foundational Hospital"
         },
         {
           kind: 'Cardiac',
@@ -824,9 +961,8 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
         {
           kind: 'Lab',
           data: {
-            'Patient Sharing': 'Not Shared',
             'Date/Time': '01-05-2023 10:45 AM',
-            'Test': 'Urine Test',
+            'Test': 'Complete Metabolic Panel',
             'Status': 'Pending',
             'Abnormal?': 'Yes',
             'Expected Date': '01-12-2023',
@@ -834,25 +970,155 @@ feels nauseous, and is having trouble breathing, and feels short of breath.
             'Encounter Provider': 'Dr. Martinez'
           },
           labResults: [
-            'Glucose: 65 - 99 mg/dL: 100 HIGH',
-            'BUN: 6 - 24 mg/dL: 25 HIGH',
-            'Creatinine: 0.76 - 1.27 mg/dL: 1.35 HIGH',
-            'eGFR if NonAfricn Am: >59 mL/min/1.73: 63',
-            'eGFR if Africn Am: >59 mL/min/1.73: 73',
-            'BUN/Creatinine Ratio: 9 - 20: 19',
-            'Sodium: 134 - 144 mmol/L: 21 CRITICAL',
-            'Potassium: 3.5 - 5.2 mmol/L: 4.0',
-            'Chloride: 96 - 106 mmol/L: 110 HIGH',
-            'Carbon Dioxide, total: 20 - 29 mmol/L: 20',
-            'Calcium: 8.7 - 10.2 mg/dL: 9.0',
-            'Protein, Total: 6.0 - 8.5 g/dL: 5.9 LOW',
-            'Albumin: 4.0 - 5.0 g/dL: 3.9 LOW',
-            'Globulin, Total: 1.5-4.5 g/dL: 2.0',
-            'Bilirubin, Total: 0.0 - 1.2 mg/dL: 1.5 HIGH',
-            'Alkaline Phosphatase: 39 - 117 IU/L: 41',
-            'AST (SGOT): 0 - 40 IU/L: 50 HIGH',
-            'ALT (SGPT): 0 - 44 IU/L: 51 HIGH'
-          ]
+            {
+              "name": "Glucose",
+              "low": 65,
+              "high": 99,
+              "units": "mg/dL",
+              "value": "100",
+              "comment": null
+            },
+            {
+              "name": "BUN",
+              "low": 6,
+              "high": 24,
+              "units": "mg/dL",
+              "value": "25",
+              "comment": null
+            },
+            {
+              "name": "Creatinine",
+              "low": 0.76,
+              "high": 1.27,
+              "units": "mg/dL",
+              "value": "1.35",
+              "comment": null
+            },
+            {
+              "name": "eGFR if NonAfricn Am",
+              "low": 59,
+              "high": null,
+              "units": "mL/min/1.73",
+              "value": 63,
+              "comment": null
+            },
+            {
+              "name": "eGFR if Africn Am",
+              "low": 59,
+              "high": null,
+              "units": "mL/min/1.73",
+              "value": 73,
+              "comment": null
+            },
+            {
+              "name": "BUN/Creatinine Ratio",
+              "low": 9,
+              "high": 20,
+              "units": null,
+              "value": 19,
+              "comment": null
+            },
+            {
+              "name": "Sodium",
+              "low": 134,
+              "high": 144,
+              "units": "mmol/L",
+              "value": "21",
+              "comment": null
+            },
+            {
+              "name": "Potassium",
+              "low": 3.5,
+              "high": 5.2,
+              "units": "mmol/L",
+              "value": 4.0,
+              "comment": null
+            },
+            {
+              "name": "Chloride",
+              "low": 96,
+              "high": 106,
+              "units": "mmol/L",
+              "value": "110",
+              "comment": null
+            },
+            {
+              "name": "Carbon Dioxide, total",
+              "low": 20,
+              "high": 29,
+              "units": "mmol/L",
+              "value": 20,
+              "comment": null
+            },
+            {
+              "name": "Calcium",
+              "low": 8.7,
+              "high": 10.2,
+              "units": "mg/dL",
+              "value": 9.0,
+              "comment": null
+            },
+            {
+              "name": "Protein, Total",
+              "low": 6.0,
+              "high": 8.5,
+              "units": "g/dL",
+              "value": "5.9",
+              "comment": null
+            },
+            {
+              "name": "Albumin",
+              "low": 4.0,
+              "high": 5.0,
+              "units": "g/dL",
+              "value": "3.9",
+              "comment": null
+            },
+            {
+              "name": "Globulin, Total",
+              "low": 1.5,
+              "high": 4.5,
+              "units": null,
+              "value": 2.0,
+              "comment": null
+            },
+            {
+              "name": "Bilirubin, Total",
+              "low": 0.0,
+              "high": 1.2,
+              "units": "mg/dL",
+              "value": "1.5",
+              "comment": null
+            },
+            {
+              "name": "Alkaline Phosphatase",
+              "low": 39,
+              "high": 117,
+              "units": "IU/L",
+              "value": 41,
+              "comment": null
+            },
+            {
+              "name": "AST (SGOT)",
+              "low": 0,
+              "high": 40,
+              "units": "IU/L",
+              "value": "50",
+              "comment": null
+            },
+            {
+              "name": "ALT (SGPT)",
+              "low": 0,
+              "high": 44,
+              "units": "IU/L",
+              "value": "51",
+              "comment": null
+            }
+          ], 
+          collected: "2024-01-01 05:00:00",
+          resulted: "2024-01-01 05:00:00",
+          labReportComment: null,
+          resultingAgency: "Carle Foundational Hospital"
         }
         ,
       {
