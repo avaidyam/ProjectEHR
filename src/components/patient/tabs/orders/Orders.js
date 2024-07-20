@@ -63,6 +63,7 @@ export default function Orders() {
     // some code on submitting order (will fill this in the future), then empty the templist
     setOrderList([]);
   };
+
   // Function to randomly select an order type !SHOULD EVENTUALLY BE REMOVED!
   const getRandomOrderType = () => {
     const types = ['New', 'Modify', 'Discontinue'];
@@ -108,22 +109,39 @@ export default function Orders() {
         return 'lightgray'
     }
   }
+
+  const getHighlightColor = (type) => {
+    switch (type) {
+      case 'New':
+        return '#87E8B6'
+      case 'Modify':
+        return '#E8BE9D'
+      case 'Discontinue':
+        return '#E88E96'
+      case 'Orders to be Signed':
+        return '#B19CD9'
+      default:
+        return 'lightgray'
+    }
+  }
   // called to generate the titles for each category, New, Modified, etc... with styling and icons
   const getTitle = (type) => {
     switch (type) {
       case 'New':
-        return <Typography variant="overline" sx={{color:'#19852F', fontWeight:600, fontSize:'16px', align:'center'}}><Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>assignment_add</Icon> New Order</Typography>
+        return <Typography variant="overline" sx={{color:'#19852F', fontWeight:600, fontSize:'16px', backgroundColor:'#BCF2C1'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>assignment_add</Icon> New Order&nbsp;&nbsp;</Typography>
       case 'Modify':
-        return <Typography variant="overline" sx={{color:'#E0A830', fontWeight:600, fontSize:'16px'}}><Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>edit_document</Icon> Orders to Modify</Typography>
+        return <Typography variant="overline" sx={{color:'#E0A830', fontWeight:600, fontSize:'16px', backgroundColor:'#F2DFC8'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>edit_document</Icon> Orders to Modify&nbsp;&nbsp;</Typography>
       case 'Discontinue':
-        return <Typography variant="overline" sx={{color:'#CF3935', fontWeight:600, fontSize:'16px'}}><Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>content_paste_off</Icon> Orders to Discontinue</Typography>
+        return <Typography variant="overline" sx={{color:'#CF3935', fontWeight:600, fontSize:'16px', backgroundColor:'#F2CCCD'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>content_paste_off</Icon> Orders to Discontinue&nbsp;&nbsp;</Typography>
       case 'Orders to be Signed':
-        return <Typography variant="overline" sx={{color:'#7471D4', fontWeight:600, fontSize:'16px'}}><Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>content_paste</Icon> Signed This Visit</Typography>
+        return <Typography variant="overline" sx={{color:'#7471D4', fontWeight:600, fontSize:'16px'}}> <Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>content_paste</Icon> Signed This Visit</Typography>
       default:
         return ''
     }
   }
-
+  const countOrdersOfType = (orders, type) => {
+    return orders.filter(order => order.type === type).length;
+  };
   
 
   let categories = ["New", "Modify", "Discontinue", "Orders to be Signed"]
@@ -408,29 +426,38 @@ export default function Orders() {
 
 
           {categories.map((name) => {
-              const ordersOfType = orderList.filter((x) => x.type === name);
-              return (
-                <Card 
+            const ordersOfType = orderList.filter((x) => x.type === name);
+
+            if (ordersOfType.length === 0) {
+              return null;
+            }
+
+            return (
+              <Card 
                 key={name} 
                 sx={{ 
                   marginBottom: 2, 
-                  padding: 2, 
                   borderLeft: '4px solid', 
-                  borderLeftColor: getBackgroundColor(name)}}>
-                  {getTitle(name)}
-                  {ordersOfType.map((order) => (
-                    <Box key={order.name} sx={{ padding: 1 }}>
-                      <Typography variant="body1">{order.name}</Typography>
-                      <Typography fontSize="9pt"
-                      sx={{
-                       color: getBackgroundColor(name),
-                      }}>{order.dose}</Typography>
-                      <Typography fontSize="8pt" color="grey">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{order.sig}</Typography>
-                    </Box>
-                  ))}
-                </Card>
-              );
-            })}
+                  borderLeftColor: getBackgroundColor(name),
+                  '&:hover': {
+                  backgroundColor: getHighlightColor(name)
+                } 
+                }}>
+                {getTitle(name)}
+                {ordersOfType.map((order) => (
+                  <Box key={order.name} sx={{ marginLeft:3, marginBottom:2 }}>
+                    <Typography variant="body1">{order.name}</Typography>
+                    <Typography fontSize="9pt" sx={{ color: getBackgroundColor(name) }}>
+                      {order.dose}
+                    </Typography>
+                    <Typography fontSize="8pt" color="grey">
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{order.sig}
+                    </Typography>
+                  </Box>
+                ))}
+              </Card>
+            );
+          })}
 
           <Box sx={{p: 1}}>
             <Button variant="outlined" color="error" onClick={submitOrder}>
