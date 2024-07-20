@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, Divider, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
+import { Box, Button, Card, Dialog, DialogActions, Divider, FormControl, Icon, IconButton, InputLabel, List, ListItem, ListItemText, ListItemButton, 
   MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select, Drawer } from '@mui/material';
 
 // for calendar/dates
@@ -74,7 +74,7 @@ export default function Orders() {
   const closeOrder = (save) => {
     setOpenOrder(false);
     if (save) {
-      orderList.push(new Drug(getRandomOrderType(), name, dose, route + ', ' + freq), refill);
+      orderList.push(new Drug(getRandomOrderType(), name, dose, route + ', ' + freq, refill));
     }
     setName('');
     setRoute('');
@@ -110,6 +110,7 @@ export default function Orders() {
     }
   }
 
+  // Used to get the highlight color based on drug type
   const getHighlightColor = (type) => {
     switch (type) {
       case 'New':
@@ -139,8 +140,15 @@ export default function Orders() {
         return ''
     }
   }
+
+  // Used to maintain a number of how many orders in each section, used to hide sections with 0 orders
   const countOrdersOfType = (orders, type) => {
     return orders.filter(order => order.type === type).length;
+  };
+  
+  // Handles removing orders on "x" click
+  const removeOrder = (orderToRemove) => {
+    setOrderList(orderList.filter(order => order !== orderToRemove));
   };
   
 
@@ -425,39 +433,59 @@ export default function Orders() {
           </Dialog>
 
 
-          {categories.map((name) => {
-            const ordersOfType = orderList.filter((x) => x.type === name);
+            {categories.map((name) => {
+              const ordersOfType = orderList.filter((x) => x.type === name);
 
-            if (ordersOfType.length === 0) {
-              return null;
-            }
+              if (ordersOfType.length === 0) {
+                return null;
+              }
 
-            return (
-              <Card 
-                key={name} 
-                sx={{ 
-                  marginBottom: 2, 
-                  borderLeft: '4px solid', 
-                  borderLeftColor: getBackgroundColor(name),
-                  '&:hover': {
-                  backgroundColor: getHighlightColor(name)
-                } 
-                }}>
-                {getTitle(name)}
-                {ordersOfType.map((order) => (
-                  <Box key={order.name} sx={{ marginLeft:3, marginBottom:2 }}>
-                    <Typography variant="body1">{order.name}</Typography>
-                    <Typography fontSize="9pt" sx={{ color: getBackgroundColor(name) }}>
-                      {order.dose}
-                    </Typography>
-                    <Typography fontSize="8pt" color="grey">
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{order.sig}
-                    </Typography>
-                  </Box>
-                ))}
-              </Card>
-            );
-          })}
+              return (
+                <Card 
+                  key={name} 
+                  sx={{ 
+                    marginBottom: 2, 
+                    borderLeft: '4px solid', 
+                    borderLeftColor: getBackgroundColor(name),
+                    '&:hover': {
+                    backgroundColor: getHighlightColor(name),
+                  } 
+                  }}>
+                  {getTitle(name)}
+                  {ordersOfType.map((order) => (
+                    <Box key={order.name} sx={{ marginLeft:3, marginBottom:2 }}>
+                      <Typography variant="body1">{order.name}</Typography>
+                      <Typography fontSize="9pt" sx={{ color: getBackgroundColor(name) }}>
+                        {order.dose}
+                      </Typography>
+                      <Typography fontSize="8pt" color="grey">
+                        {order.sig}, {order.refill} Refills
+                      </Typography>
+                      <Button
+                        sx={{ 
+                          display: 'flex',
+                          justifyContent: 'right',
+                          padding: 0,
+                          minWidth: 'auto',
+                          border: '1px solid',
+                          borderColor: 'black'
+                        }}  
+                        onClick={() => removeOrder(order)}
+                      > 
+                        <Icon 
+                          sx={{ 
+                            fontSize: '10pt', 
+                            color: 'black' 
+                          }}
+                        >
+                          close
+                        </Icon>
+                      </Button>
+                    </Box>
+                  ))}
+                </Card>
+              );
+            })}
 
           <Box sx={{p: 1}}>
             <Button variant="outlined" color="error" onClick={submitOrder}>
