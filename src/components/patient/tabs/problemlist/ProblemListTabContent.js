@@ -6,6 +6,7 @@ import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import ProblemListEditor from './ProblemListEditor.js';
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
@@ -18,22 +19,30 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [problems, setProblems] = useState(patientData.problems); // State to hold problems array
+  const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
+
+  const [indexToUpdate, setIndexToUpdate] = useState(null);
+
+  const handleExpandRow = (rowIndex) => {
+    const newExpandedRows = expandedRows.map((item, index) => index === rowIndex ? !item : item);
+    setExpandedRows(newExpandedRows);
+  };
 
   useEffect(() => {
     setFilteredDiagnoses(
-      diagnosesArray.filter(diagnosis => 
-        diagnosis.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      diagnosesArray.filter(diagnosis => diagnosis.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [searchTerm, diagnosesArray]);
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (index) => {
+    setIndexToUpdate(index);
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedDiagnosis(null); // Clear selected diagnosis on modal close
+    setIndexToUpdate(null); // Clear index to update
   };
 
   const handleDiagnosisClick = (diagnosis) => {
@@ -42,13 +51,31 @@ const ProblemListTabContent = ({ children, ...other }) => {
 
   const handleAccept = () => {
     if (selectedDiagnosis) {
-      const newProblem = {
-        diagnosis: selectedDiagnosis,
-        // Add other properties as needed for the new problem row
-      };
-      setProblems([...problems, newProblem]);
+      console.log("Index to update", indexToUpdate, indexToUpdate===null);
+      if (indexToUpdate !== null) {
+        // UPDATE the existing problem
+        const updatedProblems = problems.map((problem, i) =>
+          i === indexToUpdate ? { ...problem, diagnosis: selectedDiagnosis } : problem
+        );
+        setProblems(updatedProblems);
+      } else {
+        // ADD a new problem
+        const newProblem = {
+          diagnosis: selectedDiagnosis,
+          // Add other properties as needed for the new problem row
+        };
+        setProblems([...problems, newProblem]);
+      }
+      handleCloseModal();
     }
-    handleCloseModal();
+  };
+  
+
+  const handleDeleteProblem = (index) => {
+    const updatedProblems = problems.filter((_, i) => i !== index);
+    setProblems(updatedProblems);
+    const updatedExpandedRows = expandedRows.filter((_, i) => i !== index);
+    setExpandedRows(updatedExpandedRows);
   };
 
   return (
@@ -61,7 +88,7 @@ const ProblemListTabContent = ({ children, ...other }) => {
               variant="outlined"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onClick={handleOpenModal}
+              onClick={() => handleOpenModal(null)}
               style={{ marginRight: 0 }}
             />
             <Button
@@ -90,32 +117,47 @@ const ProblemListTabContent = ({ children, ...other }) => {
                 <TableCell style={{ width: '5%' }}>Principal</TableCell>
                 <TableCell style={{ width: '7%' }}>Change Dx</TableCell>
                 <TableCell style={{ width: '5%' }}>Resolved</TableCell>
-                <TableCell style={{ width: '5%' }}></TableCell>
+                <TableCell style={{ width: '5%' }}/>
               </TableRow>
             </TableHead>
             <TableBody>
-              {problems.map((problem, index) => ( // Use problems state for rendering
-                <TableRow key={index}>
-                  <TableCell>{problem.diagnosis}</TableCell>
-                  <TableCell>
-                    <Button>Create Overview</Button>
-                  </TableCell>
-                  <TableCell>
-                    <Checkbox name="hospitalCheckbox" />
-                  </TableCell>
-                  <TableCell>
-                    <Button><PentagonOutlinedIcon/></Button>
-                  </TableCell>
-                  <TableCell>
-                    <Button><ChangeHistoryIcon /></Button>
-                  </TableCell>
-                  <TableCell>
-                    <Button><ClearIcon /></Button>
-                  </TableCell>
-                  <TableCell>
-                    <Button><KeyboardDoubleArrowDownOutlinedIcon /></Button>
-                  </TableCell>
-                </TableRow>
+              {problems.map((problem, index) => (
+                <React.Fragment key={index}>
+                  <TableRow>
+                    <TableCell>{problem.display ? problem.display : problem.diagnosis}</TableCell>
+                    <TableCell>
+                      <Button>Create Overview</Button>
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox name="hospitalCheckbox" />
+                    </TableCell>
+                    <TableCell>
+                      <Button><PentagonOutlinedIcon /></Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button><ChangeHistoryIcon /></Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button><ClearIcon /></Button>
+                    </TableCell>
+                    <TableCell>
+                      <Button onClick={() => handleExpandRow(index)}><KeyboardDoubleArrowDownOutlinedIcon /></Button>
+                    </TableCell>
+                  </TableRow>
+                  {expandedRows[index] && (
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <ProblemListEditor
+                          data={problem}
+                          index={index}
+                          expandedRows={handleExpandRow}
+                          onDelete={handleDeleteProblem}
+                          onOpenModal={handleOpenModal}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
