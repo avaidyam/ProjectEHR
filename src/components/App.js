@@ -1,43 +1,47 @@
 import React, { useState } from 'react';
-import { HashRouter, Route, Routes } from 'react-router-dom';
-import { AppBar, Stack, TextField, IconButton, Toolbar, Typography, Box, Icon } from '@mui/material';
-import { useRouter } from '../util/urlHelpers.js';
-
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { AppBar, IconButton, Toolbar, Typography, Box, Icon } from '@mui/material';
+import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
 
-export const NavBar = ({ ...props }) => {
-  const onHandleClickRoute = useRouter()
-  return (
-    <>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} {...props}>
-        <Toolbar variant="dense" style={{ width: '100%' }}>
-          <Typography variant="h6" color="inherit" component="div">
-            ProjectEHR
-          </Typography>
-          <IconButton color="inherit" onClick={() => onHandleClickRoute(`schedule`)}>
-            <Icon>calendar_month</Icon>
-          </IconButton>
-          <TextField label="Search ..." variant="outlined" size="small" />
-        </Toolbar>
-      </AppBar>
-      <Toolbar variant="dense" />
-    </>
-  )
-}
+export const NavBar = ({ onHandleClickRoute }) => (
+  <>
+    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Toolbar variant="dense" style={{ width: '100%' }}>
+        <Typography variant="h6" color="inherit" component="div">
+          ProjectEHR
+        </Typography>
+        <IconButton color="inherit" onClick={() => onHandleClickRoute('/schedule')}>
+          <Icon>calendar_month</Icon>
+        </IconButton>
+      </Toolbar>
+    </AppBar>
+    <Toolbar variant="dense" />
+  </>
+);
 
-export const App = ({ ...props }) => {
+export const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  const handleClickRoute = (route) => {
+    navigate(route);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false); // Update state to hide NavBar
+    navigate('/'); // Redirect to the login page
+  };
+
   return (
-    <HashRouter>
-      <Box sx={{ minHeight: "100vh", overflow: 'none' }} {...props}>
-        <NavBar />
-        <Routes>
-          <Route path="/" Component={Schedule} />
-          <Route path="/schedule/" Component={Schedule} />
-          <Route path="/patient/:mrn" Component={PatientHome} />
-          {/* add subsequent routes here, ie /schedule, /chart_review, etc  */}
-        </Routes>
-      </Box>
-    </HashRouter>
-  )
-}
+    <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
+      {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} />}
+      <Routes>
+        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/schedule" element={isLoggedIn ? <Schedule onLogout={handleLogout} /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
+        <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
+      </Routes>
+    </Box>
+  );
+};

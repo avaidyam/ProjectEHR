@@ -1,3 +1,4 @@
+import React, { useContext } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -15,8 +16,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-import React from 'react';
-
+import { AuthContext } from "../login/AuthContext.js";
 import { useRouter } from '../../util/urlHelpers.js';
 
 // json data
@@ -248,29 +248,37 @@ const columns = [
 ];
 
 // takes rows from json file and set columns to make table
-export function Schedule() {
+export function Schedule({ onLogout }) {
   const onHandleClickRoute = useRouter();
-
-
+  const { logout } = useContext(AuthContext);
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
   const [preview, setPreview] = React.useState(100); // set width of table
   const [hide, setHide] = React.useState(0); // patient info hidden, will incr when checkbox marked
   const [filterElem, setFilterElem] = React.useState(null); // for filter 
+  const handleLogout = () => {
+    logout();
+    onLogout(); // Call the passed logout handler
+  };
   return (
-    <Box /* for future formatting if needed
-      sx={{
-        '#rightpanel': {
-          display: 'none',
-        },
-        
-        '& .scheduled': {
-          color: '#3299ff',
-        },
-        '& .arrived': {
-          backgroundColor: '#ff943975',
-        }, 
-      }} */
-    >
+    <Box/* for future formatting if needed
+    sx={{
+      '#rightpanel': {
+        display: 'none',
+      },
+      
+      '& .scheduled': {
+        color: '#3299ff',
+      },
+      '& .arrived': {
+        backgroundColor: '#ff943975',
+      }, 
+    }} */
+   >
+      <div style={{ textAlign: 'right' }}>
+        <button type="button" onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
+      </div>
       <div>{dateLocal()}</div>
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
         <div style={{ textAlign: 'right' }}>
