@@ -1,6 +1,7 @@
-import { Checkbox, Table, TableHead, TableRow, TableCell, Icon, Box, TextField, Button} from '@mui/material';
+import React, { useState } from 'react';
+import { Checkbox, Table, TableHead, TableRow, TableCell, Icon, Box, TextField, Button, TableBody, Typography } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import React from 'react';
+import MedicationItemEditor from './MedicationItemEditor.js';
 
 const mockMedicationData = () => ({
   currentMedications: [
@@ -8,63 +9,103 @@ const mockMedicationData = () => ({
       id: '1',
       name: 'clopidogrel',
       brandName: 'PLAVIX',
-      dosage: '75 mg',
+      dose: 75,
+      unit: 'mg',
       frequency: 'once daily',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: ['Prevent blood clots', 'Reduce risk of stroke'],
+      activePrnReasons: [],
     },
     {
       id: '2',
       name: 'aspirin',
       brandName: 'ASPIRIN',
-      dosage: '81 mg',
+      dose: 81,
+      unit: 'mg',
       frequency: 'once daily',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: ['Pain relief', 'Reduce fever', 'Anti-inflammatory'],
+      activePrnReasons: [],
     },
     {
       id: '3',
       name: 'atorvastatin',
       brandName: 'LIPITOR',
-      dosage: '80 mg',
+      dose: 80,
+      unit: 'mg',
       frequency: 'once daily',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: [],
+      activePrnReasons: [],
     },
     {
       id: '4',
       name: 'carvedilol',
       brandName: 'COREG',
-      dosage: '3.125 mg',
+      dose: 3.125,
+      unit: 'mg',
       frequency: 'twice a day',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: ['High blood pressure', 'Heart failure'],
+      activePrnReasons: [],
     },
     {
       id: '5',
       name: 'lisinopril',
       brandName: 'QBRELIS',
-      dosage: '10 mg',
+      dose: 10,
+      unit: 'mg',
       frequency: 'once daily',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: ['High blood pressure', 'Heart failure'],
+      activePrnReasons: [],
     },
     {
       id: '6',
       name: 'eplerenone',
       brandName: 'INSPRA',
-      dosage: '25 mg',
+      dose: 25,
+      unit: 'mg',
       frequency: 'once daily',
       startDate: '',
       endDate: '',
+      route: 'Oral',
+      possiblePrnReasons: ['Heart failure', 'Reduce risk of death after heart attack'],
+      activePrnReasons: [],
     },
   ]
 });
 
 export default function Medications() {
-  const {currentMedications} = mockMedicationData();
+  const [medications, setMedications] = useState(mockMedicationData().currentMedications);
+  const [editingMedication, setEditingMedication] = useState(null);
 
-  return(
+  const handleEdit = (medication) => {
+    setEditingMedication(medication);
+  };
+
+  const handleSave = (updatedMedication) => {
+    setMedications((prevMedications) =>
+      prevMedications.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
+    );
+    setEditingMedication(null);
+  };
+
+  const handleCancel = () => {
+    setEditingMedication(null);
+  };
+
+  return (
     <Box>
       <div>
         <div style={{ display: "flex" }}>
@@ -98,52 +139,81 @@ export default function Medications() {
             <Table>
               <TableHead>
                 <TableRow>
-                    <TableCell>Medication</TableCell>
-                    <TableCell />
-                    <TableCell>Last Dose</TableCell>
-                    <TableCell>Taking?</TableCell>
-                    <TableCell />
+                  <TableCell>Medication</TableCell>
+                  <TableCell />
+                  <TableCell>Last Dose</TableCell>
+                  <TableCell>Taking?</TableCell>
+                  <TableCell />
                 </TableRow>
               </TableHead>
-              <tbody>
-                {currentMedications.map(({ id, name, brandName, dosage, frequency }) => (
-                  <TableRow key={id}>
-                    <TableCell>{name} ({brandName}) {dosage} {frequency}</TableCell>
-                    <TableCell>
-                      <Button variant="outlined">
-                        Today
-                      </Button>
-                      <Button variant="outlined">
-                        Yesterday
-                      </Button>
-                      <Button variant="outlined">
-                        Past Week
-                      </Button>
-                      <Button variant="outlined">
-                        Past Month
-                      </Button>
-                      <Button variant="outlined">
-                        {'>'} Month
-                      </Button>
-                      <Button variant="outlined">
-                        Unknown
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        disabled="true"
-                        color="error"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>
-                      <Button><ClearIcon /></Button>
-                    </TableCell>
-                  </TableRow>
+              <TableBody>
+                {medications.map((medication) => (
+                  <React.Fragment key={medication.id}>
+                    <TableRow>
+                      <TableCell>
+                        <Button onClick={() => handleEdit(medication)} style={{ textAlign: 'left' }}>
+                          <Box>
+                            <Typography variant="body1" color="primary">
+                              {medication.name} ({medication.brandName}) {medication.dose}{medication.unit} {medication.route}
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                              {[
+                                medication.frequency && `${medication.frequency}`,
+                                medication.startDate && `${medication.startDate}`,
+                                medication.endDate && `${medication.endDate}`,
+                                medication.activePrnReasons.length > 0 && `PRN: ${medication.activePrnReasons.join(', ')}`
+                              ].filter(Boolean).join(', ')}
+                            </Typography>
+                          </Box>
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outlined">
+                          Today
+                        </Button>
+                        <Button variant="outlined">
+                          Yesterday
+                        </Button>
+                        <Button variant="outlined">
+                          Past Week
+                        </Button>
+                        <Button variant="outlined">
+                          Past Month
+                        </Button>
+                        <Button variant="outlined">
+                          {'>'} Month
+                        </Button>
+                        <Button variant="outlined">
+                          Unknown
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          disabled
+                          color="error"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>
+                        <Button><ClearIcon /></Button>
+                      </TableCell>
+                    </TableRow>
+                    {editingMedication && editingMedication.id === medication.id && (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <MedicationItemEditor
+                            medication={editingMedication}
+                            onSave={handleSave}
+                            onCancel={handleCancel}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
                 ))}
-              </tbody>
+              </TableBody>
             </Table>
           </div>
         </div>
