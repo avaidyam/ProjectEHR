@@ -9,6 +9,7 @@ import SnapshotTabContent from './tabs/snapshot/SnapshotTabContent.js'
 import NotesTabContent from './tabs/notewriter/NotesTabContent.js'
 import { HistoryTabContent } from './tabs/history/HistoryTabContent.js'
 import Orders from './tabs/orders/Orders.js';
+import OrdersMgmt from './tabs/orders/OrdersMgmt.js';
 import Medications from './tabs/medications/Medications.js';
 
 export const PatientHome = ({ ...props }) => {
@@ -27,6 +28,7 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="History" />
           <Tab label="Medications" />
           <Tab label="Orders" />
+          <Tab label="Orders Mgmt" />
           <Tab label="NoteWriter" />
         </Tabs>
         <Divider />
@@ -36,7 +38,8 @@ export const PatientHome = ({ ...props }) => {
         {tab === 3 && <HistoryTabContent />}
         {tab === 4 && <Medications />}
         {tab === 5 && <Orders />}
-        {tab === 6 && <NotesTabContent />}
+        {tab === 6 && <OrdersMgmt/>}
+        {tab === 7 && <NotesTabContent />}
       </Box>
     </Box>
   )
