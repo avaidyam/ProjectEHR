@@ -42,7 +42,7 @@ const PrnFormGroup = styled(FormGroup)({
   display: 'flex',
   flexDirection: 'column',
   flexWrap: 'wrap',
-  maxHeight: 150, // Adjust the maxHeight as needed
+  maxHeight: 150, 
 });
 
 export default function MedicationItemEditor({ medication, onSave, onCancel }) {
