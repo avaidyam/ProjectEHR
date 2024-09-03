@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button'; // Import Button component
 import List from '@mui/material/List';
 import Dialog from '@mui/material/Dialog';
 import ListItem from '@mui/material/ListItem';
@@ -70,8 +71,14 @@ const ImagingTabContent = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Box sx={{ border: 1 }}>
-          <button onClick={handleOpenImageViewer}>Open DWV Viewer</button>
+        <Box sx={{ textAlign: 'center', padding: 2 }}>
+          <Button
+            onClick={handleOpenImageViewer}
+            variant="contained"
+            sx={{ backgroundColor: '#1976D2', color: 'white' }} // Set the background color to blue and text color to white
+          >
+            Open DWV Viewer
+          </Button>
         </Box>
       </Grid>
       <DWVViewer
@@ -82,5 +89,6 @@ const ImagingTabContent = () => {
     </Grid>
   );
 };
+
 
 export default ImagingTabContent;
