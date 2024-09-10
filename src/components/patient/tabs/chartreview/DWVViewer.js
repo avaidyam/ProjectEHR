@@ -98,11 +98,16 @@ const DWVViewer = ({ open, onClose, images }) => {
             });
 
             app.addEventListener('renderend', () => {
-                setSelectedTool(app.canScroll() ? 'Scroll' : 'ZoomAndPan');
+                // Remove this line to prevent automatic tool selection
+                // setSelectedTool(app.canScroll() ? 'Scroll' : 'ZoomAndPan');
             });
 
             app.loadURLs(images);
             setDwvApp(app);
+
+            // Set the initial tool to 'Scroll' and update the state
+            app.setTool('Scroll');
+            setSelectedTool('Scroll');
 
             return () => {
                 app.reset();
