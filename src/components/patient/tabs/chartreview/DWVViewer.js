@@ -1,30 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
-    AppBar,
-    Typography,
-    IconButton,
-    Stack,
-    LinearProgress,
-    ToggleButton,
-    ToggleButtonGroup,
     Dialog,
     Slide,
-    Toolbar,
-    Box
+    Menu,
+    MenuItem,
+    Box,
+    LinearProgress,
+    IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
-import ContrastIcon from '@mui/icons-material/Contrast';
-import SearchIcon from '@mui/icons-material/Search';
-import StraightenIcon from '@mui/icons-material/Straighten';
 import { styled } from '@mui/system';
 import {
     App,
     decoderScripts
 } from 'dwv';
 
-// Define worker scripts paths
 decoderScripts.jpeg2000 = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpeg2000.js`;
 decoderScripts['jpeg-lossless'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/rii-mango/decode-jpegloss.js`;
 decoderScripts['jpeg-baseline'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpegbaseline.js`;
@@ -37,10 +28,6 @@ const LayerGroup = styled('div')({
     backgroundColor: '#000',
 });
 
-const AppBarStyled = styled(AppBar)({
-    position: 'relative',
-});
-
 const ContentWrapper = styled(Box)({
     display: 'flex',
     flexDirection: 'column',
@@ -49,13 +36,29 @@ const ContentWrapper = styled(Box)({
     overflow: 'hidden', 
 });
 
-const ButtonWrapper = styled(Box)({
-    display: 'flex',
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: '8px', 
-    paddingBottom: '8px'
+const CloseButton = styled(IconButton)({
+    position: 'absolute',
+    right: 8,
+    top: 8,
+    color: 'white',
+    zIndex: 1,
+});
+
+const BlackMenu = styled(Menu)({
+    '& .MuiPaper-root': {
+        backgroundColor: 'rgba(0, 0, 0, 0.9)', 
+        color: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.3)', 
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', 
+    },
+    '& .MuiMenuItem-root': {
+        '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+        },
+        '&.Mui-disabled': {
+            color: 'rgba(255, 255, 255, 0.5)', 
+        },
+    },
 });
 
 const DWVViewer = ({ open, onClose, images }) => {
@@ -64,6 +67,7 @@ const DWVViewer = ({ open, onClose, images }) => {
     const [dataLoaded, setDataLoaded] = useState(false);
     const [metaData, setMetaData] = useState({});
     const [selectedTool, setSelectedTool] = useState('Scroll');
+    const [contextMenu, setContextMenu] = useState(null);
 
     useEffect(() => {
         if (open) {
@@ -98,14 +102,11 @@ const DWVViewer = ({ open, onClose, images }) => {
             });
 
             app.addEventListener('renderend', () => {
-                // Remove this line to prevent automatic tool selection
-                // setSelectedTool(app.canScroll() ? 'Scroll' : 'ZoomAndPan');
             });
 
             app.loadURLs(images);
             setDwvApp(app);
 
-            // Set the initial tool to 'Scroll' and update the state
             app.setTool('Scroll');
             setSelectedTool('Scroll');
 
@@ -116,103 +117,66 @@ const DWVViewer = ({ open, onClose, images }) => {
         }
     }, [open, images]);
 
-    const handleToolChange = (event, newTool) => {
-        if (newTool && dwvApp) {
-            setSelectedTool(newTool);
-            dwvApp.setTool(newTool);
-            if (newTool === 'Draw') {
+    const handleContextMenu = useCallback((event) => {
+        event.preventDefault();
+        setContextMenu(
+            contextMenu === null
+                ? { mouseX: event.clientX - 2, mouseY: event.clientY - 4 }
+                : null,
+        );
+    }, [contextMenu]);
+
+    const handleToolChange = (tool) => {
+        if (tool && dwvApp) {
+            setSelectedTool(tool);
+            dwvApp.setTool(tool);
+            if (tool === 'Draw') {
                 dwvApp.setToolFeatures({shapeName: 'Ruler'});
             }
         }
+        setContextMenu(null);
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullScreen fullWidth TransitionComponent={Slide}>
-            <AppBarStyled>
-                <Toolbar>
-                    <IconButton color="inherit" onClick={onClose} aria-label="Close">
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h6" color="inherit">
-                        DICOM Viewer
-                    </Typography>
-                </Toolbar>
-            </AppBarStyled>
-
+        <Dialog 
+            open={open} 
+            onClose={onClose} 
+            fullScreen 
+            fullWidth 
+            TransitionComponent={Slide}
+            className="prevent-default-context-menu"
+        >
+            <CloseButton onClick={onClose} aria-label="close">
+                <CloseIcon />
+            </CloseButton>
             <ContentWrapper>
                 <LinearProgress variant="determinate" value={loadProgress} />
 
-                <ButtonWrapper>
-                    <ToggleButtonGroup size="small" color="primary" value={selectedTool} exclusive onChange={handleToolChange}>
-                        <ToggleButton
-                            value="Scroll"
-                            title="Scroll"
-                            disabled={!dataLoaded}
-                            sx={{
-                                backgroundColor: 'grey', 
-                                '&.Mui-selected': {
-                                    backgroundColor: 'white', 
-                                },
-                                '&:hover': {
-                                    backgroundColor: 'lightgrey', 
-                                },
-                            }}
-                        >
-                            <MenuIcon />
-                        </ToggleButton>
-                        <ToggleButton
-                            value="ZoomAndPan"
-                            title="ZoomAndPan"
-                            disabled={!dataLoaded}
-                            sx={{
-                                backgroundColor: 'grey', 
-                                '&.Mui-selected': {
-                                    backgroundColor: 'white', 
-                                },
-                                '&:hover': {
-                                    backgroundColor: 'grey', 
-                                },
-                            }}
-                        >
-                            <SearchIcon />
-                        </ToggleButton>
-                        <ToggleButton
-                            value="WindowLevel"
-                            title="WindowLevel"
-                            disabled={!dataLoaded}
-                            sx={{
-                                backgroundColor: 'grey', 
-                                '&.Mui-selected': {
-                                    backgroundColor: 'white', 
-                                },
-                                '&:hover': {
-                                    backgroundColor: 'grey', 
-                                },
-                            }}
-                        >
-                            <ContrastIcon />
-                        </ToggleButton>
-                        <ToggleButton
-                            value="Draw"
-                            title="Draw"
-                            disabled={!dataLoaded}
-                            sx={{
-                                backgroundColor: 'grey', 
-                                '&.Mui-selected': {
-                                    backgroundColor: 'white', 
-                                },
-                                '&:hover': {
-                                    backgroundColor: 'grey', 
-                                },
-                            }}
-                        >
-                            <StraightenIcon />
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </ButtonWrapper>
+                <LayerGroup id="layerGroup0" onContextMenu={handleContextMenu}></LayerGroup>
 
-                <LayerGroup id="layerGroup0"></LayerGroup>
-
+                <BlackMenu
+                    open={contextMenu !== null}
+                    onClose={() => setContextMenu(null)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={
+                        contextMenu !== null
+                            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                            : undefined
+                    }
+                >
+                    <MenuItem onClick={() => handleToolChange('Scroll')} disabled={!dataLoaded}>
+                        Scroll
+                    </MenuItem>
+                    <MenuItem onClick={() => handleToolChange('ZoomAndPan')} disabled={!dataLoaded}>
+                        Zoom and Pan
+                    </MenuItem>
+                    <MenuItem onClick={() => handleToolChange('WindowLevel')} disabled={!dataLoaded}>
+                        Window Level
+                    </MenuItem>
+                    <MenuItem onClick={() => handleToolChange('Draw')} disabled={!dataLoaded}>
+                        Draw
+                    </MenuItem>
+                </BlackMenu>
             </ContentWrapper>
         </Dialog>
     );
