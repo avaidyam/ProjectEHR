@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItemButton, ListItemText, ListItemSecondaryAction } from '@mui/material';
+import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItem, Grid } from '@mui/material';
+import {useOrder, Drug} from './OrdersContext.js';
 
 // need to link to actions in orders later
 const mockMedicationData = () => ({
@@ -65,6 +66,7 @@ const mockMedicationData = () => ({
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
+
   return (
     <div
       role="tabpanel"
@@ -84,9 +86,14 @@ const TabPanel = (props) => {
 export default function OrdersMgmt() {
   const [value, setValue] = useState(0);
   const { currentMedications } = mockMedicationData();
+  const {orderList, setOrderList} = useOrder();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const addOrder = (med, medChangeType) => {
+    orderList.push(new Drug(medChangeType, med.name, med.dose, med.frequency, med.brandName)); // This updates the context's orderList directly
   };
 
   return (
@@ -109,23 +116,28 @@ export default function OrdersMgmt() {
           {currentMedications.map((med) => (
             <Box>
               <Divider />
-              <ListItemButton sx={{ mb: 1, p: 1 }}>
-                <ListItemText
-                  primary={`Name: ${med.name}`}
-                  secondary={
-                    <>
-                      <Typography variant="body2">{`Brand Name: ${med.brandName}`}</Typography>
-                      <Typography variant="body2">{`Dosage: ${med.dosage}`}</Typography>
-                      <Typography variant="body2">{`Frequency: ${med.frequency}`}</Typography>
-                    </>
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <Button variant="outlined" size="small">Modify</Button>
-                  <Button variant="outlined" size="small">Hold</Button>
-                  <Button variant="outlined" size="small">Discontinue</Button>
-                </ListItemSecondaryAction>
-              </ListItemButton>
+              <ListItem sx={{ mb: 1, p: 1 }}>
+                  <Grid container spacing={3}>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant="body2">{med.name} {med.dosage}</Typography>
+                      </Grid>
+
+                      {/* Second Column: Dosage and Frequency */}
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2">{med.dosage} {med.frequency}</Typography>
+                      </Grid>
+
+                      {/* Third Column: Action Buttons */}
+                      <Grid item xs={12} sm={3}>
+                      <Box sx={{ textAlign: 'right' }}>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Modify')}>Modify</Button>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Hold')}>Hold</Button>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Discontinue')}>Discontinue</Button>
+                      </Box>
+                      </Grid>
+                    </Grid>
+
+              </ListItem>
             </Box>
           ))}
         </List>
