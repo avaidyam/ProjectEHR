@@ -4,59 +4,66 @@ import {useOrder, Drug} from './OrdersContext.js';
 
 // need to link to actions in orders later
 const mockMedicationData = () => ({
+  
   currentMedications: [
     {
       id: '1',
-      name: 'clopidogrel',
-      brandName: 'PLAVIX',
-      dosage: '75 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'metformin',
+      brandName: '',
+      dosage: '500 mg',
+      frequency: 'TWICE A DAY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '2',
-      name: 'aspirin',
-      brandName: 'ASPIRIN',
-      dosage: '81 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'lisinopril',
+      brandName: '',
+      dosage: '5 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '3',
-      name: 'atorvastatin',
-      brandName: 'LIPITOR',
-      dosage: '80 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'lovastatin',
+      brandName: '',
+      dosage: '20 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '4',
-      name: 'carvedilol',
-      brandName: 'COREG',
-      dosage: '3.125 mg',
-      frequency: 'twice a day',
-      startDate: '',
+      name: 'omeprazole',
+      brandName: '',
+      dosage: '20 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '5',
-      name: 'lisinopril',
-      brandName: 'QBRELIS',
-      dosage: '10 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'acetaminophen',
+      brandName: '',
+      dosage: '500 mg',
+      frequency: 'AS NEEDED',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '6',
-      name: 'eplerenone',
-      brandName: 'INSPRA',
-      dosage: '25 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'ibuprofen',
+      brandName: '',
+      dosage: '200 mg',
+      frequency: 'AS NEEDED',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
   ]
@@ -93,7 +100,7 @@ export default function OrdersMgmt() {
   };
 
   const addOrder = (med, medChangeType) => {
-    orderList.push(new Drug(medChangeType, med.name, med.dose, med.frequency, med.brandName)); // This updates the context's orderList directly
+    orderList.push(new Drug(medChangeType, med.name, med.dosage, med.frequency, 0)); // This updates the context's orderList directly
   };
 
   return (
@@ -124,7 +131,7 @@ export default function OrdersMgmt() {
 
                       {/* Second Column: Dosage and Frequency */}
                       <Grid item xs={12} sm={6}>
-                        <Typography variant="body2">{med.dosage} {med.frequency}</Typography>
+                        <Typography variant="body2">{med.dosage}, {med.route}, {med.frequency}, started on {med.startDate}</Typography>
                       </Grid>
 
                       {/* Third Column: Action Buttons */}

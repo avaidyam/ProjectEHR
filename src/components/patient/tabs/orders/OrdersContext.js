@@ -13,56 +13,6 @@ class Drug {
     }
   }
 
-// need to link to actions in orders later
-const mockOrderList = () => ({
-    medications: [
-      {
-        name: 'clopidogrel',
-        dosage: '75 mg',
-        frequency: 'once daily',
-        startDate: '',
-        endDate: '',
-      },
-      {
-        name: 'aspirin',
-        dosage: '81 mg',
-        frequency: 'once daily',
-        startDate: '',
-        endDate: '',
-      },
-      {
-        name: 'atorvastatin',
-        dosage: '80 mg',
-        frequency: 'once daily',
-        startDate: '5/5/24',
-        endDate: 'UNTIL DISCONTINUED',
-      },
-      {
-        name: 'carvedilol',
-        brandName: 'COREG',
-        dosage: '3.125 mg',
-        frequency: 'twice a day',
-        startDate: '',
-        endDate: '',
-      },
-      {
-        name: 'lisinopril',
-        brandName: 'QBRELIS',
-        dosage: '10 mg',
-        frequency: 'once daily',
-        startDate: '',
-        endDate: '',
-      },
-      {
-        name: 'eplerenone',
-        brandName: 'INSPRA',
-        dosage: '25 mg',
-        frequency: 'once daily',
-        startDate: '',
-        endDate: '',
-      },
-    ]
-  });
 
 // Create a Context Provider component
 export const OrderProvider = ({ children }) => {

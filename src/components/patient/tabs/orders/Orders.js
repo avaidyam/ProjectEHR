@@ -67,7 +67,7 @@ export default function Orders() {
   const closeOrder = (save) => {
     setOpenOrder(false);
     if (save) {
-      orderList.push(new Drug(getRandomOrderType(), name, dose, route + ', ' + freq, refill));
+      orderList.push(new Drug(getRandomOrderType(), name, dose, `${route}, ${freq}`, refill));
     }
     setName('');
     setRoute('');
@@ -88,8 +88,8 @@ export default function Orders() {
 
 
   // called to get the color scheme for text and box styling
-  const getBackgroundColor = (type) => {
-    switch (type) {
+  const getBackgroundColor = (backC) => {
+    switch (backC) {
       case 'New':
         return '#19852F'
       case 'Modify':
@@ -106,8 +106,8 @@ export default function Orders() {
   }
 
   // Used to get the highlight color based on drug type
-  const getHighlightColor = (type) => {
-    switch (type) {
+  const getHighlightColor = (highC) => {
+    switch (highC) {
       case 'New':
         return '#87E8B6'
       case 'Modify':
@@ -123,8 +123,8 @@ export default function Orders() {
     }
   }
   // called to generate the titles for each category, New, Modified, etc... with styling and icons
-  const getTitle = (type) => {
-    switch (type) {
+  const getTitle = (title) => {
+    switch (title) {
       case 'New':
         return <Typography variant="overline" sx={{color:'#19852F', fontWeight:600, fontSize:'16px', backgroundColor:'#BCF2C1'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>assignment_add</Icon> New Order&nbsp;&nbsp;</Typography>
       case 'Modify':
@@ -141,9 +141,9 @@ export default function Orders() {
   }
 
   // Used to maintain a number of how many orders in each section, used to hide sections with 0 orders
-  const countOrdersOfType = (orders, type) => {
-    return orders.filter(order => order.type === type).length;
-  };
+  // const countOrdersOfType = (orders, type) => {
+  //  return orders.filter(order => order.type === type).length;
+  // };
   
   // Handles removing orders on "x" click
   const removeOrder = (orderToRemove) => {
@@ -151,7 +151,7 @@ export default function Orders() {
   };
   
 
-  let categories = ["New", "Modify", "Hold", "Discontinue", "Orders to be Signed"]
+  const categories = ["New", "Modify", "Hold", "Discontinue", "Orders to be Signed"]
 
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -208,6 +208,21 @@ export default function Orders() {
         <div>
           <Dialog fullWidth maxWidth="md" onClose={() => { setOpenSearchList(false) }} open={openSearchList}>
             <List>
+            <TextField
+                label="Add orders or order sets"
+                size="small"
+                sx={{ minWidth: 300 }}
+                variant="outlined"
+                value={value}
+                onChange={(x) => setValue(x.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter')
+                    setOpenSearchList(!openSearchList);
+                }}
+              />
+              <Button variant="outlined" onClick={() => { setOpenSearchList(!openSearchList) }}>
+                <Icon color="success">add</Icon> SEARCH
+              </Button>
               {(!data || data.length === 0) ? (
                 <p>No Results. Try again.</p>
               ) : (
