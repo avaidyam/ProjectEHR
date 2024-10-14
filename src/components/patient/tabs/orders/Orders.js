@@ -214,9 +214,7 @@ export default function Orders() {
                     setOpenSearchList(!openSearchList);
                 }}
               />
-              <Button variant="outlined" onClick={() => { setOpenSearchList(!openSearchList) }}>
-                <Icon color="success">add</Icon> SEARCH
-              </Button>
+
               {(!data || data.length === 0) ? (
                 <p>No Results. Try again.</p>
               ) : (
