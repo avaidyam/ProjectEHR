@@ -79,7 +79,7 @@ const TabPanel = (props) => {
       role="tabpanel"
       hidden={value !== index}
       aria-labelledby={`tab-${index}`}
-      {...other}
+      {...other} 
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
