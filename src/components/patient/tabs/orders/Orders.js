@@ -57,17 +57,11 @@ export default function Orders() {
     setOrderList([]);
   };
 
-  // Function to randomly select an order type !SHOULD EVENTUALLY BE REMOVED!
-  const getRandomOrderType = () => {
-    const types = ['New', 'Modify', 'Hold', 'Discontinue'];
-    return types[Math.floor(Math.random() * types.length)];
-  };
-
 
   const closeOrder = (save) => {
     setOpenOrder(false);
     if (save) {
-      orderList.push(new Drug(getRandomOrderType(), name, dose, `${route}, ${freq}`, refill));
+      orderList.push(new Drug('New', name, dose, `${route}, ${freq}`, refill));
     }
     setName('');
     setRoute('');
