@@ -1,8 +1,8 @@
-export const TEST_PATIENT_INFO_2 = ({ patientMRN }) => ({
+export const TEST_PATIENT_INFO = ({ patientMRN }) => ({
     firstName: 'Alex',
     lastName: 'Bowman',
     dateOfBirth: '1993-05-15',
-    age: 30,
+    age: 31,
     avatarUrl: null,
     preferredLanguage: 'English',
     gender: 'Female',

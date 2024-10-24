@@ -3,7 +3,7 @@ import {
   Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientDemo.js';
 import LabReport from '../snapshot/LabReportTab.js';
 import ImagingTabContent from './ImagingTabContent.js';
 

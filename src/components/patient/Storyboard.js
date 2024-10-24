@@ -5,7 +5,7 @@ import { blue, deepOrange } from '@mui/material/colors';
 
 import DateHelpers from '../../util/DateHelpers.js';
 import { usePatientMRN } from '../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js'
+import { TEST_PATIENT_INFO } from '../../util/data/PatientDemo.js'
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese

@@ -6,7 +6,7 @@ const TEST_PATIENT_INFO = ({ patientMRN }) => ({
   firstName: 'Alex',
   lastName: 'Bowman',
   dateOfBirth: '05/15/1993',
-  age: 30,
+  age: 31,
   avatarUrl: null,
   preferredLanguage: 'English',
   gender: 'Female',

@@ -3,7 +3,7 @@ import { materialRenderers, materialCells } from '@jsonforms/material-renderers'
 import { JsonForms } from '@jsonforms/react'
 import { usePatientMRN } from '../../../../util/urlHelpers.js'
 import histschema from '../../../../util/data/historyschema.json'
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientDemo.js'
 
 export const HistoryTabContent = ({ children, ...props }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN()
