@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material'
+import { Box, Tab, Tabs, Divider,  Paper} from '@mui/material'
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 
 import { Storyboard } from './Storyboard.js'
@@ -137,6 +137,194 @@ const bodySystems = [
   },
 ];
 
+const physicalExamBodySystems = [
+  {
+    title: 'Constitutional',
+    subsections: [
+      {
+        // subsectionTitle: 'General', 
+        checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'], 
+        symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'], 
+      }, 
+    ],
+  },
+  { 
+    title: 'Neck', 
+    subsections: [ 
+      { 
+        checkboxes: ['ROM Normal', 'Supple'], 
+        symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'], 
+      }, 
+    ],
+  },
+  {
+    title: 'Skin',
+    subsections: [
+      {
+        checkboxes: ['Warm', 'Dry', 'Normal Color'],
+        symptoms: ['Rash', 'Erythema', 'Pallor', 'Cyanosis'],
+      },
+    ],
+  },
+  {
+    title: 'Respiratory',
+    subsections: [
+      {
+        subsectionTitle: 'Breath Sounds',
+        checkboxes: ['Clear to Auscultation Bilaterally'],
+        symptoms: ['Wheezes', 'Rales', 'Rhonchi'],
+      },
+      {
+        subsectionTitle: 'Respiratory Effort',
+        checkboxes: ['Normal Effort', 'No Accessory Muscle Use'],
+        symptoms: ['Labored Breathing', 'Retractions'],
+      },
+    ],
+  },
+  {
+    title: 'Genitourinary / Anorectal',
+    subsections: [
+      {
+        subsectionTitle: 'General',
+        checkboxes: ['Normal External Appearance'],
+        symptoms: ['Lesions', 'Discharge'],
+      },
+      {
+        subsectionTitle: 'Anorectal',
+        checkboxes: ['Normal Tone'],
+        symptoms: ['Hemorrhoids', 'Fissures'],
+      },
+    ],
+  },
+  {
+    title: 'Musculoskeletal',
+    subsections: [
+      {
+        subsectionTitle: 'General',
+        checkboxes: ['Full Range of Motion', 'No Deformity'],
+        symptoms: ['Tenderness', 'Swelling', 'Limited ROM'],
+      },
+      {
+        subsectionTitle: 'Spine',
+        checkboxes: ['Normal Curvature'],
+        symptoms: ['Tenderness', 'Kyphosis', 'Scoliosis'],
+      },
+    ],
+  },
+  {
+    title: 'Neurological',
+    subsections: [
+      {
+        subsectionTitle: 'Mental Status',
+        checkboxes: ['Alert', 'Oriented x3'],
+        symptoms: ['Confusion', 'Lethargy'],
+      },
+      {
+        subsectionTitle: 'Motor Function',
+        checkboxes: ['Normal Strength'],
+        symptoms: ['Weakness', 'Tremor', 'Involuntary Movements'],
+      },
+      {
+        subsectionTitle: 'Reflexes',
+        checkboxes: ['Normal Reflexes'],
+        symptoms: ['Hyperreflexia', 'Hyporeflexia'],
+      },
+    ],
+  },
+  {
+    title: 'Psychiatric',
+    subsections: [
+      {
+        subsectionTitle: 'Affect',
+        checkboxes: ['Normal Affect'],
+        symptoms: ['Flat', 'Anxious', 'Depressed'],
+      },
+      {
+        subsectionTitle: 'Behavior',
+        checkboxes: ['Cooperative'],
+        symptoms: ['Agitated', 'Withdrawn'],
+      },
+    ],
+  },
+  {
+    title: 'Gastrointestinal',
+    subsections: [
+      {
+        subsectionTitle: 'Inspection',
+        checkboxes: ['Non-Distended'],
+        symptoms: ['Scars', 'Striae'],
+      },
+      {
+        subsectionTitle: 'Palpation',
+        checkboxes: ['Soft', 'Non-Tender'],
+        symptoms: ['Tenderness', 'Guarding', 'Rebound'],
+      },
+      {
+        subsectionTitle: 'Bowel Sounds',
+        checkboxes: ['Normal Bowel Sounds'],
+        symptoms: ['Hyperactive', 'Hypoactive', 'Absent'],
+      },
+    ],
+  },
+  {
+    title: 'HEENT',
+    subsections: [
+      {
+        subsectionTitle: 'Head',
+        checkboxes: ['Normocephalic', 'Atraumatic'],
+        symptoms: [],
+      },
+      {
+        subsectionTitle: 'Eyes',
+        checkboxes: ['PERRL', 'EOM Intact'],
+        symptoms: ['Conjunctivae Normal', 'Scleral Icterus'],
+      },
+      {
+        subsectionTitle: 'Ears (Right)',
+        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'],
+        symptoms: ['Impacted Cerumen'],
+      },
+      {
+        subsectionTitle: 'Ears (Left)',
+        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'], 
+        symptoms: ['Impacted Cerumen'], 
+      }, 
+      { 
+        subsectionTitle: 'Nose', 
+        checkboxes: ['Nose Normal'], 
+        symptoms: ['Congestion', 'Rhinorrhea'], 
+      }, 
+      { 
+        subsectionTitle: 'Mouth/Throat', 
+        checkboxes: ['Moist'], 
+        symptoms: ['Clear', 'Exudate', 'Erythema'], 
+      }, 
+    ], 
+  },
+  {
+    title: 'Cardiovascular',
+    subsections: [
+      {
+        subsectionTitle: 'Rate',
+        checkboxes: ['Normal Rate', 'Tachycardia', 'Bradycardia'],
+        symptoms: []
+      },
+      {
+        subsectionTitle: 'Rhythm',
+        checkboxes: ['Regular Rhythm', 'Irregular Rhythm'],
+        symptoms: []
+      },
+      {
+        subsectionTitle: 'Pulses and Heart Sounds',
+        checkboxes: ['Pulses Normal', 'Heart Sounds Normal'],
+        symptoms: ['Murmur', 'Friction Rub', 'Gallop']
+      },
+    ],
+  },
+
+];
+
+
 export const PatientHome = ({ ...props }) => {
   const drawerWidth = 250
   const [tab, setTab] = useState(0)
@@ -157,7 +345,26 @@ export const PatientHome = ({ ...props }) => {
   
     return initialState;
   };
+
+  const generateInitialPEState = (systems) => {
+    // We need a separate function to generate the initial state for the physical exam because it has subsections
+    const initialState = {};
   
+    systems.forEach(system => {
+      const systemState = {};
+      system.subsections.forEach((subsection, idx) => {
+        const subsectionTitle = subsection.subsectionTitle ? subsection.subsectionTitle.toLowerCase() : '';
+        systemState[subsectionTitle] = {symptoms: null, checkboxes: null}; // Initial state for each subsection is null
+      });
+      initialState[system.title.toLowerCase()] = systemState;
+      systemState['custom'] = null; // Add a custom entry for custom PE text (DescriptionIcon)
+    });
+  
+    return initialState;
+  };
+  
+  
+  const [peState, setPEState] = useState(generateInitialPEState(physicalExamBodySystems));
   const [rosState, setRosState] = useState(generateInitialRosState(bodySystems));
 
   return (
@@ -187,7 +394,10 @@ export const PatientHome = ({ ...props }) => {
           setEditorState={setEditorState}
           rosState={rosState} 
           setRosState={setRosState}
+          peState={peState} 
+          setPEState={setPEState}
           bodySystems={bodySystems}
+          bodySystemsPE={physicalExamBodySystems}
           // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
           // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
          />}

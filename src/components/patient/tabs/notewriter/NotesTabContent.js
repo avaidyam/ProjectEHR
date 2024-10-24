@@ -11,7 +11,10 @@ const tabLabels = [
   "Physical Exam"
 ];
 
-export const Notewriter = ({ editorState, setEditorState, rosState, setRosState, bodySystems}) => {
+export const Notewriter = ({ editorState, setEditorState, 
+                            rosState, setRosState, 
+                            peState, setPEState,
+                            bodySystems, bodySystemsPE}) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Zero is Index of the first tab (HPI)
   const [selectedTabLabel, setSelectedTabLabel] = useState('HPI');
 
@@ -42,7 +45,11 @@ export const Notewriter = ({ editorState, setEditorState, rosState, setRosState,
           editorState={editorState} setEditorState={setEditorState}
           rosState={rosState} setRosState={setRosState} bodySystems={bodySystems} />
       )}
-      {selectedTabLabel === 'Physical Exam' && <NoteWriterPE />}
+      {selectedTabLabel === 'Physical Exam' && (
+        <NoteWriterPE 
+          editorState={editorState} setEditorState={setEditorState}
+          peState={peState} setPEState={setPEState} bodySystemsPE={bodySystemsPE}/>
+      )}
     </div>
   );
 };
