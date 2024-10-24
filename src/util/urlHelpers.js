@@ -1,6 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
-
-import { URL_KEYS } from './constants.js';
+import { useNavigate, useSearchParams, generatePath, useParams } from 'react-router-dom';
 
 /**
  * hook to extract mrn from url and set new one
@@ -10,16 +8,11 @@ import { URL_KEYS } from './constants.js';
  * *must* be used from within a functional component
  */
 export const usePatientMRN = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-
+  const { mrn } = useParams()
+  const navigate = useNavigate()
   return [
-    searchParams.get(URL_KEYS.MRN),
-    (value) =>
-      setSearchParams((params) => {
-        params.set(URL_KEYS.MRN, value);
-
-        return params;
-      }),
+    mrn,
+    (value) => navigate(generatePath('/patient/:mrn', { mrn: value })),
   ];
 };
 

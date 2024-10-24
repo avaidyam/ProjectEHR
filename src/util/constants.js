@@ -1,7 +1,3 @@
-export const URL_KEYS = {
-  MRN: 'mrn',
-  SELECTED_PATIENT_TAB: 'patient_tab',
-};
 
 // A very rudimentary FHIR store; filter by `resourceType`, etc to use.
 // This is global-scoped because it will need to be accessible from across the app right now;
