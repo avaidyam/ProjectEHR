@@ -107,7 +107,6 @@ export default function Orders() {
   
 
   const categories = ["New", "Modify", "Hold", "Discontinue", "Orders to be Signed"]
-
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
@@ -175,7 +174,6 @@ export default function Orders() {
                     setOpenSearchList(!openSearchList);
                 }}
               />
-
               {(!data || data.length === 0) ? (
                 <p>No Results. Try again.</p>
               ) : (

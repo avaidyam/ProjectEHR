@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { materialRenderers, materialCells } from '@jsonforms/material-renderers'
 import { JsonForms } from '@jsonforms/react'
 import { usePatientMRN } from '../../../../util/urlHelpers.js'
-import histschema from '../../../../util/data/historyschema.json'
+import histschema from '../../../../util/data/history_schema.json'
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
 
 export const HistoryTabContent = ({ children, ...props }) => {

@@ -12,12 +12,12 @@
       "eventStatus": "",
       "room": null,
       "patient": {
-        "mrn": 6547,
-        "lastName": "Smith",
-        "firstName": "James",
+        "mrn": 1230001,
+        "lastName": "Bowman",
+        "firstName": "Alec",
         "middleName": null,
-        "age": 37,
-        "gender": "M",
+        "age": 31,
+        "gender": "F",
         "insurName": "BLUE CROSS BLUE SHIELD BCBS"
       },
       "provider": {
@@ -43,7 +43,7 @@
       "eventStatus": "",
       "room": 1,
       "patient": {
-        "mrn": 12345,
+        "mrn": 4641821,
         "lastName": "Hanson",
         "firstName": "John",
         "middleName": null,
@@ -74,7 +74,7 @@
       "eventStatus": "",
       "room": 5,
       "patient": {
-        "mrn": 1324,
+        "mrn": 4641821,
         "lastName": "Shen",
         "firstName": "Julia",
         "middleName": null,
@@ -105,7 +105,7 @@
       "eventStatus": "",
       "room": 3,
       "patient": {
-        "mrn": 65189,
+        "mrn": 4641821,
         "lastName": "Burnham",
         "firstName": "Jennifer",
         "middleName": null,
