@@ -8,7 +8,7 @@ const mockMedicationData = () => ({
   currentMedications: [
     {
       id: '1',
-      name: 'metformin',
+      name: 'metFORMIN',
       brandName: '',
       dosage: '500 mg',
       frequency: 'TWICE A DAY',
@@ -100,7 +100,7 @@ export default function OrdersMgmt() {
   };
 
   const addOrder = (med, medChangeType) => {
-    orderList.push(new Drug(medChangeType, med.name, med.dosage, med.frequency, 0)); // This updates the context's orderList directly
+    orderList.push(new Drug(medChangeType, med.name, med.dosage, med.frequency, med.route, 0)); // This updates the context's orderList directly
   };
 
   return (

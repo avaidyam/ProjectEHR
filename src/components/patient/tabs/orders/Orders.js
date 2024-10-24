@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, Card, Dialog, DialogActions, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
   MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material';
 
@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 
 // import json orders master list
 import { getRxTerms } from '../../../../util/getRxTerms.js';
-import {useOrder, Drug} from './OrdersContext.js';
+import {useOrder} from './OrdersContext.js';
 
 // display + add # days on date picker
 function dateLocal(addDay) {
@@ -25,53 +25,14 @@ function dateLocal(addDay) {
 }
 
 export default function Orders() {
-  const [tempMed, setTempMed] = useState(null);
-  const [openSearchList, setOpenSearchList] = useState(false);
-  const [openOrder, setOpenOrder] = useState(false);
-  const [data, setData] = useState([]);
-  const [value, setValue] = useState('');
-  const [name, setName] = useState('');
-  const [route, setRoute] = useState('');
-  const [dose, setDose] = useState('');
-  const [freq, setFreq] = useState('');
-  const [refill, setRefill] = useState('');
-  const [type, setType] = useState('');
-  const [status, setStatus] = useState('');
-  const [priority, setPriority] = useState('');
-  const [classCollect, setClass] = useState('');
-
-  // for future labs only: expected date & expired date of lab order
-  const [expectDate, setExpectDate] = useState(0);
-  const [expireDate, setExpireDate] = useState(90);
-
-  // for standing labs only: interval (how often) & count (# of times)
-  const [interval, setInterval] = useState(30);
-  const [count, setCount] = useState(1);
-
-  // list of orders that are pending/waiting to be signed
-  const {orderList, setOrderList} = useOrder();
-
-  // action for signing orders
-  const submitOrder = () => {
-    // some code on submitting order (will fill this in the future), then empty the templist
-    setOrderList([]);
-  };
-
-
-  const closeOrder = (save) => {
-    setOpenOrder(false);
-    if (save) {
-      orderList.push(new Drug('New', name, dose, `${route}, ${freq}`, refill));
-    }
-    setName('');
-    setRoute('');
-    setDose('');
-    setRefill('');
-    setType('');
-    setStatus('');
-    setPriority('');
-    setClass('');
-  };
+  
+  const {
+    tempMed, setTempMed, openSearchList, setOpenSearchList, openOrder, setOpenOrder, 
+    data, setData, value, setValue, name, setName, route, setRoute, dose, setDose, freq, setFreq, refill, setRefill, 
+    type, setType, status, setStatus, priority, setPriority, classCollect, setClass,
+    expectDate, setExpectDate, expireDate, setExpireDate, interval, setInterval, count, setCount, orderList, setOrderList,
+    submitOrder, closeOrder
+  } = useOrder();
 
   useEffect(() => {
     getRxTerms(value).then(setData);
@@ -465,7 +426,7 @@ export default function Orders() {
                         {order.dose}
                       </Typography>
                       <Typography fontSize="8pt" color="grey">
-                        {order.sig}, {order.refill} Refills
+                        {order.route}, {order.freq}, {order.refill} Refills
                       </Typography>
                       <Button
                         sx={{ 
