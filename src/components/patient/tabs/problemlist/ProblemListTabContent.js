@@ -5,12 +5,12 @@ import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientDemo.js';
+import { TEST_PATIENT_INFO_2 } from '../../../../util/data/PatientDemo.js';
 import ProblemListEditor from './ProblemListEditor.js';
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const patientData = TEST_PATIENT_INFO({ patientMRN });
+  const patientData = TEST_PATIENT_INFO_2({ patientMRN });
   const diagnosesArray = patientData.diagnosisList;
 
   const [searchTerm, setSearchTerm] = useState('');

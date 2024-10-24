@@ -5,7 +5,7 @@ import { blue, deepOrange } from '@mui/material/colors';
 
 import DateHelpers from '../../util/DateHelpers.js';
 import { usePatientMRN } from '../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../util/data/PatientDemo.js'
+import { TEST_PATIENT_INFO_2 } from '../../util/data/PatientDemo.js'
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
@@ -90,7 +90,7 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
 };
 
 export const PatientSidebarVitalsOverview = ({ patientMRN, ...props }) => {
-  const { vitals } = TEST_PATIENT_INFO({ patientMRN });
+  const { vitals } = TEST_PATIENT_INFO_2({ patientMRN });
   /** sort most recent to older */
   const [mostRecentVitals, ...olderVitals] = _.sortBy(
     vitals || [],
@@ -124,7 +124,7 @@ export const Storyboard = ({ ...props }) => {
     encounter,
     careGaps,
     problems
-  } = TEST_PATIENT_INFO({
+  } = TEST_PATIENT_INFO_2({
     patientMRN,
   });
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);

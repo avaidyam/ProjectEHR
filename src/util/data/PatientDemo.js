@@ -1,4 +1,4 @@
-export const TEST_PATIENT_INFO = ({ patientMRN }) => ({
+export const TEST_PATIENT_INFO_2 = ({ patientMRN }) => ({
     firstName: 'Alex',
     lastName: 'Bowman',
     dateOfBirth: '1993-05-15',

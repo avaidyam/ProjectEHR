@@ -3,7 +3,7 @@ import {
   Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientDemo.js';
+import { TEST_PATIENT_INFO_2 } from '../../../../util/data/PatientDemo.js';
 import LabReport from '../snapshot/LabReportTab.js';
 import ImagingTabContent from './ImagingTabContent.js';
 
@@ -106,7 +106,7 @@ export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const { documents } = TEST_PATIENT_INFO({ patientMRN });
+  const { documents } = TEST_PATIENT_INFO_2({ patientMRN });
 
   return (
     <div>
