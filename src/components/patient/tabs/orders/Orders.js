@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, Divider, FormControl, Icon, IconButton, InputLabel, List, ListItem, ListItemText, ListItemButton, 
-  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select, Drawer } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Box, Button, Card, Dialog, DialogActions, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
+  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material';
 
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 
 // import json orders master list
 import { getRxTerms } from '../../../../util/getRxTerms.js';
+import {useOrder} from './OrdersContext.js';
 
 // display + add # days on date picker
 function dateLocal(addDay) {
@@ -23,68 +24,15 @@ function dateLocal(addDay) {
   );
 }
 
-function Drug(type, name, dose, sig, refill) {
-  this.type = type;
-  this.name = name;
-  this.dose = dose;
-  this.sig = sig;
-  this.refill = refill;
-}
-
 export default function Orders() {
-  const [tempMed, setTempMed] = useState(null);
-  const [openSearchList, setOpenSearchList] = useState(false);
-  const [openOrder, setOpenOrder] = useState(false);
-  const [data, setData] = useState([]);
-  const [value, setValue] = useState('');
-  const [name, setName] = useState('');
-  const [route, setRoute] = useState('');
-  const [dose, setDose] = useState('');
-  const [freq, setFreq] = useState('');
-  const [refill, setRefill] = useState('');
-  const [type, setType] = useState('');
-  const [status, setStatus] = useState('');
-  const [priority, setPriority] = useState('');
-  const [classCollect, setClass] = useState('');
-
-  // for future labs only: expected date & expired date of lab order
-  const [expectDate, setExpectDate] = useState(0);
-  const [expireDate, setExpireDate] = useState(90);
-
-  // for standing labs only: interval (how often) & count (# of times)
-  const [interval, setInterval] = useState(30);
-  const [count, setCount] = useState(1);
-
-  // list of orders that are pending/waiting to be signed
-  const [orderList, setOrderList] = useState([]);
-
-  // action for signing orders
-  const submitOrder = () => {
-    // some code on submitting order (will fill this in the future), then empty the templist
-    setOrderList([]);
-  };
-
-  // Function to randomly select an order type !SHOULD EVENTUALLY BE REMOVED!
-  const getRandomOrderType = () => {
-    const types = ['New', 'Modify', 'Discontinue'];
-    return types[Math.floor(Math.random() * types.length)];
-  };
-
-
-  const closeOrder = (save) => {
-    setOpenOrder(false);
-    if (save) {
-      orderList.push(new Drug(getRandomOrderType(), name, dose, route + ', ' + freq, refill));
-    }
-    setName('');
-    setRoute('');
-    setDose('');
-    setRefill('');
-    setType('');
-    setStatus('');
-    setPriority('');
-    setClass('');
-  };
+  
+  const {
+    tempMed, setTempMed, openSearchList, setOpenSearchList, openOrder, setOpenOrder, 
+    data, setData, value, setValue, name, setName, route, setRoute, dose, setDose, freq, setFreq, refill, setRefill, 
+    type, setType, status, setStatus, priority, setPriority, classCollect, setClass,
+    expectDate, setExpectDate, expireDate, setExpireDate, interval, setInterval, count, setCount, orderList, setOrderList,
+    submitOrder, closeOrder
+  } = useOrder();
 
   useEffect(() => {
     getRxTerms(value).then(setData);
@@ -95,12 +43,14 @@ export default function Orders() {
 
 
   // called to get the color scheme for text and box styling
-  const getBackgroundColor = (type) => {
-    switch (type) {
+  const getBackgroundColor = (backC) => {
+    switch (backC) {
       case 'New':
         return '#19852F'
       case 'Modify':
         return '#E27602'
+      case 'Hold':
+        return '#7e57c2'
       case 'Discontinue':
         return '#FF2C2C'
       case 'Orders to be Signed':
@@ -111,12 +61,14 @@ export default function Orders() {
   }
 
   // Used to get the highlight color based on drug type
-  const getHighlightColor = (type) => {
-    switch (type) {
+  const getHighlightColor = (highC) => {
+    switch (highC) {
       case 'New':
         return '#87E8B6'
       case 'Modify':
         return '#E8BE9D'
+      case 'Hold':
+        return '#b39ddb'
       case 'Discontinue':
         return '#E88E96'
       case 'Orders to be Signed':
@@ -126,12 +78,14 @@ export default function Orders() {
     }
   }
   // called to generate the titles for each category, New, Modified, etc... with styling and icons
-  const getTitle = (type) => {
-    switch (type) {
+  const getTitle = (title) => {
+    switch (title) {
       case 'New':
         return <Typography variant="overline" sx={{color:'#19852F', fontWeight:600, fontSize:'16px', backgroundColor:'#BCF2C1'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>assignment_add</Icon> New Order&nbsp;&nbsp;</Typography>
       case 'Modify':
         return <Typography variant="overline" sx={{color:'#E0A830', fontWeight:600, fontSize:'16px', backgroundColor:'#F2DFC8'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>edit_document</Icon> Orders to Modify&nbsp;&nbsp;</Typography>
+      case 'Hold':
+        return <Typography variant="overline" sx={{color:'#7e57c2', fontWeight:600, fontSize:'16px', backgroundColor:'#d1c4e9'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>edit_document</Icon> Orders to Hold&nbsp;&nbsp;</Typography>
       case 'Discontinue':
         return <Typography variant="overline" sx={{color:'#CF3935', fontWeight:600, fontSize:'16px', backgroundColor:'#F2CCCD'}}>&nbsp;<Icon sx={{fontSize:'20px', position:'relative', top:'3.5px'}}>content_paste_off</Icon> Orders to Discontinue&nbsp;&nbsp;</Typography>
       case 'Orders to be Signed':
@@ -142,9 +96,9 @@ export default function Orders() {
   }
 
   // Used to maintain a number of how many orders in each section, used to hide sections with 0 orders
-  const countOrdersOfType = (orders, type) => {
-    return orders.filter(order => order.type === type).length;
-  };
+  // const countOrdersOfType = (orders, type) => {
+  //  return orders.filter(order => order.type === type).length;
+  // };
   
   // Handles removing orders on "x" click
   const removeOrder = (orderToRemove) => {
@@ -152,8 +106,7 @@ export default function Orders() {
   };
   
 
-  let categories = ["New", "Modify", "Discontinue", "Orders to be Signed"]
-
+  const categories = ["New", "Modify", "Hold", "Discontinue", "Orders to be Signed"]
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
@@ -209,6 +162,18 @@ export default function Orders() {
         <div>
           <Dialog fullWidth maxWidth="md" onClose={() => { setOpenSearchList(false) }} open={openSearchList}>
             <List>
+            <TextField
+                label="Add orders or order sets"
+                size="small"
+                sx={{ minWidth: 300 }}
+                variant="outlined"
+                value={value}
+                onChange={(x) => setValue(x.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter')
+                    setOpenSearchList(!openSearchList);
+                }}
+              />
               {(!data || data.length === 0) ? (
                 <p>No Results. Try again.</p>
               ) : (
@@ -459,7 +424,7 @@ export default function Orders() {
                         {order.dose}
                       </Typography>
                       <Typography fontSize="8pt" color="grey">
-                        {order.sig}, {order.refill} Refills
+                        {order.route}, {order.freq}, {order.refill} Refills
                       </Typography>
                       <Button
                         sx={{ 

@@ -4,6 +4,7 @@ import { AppBar, IconButton, Toolbar, Typography, Box, Icon, Button } from '@mui
 import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
+import { OrderProvider } from './patient/tabs/orders/OrdersContext.js'; // Import the OrderProvider
 
 export const NavBar = ({ onHandleClickRoute, onLogout }) => (
   <>
@@ -45,6 +46,7 @@ export const App = () => {
   };
 
   return (
+    <OrderProvider>
     <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
       {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />}
       <Routes>
@@ -53,5 +55,6 @@ export const App = () => {
         <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
       </Routes>
     </Box>
+    </OrderProvider>
   );
 };

@@ -1,61 +1,69 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItemButton, ListItemText, ListItemSecondaryAction } from '@mui/material';
+import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItem, Grid } from '@mui/material';
+import {useOrder, Drug} from './OrdersContext.js';
 
 // need to link to actions in orders later
 const mockMedicationData = () => ({
+  
   currentMedications: [
     {
       id: '1',
-      name: 'clopidogrel',
-      brandName: 'PLAVIX',
-      dosage: '75 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'metFORMIN',
+      brandName: '',
+      dosage: '500 mg',
+      frequency: 'TWICE A DAY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '2',
-      name: 'aspirin',
-      brandName: 'ASPIRIN',
-      dosage: '81 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'lisinopril',
+      brandName: '',
+      dosage: '5 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '3',
-      name: 'atorvastatin',
-      brandName: 'LIPITOR',
-      dosage: '80 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'lovastatin',
+      brandName: '',
+      dosage: '20 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '4',
-      name: 'carvedilol',
-      brandName: 'COREG',
-      dosage: '3.125 mg',
-      frequency: 'twice a day',
-      startDate: '',
+      name: 'omeprazole',
+      brandName: '',
+      dosage: '20 mg',
+      frequency: 'ONCE DAILY',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '5',
-      name: 'lisinopril',
-      brandName: 'QBRELIS',
-      dosage: '10 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'acetaminophen',
+      brandName: '',
+      dosage: '500 mg',
+      frequency: 'AS NEEDED',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
     {
       id: '6',
-      name: 'eplerenone',
-      brandName: 'INSPRA',
-      dosage: '25 mg',
-      frequency: 'once daily',
-      startDate: '',
+      name: 'ibuprofen',
+      brandName: '',
+      dosage: '200 mg',
+      frequency: 'AS NEEDED',
+      route: 'oral',
+      startDate: 'Sat 9/1/24',
       endDate: '',
     },
   ]
@@ -65,12 +73,13 @@ const mockMedicationData = () => ({
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
+
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
       aria-labelledby={`tab-${index}`}
-      {...other}
+      {...other} 
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
@@ -84,9 +93,14 @@ const TabPanel = (props) => {
 export default function OrdersMgmt() {
   const [value, setValue] = useState(0);
   const { currentMedications } = mockMedicationData();
+  const {orderList, setOrderList} = useOrder();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const addOrder = (med, medChangeType) => {
+    orderList.push(new Drug(medChangeType, med.name, med.dosage, med.frequency, med.route, 0)); // This updates the context's orderList directly
   };
 
   return (
@@ -109,23 +123,28 @@ export default function OrdersMgmt() {
           {currentMedications.map((med) => (
             <Box>
               <Divider />
-              <ListItemButton sx={{ mb: 1, p: 1 }}>
-                <ListItemText
-                  primary={`Name: ${med.name}`}
-                  secondary={
-                    <>
-                      <Typography variant="body2">{`Brand Name: ${med.brandName}`}</Typography>
-                      <Typography variant="body2">{`Dosage: ${med.dosage}`}</Typography>
-                      <Typography variant="body2">{`Frequency: ${med.frequency}`}</Typography>
-                    </>
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <Button variant="outlined" size="small">Modify</Button>
-                  <Button variant="outlined" size="small">Hold</Button>
-                  <Button variant="outlined" size="small">Discontinue</Button>
-                </ListItemSecondaryAction>
-              </ListItemButton>
+              <ListItem sx={{ mb: 1, p: 1 }}>
+                  <Grid container spacing={3}>
+                      <Grid item xs={12} sm={3}>
+                        <Typography variant="body2">{med.name} {med.dosage}</Typography>
+                      </Grid>
+
+                      {/* Second Column: Dosage and Frequency */}
+                      <Grid item xs={12} sm={6}>
+                        <Typography variant="body2">{med.dosage}, {med.route}, {med.frequency}, started on {med.startDate}</Typography>
+                      </Grid>
+
+                      {/* Third Column: Action Buttons */}
+                      <Grid item xs={12} sm={3}>
+                      <Box sx={{ textAlign: 'right' }}>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Modify')}>Modify</Button>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Hold')}>Hold</Button>
+                        <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Discontinue')}>Discontinue</Button>
+                      </Box>
+                      </Grid>
+                    </Grid>
+
+              </ListItem>
             </Box>
           ))}
         </List>
