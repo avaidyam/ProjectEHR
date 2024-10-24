@@ -12,6 +12,8 @@ import { HistoryTabContent } from './tabs/history/HistoryTabContent.js'
 import Orders from './tabs/orders/Orders.js';
 import OrdersMgmt from './tabs/orders/OrdersMgmt.js';
 import Medications from './tabs/medications/Medications.js';
+import Pdmp from './tabs/pdmp/Pdmp.js';
+
 
 const bodySystems = [
   {
@@ -176,6 +178,7 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="Orders" />
           <Tab label="Orders Mgmt" />
           <Tab label="NoteWriter" />
+          <Tab label="PDMP" />
         </Tabs>
         <Divider />
         {tab === 0 && <SnapshotTabContent />}
@@ -194,6 +197,7 @@ export const PatientHome = ({ ...props }) => {
           // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
           // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
          />}
+         {tab === 8 && <Pdmp/>}
       </Box>
     </Box>
   )
