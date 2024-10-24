@@ -3,56 +3,46 @@ import React from 'react';
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 const TEST_PATIENT_INFO = ({ patientMRN }) => ({
-  firstName: 'Patient',
-  lastName: 'Sherman',
-  dateOfBirth: '05/15/1995',
-  age: 28,
+  firstName: 'Alex',
+  lastName: 'Bowman',
+  dateOfBirth: '05/15/1993',
+  age: 30,
   avatarUrl: null,
   preferredLanguage: 'English',
-  gender: 'Male',
-  address: '42 Wallaby Way, Sydney, Australia',
-  phone: '1 (205) 867-5309',
-  allergies: [{id: 'uiduid', allergen: 'Peanuts', reaction: 'Death'}],
-  medicalHistory: [{
-      id: 'jakjak',
-      name: 'Opioid Use Disorder'
-    },
-    {
-      id: 'whywhy', 
-      name: 'Heart Failure with preserved ejection fraction'
-    }
+  gender: 'Female',
+  address: '506 S Mathews Ave, Urbana, IL',
+  phone: '1 (234) 5678',
+  allergies: [{id: 'uiduid', allergen: 'Penicillin', reaction: '?'}],
+  medicalHistory: [
   ],
-  medications: [{
-      id: '123123',
-      name: 'Metoprolol',
-      dosage: '25mg',
-      frequency: 'BID',
-      route: 'tab',
-      startDate: '',
-      endDate: '',
-    },
-    {
-      id: 'abcabc',
-      name: 'Suboxone (buprenorphine-naltrexone)',
-      dosage: '25mg/5mg',
-      frequency: 'QD',
-      route: 'tab',
-      startDate: '',
-      endDate: '',
-    },
+  medications: [
   ],
-  surgicalHistory: [{
-      id: '123123',
-      name: 'ulnar collateral reconstruction (R)',
-      date: '2014-01-07' 
-    },
+  surgicalHistory: [
   ],
   familyHistory: [
     {
       id: 'xyzxyz',
+      relation: 'Father',
+      alive: true,
+      conditions: ['Hypertension']
+    },
+     {
+      id: 'xyzxyz',
+      relation: 'Mother',
+      alive: true,
+      conditions: []
+    },
+     {
+      id: 'xyzxyz',
+      relation: 'Daughter',
+      alive: true,
+      conditions: []
+    },
+     {
+      id: 'xyzxyz',
       relation: 'Brother',
       alive: true,
-      conditions: ['Autobrewery Syndrome']
+      conditions: []
     }
   ],
 });
