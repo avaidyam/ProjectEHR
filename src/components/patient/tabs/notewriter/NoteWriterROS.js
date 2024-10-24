@@ -12,8 +12,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 
 
 const replaceROSText = (editorState, rosState) => {
-  let contentState = editorState.getCurrentContent();
-  let blocks = contentState.getBlockMap().toArray();
+  const contentState = editorState.getCurrentContent();
+  const blocks = contentState.getBlockMap().toArray();
 
   let rosText = "";
   Object.entries(rosState).forEach(([systemName, symptoms]) => {
