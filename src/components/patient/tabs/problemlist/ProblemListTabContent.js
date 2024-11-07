@@ -27,9 +27,18 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const [indexToUpdate, setIndexToUpdate] = useState(null);
 
   const handleExpandRow = (rowIndex) => {
-    const newExpandedRows = expandedRows.map((item, index) => index === rowIndex ? !item : item);
+    const newExpandedRows = expandedRows.map((item, index) =>
+        index === rowIndex ? !item : item
+    );
+
+    // If it's a newly added row, ensure it's set to true (expanded)
+    if (rowIndex >= expandedRows.length) {
+        newExpandedRows.push(true); // Expand the new row
+    }
+
     setExpandedRows(newExpandedRows);
   };
+
 
   useEffect(() => {
     setFilteredDiagnoses(
@@ -54,24 +63,28 @@ const ProblemListTabContent = ({ children, ...other }) => {
 
   const handleAccept = () => {
     if (selectedDiagnosis) {
-      console.log("Index to update", indexToUpdate, indexToUpdate===null);
-      if (indexToUpdate !== null) {
-        // UPDATE the existing problem
-        const updatedProblems = problems.map((problem, i) =>
-          i === indexToUpdate ? { ...problem, diagnosis: selectedDiagnosis } : problem
-        );
-        setProblems(updatedProblems);
-      } else {
-        // ADD a new problem
-        const newProblem = {
-          diagnosis: selectedDiagnosis,
-          // Add other properties as needed for the new problem row
-        };
-        setProblems([...problems, newProblem]);
-      }
-      handleCloseModal();
+        if (indexToUpdate !== null) {
+            // UPDATE the existing problem
+            const updatedProblems = problems.map((problem, i) =>
+                i === indexToUpdate ? { ...problem, diagnosis: selectedDiagnosis } : problem
+            );
+            setProblems(updatedProblems);
+        } else {
+            // ADD a new problem
+            const newProblem = {
+                diagnosis: selectedDiagnosis,
+                // Add other properties as needed for the new problem row
+            };
+            setProblems([...problems, newProblem]);
+
+            // Ensure the editor is expanded for the newly added row
+            setExpandedRows([...expandedRows, true]);  // Automatically expand the new row
+        }
+        handleCloseModal();
     }
   };
+
+  
   
 
   const handleDeleteProblem = (index) => {
