@@ -31,6 +31,11 @@ const SnapshotTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   const ptInfo = TEST_PATIENT_INFO({ patientMRN });
 
+  // Helper function to check if a section is empty
+  const isSectionEmpty = (section) => {
+    return !section || section.length === 0;
+  };
+
   return (
     <Grid container spacing={2} sx={{ p: 2 }}>
       <Grid item xs={12} md={6}>
@@ -44,63 +49,82 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Allergies" color='#9F3494'>
           <div>
-          {ptInfo.allergies.map((allergy) => {
-            return (
-              <div key={allergy.id}>
-                <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
-                    </div>
-                  );
-                })}
+            {isSectionEmpty(ptInfo.allergies) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              ptInfo.allergies.map((allergy) => (
+                <div key={allergy.id}>
+                  <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
+                </div>
+              ))
+            )}
           </div>
         </TitledCard>
       </Grid>
       <Grid item xs={12} md={6}>
         <TitledCard title="Medical History" color='#9F3494'>
           <div>
-            {ptInfo.history.medical.map((condition) => {
-              return (
+            {isSectionEmpty(ptInfo.history.medical) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              ptInfo.history.medical.map((condition) => (
                 <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                     {condition.date}
                   </span>
                   <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </TitledCard>
       </Grid>
       <Grid item xs={12} md={6}>
         <TitledCard title="Medications" color='#9E49E2'>
           <div>
-            {(ptInfo.medications ?? []).map((medication) => {
-              return(<div key={medication.id} style={{ color: '#9E49E2' }}>{medication.name} {medication.dosage} {medication.frequency}</div>)
-            })}
+            {isSectionEmpty(ptInfo.medications) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              ptInfo.medications.map((medication) => (
+                <div key={medication.id} style={{ color: '#9E49E2' }}>
+                  {medication.name} {medication.dosage} {medication.frequency}
+                </div>
+              ))
+            )}
           </div>
         </TitledCard>
       </Grid>
       <Grid item xs={12} md={6}>
-        <TitledCard title="Surgical History" color= '#9F3494'>
+        <TitledCard title="Surgical History" color='#9F3494'>
           <div>
-            {ptInfo.history.surgical.map((condition) => {
-              return (
+            {isSectionEmpty(ptInfo.history.surgical) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              ptInfo.history.surgical.map((condition) => (
                 <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                     {condition.date}
                   </span>
                   <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.procedure}</span>
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </TitledCard>
       </Grid>
       <Grid item xs={12} md={6}>
-        <TitledCard title="Family History" color= '#9F3494'>
+        <TitledCard title="Family History" color='#9F3494'>
           <div>
-            {ptInfo.history.family.map((relative) => {
-              return(<div key={relative.id}> <span style={{color:'#bbbbbb'}}>{relative.relationship}</span> <span style={{marginLeft:'35px'}}>{relative.problems.map(x => x.description).join(', ')}</span></div>)
-            })}
+            {isSectionEmpty(ptInfo.history.family) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              ptInfo.history.family.map((relative) => (
+                <div key={relative.id}>
+                  <span style={{color:'#bbbbbb'}}>{relative.relationship}</span>
+                  <span style={{marginLeft:'35px'}}>{relative.problems.map(x => x.description).join(', ')}</span>
+                </div>
+              ))
+            )}
           </div>
         </TitledCard>
       </Grid>
