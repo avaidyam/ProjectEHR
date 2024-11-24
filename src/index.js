@@ -58,11 +58,39 @@ const theme = createTheme({
       fontWeight: 300,
     },
     body2: {
-      fontSize: '1.1rem',
+      fontSize: '1rem',
       fontWeight: 300,
     },
   },
   components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFFFF',
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFFFF',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFFFF',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#FFFFFF',
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {

@@ -44,8 +44,8 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
   };
 
   return (
-    <form style={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ position: 'relative', flexGrow: 1 }}>
+    <form style={{ height: '80vh', display: 'flex', flexDirection: 'column', backgroundColor: '#FFFFFF'}}>
+      <Box sx={{ position: 'relative', flexGrow: 1}}>
         <Editor
           onEditorStateChange={setEditorState}
           editorState={editorState}

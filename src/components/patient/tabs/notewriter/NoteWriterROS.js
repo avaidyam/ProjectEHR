@@ -185,7 +185,7 @@ const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bod
   }, [rosState, setEditorState]); // Remove `editorState` from the dependency array
 
   return (
-    <Box sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2, backgroundColor: '#FFFFFF' }}>
       <Grid container spacing={.5}>
         {bodySystems.map((system, idx) => (
           <Grid item xs={6} md={4} lg={3} key={idx}>

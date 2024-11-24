@@ -300,7 +300,7 @@ const NoteWriterPE = ({ editorState, setEditorState, peState, setPEState, bodySy
   }, [peState, setEditorState]);
 
   return (
-    <Box sx={{ padding: 2 }}>
+    <Box sx={{ padding: 2, backgroundColor: '#FFFFFF' }}>
       <Grid container spacing={1}>
         {bodySystemsPE.map((system, idx) => (
           <Grid item xs={12} md={6} lg={4} key={idx}>
