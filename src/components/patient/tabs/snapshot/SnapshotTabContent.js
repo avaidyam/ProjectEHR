@@ -19,7 +19,8 @@ const TitledCard = ({ children, title, color}) => {
       padding: '16px',
       borderRadius: '8px',
       overflow: 'hidden',
-      position: 'relative'
+      position: 'relative',
+      background: '#FFFFFF'
     }}>
       <h3 style={{ fontSize: "1.2em", marginTop: 0, color: color}}>{title}</h3>
       <div style={{ margin: 0 }}>{children}</div>

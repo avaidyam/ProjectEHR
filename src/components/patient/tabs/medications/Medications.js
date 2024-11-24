@@ -153,7 +153,7 @@ export default function Medications() {
                       <TableCell>
                         <Button onClick={() => handleEdit(medication)} style={{ textAlign: 'left' }}>
                           <Box>
-                            <Typography variant="body1" color="primary">
+                            <Typography variant="body1">
                               {medication.name} ({medication.brandName}) {medication.dose}{medication.unit} {medication.route}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">

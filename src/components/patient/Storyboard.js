@@ -163,10 +163,10 @@ export const Storyboard = ({ ...props }) => {
       <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance.carrierName}</span></span>
     </div>
       <Divider color="inherit" />
-      <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {encounter.type}</Typography>
-      <Typography>Date: {encounter.date}</Typography>
-      <Typography>Reason: {encounter.concerns.join(", ")}</Typography>
+      <Typography variant="h6" color="inherit">Encounter</Typography>
+      <Typography color="inherit">Type: {encounter.type}</Typography>
+      <Typography color="inherit">Date: {encounter.date}</Typography>
+      <Typography color="inherit">Reason: {encounter.concerns.join(", ")}</Typography>
       <Divider color="inherit" />
       <PatientSidebarVitalsOverview patientMRN={patientMRN} />
       <Divider color="inherit" />

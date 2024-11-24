@@ -9,19 +9,15 @@ import { AuthProvider } from './components/login/AuthContext.js';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2196f3', // EPIC's bright blue
-      light: '#64b5f6',
-      dark: '#1976d2',
-      contrastText: '#FFFFFF',
+      main: '#dbf1ff', 
+      contrastText: '#000000',
     },
     secondary: {
-      main: '#90caf9', // Lighter blue for secondary elements
-      light: '#bbdefb',
-      dark: '#64b5f6',
+      main: '#64b5f6', 
       contrastText: '#000000',
     },
     background: {
-      default: '#f5f9ff', // Light blue-tinted background
+      default: '#eef7ff', 
       paper: '#FFFFFF',
     },
     text: {
@@ -29,7 +25,7 @@ const theme = createTheme({
       secondary: '#666666',
     },
     warning: {
-      main: '#ff9800', // Orange for alerts/warnings
+      main: '#ff9800', 
       light: '#ffb74d',
       dark: '#f57c00',
     },
@@ -38,44 +34,75 @@ const theme = createTheme({
       light: '#4fc3f7',
       dark: '#0288d1',
     },
+    action: {
+      hover: '#90caf9',
+    },
   },
   typography: {
-    fontFamily: '"Segoe UI", "Arial", sans-serif',
-    fontSize: 12, // EPIC uses smaller font sizes
+    fontFamily: '"Segoe UI Light", "Segoe UI", sans-serif',
+    fontSize: 12,
+    allVariants: {
+      color: '#000000',
+      fontWeight: 300,
+    },
     h1: {
-      fontSize: '1.2rem',
-      fontWeight: 500,
+      fontSize: '1.5rem',
+      fontWeight: 400,
     },
     h2: {
       fontSize: '1.1rem',
-      fontWeight: 500,
-    },
-    h3: {
-      fontSize: '1rem',
-      fontWeight: 500,
+      fontWeight: 400,
     },
     body1: {
-      fontSize: '0.8rem',
+      fontSize: '1.1rem',
+      fontWeight: 300,
     },
     body2: {
-      fontSize: '0.75rem',
+      fontSize: '1.1rem',
+      fontWeight: 300,
     },
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#42a5f5',
+          color: '#000000',
+          boxShadow: 'none',
+          minHeight: '32px',
+        },
+      },
+    },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          minHeight: '32px !important',
+          padding: '0 4px',
+        },
+      },
+    },
     MuiTab: {
       styleOverrides: {
         root: {
-          minHeight: '32px',
-          padding: '6px 12px',
+          minHeight: '24px',
+          padding: '4px 12px',
           textTransform: 'none',
-          fontSize: '0.8rem',
-          backgroundColor: '#bbdefb',
-          marginRight: '1px',
-          borderTopLeftRadius: '4px',
-          borderTopRightRadius: '4px',
+          fontSize: '1rem',
+          color: '#000000',
+          backgroundColor: '#90caf9',
+          marginRight: '2px',
+          marginLeft: '2px',
+          borderTopLeftRadius: '3px',
+          borderTopRightRadius: '3px',
+          borderTop: '1px solid #64b5f6',
+          borderLeft: '1px solid #64b5f6',
+          borderRight: '1px solid #64b5f6',
           '&.Mui-selected': {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#eef7ff',
             color: '#000000',
+          },
+          '&:hover': {
+            backgroundColor: '#83b9e6', 
           },
         },
       },
@@ -83,27 +110,39 @@ const theme = createTheme({
     MuiTabs: {
       styleOverrides: {
         root: {
-          minHeight: '32px',
-          backgroundColor: '#bbdefb',
+          minHeight: '24px',
+          backgroundColor: '#e3f2fd',
         },
         indicator: {
-          display: 'none', // EPIC doesn't use bottom indicators
+          display: 'none',
         },
       },
     },
-    MuiAppBar: {
+    MuiTableCell: {
       styleOverrides: {
         root: {
-          backgroundColor: '#2196f3',
-          boxShadow: 'none',
+          padding: '2px 8px',
+          fontSize: '1rem',
+          borderBottom: '1px solid #e0e0e0',
+          backgroundColor: '#FFFFFF',
+          height: '24px',
+        },
+        head: {
+          fontWeight: 500,
+          backgroundColor: '#FFFFFF',
+          color: '#000000',
         },
       },
     },
-    MuiToolbar: {
+    MuiTableRow: {
       styleOverrides: {
         root: {
-          minHeight: '40px !important',
-          padding: '0 8px',
+          '&.Mui-selected': {
+            backgroundColor: '#eef7ff',
+          },
+          '&:hover': {
+            backgroundColor: '#90caf9',
+          },
         },
       },
     },
@@ -111,52 +150,46 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontSize: '0.8rem',
-          padding: '4px 8px',
-          minHeight: '24px',
-        },
-        contained: {
+          fontSize: '1rem',
+          padding: '2px 8px',
+          minHeight: '20px',
+          color: '#000000',
+          backgroundColor: '#e3f2fd',
+          border: '1px solid #90caf9',
           boxShadow: 'none',
           '&:hover': {
+            backgroundColor: '#90caf9',
             boxShadow: 'none',
           },
         },
       },
     },
-    MuiCard: {
+    MuiIconButton: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-          borderRadius: '2px',
+          padding: '4px',
+          color: '#000000',
         },
       },
     },
-    MuiPaper: {
+    MuiDivider: {
       styleOverrides: {
         root: {
-          borderRadius: '2px',
-        },
-        elevation1: {
-          boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+          borderColor: '#e0e0e0',
         },
       },
     },
-    MuiTableCell: {
+    MuiCheckbox: {
       styleOverrides: {
         root: {
-          padding: '4px 8px',
-          fontSize: '0.8rem',
-          borderBottom: '1px solid #e0e0e0',
-        },
-        head: {
-          fontWeight: 500,
-          backgroundColor: '#f5f5f5',
+          padding: '2px',
+          color: '#757575',
         },
       },
     },
   },
   shape: {
-    borderRadius: 2,
+    borderRadius: 3,
   },
 });
 

@@ -293,6 +293,7 @@ export function Schedule() {
             }}
             pageSizeOptions={[5, 10]}
             sx={{
+              backgroundColor: '#FFFFFF',
               '& .MuiDataGrid-cell:hover': {
                 color: 'primary.main',
               },
