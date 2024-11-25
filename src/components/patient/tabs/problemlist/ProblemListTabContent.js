@@ -9,16 +9,46 @@ import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import ProblemListEditor from './ProblemListEditor.js';
 
 // FIXME: This is temporary!
-const _diagnosisList = ['Acne', 'Acute cholecystitis', 'Acute lymphoblastic leukaemia', 'Acute lymphoblastic leukaemia: Children', 'Acute lymphoblastic leukaemia: Teenagers and young adults', 'Acute myeloid leukaemia', 'Acute myeloid leukaemia: Children', 'Acute myeloid leukaemia: Teenagers and young adults', 'Acute pancreatitis', 'Addison\'s disease', 'Alcohol-related liver disease', 'Allergic rhinitis', 'Allergies', 'Alzheimer\'s disease', 'Anal cancer', 'Anaphylaxis', 'Angioedema', 'Ankylosing spondylitis', 'Anorexia nervosa', 'Anxiety', 'Anxiety disorders in children', 'Appendicitis', 'Arthritis', 'Asbestosis', 'Asthma', 'Atopic eczema', 'Attention deficit hyperactivity disorder (ADHD)', 'Autistic spectrum disorder (ASD)', 'Bacterial vaginosis', 'Benign prostate enlargement', 'Bile duct cancer (cholangiocarcinoma)', 'Binge eating', 'Bipolar disorder', 'Bladder cancer', 'Blood poisoning (sepsis)', 'Bone cancer', 'Bone cancer: Teenagers and young adults', 'Bowel cancer', 'Bowel incontinence', 'Bowel polyps', 'Brain stem death', 'Brain tumours', 'Brain tumours: Children', 'Brain tumours: Teenagers and young adults', 'Breast cancer (female)', 'Breast cancer (male)', 'Bronchiectasis', 'Bronchitis', 'Bulimia', 'Bunion', 'Carcinoid syndrome and carcinoid tumours', 'Catarrh', 'Cellulitis', 'Cerebral palsy', 'Cervical cancer', 'Chest infection', 'Chest pain', 'Chickenpox', 'Chilblains', 'Chlamydia', 'Chronic fatigue syndrome', 'Chronic kidney disease', 'Chronic lymphocytic leukaemia', 'Chronic myeloid leukaemia', 'Chronic obstructive pulmonary disease', 'Chronic pain', 'Chronic pancreatitis', 'Cirrhosis', 'Clostridium difficile', 'Coeliac disease', 'Cold sore', 'Coma', 'Common cold', 'Common heart conditions', 'Congenital heart disease', 'Conjunctivitis', 'Constipation', 'Coronavirus (COVID-19)', 'Cough', 'Crohn\'s disease', 'Croup', 'Cystic fibrosis', 'Cystitis', 'Deafblindness', 'Deep vein thrombosis', 'Dehydration', 'Dementia', 'Dementia with Lewy bodies', 'Dental abscess', 'Depression', 'Dermatitis herpetiformis', 'Diabetes', 'Diarrhoea', 'Discoid eczema', 'Diverticular disease and diverticulitis', 'Dizziness (Lightheadedness)', 'Down\'s syndrome', 'Dry mouth', 'Dysphagia (swallowing problems)', 'Dystonia', 'Earache', 'Earwax build-up', 'Ebola virus disease', 'Ectopic pregnancy', 'Ehlers-Danlos syndromes', 'Elective care', 'Endometriosis', 'Enterovirus D68', 'Epilepsy', 'Erectile dysfunction', 'Ewing sarcoma: Teenagers and young adults', 'Eye cancer', 'Eye cancer: Teenagers and young adults', 'Eyelid problems', 'Facial palsy', 'Fainting', 'Febrile seizures', 'Fetal alcohol spectrum disorder', 'Fever', 'Fibroids', 'Fibromyalgia', 'Flat feet', 'Flu', 'Folliculitis', 'Food poisoning', 'Foot drop', 'Fragile X syndrome', 'Gallbladder cancer', 'Gallstones', 'Ganglion cyst', 'Gastritis', 'Gastroenteritis', 'Gastro-oesophageal reflux disease (GORD)', 'Genital herpes', 'Genital warts', 'Gestational diabetes', 'Gilbert\'s syndrome', 'Glandular fever', 'Glaucoma', 'Glue ear', 'Gout', 'Group B streptococcus', 'Guillain-Barré syndrome', 'Gynaecomastia', 'Haemochromatosis', 'Haemophilia', 'Head and neck cancer', 'Head lice and nits', 'Headaches', 'Hearing loss', 'Heart failure', 'Heart palpitations', 'Helicobacter pylori infection', 'Hidradenitis suppurativa', 'High cholesterol', 'HIV', 'Hodgkin lymphoma', 'Homocystinuria', 'Housemaid\'s knee (prepatellar bursitis)', 'Huntington\'s disease', 'Hydrocephalus', 'Hyperglycaemia (high blood sugar)', 'Hyperhidrosis', 'Hyperopia (long-sightedness)', 'Hyperthyroidism (overactive thyroid)', 'Hypospadias', 'Hypothyroidism (underactive thyroid)', 'Ileostomy', 'Impetigo', 'Indigestion', 'Infant colic', 'Infective endocarditis', 'Inflammatory bowel disease (IBD)', 'Influenza (flu)', 'Insomnia', 'Insulinoma', 'Intellectual disability', 'Interstitial cystitis', 'Intracranial hypertension', 'Invasive meningococcal disease', 'Iron deficiency anaemia', 'Irritable bowel syndrome (IBS)', 'Itching', 'Jaundice', 'Joint hypermobility syndrome', 'Juvenile idiopathic arthritis', 'Kidney cancer', 'Kidney infection', 'Kidney stones', 'Korsakoff\'s syndrome', 'Krabbe disease', 'Kyphosis', 'Labyrinthitis', 'Langerhans cell histiocytosis', 'Laryngitis', 'Leg cramps', 'Leukaemia', 'Leukaemia: Children', 'Leukaemia: Teenagers and young adults', 'Lewy body dementia', 'Lichen planus', 'Lichen sclerosus', 'Lipoma', 'Liver cancer', 'Liver disease', 'Long-sightedness (hyperopia)', 'Loss of libido', 'Low blood pressure (hypotension)', 'Lung cancer', 'Lupus', 'Lyme disease', 'Lymphoedema', 'Lymphoma', 'Malaria', 'Male menopause', 'Malnutrition', 'Marfan syndrome', 'Mastitis', 'Measles', 'Medulloblastoma', 'Melanoma', 'Melanoma: Teenagers and young adults', 'Meningitis', 'Menopause', 'Menorrhagia (heavy periods)', 'Menstrual cycle', 'Mesothelioma', 'Metastatic cancer', 'Microcephaly', 'Middle ear infection (otitis media)', 'Migraine', 'Miscarriage', 'Motor neurone disease (MND)', 'Mouth cancer', 'Mouth ulcer', 'MRSA', 'Multiple myeloma', 'Multiple sclerosis (MS)', 'Mumps', 'Muscle cramps', 'Muscular dystrophy', 'Myasthenia gravis', 'Myocardial infarction (heart attack)', 'Myocarditis', 'Myopia (short-sightedness)', 'Narcolepsy', 'Nasal and sinus cancer', 'Nasal polyps', 'Nausea and vomiting in adults', 'Necrotising fasciitis', 'Nephrotic syndrome', 'Neuroblastoma', 'Neuroblastoma: Children', 'Neurofibromatosis type 1', 'Neurofibromatosis type 2', 'Non-Hodgkin lymphoma', 'Non-melanoma skin cancer', 'Non-ulcer dyspepsia', 'Nonalcoholic fatty liver disease', 'Norovirus', 'Nosebleed', 'Obesity', 'Obsessive compulsive disorder (OCD)', 'Oesophageal cancer', 'Oesophagitis', 'Oral thrush', 'Oropharyngeal cancer', 'Osteoarthritis', 'Osteomyelitis', 'Osteosarcoma', 'Osteosarcoma: Teenagers and young adults', 'Ovarian cancer', 'Ovarian cyst', 'Overactive thyroid', 'Paget\'s disease of the nipple', 'Pancreatic cancer', 'Panic disorder', 'Parkinson\'s disease', 'Patau\'s syndrome', 'Pelvic inflammatory disease', 'Pelvic organ prolapse', 'Penile cancer', 'Peripheral neuropathy', 'Personality disorder', 'Pleurisy', 'Pneumonia', 'Polymyalgia rheumatica', 'Post-polio syndrome', 'Post-traumatic stress disorder (PTSD)', 'Postnatal depression', 'Pregnancy and baby', 'Pressure ulcers', 'Prostate cancer', 'Psoriasis', 'Psoriatic arthritis', 'Psychosis', 'Pubic lice', 'Rare tumours', 'Raynaud\'s phenomenon', 'Reactive arthritis', 'Restless legs syndrome', 'Retinoblastoma: Children', 'Rhabdomyosarcoma', 'Rheumatoid arthritis', 'Ringworm and other fungal infections', 'Rosacea', 'Scabies', 'Scarlet fever', 'Schizophrenia', 'Scoliosis', 'Septic shock', 'Shingles', 'Shortness of breath', 'Sickle cell disease', 'Sinusitis', 'Sjogren\'s syndrome', 'Skin cancer (melanoma)', 'Skin cancer (non-melanoma)', 'Slapped cheek syndrome', 'Soft tissue sarcomas', 'Soft tissue sarcomas: Teenagers and young adults', 'Sore throat', 'Spleen problems and spleen removal', 'Stillbirth', 'Stomach ache and abdominal pain', 'Stomach cancer', 'Stomach ulcer', 'Streptococcus A (strep A)', 'Stress, anxiety and low mood', 'Stroke', 'Sudden infant death syndrome (SIDS)', 'Suicide', 'Sunburn', 'Swollen glands', 'Syphilis', 'Testicular cancer', 'Testicular cancer: Teenagers and young adults', 'Testicular lumps and swellings', 'Thirst', 'Threadworms', 'Thrush', 'Thyroid cancer', 'Thyroid cancer: Teenagers and young adults', 'Tinnitus', 'Tonsillitis', 'Tooth decay', 'Toothache', 'Transient ischaemic attack (TIA)', 'Trigeminal neuralgia', 'Tuberculosis (TB)', 'Type 1 diabetes', 'Type 2 diabetes', 'Trichomonas infection', 'Transverse myelitis', 'Ulcerative colitis', 'Underactive thyroid', 'Urinary incontinence', 'Urinary tract infection (UTI)', 'Urinary tract infection (UTI) in children', 'Urticaria (hives)', 'Vaginal cancer', 'Vaginal discharge', 'Varicose eczema', 'Venous leg ulcer', 'Vertigo', 'Vitamin B12 or folate deficiency anaemia', 'Vomiting in adults', 'Vulval cancer', 'Warts and verrucas', 'Whooping cough', 'Wilms\' tumor', 'Womb (uterus) cancer', 'Yellow fever']
+
+function formatSnomedData(data) {
+  return data.map((item) => ({
+    id: item.conceptId || "N/A",
+    name: item.term || "Unnamed Concept",
+    fields: {
+      semanticTag: item.semanticTag || "N/A",
+      active: item.active || false,
+    },
+  }));
+}
+
+async function getSnomed(term) {
+  /** disabled nonfunctional try-catch to make eslint happy */
+  try {
+    const fetchSnomedData = `https://browser.ihtsdotools.org/snowstorm/snomed-ct/browser/MAIN/descriptions?&limit=50&term=${encodeURIComponent(term)}&conceptActive=true&lang=english&skipTo=0&returnLimit=100`;
+
+    const response = await fetch(fetchSnomedData);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return formatSnomedData(data.items || []);
+  } catch (error) {
+    console.error('Error fetching SNOMED data:', error);
+    return [];
+  }
+  // } catch (error) {
+  //   throw error;
+  // }
+}
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   const patientData = TEST_PATIENT_INFO({ patientMRN });
-  const diagnosesArray = _diagnosisList;
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredDiagnoses, setFilteredDiagnoses] = useState(diagnosesArray);
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null); // Track selected diagnosis
+  const [diagnosesArray, setDiagnosesArray] = useState([]);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [problems, setProblems] = useState(patientData.problems); // State to hold problems array
@@ -39,13 +69,17 @@ const ProblemListTabContent = ({ children, ...other }) => {
     setExpandedRows(newExpandedRows);
   };
 
-
   useEffect(() => {
-    setFilteredDiagnoses(
-      diagnosesArray.filter(diagnosis => diagnosis.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [searchTerm, diagnosesArray]);
-
+    const fetchDiagnoses = async () => {
+      if (searchTerm.trim()) {
+        const results = await getSnomed(searchTerm);
+        setDiagnosesArray(results);
+      } else {
+        setDiagnosesArray([]);
+      }
+    };
+    fetchDiagnoses();
+  }, [searchTerm]);
   const handleOpenModal = (index) => {
     setIndexToUpdate(index);
     setIsModalOpen(true);
@@ -58,21 +92,21 @@ const ProblemListTabContent = ({ children, ...other }) => {
   };
 
   const handleDiagnosisClick = (diagnosis) => {
-    setSelectedDiagnosis(diagnosis === selectedDiagnosis ? null : diagnosis);
+    setSelectedDiagnosis(diagnosis.name === selectedDiagnosis?.name ? null : diagnosis);
   };
 
   const handleAccept = () => {
-    if (selectedDiagnosis) {
+    if (selectedDiagnosis?.name) {
         if (indexToUpdate !== null) {
             // UPDATE the existing problem
             const updatedProblems = problems.map((problem, i) =>
-                i === indexToUpdate ? { ...problem, diagnosis: selectedDiagnosis } : problem
+                i === indexToUpdate ? { ...problem, diagnosis: selectedDiagnosis.name } : problem
             );
             setProblems(updatedProblems);
         } else {
             // ADD a new problem
             const newProblem = {
-                diagnosis: selectedDiagnosis,
+                diagnosis: selectedDiagnosis.name,
                 // Add other properties as needed for the new problem row
             };
             setProblems([...problems, newProblem]);
@@ -224,13 +258,13 @@ const ProblemListTabContent = ({ children, ...other }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredDiagnoses.map((diagnosis, index) => (
+                  {diagnosesArray.map((diagnosis, index) => (
                     <TableRow
                       key={index}
                       onClick={() => handleDiagnosisClick(diagnosis)}
-                      style={{ cursor: 'pointer', backgroundColor: selectedDiagnosis === diagnosis ? '#e0f7fa' : 'inherit' }}
+                      style={{ cursor: 'pointer', backgroundColor: selectedDiagnosis?.name === diagnosis.name ? '#e0f7fa' : 'inherit' }}
                     >
-                      <TableCell>{diagnosis}</TableCell>
+                      <TableCell>{diagnosis.name}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
