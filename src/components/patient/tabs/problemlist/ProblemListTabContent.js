@@ -8,8 +8,6 @@ import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import ProblemListEditor from './ProblemListEditor.js';
 
-// FIXME: This is temporary!
-
 function formatSnomedData(data) {
   return data.map((item) => ({
     id: item.conceptId || "N/A",
