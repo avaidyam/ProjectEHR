@@ -49,10 +49,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Allergies" color='#9F3494'>
           <div>
-            {isSectionEmpty(ptInfo.allergies) ? (
+            {isSectionEmpty(ptInfo.encounters?.[0]?.allergies ) ? (
               <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
             ) : (
-              ptInfo.allergies.map((allergy) => (
+              ptInfo.encounters?.[0]?.allergies.map((allergy) => (
                 <div key={allergy.id}>
                   <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
                 </div>
@@ -64,10 +64,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Medical History" color='#9F3494'>
           <div>
-            {isSectionEmpty(ptInfo.history.medical) ? (
+            {isSectionEmpty(ptInfo.encounters?.[0]?.history.medical) ? (
               <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
             ) : (
-              ptInfo.history.medical.map((condition) => (
+              ptInfo.encounters?.[0]?.history.medical.map((condition) => (
                 <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                     {condition.date}
@@ -82,10 +82,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Medications" color='#9E49E2'>
           <div>
-            {isSectionEmpty(ptInfo.medications) ? (
+            {isSectionEmpty(ptInfo.encounters?.[0]?.medications) ? (
               <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
             ) : (
-              ptInfo.medications.map((medication) => (
+              ptInfo.encounters?.[0]?.medications.map((medication) => (
                 <div key={medication.id} style={{ color: '#9E49E2' }}>
                   {medication.name} {medication.dosage} {medication.frequency}
                 </div>
@@ -97,10 +97,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Surgical History" color='#9F3494'>
           <div>
-            {isSectionEmpty(ptInfo.history.surgical) ? (
+            {isSectionEmpty(ptInfo.encounters?.[0]?.history.surgical) ? (
               <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
             ) : (
-              ptInfo.history.surgical.map((condition) => (
+              ptInfo.encounters?.[0]?.history.surgical.map((condition) => (
                 <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                     {condition.date}
@@ -115,10 +115,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Grid item xs={12} md={6}>
         <TitledCard title="Family History" color='#9F3494'>
           <div>
-            {isSectionEmpty(ptInfo.history.family) ? (
+            {isSectionEmpty(ptInfo.encounters?.[0]?.history.family) ? (
               <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
             ) : (
-              ptInfo.history.family.map((relative) => (
+              ptInfo.encounters?.[0]?.history.family.map((relative) => (
                 <div key={relative.id}>
                   <span style={{color:'#bbbbbb'}}>{relative.relationship}</span>
                   <span style={{marginLeft:'35px'}}>{relative.problems.map(x => x.description).join(', ')}</span>

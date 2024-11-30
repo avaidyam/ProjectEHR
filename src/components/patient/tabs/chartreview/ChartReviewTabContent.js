@@ -106,8 +106,9 @@ export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const { documents } = TEST_PATIENT_INFO({ patientMRN });
-
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { documents } = encounters?.[0]
+  
   return (
     <div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

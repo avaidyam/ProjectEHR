@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { AppBar, IconButton, Toolbar, Typography, Box, Icon, Button } from '@mui/material';
+import { AuthProvider, AuthContext } from './login/AuthContext';
 import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
-import { OrderProvider } from './patient/tabs/orders/OrdersContext.js'; // Import the OrderProvider
+import { OrderProvider } from './patient/tabs/orders/OrdersContext.js';
 
-export const NavBar = ({ onHandleClickRoute, onLogout }) => (
+export const NavBar = ({ onHandleClickRoute, onLogout }) => {
+  const { isAdmin, globalEncounter, setGlobalEncounter } = useContext(AuthContext); // Access admin and globalEncounter
+
+  const handleSetEncounter = () => {
+    let encounterNumber = null;
+  
+    while (encounterNumber === null || isNaN(encounterNumber)) {
+      const input = prompt("Enter the global encounter number (must be a number):");
+      if (input === null) break; // User canceled the prompt
+      encounterNumber = Number(input);
+
+      if (isNaN(encounterNumber)) {
+        alert("Please enter a valid number.");
+        encounterNumber = null; // Reset to keep looping
+      }
+    }
+
+    if (encounterNumber !== null) {
+      setGlobalEncounter(encounterNumber); // Update the global encounter
+    }
+  };
+  
+  
+
+  return (
   <>
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -19,6 +44,11 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => (
           </IconButton>
         </Box>
         <Box>
+            {isAdmin && ( // Show button only for admin users
+              <Button color="inherit" onClick={handleSetEncounter}>
+                Select Encounter
+              </Button>
+            )}
           <Button color="inherit" onClick={onLogout}>
             Logout
           </Button>
@@ -31,30 +61,35 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => (
     <Toolbar variant="dense" />
   </>
 );
+}
 
 export const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Keep this for now
   const navigate = useNavigate();
+  const { isAuthenticated, logout } = useContext(AuthContext);
 
   const handleClickRoute = (route) => {
-    navigate(route);
+    navigate(route); // Redirect to the chosen route
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false); // Update state to hide NavBar
+    logout(); // Call logout from AuthContext
     navigate('/'); // Redirect to the login page
   };
 
   return (
-    <OrderProvider>
-    <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
-      {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />}
-      <Routes>
-        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/schedule" element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-      </Routes>
-    </Box>
-    </OrderProvider>
+    <AuthProvider>
+      <OrderProvider>
+        <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
+          {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />}
+          <Routes>
+            <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+            <Route path="/schedule" element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
+            <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
+          </Routes>
+        </Box>
+      </OrderProvider>
+    </AuthProvider>
   );
 };

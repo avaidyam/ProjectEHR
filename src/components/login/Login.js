@@ -8,18 +8,13 @@ const Login = ({ setIsLoggedIn }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // Use context here
+  const { login } = useContext(AuthContext); // Use context for login functionality
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Example validation
-    // if ( username === 'admin' && password === 'admin') {
-      login(); // Update authentication state
-      setIsLoggedIn(true); // Update state in App component
-      navigate('/schedule'); // Navigate to the Schedule page
-    /* } else {
-      alert('Invalid credentials');
-    } */
+    login(username, password); // Call the AuthContext login function
+    setIsLoggedIn(true); // Reintroduce this to update App.js state
+    navigate('/schedule'); // Redirect to the schedule page
   };
 
   return (

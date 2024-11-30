@@ -13,7 +13,6 @@ const _diagnosisList = ['Acne', 'Acute cholecystitis', 'Acute lymphoblastic leuk
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const patientData = TEST_PATIENT_INFO({ patientMRN });
   const diagnosesArray = _diagnosisList;
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,7 +20,8 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [problems, setProblems] = useState(patientData.problems); // State to hold problems array
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const [problems, setProblems] = useState(encounters?.[0]?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);

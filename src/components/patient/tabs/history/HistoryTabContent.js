@@ -7,7 +7,8 @@ import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
 
 export const HistoryTabContent = ({ children, ...props }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN()
-  const { history } = TEST_PATIENT_INFO({ patientMRN })
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { history } = encounters?.[0]
   const { schema, uischema } = histschema
   const [data, setData] = useState(history)
   return (

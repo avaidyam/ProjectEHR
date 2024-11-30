@@ -18,7 +18,6 @@ const replacePEText = (editorState, peState) => {
   Object.entries(peState).forEach(([systemName, systemData]) => {
     if (!systemData) return; // If there's no data for this system, skip it
 
-    console.log(systemData)
     const customNote = systemData.custom; // Extract custom note if it exists
     let systemText = `${systemName.charAt(0).toUpperCase() + systemName.slice(1)}: \n`; // Start building text for the system
     let hasSubsectionText = false; // Track if the system has any subsection text
