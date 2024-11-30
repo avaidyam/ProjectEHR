@@ -8,29 +8,6 @@ import { PatientHome } from './patient/PatientHome.js';
 import { OrderProvider } from './patient/tabs/orders/OrdersContext.js';
 
 export const NavBar = ({ onHandleClickRoute, onLogout }) => {
-  const { isAdmin, globalEncounter, setGlobalEncounter } = useContext(AuthContext); // Access admin and globalEncounter
-
-  const handleSetEncounter = () => {
-    let encounterNumber = null;
-  
-    while (encounterNumber === null || isNaN(encounterNumber)) {
-      const input = prompt("Enter the global encounter number (must be a number):");
-      if (input === null) break; // User canceled the prompt
-      encounterNumber = Number(input);
-
-      if (isNaN(encounterNumber)) {
-        alert("Please enter a valid number.");
-        encounterNumber = null; // Reset to keep looping
-      }
-    }
-
-    if (encounterNumber !== null) {
-      setGlobalEncounter(encounterNumber); // Update the global encounter
-    }
-  };
-  
-  
-
   return (
   <>
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -44,11 +21,6 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => {
           </IconButton>
         </Box>
         <Box>
-            {isAdmin && ( // Show button only for admin users
-              <Button color="inherit" onClick={handleSetEncounter}>
-                Select Encounter
-              </Button>
-            )}
           <Button color="inherit" onClick={onLogout}>
             Logout
           </Button>
