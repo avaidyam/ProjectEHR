@@ -16,7 +16,7 @@ const Login = ({ setIsLoggedIn }) => {
     // if ( username === 'admin' && password === 'admin') {
       login(); // Update authentication state
       setIsLoggedIn(true); // Update state in App component
-      navigate('/schedule'); // Navigate to the Schedule page
+      navigate('/department'); // Navigate to the Department Selection page
     /* } else {
       alert('Invalid credentials');
     } */
