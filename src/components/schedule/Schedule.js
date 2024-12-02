@@ -217,6 +217,16 @@ const columns = [
       }) ${params.row.patient.age} years old / ${params.row.patient.gender}`,
   },
   {
+    field: 'cc',
+    headerName: 'CC',
+    width: 100,
+    renderCell: (params) => (
+      <Tooltip title={params.value}>
+        <span>{params.value}</span>
+      </Tooltip>
+    ),
+  },
+  {
     field: 'notes',
     headerName: 'Notes',
     width: 200,
@@ -248,9 +258,14 @@ export function Schedule() {
   const [preview, setPreview] = React.useState(100); // set width of table
   const [hide, setHide] = React.useState(0); // patient info hidden, will incr when checkbox marked
   const [filterElem, setFilterElem] = React.useState(null); // for filter 
+  const [selPatient, setPatient] = React.useState(null);
+
+  const patientScheduleClick = (params) => {
+    setPatient(params.row);  
+  };
 
   return (
-    <Box>
+    <Box sx={{ position: 'relative' }}>
       <div>{dateLocal()}</div>
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
         <div style={{ textAlign: 'right' }}>
@@ -265,10 +280,35 @@ export function Schedule() {
           />
         </div>
         <div>
+          {open && ( // shows text if preview box is checked
+          <Typography
+            sx={{
+              position: 'absolute',
+              top: '150px',
+              left: 'calc(50% + 100px)',
+              zIndex: -1,
+              fontSize: '20px',
+            }}
+          >
+            {selPatient ? 
+            (<>
+              Name: {selPatient.patient.firstName} {selPatient.patient.lastName} <br/>
+              Age: {selPatient.patient.age} <br/>
+              Gender: {selPatient.patient.gender} <br/>
+              CC: {selPatient.cc} <br/>
+              Notes: {selPatient.notes}
+            </>): 
+            <>No Patient Selected.</>
+            }
+          </Typography>
+        )}
+        </div>
+        <div>
           <DataGrid
             getRowHeight={() => 'auto'}
             rows={appt.appts}
             columns={columns}
+            onRowClick={patientScheduleClick}
             onRowDoubleClick={({
               row: {
                 patient: { mrn: selectedMRN },
