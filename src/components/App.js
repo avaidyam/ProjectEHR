@@ -4,8 +4,10 @@ import { AppBar, IconButton, Toolbar, Typography, Box, Icon, Button } from '@mui
 import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
+import Department from './department/Department.js'; // Import Department page
 import { OrderProvider } from './patient/tabs/orders/OrdersContext.js'; // Import the OrderProvider
 
+// Navigation Bar Component
 export const NavBar = ({ onHandleClickRoute, onLogout }) => (
   <>
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -32,29 +34,73 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => (
   </>
 );
 
+// Main App Component
 export const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracks login status
+  const [isDepartmentSelected, setIsDepartmentSelected] = useState(false); // Tracks department selection
   const navigate = useNavigate();
 
+  // Handles navigation between routes
   const handleClickRoute = (route) => {
     navigate(route);
   };
 
+  // Logs out and resets state
   const handleLogout = () => {
-    setIsLoggedIn(false); // Update state to hide NavBar
+    setIsLoggedIn(false); // Hide NavBar
+    setIsDepartmentSelected(false); // Reset department selection
     navigate('/'); // Redirect to the login page
+  };
+
+  // Handles department selection and navigates to the schedule page
+  const handleDepartmentSelect = (department) => {
+    if (department) {
+      // console.log('Selected Department:', department);
+      setIsDepartmentSelected(true); // Show NavBar after department is selected
+      navigate('/schedule');
+    }
   };
 
   return (
     <OrderProvider>
-    <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
-      {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />}
-      <Routes>
-        <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/schedule" element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-      </Routes>
-    </Box>
+      <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
+        {isLoggedIn && isDepartmentSelected && (
+          <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
+        )}
+        <Routes>
+          <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+          <Route
+            path="/schedule"
+            element={
+              isLoggedIn && isDepartmentSelected ? (
+                <Schedule />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/department"
+            element={
+              isLoggedIn ? (
+                <Department onDepartmentSelect={handleDepartmentSelect} />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/patient/:mrn"
+            element={
+              isLoggedIn && isDepartmentSelected ? (
+                <PatientHome />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+        </Routes>
+      </Box>
     </OrderProvider>
   );
 };
