@@ -5,6 +5,7 @@ import { AuthProvider, AuthContext } from './login/AuthContext';
 import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
+import Department from './department/Department.js'; // Import Department page
 import { OrderProvider } from './patient/tabs/orders/OrdersContext.js';
 
 export const NavBar = ({ onHandleClickRoute, onLogout }) => {
@@ -35,33 +36,75 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => {
 );
 }
 
+// Main App Component
 export const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Keep this for now
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracks login status
+  const [isDepartmentSelected, setIsDepartmentSelected] = useState(false); // Tracks department selection
+
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useContext(AuthContext);
 
+  // Handles navigation between routes
   const handleClickRoute = (route) => {
     navigate(route); // Redirect to the chosen route
   };
 
+  // Logs out and resets state
   const handleLogout = () => {
-    setIsLoggedIn(false); // Update state to hide NavBar
-    logout(); // Call logout from AuthContext
+    setIsLoggedIn(false); // Hide NavBar
+    setIsDepartmentSelected(false); // Reset department selection
     navigate('/'); // Redirect to the login page
   };
 
+  // Handles department selection and navigates to the schedule page
+  const handleDepartmentSelect = (department) => {
+    if (department) {
+      // console.log('Selected Department:', department);
+      setIsDepartmentSelected(true); // Show NavBar after department is selected
+      navigate('/schedule');
+    }
+  };
+
   return (
-    <AuthProvider>
-      <OrderProvider>
-        <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
-          {isLoggedIn && <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />}
-          <Routes>
-            <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-            <Route path="/schedule" element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-            <Route path="/patient/:mrn" element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={setIsLoggedIn} />} />
-          </Routes>
-        </Box>
-      </OrderProvider>
-    </AuthProvider>
+    <OrderProvider>
+      <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
+        {isLoggedIn && isDepartmentSelected && (
+          <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
+        )}
+        <Routes>
+          <Route path="/" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
+          <Route
+            path="/schedule"
+            element={
+              isLoggedIn && isDepartmentSelected ? (
+                <Schedule />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/department"
+            element={
+              isLoggedIn ? (
+                <Department onDepartmentSelect={handleDepartmentSelect} />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/patient/:mrn"
+            element={
+              isLoggedIn && isDepartmentSelected ? (
+                <PatientHome />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+        </Routes>
+      </Box>
+    </OrderProvider>
   );
 };
