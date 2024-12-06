@@ -45,7 +45,7 @@ const Login = ({ setIsLoggedIn }) => {
     e.preventDefault();
     login(username, password); // Authenticate user
     setIsLoggedIn(true); // Update parent state
-    navigate('/schedule'); // Redirect to schedule page
+    navigate('/department'); // Redirect to schedule page
   };
 
   // Handle password validation flow
