@@ -1,8 +1,7 @@
-import React, { useState, useContext  } from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
 import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
-import { AuthContext } from '../login/AuthContext'; 
 
 import DateHelpers from '../../util/DateHelpers.js';
 import { usePatientMRN } from '../../util/urlHelpers.js';
@@ -91,13 +90,7 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
 };
 
 export const PatientSidebarVitalsOverview = ({ patientMRN, ...props }) => {
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
-  // Get the enabled encounter number for the patient using their MRN
-  const enabledEncounterNumber = enabledEncounters[patientMRN];
-  // Select the correct encounter using the enabled encounter number
-  const vitals = encounters[enabledEncounterNumber].vitals;
-
+  const { vitals } = TEST_PATIENT_INFO({ patientMRN });
   /** sort most recent to older */
   const [mostRecentVitals, ...olderVitals] = _.sortBy(
     vitals || [],
@@ -127,21 +120,13 @@ export const Storyboard = ({ ...props }) => {
     avatarUrl,
     gender,
     PCP,
-    encounters,
-  } = TEST_PATIENT_INFO({ patientMRN });
-
-  // Extract the first encounter
-  const {
     insurance,
-    careGaps,
     encounter,
-    problems,
-    vitals,
-    documents,
-    allergies,
-    history
-  } = encounters[0] || {}; // Safely access the first encounter
-
+    careGaps,
+    problems
+  } = TEST_PATIENT_INFO({
+    patientMRN,
+  });
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
     <>

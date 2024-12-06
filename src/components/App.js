@@ -1,15 +1,14 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { AppBar, IconButton, Toolbar, Typography, Box, Icon, Button } from '@mui/material';
-import { AuthProvider, AuthContext } from './login/AuthContext';
 import Login from './login/Login.js';
 import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
 import Department from './department/Department.js'; // Import Department page
-import { OrderProvider } from './patient/tabs/orders/OrdersContext.js';
+import { OrderProvider } from './patient/tabs/orders/OrdersContext.js'; // Import the OrderProvider
 
-export const NavBar = ({ onHandleClickRoute, onLogout }) => {
-  return (
+// Navigation Bar Component
+export const NavBar = ({ onHandleClickRoute, onLogout }) => (
   <>
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
@@ -34,19 +33,16 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => {
     <Toolbar variant="dense" />
   </>
 );
-}
 
 // Main App Component
 export const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracks login status
   const [isDepartmentSelected, setIsDepartmentSelected] = useState(false); // Tracks department selection
-
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useContext(AuthContext);
 
   // Handles navigation between routes
   const handleClickRoute = (route) => {
-    navigate(route); // Redirect to the chosen route
+    navigate(route);
   };
 
   // Logs out and resets state

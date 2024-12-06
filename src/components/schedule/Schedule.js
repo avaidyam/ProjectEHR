@@ -16,8 +16,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
-
-import { AuthContext } from '../login/AuthContext';
+// Removed AuthContext import since it's no longer needed
 import { useRouter } from '../../util/urlHelpers.js';
 
 // json data
@@ -259,14 +258,11 @@ export function Schedule() {
   const [preview, setPreview] = React.useState(100); // set width of table
   const [hide, setHide] = React.useState(0); // patient info hidden, will incr when checkbox marked
   const [filterElem, setFilterElem] = React.useState(null); // for filter 
-  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
-
   const [selPatient, setPatient] = React.useState(null);
 
   const patientScheduleClick = (params) => {
     setPatient(params.row);  
   };
-
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -317,15 +313,7 @@ export function Schedule() {
               row: {
                 patient: { mrn: selectedMRN },
               },
-            }) => {
-              console.log("Enabled Encounters: ", enabledEncounters, enabledEncounters[selectedMRN])
-              if (enabledEncounters[selectedMRN] == null) {
-                alert("You cannot view this chart because no encounter is associated with this MRN.");
-                return; // Prevent routing
-              }
-            
-              onHandleClickRoute(`patient/${selectedMRN}`); // Proceed with routing if an encounter is selected
-            }}
+            }) => onHandleClickRoute(`patient/${selectedMRN}`)}
             slots={{ toolbar: customFilterBar }}
             slotProps={{
               panel: {
