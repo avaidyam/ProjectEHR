@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { Typography, TextField, Button, Icon, Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
@@ -7,6 +7,7 @@ import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDou
 import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import ProblemListEditor from './ProblemListEditor.js';
+import { AuthContext } from '../../../login/AuthContext';
 
 function formatSnomedData(data) {
   return data.map((item) => ({
@@ -42,6 +43,7 @@ async function getSnomed(term) {
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
+
   const patientData = TEST_PATIENT_INFO({ patientMRN });
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,7 +51,11 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [problems, setProblems] = useState(patientData.problems); // State to hold problems array
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
+  const enabledEncounterNumber = enabledEncounters[patientMRN];
+
+  const [problems, setProblems] = useState(encounters?.[enabledEncounterNumber]?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);

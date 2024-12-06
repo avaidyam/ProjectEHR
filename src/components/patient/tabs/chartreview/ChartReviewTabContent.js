@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
@@ -6,6 +6,7 @@ import { usePatientMRN } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
 import ImagingTabContent from './ImagingTabContent.js';
+import { AuthContext } from '../../../login/AuthContext.js';
 
 const tabLabels = [
   "Encounters",
@@ -106,8 +107,12 @@ export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const { documents } = TEST_PATIENT_INFO({ patientMRN });
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
+  const enabledEncounterNumber = enabledEncounters[patientMRN];
 
+  const { documents } = encounters?.[enabledEncounterNumber]
+  
   return (
     <div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
