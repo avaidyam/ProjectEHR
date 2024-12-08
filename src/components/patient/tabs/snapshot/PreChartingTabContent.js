@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 import React from 'react';
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 
 const getPatientPreChartingData = () => ({
   currentMedications: [
@@ -22,6 +22,7 @@ const getPatientPreChartingData = () => ({
 const PreChartingTabContent = ({ children, ...other }) => {
   const { currentMedications, patientAllergies, medicalHistory } = getPatientPreChartingData();
   const [patientMRN, setPatientMRN] = usePatientMRN();
+  const [enc, setEnc] = useEncounterID()
 
   return (
     <div className="tab-content-container">

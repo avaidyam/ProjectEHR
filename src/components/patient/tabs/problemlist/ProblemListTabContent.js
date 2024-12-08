@@ -4,7 +4,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import ProblemListEditor from './ProblemListEditor.js';
 import { AuthContext } from '../../../login/AuthContext';
@@ -43,6 +43,7 @@ async function getSnomed(term) {
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
+  const [enc, setEnc] = useEncounterID()
 
   const patientData = TEST_PATIENT_INFO({ patientMRN });
 
@@ -52,10 +53,8 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
-  const enabledEncounterNumber = enabledEncounters[patientMRN];
 
-  const [problems, setProblems] = useState(encounters?.[enabledEncounterNumber]?.problems); // State to hold problems array
+  const [problems, setProblems] = useState(encounters?.find(x => x.id === enc)?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);

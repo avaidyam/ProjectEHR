@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, generatePath, useParams } from 'react-rou
 /**
  * hook to extract mrn from url and set new one
  *
- * usage: `const [patientMRN, setPatientMRN] = usePatientMRN();`
+ * usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
  *
  * *must* be used from within a functional component
  */
@@ -13,6 +13,22 @@ export const usePatientMRN = () => {
   return [
     mrn,
     (value) => navigate(generatePath('/patient/:mrn', { mrn: value })),
+  ];
+};
+
+/**
+ * hook to extract mrn from url and set new one
+ *
+ * usage: `const [enc, setEnc] = useEncounterID()`
+ *
+ * *must* be used from within a functional component
+ */
+export const useEncounterID = () => {
+  const { mrn, enc } = useParams()
+  const navigate = useNavigate()
+  return [
+    enc,
+    (value) => navigate(generatePath('/patient/:mrn/encounter/:enc', { mrn: mrn, enc: value })),
   ];
 };
 

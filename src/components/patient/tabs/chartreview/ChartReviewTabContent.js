@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import {
   Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
 import ImagingTabContent from './ImagingTabContent.js';
@@ -88,8 +88,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                     )
                   ))}
                   <Divider />
-                  {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />}
+                  {/*selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />*/}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
+                  {selectedRow.data.image && (
+                    <ImagingTabContent selectedRow={selectedRow} />
+                  )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
                   )}
@@ -107,11 +110,24 @@ export const ChartReview = ({ ...props }) => {
   const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
+  const [enc, setEnc] = useEncounterID()
   const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
-  const enabledEncounterNumber = enabledEncounters[patientMRN];
 
-  const { documents } = encounters?.[enabledEncounterNumber]
+  // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
+  // TODO: this is where modifications should be made for order-conditional documents being shown
+  // or logic to advance from one encounter to the next
+  const currentEncDate = encounters?.find(x => x.id === enc).startDate
+  const documents = encounters?.filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
+  const encounters_data = encounters.map(x => ({
+    kind: 'Encounters',
+    data: {
+      date: x.startDate,
+      type: x.type,
+      department: x.department,
+      specialty: x.specialty,
+      provider: x.provider
+    }
+  }))
   
   return (
     <div>
@@ -130,7 +146,7 @@ export const ChartReview = ({ ...props }) => {
           />
         ))}
       </Box>
-      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={documents} />
+      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encounters_data, ...documents]} />
     </div>
   );
 };
