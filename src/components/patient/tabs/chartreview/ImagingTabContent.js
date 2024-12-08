@@ -53,7 +53,7 @@ const ResultList = () => {
   return <p>No MRN</p>;
 };
 
-const ImagingTabContent = () => {
+const ImagingTabContent = ({ selectedRow }) => {
   const [openImageViewer, setOpenImageViewer] = useState(false);
 
   const handleOpenImageViewer = () => {
@@ -83,7 +83,7 @@ const ImagingTabContent = () => {
       <DWVViewer
         open={openImageViewer}
         onClose={handleCloseImageViewer}
-        images={dicomFiles}
+        images={selectedRow?.data?.image ? [selectedRow?.data?.image] : dicomFiles}
       />
     </Grid>
   );

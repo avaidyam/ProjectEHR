@@ -88,8 +88,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                     )
                   ))}
                   <Divider />
-                  {selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />}
+                  {/*selectedRow.data.image && <img src={selectedRow.data.image} alt="chart review" />*/}
                   <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
+                  {selectedRow.data.image && (
+                    <ImagingTabContent selectedRow={selectedRow} />
+                  )}
                   {selectedTabLabel === 'Specialty Test' && selectedRow && (
                     <ImagingTabContent selectedRow={selectedRow} />
                   )}

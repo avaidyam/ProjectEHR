@@ -21,6 +21,28 @@ decoderScripts['jpeg-lossless'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders
 decoderScripts['jpeg-baseline'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpegbaseline.js`;
 decoderScripts.rle = `${process.env.PUBLIC_URL}/assets/dwv/decoders/dwv/decode-rle.js`;
 
+/**
+ * Convert a base64 url to an ArrayBuffer.
+ * Something like: 'data:application/dicom;base64,SGVsbG8sIFdvcmxkIQ=='
+ * The function is independent from the mime type.
+ *
+ * @param {string} str Base64 url string.
+ * @returns {ArrayBuffer} The corresponding buffer.
+ */
+export function b64ToFile(str) {
+    const parts = str.split(';base64,');
+    const byteChars = window.atob(parts[1]);
+    const buf = new ArrayBuffer(byteChars.length);
+    const bufView = new Uint8Array(buf);
+    for (let i = 0, strLen = byteChars.length; i < strLen; i++) {
+      bufView[i] = byteChars.charCodeAt(i);
+    }
+
+    // Reuse the content-type of the data URL and the filename will become the same.
+    const type = parts[0].replace("data:", "")
+    return new File([new Blob([buf])], type.replace('/', '.'), { type })
+}
+
 const LayerGroup = styled('div')({
     position: 'relative',
     width: '100%',
@@ -101,10 +123,21 @@ const DWVViewer = ({ open, onClose, images }) => {
                 setDataLoaded(true);
             });
 
-            app.addEventListener('renderend', () => {
+            app.addEventListener('error', (event) => {
+                console.dir(event)
             });
 
-            app.loadURLs(images);
+            app.addEventListener('abort', (event) => {
+                console.dir(event)
+            });
+
+            app.addEventListener('renderend', () => {
+            });
+            if (images[0]?.startsWith?.("data:")) {
+                app.loadFiles([b64ToFile(images[0])])
+            } else {
+                app.loadURLs(images);
+            }
             setDwvApp(app);
 
             app.setTool('Scroll');
