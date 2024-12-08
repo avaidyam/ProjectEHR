@@ -14,23 +14,7 @@
       "room": null,
       "patient": {
         "mrn": "1230001",
-        "enc": "1",
-        "lastName": "Bowman",
-        "firstName": "Alec",
-        "middleName": null,
-        "age": 31,
-        "gender": "F",
-        "insurName": "BLUE CROSS BLUE SHIELD BCBS"
-      },
-      "provider": {
-        "lastName": "James",
-        "firstName": "Stern",
-        "middleName": "Chris"
-      },
-      "pcp": {
-        "lastName": "James",
-        "firstName": "Stern",
-        "middleName": "Chris"
+        "enc": "1"
       }
     },
     {
@@ -47,23 +31,7 @@
       "room": 1,
       "patient": {
         "mrn": "4641821",
-        "enc": "3",
-        "lastName": "Hanson",
-        "firstName": "John",
-        "middleName": null,
-        "age": 66,
-        "gender": "M",
-        "insurName": "UNITED HEALTHCARE"
-      },
-      "provider": {
-        "lastName": "Nelson",
-        "firstName": "Chris",
-        "middleName": "Topher"
-      },
-      "pcp": {
-        "lastName": "Nelson",
-        "firstName": "Chris",
-        "middleName": "Topher"
+        "enc": "3"
       }
     },
     {
@@ -80,23 +48,7 @@
       "room": 5,
       "patient": {
         "mrn": "4641821",
-        "enc": "4",
-        "lastName": "Shen",
-        "firstName": "Julia",
-        "middleName": null,
-        "age": 18,
-        "gender": "F",
-        "insurName": "AETNA COMMERCIAL"
-      },
-      "provider": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
-      },
-      "pcp": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
+        "enc": "4"
       }
     },
     {
@@ -113,23 +65,7 @@
       "room": 3,
       "patient": {
         "mrn": "4641821",
-        "enc": "1",
-        "lastName": "Burnham",
-        "firstName": "Jennifer",
-        "middleName": null,
-        "age": 24,
-        "gender": "F",
-        "insurName": "AETNA COMMERCIAL"
-      },
-      "provider": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
-      },
-      "pcp": {
-        "lastName": "Johnson",
-        "firstName": "Emily",
-        "middleName": "May"
+        "enc": "1"
       }
     }
   ]

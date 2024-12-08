@@ -196,27 +196,30 @@ const columns = [
     field: 'fullName',
     headerName: 'Patient Name/MRN/Age/Gender',
     width: 300,
-    renderCell: (params) => (
-      <div>
+    renderCell: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      return (<div>
         <div style={{ float: 'left', marginRight: 10 }}>
           <Avatar>
-            {params.row.patient.firstName.charAt(0).concat(params.row.patient.lastName.charAt(0))}
+            {data.firstName.charAt(0).concat(data.lastName.charAt(0))}
           </Avatar>
         </div>
         <div style={{ float: 'right' }}>
           <Typography>
-            {params.row.patient.lastName}, {params.row.patient.firstName} ({params.row.patient.mrn})
+            {data.lastName}, {data.firstName} ({data.mrn})
           </Typography>
           <Typography color="textSecondary">
-            {params.row.patient.age} years old / {params.row.patient.gender}
+            {data.age} years old / {data.gender}
           </Typography>
         </div>
-      </div>
-    ),
-    valueGetter: (params) =>
-      `${params.row.patient.lastName || ''}, ${params.row.patient.firstName || ''} \n (${
-        params.row.patient.mrn
-      }) ${params.row.patient.age} years old / ${params.row.patient.gender}`,
+      </div>)
+    },
+    valueGetter: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      return `${data.lastName || ''}, ${data.firstName || ''} \n (${
+        data.mrn
+      }) ${data.age} years old / ${data.gender}`
+    },
   },
   {
     field: 'cc',
@@ -242,14 +245,21 @@ const columns = [
     field: 'fullProviderName',
     headerName: 'Provider Name',
     width: 200,
-    valueGetter: (params) => `${params.row.provider.lastName}, ${params.row.provider.firstName}`,
+    valueGetter: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.provider
+      return data2//`${data2.provider.lastName}, ${data2.provider.firstName}`
+    },
   },
   { field: 'type', headerName: 'Type', width: 100 },
   {
     field: 'insurName',
     headerName: 'Coverage',
     width: 200,
-    valueGetter: (params) => `${params.row.patient.insurName}`,
+    valueGetter: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      return `${data.insurance.carrierName}`
+    },
   },
 ];
 
