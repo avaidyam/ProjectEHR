@@ -5,7 +5,10 @@ import './Login.css';
 import logo from './Logo.png'; // Import the EPIC logo image
 import ConfigureDialog from './ConfigureDialog'; // Import the dialog component
 import { Button } from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+
 import schedule from '../../util/data/schedule.json'; // Import the schedule JSON file for mrns
+import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
 
 const Login = ({ setIsLoggedIn }) => {
   const [username, setUsername] = useState('');
@@ -15,7 +18,7 @@ const Login = ({ setIsLoggedIn }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
 
   const [patients, setPatients] = useState([]); // State to store the extracted patients
-  const encountersPerPatient = 2; // Predefined encounters per patient
+  const [encounterCounts, setEncounterCounts] = useState({}); // State as a hash object
   
     // Extract unique MRNs from schedule.json
     useEffect(() => {
@@ -23,6 +26,21 @@ const Login = ({ setIsLoggedIn }) => {
       setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
     }, []);
 
+    // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
+    useEffect(() => {
+      // Extract unique MRNs from the schedule
+      const uniqueMRNs = Array.from(new Set(schedule.appts.map((appt) => appt.patient.mrn)));
+  
+      // Retrieve encounters for each MRN and store in a hash
+      const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
+        const patientInfo = TEST_PATIENT_INFO({ patientMRN: mrn }); // Call the function for each MRN
+        acc[mrn] = patientInfo?.encounters?.length || 0; // Use MRN as key and number of encounters as value
+        return acc;
+      }, {});
+  
+      setEncounterCounts(encountersHash); // Update state with the hash
+    }, []);
+  
     useEffect(() => {
       // Check if enabledEncounters is empty
       if (Object.keys(enabledEncounters).length === 0 && patients.length > 0) {
@@ -37,8 +55,6 @@ const Login = ({ setIsLoggedIn }) => {
       }
     }, [enabledEncounters, patients, updateEncounters]);
     
-
-  
 
   // Handle login submission
   const handleSubmit = (e) => {
@@ -120,10 +136,8 @@ const Login = ({ setIsLoggedIn }) => {
         <div className="login-footer">
           <a href="/forgot-password" className="login-link">Forgot Password?</a>
         </div>
-        <div className="login-footer">
-          <Button variant="contained" onClick={handleConfigure}>
-            Configure
-          </Button>
+        <div className="configure-icon-container" onClick={handleConfigure}>
+          <SettingsIcon style={{ fontSize: '36px', cursor: 'pointer' }} />
         </div>
       </div>
 
@@ -133,7 +147,7 @@ const Login = ({ setIsLoggedIn }) => {
         onClose={handleCloseDialog}
         onSubmit={handleSubmitEncounters}
         patients={patients}
-        encountersPerPatient={encountersPerPatient}
+        encounterCounts={encounterCounts}
       />
     </div>
   );

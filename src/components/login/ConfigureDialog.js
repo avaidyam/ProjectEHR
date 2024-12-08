@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Modal, Box, Typography, MenuItem, Select, Button } from '@mui/material';
 
-const ConfigureDialog = ({ open, onClose, onSubmit, patients, encountersPerPatient }) => {
+const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
   const [selectedEncounters, setSelectedEncounters] = useState({});
 
   // Handle selecting an encounter for a patient
@@ -14,26 +14,38 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encountersPerPatie
     }));
   };
 
+  // This function will be the pop up box to select the desired encounters!
   const renderTree = () => {
-    return patients.map((patient, pIndex) => (
-      <Box key={`pt${pIndex}`} sx={{ marginBottom: 2 }}>
-        <Typography variant="h6">{patient}</Typography>
-        <Select
-          value={selectedEncounters[patient] !== undefined ? selectedEncounters[patient] : 'None'}
-          onChange={(e) => handleSelectEncounter(patient, e.target.value)}
-          displayEmpty
-          fullWidth
-        >
-          <MenuItem value="None">None</MenuItem>
-          {Array.from({ length: encountersPerPatient }, (_, eIndex) => (
-            <MenuItem key={eIndex} value={eIndex}>
-              Encounter {eIndex + 1}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
-    ));
+    return patients.map((patient, pIndex) => {
+      const encounterCount = encounterCounts[patient] || 0; // Get the number of encounters for the patient, default to 0
+  
+      // Ensure the selected value matches available options or defaults to "None"
+      const selectedValue =
+        selectedEncounters[patient] !== undefined
+          ? selectedEncounters[patient]
+          : "None";
+  
+      return (
+        <Box key={`pt${pIndex}`} sx={{ marginBottom: 2 }}>
+          <Typography variant="h6">{patient}</Typography>
+          <Select
+            value={selectedValue}
+            onChange={(e) => handleSelectEncounter(patient, e.target.value)}
+            displayEmpty
+            fullWidth
+          >
+            <MenuItem value="None">None</MenuItem>
+            {Array.from({ length: encounterCount }, (_, eIndex) => (
+              <MenuItem key={eIndex} value={eIndex}>
+                Encounter {eIndex + 1}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+      );
+    });
   };
+  
 
   const handleSubmit = () => {
     const finalizedEncounters = { ...selectedEncounters };
@@ -43,7 +55,6 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encountersPerPatie
       }
     });
 
-    console.log('Finalized Encounters:', finalizedEncounters);
     onSubmit(finalizedEncounters); 
   };
 

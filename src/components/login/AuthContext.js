@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 // Clear specific localStorage items on refresh
-localStorage.removeItem('adminPassword'); // Removes only the admin password
+// localStorage.removeItem('adminPassword'); // Removes only the admin password - helpful for testing purposes
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
