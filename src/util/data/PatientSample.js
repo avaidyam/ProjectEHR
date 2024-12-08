@@ -539,6 +539,471 @@ const _data = [
       }
     ]
   }, {
+    firstName: 'Xiao-Mei',
+    lastName: 'Chen',
+    dateOfBirth: '1958-05-15',
+    age: 65,
+    avatarUrl: null,
+    address: null,
+    preferredLanguage: 'Cantonese',
+    gender: 'Female',
+    mrn: "1230006",
+    PCP: {
+      name: 'Chris Nelson',
+      title: "MD",
+      role: "PCP",
+      avatarUrl: null,
+    },
+    insurance: {
+      carrierName: 'UnitedHealthcare',
+    },
+    encounters: [
+      {
+        id: "8",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+      {
+        id: "9",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "Incorporating knowledge from the presentation, counsel the patient."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [
+            {
+              "diagnosis": "Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Dietary counseling and surveillance (ICD-10-CM Z71.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Lack of physical exercise (ICD-10-CM Z72.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            }
+          ],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+    ]
+  }, {
+    firstName: 'Nestor',
+    lastName: 'Ortega-Rodriguez',
+    dateOfBirth: '1958-05-15',
+    age: 65,
+    avatarUrl: null,
+    address: null,
+    preferredLanguage: 'Spanish',
+    gender: 'Male',
+    mrn: "1230007",
+    PCP: {
+      name: 'Chris Nelson',
+      title: "MD",
+      role: "PCP",
+      avatarUrl: null,
+    },
+    insurance: {
+      carrierName: 'UnitedHealthcare',
+    },
+    encounters: [
+      {
+        id: "12",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+      {
+        id: "13",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "Incorporating knowledge from the presentation, counsel the patient."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [
+            {
+              "diagnosis": "Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Dietary counseling and surveillance (ICD-10-CM Z71.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Lack of physical exercise (ICD-10-CM Z72.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            }
+          ],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+    ]
+  }, {
+    firstName: 'Nina',
+    lastName: 'Ortega-Rodriguez',
+    dateOfBirth: '1958-05-15',
+    age: 65,
+    avatarUrl: null,
+    address: null,
+    preferredLanguage: 'Spanish',
+    gender: 'Female',
+    mrn: "1230008",
+    PCP: {
+      name: 'Chris Nelson',
+      title: "MD",
+      role: "PCP",
+      avatarUrl: null,
+    },
+    insurance: {
+      carrierName: 'UnitedHealthcare',
+    },
+    encounters: [
+      {
+        id: "14",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+      {
+        id: "15",
+        startDate: '2024-04-02 12:30',
+        endDate: '2024-04-02 12:50',
+        type: "Office Visit",
+        status: "Signed",
+        department: "Family Medicine",
+        specialty: "Family Medicine",
+        provider: "Chris Nelson, MD",
+        concerns: [
+          "leg swelling", "Incorporating knowledge from the presentation, counsel the patient."
+        ],
+        diagnoses: [
+          "leg swelling"
+        ],
+        problems: [
+        ],
+        vitals: [
+          {
+            id: '123456789',
+            measurementDate: '2024-04-02',
+            bloodPressureSystolic: 105,
+            bloodPressureDiastolic: 60,
+            height: `5' 5"`,
+            weight: 140,
+            bmi: 23,
+            respiratoryRate: 12,
+            heartRate: 65,
+          },
+          {
+            id: '123456790',
+            measurementDate: '2022-09-15',
+            bloodPressureSystolic: 110,
+            bloodPressureDiastolic: 76,
+            height: `5' 5"`,
+            weight: 141,
+            bmi: 23,
+            respiratoryRate: 14,
+            heartRate: 73,
+          },
+        ],
+        documents: [
+        ],
+        allergies: [],
+        history: {
+          "medical": [
+            {
+              "diagnosis": "Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Dietary counseling and surveillance (ICD-10-CM Z71.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            },
+            {
+              "diagnosis": "Lack of physical exercise (ICD-10-CM Z72.3)",
+              "date": "2024-12-08",
+              "age": "65"
+            }
+          ],
+          "surgical": [],
+          "family": [
+          ],
+          "SubstanceSexualHealth": {
+            
+          },
+          "Socioeconomic": {
+          },
+          "SocialDocumentation": {
+            "textbox": ""
+          }
+        } 
+      },
+    ]
+  }, {
     firstName: 'John',
     lastName: 'Hanson',
     dateOfBirth: '1958-05-15',
