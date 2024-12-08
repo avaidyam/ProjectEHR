@@ -1,6 +1,6 @@
 import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
-import { Box, Tab, Tabs, Divider, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
+import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
 import { AuthContext } from '../login/AuthContext'; 
 
@@ -159,6 +159,9 @@ export const Storyboard = ({ ...props }) => {
           <span>DOB: {DateHelpers.standardFormat(dateOfBirth)}</span>
           <span>MRN: {patientMRN}</span>
           <strong>Preferred language: {preferredLanguage}</strong>
+          {preferredLanguage !== 'English' && 
+            <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
+          }
         </div>
       </div>
       <Divider color="inherit" />
