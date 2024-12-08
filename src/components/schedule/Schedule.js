@@ -230,6 +230,11 @@ const columns = [
         <span>{params.value}</span>
       </Tooltip>
     ),
+    /*valueGetter: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[0] ?? ""
+      return data2
+    },//*/
   },
   {
     field: 'notes',
@@ -240,6 +245,11 @@ const columns = [
         <span>{params.value}</span>
       </Tooltip>
     ),
+    /*valueGetter: (params) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[1] ?? ""
+      return data2 // FIXME we need an actual appointment object still but this will do for now
+    },//*/
   },
   {
     field: 'fullProviderName',
