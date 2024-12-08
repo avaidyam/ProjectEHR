@@ -13,7 +13,8 @@
       "eventStatus": "",
       "room": null,
       "patient": {
-        "mrn": 1230001,
+        "mrn": "1230001",
+        "enc": "1",
         "lastName": "Bowman",
         "firstName": "Alec",
         "middleName": null,
@@ -45,7 +46,8 @@
       "eventStatus": "",
       "room": 1,
       "patient": {
-        "mrn": 4641821,
+        "mrn": "4641821",
+        "enc": "3",
         "lastName": "Hanson",
         "firstName": "John",
         "middleName": null,
@@ -77,7 +79,8 @@
       "eventStatus": "",
       "room": 5,
       "patient": {
-        "mrn": 4641821,
+        "mrn": "4641821",
+        "enc": "4",
         "lastName": "Shen",
         "firstName": "Julia",
         "middleName": null,
@@ -109,7 +112,8 @@
       "eventStatus": "",
       "room": 3,
       "patient": {
-        "mrn": 4641821,
+        "mrn": "4641821",
+        "enc": "1",
         "lastName": "Burnham",
         "firstName": "Jennifer",
         "middleName": null,

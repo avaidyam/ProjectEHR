@@ -94,7 +94,7 @@ export const App = () => {
             }
           />
           <Route
-            path="/patient/:mrn"
+            path="/patient/:mrn/encounter/:enc"
             element={
               isLoggedIn && isDepartmentSelected ? (
                 <PatientHome />

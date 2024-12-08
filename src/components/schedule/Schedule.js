@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 
 import { AuthContext } from '../login/AuthContext';
 import { useRouter } from '../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js'
 
 // json data
 import appt from '../../util/data/schedule.json';
@@ -315,7 +316,7 @@ export function Schedule() {
             onRowClick={patientScheduleClick}
             onRowDoubleClick={({
               row: {
-                patient: { mrn: selectedMRN },
+                patient: { mrn: selectedMRN, enc: selectedEnc },
               },
             }) => {
               console.log("Enabled Encounters: ", enabledEncounters, enabledEncounters[selectedMRN])
@@ -323,8 +324,16 @@ export function Schedule() {
                 alert("You cannot view this chart because no encounter is associated with this MRN.");
                 return; // Prevent routing
               }
+              //if (!enabledEncounters[selectedMRN].includes(selectedEnc)) {
+              //  alert("You cannot view this chart because this encounter is marked CONFIDENTIAL.");
+              //  return; // Prevent routing
+              //} // FIXME later
+              if (!TEST_PATIENT_INFO({ patientMRN: selectedMRN }).encounters.map(x => x.id).includes(selectedEnc)) {
+                alert("You cannot view this chart because this encounter DOES NOT EXIST [system error].");
+                return; // Prevent routing
+              }
             
-              onHandleClickRoute(`patient/${selectedMRN}`); // Proceed with routing if an encounter is selected
+              onHandleClickRoute(`patient/${selectedMRN}/encounter/${selectedEnc}`); // Proceed with routing if an encounter is selected
             }}
             slots={{ toolbar: customFilterBar }}
             slotProps={{

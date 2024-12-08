@@ -5,7 +5,7 @@ import { blue, deepOrange } from '@mui/material/colors';
 import { AuthContext } from '../login/AuthContext'; 
 
 import DateHelpers from '../../util/DateHelpers.js';
-import { usePatientMRN } from '../../util/urlHelpers.js';
+import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js'
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
@@ -90,13 +90,9 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   );
 };
 
-export const PatientSidebarVitalsOverview = ({ patientMRN, ...props }) => {
+export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) => {
   const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
-  // Get the enabled encounter number for the patient using their MRN
-  const enabledEncounterNumber = enabledEncounters[patientMRN];
-  // Select the correct encounter using the enabled encounter number
-  const vitals = encounters[enabledEncounterNumber].vitals;
+  const vitals = (encounters?.find(x => x.id === encID) ?? {}).vitals;
 
   /** sort most recent to older */
   const [mostRecentVitals, ...olderVitals] = _.sortBy(
@@ -118,7 +114,8 @@ export const PatientSidebarVitalsOverview = ({ patientMRN, ...props }) => {
 };
 
 export const Storyboard = ({ ...props }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN();
+  const [patientMRN, setPatientMRN] = usePatientMRN()
+  const [enc, setEnc] = useEncounterID()
   const {
     firstName,
     lastName,
@@ -128,19 +125,22 @@ export const Storyboard = ({ ...props }) => {
     gender,
     PCP,
     encounters,
+    insurance,
   } = TEST_PATIENT_INFO({ patientMRN });
-
+  console.dir(enc, encounters?.find(x => x.id === enc))
   // Extract the first encounter
   const {
-    insurance,
-    careGaps,
-    encounter,
     problems,
     vitals,
     documents,
     allergies,
     history
-  } = encounters[0] || {}; // Safely access the first encounter
+  } = (encounters?.find(x => x.id === enc) ?? {}); // Safely access the first encounter
+
+  const careGaps = [
+    { id: '1', name: 'COVID Booster #8' },
+    { id: '2', name: 'COVID Booster #9' },
+  ] // FIXME this should later be computed based on the "not on file" items in snapshot 
 
   const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
@@ -179,11 +179,11 @@ export const Storyboard = ({ ...props }) => {
     </div>
       <Divider color="inherit" />
       <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {encounter.type}</Typography>
-      <Typography>Date: {encounter.date}</Typography>
-      <Typography>Reason: {encounter.concerns.join(", ")}</Typography>
+      <Typography>Type: {encounters?.find(x => x.id === enc)?.type}</Typography>
+      <Typography>Date: {encounters?.find(x => x.id === enc)?.startDate}</Typography>
+      <Typography>Reason: {encounters?.find(x => x.id === enc)?.concerns.join(", ")}</Typography>
       <Divider color="inherit" />
-      <PatientSidebarVitalsOverview patientMRN={patientMRN} />
+      <PatientSidebarVitalsOverview patientMRN={patientMRN} encID={enc} />
       <Divider color="inherit" />
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
         Care Gaps ({careGaps.length})

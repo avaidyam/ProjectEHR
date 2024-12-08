@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useState } from 'react';
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import DWVViewer from './DWVViewer.js';
 
 // The following are nice utilities but should be cleaned up eventually.
@@ -37,6 +37,7 @@ let loadImages = (scanID) => {
 // ResultList component (unchanged)
 const ResultList = () => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
+  const [enc, setEnc] = useEncounterID()
   if (patientMRN === null) { //FIXME this should NEVER be null!!!
     return (
       <List>
