@@ -115,6 +115,16 @@ export const ChartReview = ({ ...props }) => {
   // or logic to advance from one encounter to the next
   const currentEncDate = encounters?.find(x => x.id === enc).startDate
   const documents = encounters?.filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
+  const encounters_data = encounters.map(x => ({
+    kind: 'Encounters',
+    data: {
+      date: x.startDate,
+      type: x.type,
+      department: x.department,
+      specialty: x.specialty,
+      provider: x.provider
+    }
+  }))
   
   return (
     <div>
@@ -133,7 +143,7 @@ export const ChartReview = ({ ...props }) => {
           />
         ))}
       </Box>
-      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={documents} />
+      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encounters_data, ...documents]} />
     </div>
   );
 };
