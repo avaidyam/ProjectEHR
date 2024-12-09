@@ -9,6 +9,7 @@ import { EditorState, Modifier, SelectionState } from 'draft-js';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import CustomNoteModal from './CustomNoteModal'; // Import the custom note modal component
 
 
 const replaceROSText = (editorState, rosState) => {
@@ -69,46 +70,53 @@ const replaceROSText = (editorState, rosState) => {
 };
 
 const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSystemState }) => {
-
   const [isNegChecked, setIsNegChecked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for controlling modal visibility
+  const [currentCustomNote, setCurrentCustomNote] = useState(''); // State to hold the custom note
 
   const handleNegCheck = (e) => {
     setIsNegChecked(e.target.checked);
-    // Set all symptoms to false if neg is checked
-    updateSystemState(symptoms.reduce((acc, symptom) => ({
-      ...acc,
-      [symptom]: e.target.checked ? false : null,
-    }), {}));
+    updateSystemState(
+      symptoms.reduce(
+        (acc, symptom) => ({
+          ...acc,
+          [symptom]: e.target.checked ? false : null,
+        }),
+        {}
+      )
+    );
   };
 
   const handleCustomNote = () => {
-    const currentCustomNote = systemState['custom'] || ''; // Get the existing custom note or default to an empty string
-    const customNote = prompt(`Enter a custom note for ${title}`, currentCustomNote); // Pre-fill with the existing note
-    if (customNote !== null) { // Check for null to handle canceling the prompt
-      updateSystemState({
-        ...systemState,
-        custom: customNote, // Update the custom note
-      });
-    }
+    const existingNote = systemState.custom || '';
+    setCurrentCustomNote(existingNote); // Set the current note
+    setIsModalOpen(true); // Open the modal
   };
 
-  const allNegative = Object.values(systemState).every(state => state === false);
+  const handleSaveCustomNote = (newCustomNote) => {
+    updateSystemState({
+      ...systemState,
+      custom: newCustomNote, // Update the custom note
+    });
+    setIsModalOpen(false); // Close the modal
+  };
+
+  const allNegative = Object.values(systemState).every((state) => state === false);
 
   const handleSymptomClick = (symptomName, newState) => {
     updateSystemState({
       ...systemState,
-      [symptomName]: newState === systemState[symptomName] ? null : newState
+      [symptomName]: newState === systemState[symptomName] ? null : newState,
     });
   };
-  
+
   return (
     <Box sx={{ border: '1px solid #ddd', padding: 2, marginBottom: 2, width: '100%' }}>
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between">
         <Grid item>
-              
-              <IconButton onClick={handleCustomNote}>
-            <DescriptionIcon 
-              sx={{ color: systemState.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note is not empty
+          <IconButton onClick={handleCustomNote}>
+            <DescriptionIcon
+              sx={{ color: systemState.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
             />
           </IconButton>
         </Grid>
@@ -134,20 +142,21 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '4px', // Reduced padding to make items closer vertically
+                  padding: '4px',
                   borderRadius: 1,
                   backgroundColor:
-                    systemState[symptom] === true ? 'red' :
-                    systemState[symptom] === false ? 'green' : '#f0f0f0',
+                    systemState[symptom] === true
+                      ? 'red'
+                      : systemState[symptom] === false
+                      ? 'green'
+                      : '#f0f0f0',
                   color: systemState[symptom] != null ? 'white' : 'black',
                   cursor: 'pointer',
                   width: '100%',
-                  height: '30px', // Adjust the height to make the items shorter
+                  height: '30px',
                 }}
               >
-                <Typography sx={{ marginLeft: 2 }}>
-                  {symptom}
-                </Typography>
+                <Typography sx={{ marginLeft: 2 }}>{symptom}</Typography>
                 <Box>
                   <IconButton
                     onClick={() => handleSymptomClick(symptom, true)}
@@ -167,6 +176,15 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
           </Grid>
         ))}
       </Box>
+
+      {/* Custom Note Modal */}
+      <CustomNoteModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveCustomNote}
+        title={`Enter a custom note for ${title}`}
+        defaultValue={currentCustomNote}
+      />
     </Box>
   );
 });
