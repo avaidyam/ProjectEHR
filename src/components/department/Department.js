@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Department.css';
 import { useNavigate } from 'react-router-dom'; // For navigating back to the login page
 import logo from './Logo.png';
+import Notification from '../../util/Notification';
+
 
 const departments = [
   { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },
@@ -13,13 +15,18 @@ const departments = [
 const Department = ({ onDepartmentSelect }) => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' }); // Notification state
   const navigate = useNavigate(); // For navigation (Cancel button functionality)
+
+  const showNotification = (message, severity = 'info') => {
+    setNotification({ open: true, message, severity });
+  };
 
   const handleSelect = () => {
     if (selectedDepartment) {
       onDepartmentSelect(selectedDepartment); // Pass selected department up
     } else {
-      alert('Please select a department.');
+      showNotification('Please select a department.', 'warning'); // Trigger notification instead of alert
     }
   };
 
@@ -85,6 +92,14 @@ const Department = ({ onDepartmentSelect }) => {
           <button onClick={handleCancel} className="cancel-button">Cancel</button>
         </div>
       </div>
+
+      {/* Notification Component */}
+      <Notification
+        open={notification.open}
+        onClose={() => setNotification({ ...notification, open: false })}
+        message={notification.message}
+        severity={notification.severity}
+      />
     </div>
   );
 };

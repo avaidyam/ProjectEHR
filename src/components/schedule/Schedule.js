@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -11,6 +11,8 @@ import Select from '@mui/material/Select';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
+import Notification from '../../util/Notification';
+
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -266,11 +268,22 @@ export function Schedule() {
   const patientScheduleClick = (params) => {
     setPatient(params.row);  
   };
+  
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
 
+  const showNotification = (message, severity = 'info') => {
+    setNotification({ open: true, message, severity });
+  };
 
   return (
     <Box sx={{ position: 'relative' }}>
       <div>{dateLocal()}</div>
+      <Notification
+        open={notification.open}
+        onClose={() => setNotification({ ...notification, open: false })}
+        message={notification.message}
+        severity={notification.severity}
+      />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
         <div style={{ textAlign: 'right' }}>
           <FormControlLabel
@@ -318,9 +331,8 @@ export function Schedule() {
                 patient: { mrn: selectedMRN },
               },
             }) => {
-              console.log("Enabled Encounters: ", enabledEncounters, enabledEncounters[selectedMRN])
               if (enabledEncounters[selectedMRN] == null) {
-                alert("You cannot view this chart because no encounter is associated with this MRN.");
+                showNotification('You cannot view this chart because no encounter is associated with this MRN.', 'warning');
                 return; // Prevent routing
               }
             
