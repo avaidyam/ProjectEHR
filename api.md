@@ -31,13 +31,17 @@
   - `start: date`
   - `end: date`
   - `type: string`
-  - `status: string`
+  - `status: Status`
   - `department: string`
   - `practioner: Practitioner[]`
   - `concerns: Problem[]`
   - `diagnoses: Problem[]`
   - `problems: Problem[]`
   - `observations: Observation[]`
+- **`Status`**
+  - `value: string`: The status.
+  - `changed: date`: When this status was applied.
+  - `actor: Practitioner`: The Practitioner that applied this status.
 - **`Problem`**
   - `code: string`: The SNOMED-CT code mapped to the problem.
   - `title: string`: The human-friendly renamed title of the problem.
