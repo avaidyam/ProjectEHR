@@ -1,0 +1,58 @@
+# Data Model 
+
+## Resource Types
+
+- **`Patient`**
+  - `id: string`
+  - `name: string`
+  - `birthdate: date`
+  - `gender: string`
+  - `language: string`
+  - `address: string`
+  - `insurance: string`
+  - `PCP: Practitioner`
+- **`Location`**
+  - `id: string`
+  - `name: string`
+  - `slots: Slot[]`
+- **`Practitioner`**
+  - `id: string`
+  - `name: string`
+  - `schedule: Schedule[]`
+- **`Schedule`**
+  - `id: string`
+  - `department: string`
+  - `period: date-temporal`: TODO.
+  - `comment: string`
+- **`Appointment`**
+  - `id: string`
+- **`Encounter`**
+  - `id: string`
+  - `start: date`
+  - `end: date`
+  - `type: string`
+  - `status: string`
+  - `department: string`
+  - `practioner: Practitioner[]`
+  - `concerns: Problem[]`
+  - `diagnoses: Problem[]`
+  - `problems: Problem[]`
+  - `observations: Observation[]`
+- **`Problem`**
+  - `code: string`: The SNOMED-CT code mapped to the problem.
+  - `title: string`: The human-friendly renamed title of the problem.
+- **`Observation`**
+  - `code: string`: The code mapped to this observation (i.e. `pulse`, `systolic-bp`, etc.).
+  - `value: string`: The value of the observation.
+- **`Result`**
+  - `code: string`: The LOINC code mapped to this result.
+  - `date: date`
+  - `status: string`
+  - `components: Component[]`
+    - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
+    - `value: string|number`: The value of the sub-component.
+    - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
+    - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
+    - `comment: string|null`: An optional comment about the component.
+- **`Order`**
+  - `id: string`
