@@ -116,3 +116,38 @@
   - `status: string(pended|signed|sign-with-visit|addended)`
   - `replaced_by: Note|null`: If this note has been `status=addended`, this **MUST** point to the replacing note, otherwise it is `null`.
   - `content: string`
+- **`Medication`**
+  - `id: string`
+  - `name: string`: The generic name of the medication.
+  - `brandName: string`: The brand name of the medication.
+  - `dose: number`: The prescribed dosage.
+  - `unit: string`: The measurement unit (e.g., mg, mL).
+  - `frequency: string`: How often the medication should be taken.
+  - `startDate: date|null`: The date the medication was started.
+  - `endDate: date|null`: The date the medication was discontinued, or null if ongoing.
+  - `route: string`: The method of administration (e.g., Oral, IV).
+  - `possiblePrnReasons: string[]`: List of potential reasons for taking this medication as needed.
+  - `activePrnReasons: string[]`: List of active reasons for PRN (as needed) use.
+- **`LabTest`**
+  - `dateTime: date` – The date and time of the test.
+  - `test: string` – The name of the test performed.
+  - `status: string` – The current status of the test (e.g., completed, pending).
+  - `abnormal: boolean` – Whether the test result is flagged as abnormal.
+  - `expectedDate: date|null` – The expected date for results.
+  - `expiration: date|null` – The expiration date of the test result.
+  - `encounterProvider: Practitioner` – The provider who ordered the test.
+  - `labResults: LabResult[]` – A list of results from this test.
+- **`LabResult`**
+  - `name: string` – The name of the test component.
+  - `low: number|null` – The lower reference range, or `null` if not applicable.
+  - `high: number|null` – The upper reference range, or `null` if not applicable.
+  - `units: string|null` – The unit of measurement.
+  - `value: string|number` – The recorded value.
+  - `comment: string|null` – Additional comments on the result.
+- **`FamilyHistory`**
+  - `relationship: string` – The relationship to the patient (e.g., mother, father).
+  - `name: string` – The name of the family member, if recorded.
+  - `status: string` – The family member's health status (e.g., alive, deceased).
+  - `age: number` – The family member’s age.
+  - `problems: Condition[]` – A list of `Condition` affecting the family member.
+  
