@@ -10,11 +10,6 @@
   - `language: string`
   - `address: string`
   - `insurance: string`
-  - `care_team: <>[]`
-    - `practitioner: Practitioner`
-    - `role: string`
-    - `start: date`
-    - `end: date`
 - **`Practitioner`**
   - `id: string`
   - `name: string`
@@ -39,22 +34,39 @@
   - `department: string`
   - `care_team: <>[]`
     - `practitioner: Practitioner`
-    - `role: string`
+    - `role: string(pcp|ed|hospitalist|consult|student|nurse|...)`
     - `start: date`
     - `end: date`
-  - `concerns: Problem[]`
-  - `diagnoses: Problem[]`
-  - `problems: Problem[]`
-  - `observations: Observation[]`
+  - `concerns: Condition[]`: This condition list acts as the ED clinical impression differential diagnosis list.
+  - `diagnoses: Condition[]`: This condition list acts as the outpatient visit diagnoses list.
+  - `problems: Condition[]`: This condition list acts as the inpatient active/resolved problem list.
+  - `observations: Observation[]`: This acts as the equivalent of recorded observations in flowsheets.
+  - `history: <>`: 
+    - `allergies: <>[]`
+      - `substance: string`
+      - `reaction: string`
+      - `type: string(allergy|intolerance|side-effect)`
+      - `severity: string(low|high|unknown)`
+      - `verified: boolean`
+      - `resolved: boolean`
+      - `recorded: date`
+      - `recorder: Practitioner`
+      - `comment: string`
+    - `immunizations: <>[]`
+      - `vaccine: string`
+      - `received: date`
+      - `recorded: date`
+      - `recorder: Practitioner`
 - **`Status`**
   - `value: string`: The status.
   - `changed: date`: When this status was applied.
   - `actor: Practitioner`: The Practitioner that applied this status.
-- **`Problem`**
-  - `code: string`: The SNOMED-CT code mapped to the problem.
-  - `title: string`: The human-friendly renamed title of the problem.
+- **`Condition`**
+  - `code: string`: The SNOMED-CT code mapped to the condition.
+  - `title: string`: The human-friendly renamed title of the condition.
   - `principal: boolean`
   - `active: boolean`
+  - `hospital: boolean`
   - `priority: number`
   - `recorded: date`
   - `recorder: Practitioner`
@@ -62,20 +74,20 @@
 - **`Observation`**
   - `code: string`: The code mapped to this observation (i.e. `pulse`, `systolic-bp`, etc.).
   - `value: string`: The value of the observation.
-- **`Result`**: i.e. `EKG={"11524-6", ..., "over-read", [{"RPT", "EKG report here"}], "data:image/dcm;base64,aGVsbG8="}`
+- **`Result`**:
   - `code: string`: The LOINC code mapped to this result.
   - `date: date`
   - `status: string`
   - `components: Component[]`
-  - `image: Image|null`: Imaging data (DICOM) for this result, if applicable, otherwise `null`.
+  - `image: string|null`: A base64-encoded data-uri OR an external URL containing DICOM imaging data for this result, if applicable, otherwise `null`.
+  - Examples:
+    - `EKG={"11524-6", ..., "over-read", [{"RPT", "EKG report here"}], "data:image/dcm;base64,aGVsbG8="}`
 - **`Component`**
   - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
   - `value: string|number`: The value of the sub-component.
   - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
   - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
   - `comment: string|null`: An optional comment about the component.
-- **`Image`**
-  - `data: string`: A base64-encoded data-uri OR an external URL containing DICOM data.
 - **`Order`**
   - `id: string`
   - `created: date`
