@@ -2,8 +2,11 @@
 
 ## Resource Types
 
+- **`Object`**
+  - `id: string`: A UUID representing the object.
+  - `type: string`: The type of this object.
 - **`Patient`**
-  - `id: string`
+  - `id: string`: Note: this `id` field is the same as `Object`, and acts as the patient's `mrn` (medical records number).
   - `name: string`
   - `birthdate: date`
   - `gender: string`
@@ -11,22 +14,33 @@
   - `address: string`
   - `insurance: string`
 - **`Practitioner`**
-  - `id: string`
   - `name: string`
   - `schedule: Schedule[]`
 - **`Location`**
-  - `id: string`
   - `name: string`
   - `schedule: Schedule[]`
 - **`Schedule`**
-  - `id: string`
   - `department: string`
   - `period: date-temporal`: TODO.
   - `comment: string`
 - **`Appointment`**
-  - `id: string`
+  - `patient: Patient`
+  - `practitioner: Practitioner`
+  - `location: Location`
+  - `date: date`
+  - `duration: number`
+  - `status: string`
+  - `flag: string`
+  - `concern: string`: The reason-for-visit (RFV) or chief-complaint (CC) for the appointment.
+  - `comment: string`: Any miscellaneous notes for this appointment.
+- **`List`**
+  - `name: string`
+  - `parent: List`
+  - `owner: Practitioner|null`: The owner of the list, or `null` if this is a system-wide accessible list.
+  - `shared: Practitioner[]|null`: A set of Practitioners that have read-write access, or `null` if not shared.
+  - `patients: Patient[]`
 - **`Encounter`**
-  - `id: string`
+  - `appointment: Appointment|null`: The originating appointment for this encounter, if applicable (i.e. outpatient clinic setting).
   - `start: date`
   - `end: date`
   - `type: string`
@@ -89,13 +103,16 @@
   - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
   - `comment: string|null`: An optional comment about the component.
 - **`Order`**
-  - `id: string`
   - `created: date`
   - `creator: Practitioner`
   - `status: string`
 - **`Note`**
-  - `id: string`
   - `encounter: Encounter`
-  - `type: string`
-  - `status: string`
+  - `author: Practitioner`
+  - `cosigner: Practitioner[]|null`: A set of cosigners for the note, or `null` if not applicable for co-signing. An empty set indicates this note still requires co-sign before it is approved. Co-signing the note will create an addended version.
+  - `created_date: date`: The date the note was actually created.
+  - `service_date: date`: The service date for which the note contains information (which may be earlier, but never later than the `created_date`).
+  - `type: string(hp|progress|discharge|consult|staff)`
+  - `status: string(pended|signed|sign-with-visit|addended)`
+  - `replaced_by: Note|null`: If this note has been `status=addended`, this **MUST** point to the replacing note, otherwise it is `null`.
   - `content: string`
