@@ -10,12 +10,16 @@
   - `language: string`
   - `address: string`
   - `insurance: string`
-  - `PCP: Practitioner`
-- **`Location`**
+  - `care_team: <>[]`
+    - `practitioner: Practitioner`
+    - `role: string`
+    - `start: date`
+    - `end: date`
+- **`Practitioner`**
   - `id: string`
   - `name: string`
-  - `slots: Slot[]`
-- **`Practitioner`**
+  - `schedule: Schedule[]`
+- **`Location`**
   - `id: string`
   - `name: string`
   - `schedule: Schedule[]`
@@ -33,7 +37,11 @@
   - `type: string`
   - `status: Status`
   - `department: string`
-  - `practioner: Practitioner[]`
+  - `care_team: <>[]`
+    - `practitioner: Practitioner`
+    - `role: string`
+    - `start: date`
+    - `end: date`
   - `concerns: Problem[]`
   - `diagnoses: Problem[]`
   - `problems: Problem[]`
@@ -45,18 +53,37 @@
 - **`Problem`**
   - `code: string`: The SNOMED-CT code mapped to the problem.
   - `title: string`: The human-friendly renamed title of the problem.
+  - `principal: boolean`
+  - `active: boolean`
+  - `priority: number`
+  - `recorded: date`
+  - `recorder: Practitioner`
+  - `comment: string`
 - **`Observation`**
   - `code: string`: The code mapped to this observation (i.e. `pulse`, `systolic-bp`, etc.).
   - `value: string`: The value of the observation.
-- **`Result`**
+- **`Result`**: i.e. `EKG={"11524-6", ..., "over-read", [{"RPT", "EKG report here"}], "data:image/dcm;base64,aGVsbG8="}`
   - `code: string`: The LOINC code mapped to this result.
   - `date: date`
   - `status: string`
   - `components: Component[]`
-    - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
-    - `value: string|number`: The value of the sub-component.
-    - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
-    - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
-    - `comment: string|null`: An optional comment about the component.
+  - `image: Image|null`: Imaging data (DICOM) for this result, if applicable, otherwise `null`.
+- **`Component`**
+  - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
+  - `value: string|number`: The value of the sub-component.
+  - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
+  - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
+  - `comment: string|null`: An optional comment about the component.
+- **`Image`**
+  - `data: string`: A base64-encoded data-uri OR an external URL containing DICOM data.
 - **`Order`**
   - `id: string`
+  - `created: date`
+  - `creator: Practitioner`
+  - `status: string`
+- **`Note`**
+  - `id: string`
+  - `encounter: Encounter`
+  - `type: string`
+  - `status: string`
+  - `content: string`
