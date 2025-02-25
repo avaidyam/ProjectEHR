@@ -2,57 +2,152 @@
 
 ## Resource Types
 
+- **`Object`**
+  - `id: string`: A UUID representing the object.
+  - `type: string`: The type of this object.
 - **`Patient`**
-  - `id: string`
+  - `id: string`: Note: this `id` field is the same as `Object`, and acts as the patient's `mrn` (medical records number).
   - `name: string`
   - `birthdate: date`
   - `gender: string`
   - `language: string`
   - `address: string`
   - `insurance: string`
-  - `PCP: Practitioner`
-- **`Location`**
-  - `id: string`
-  - `name: string`
-  - `slots: Slot[]`
 - **`Practitioner`**
-  - `id: string`
+  - `name: string`
+  - `schedule: Schedule[]`
+- **`Location`**
   - `name: string`
   - `schedule: Schedule[]`
 - **`Schedule`**
-  - `id: string`
   - `department: string`
   - `period: date-temporal`: TODO.
   - `comment: string`
 - **`Appointment`**
-  - `id: string`
+  - `patient: Patient`
+  - `practitioner: Practitioner`
+  - `location: Location`
+  - `date: date`
+  - `duration: number`
+  - `status: string`
+  - `flag: string`
+  - `concern: string`: The reason-for-visit (RFV) or chief-complaint (CC) for the appointment.
+  - `comment: string`: Any miscellaneous notes for this appointment.
+- **`List`**
+  - `name: string`
+  - `parent: List`
+  - `owner: Practitioner|null`: The owner of the list, or `null` if this is a system-wide accessible list.
+  - `shared: Practitioner[]|null`: A set of Practitioners that have read-write access, or `null` if not shared.
+  - `patients: Patient[]`
 - **`Encounter`**
-  - `id: string`
+  - `appointment: Appointment|null`: The originating appointment for this encounter, if applicable (i.e. outpatient clinic setting).
   - `start: date`
   - `end: date`
   - `type: string`
-  - `status: string`
+  - `status: Status`
   - `department: string`
-  - `practioner: Practitioner[]`
-  - `concerns: Problem[]`
-  - `diagnoses: Problem[]`
-  - `problems: Problem[]`
-  - `observations: Observation[]`
-- **`Problem`**
-  - `code: string`: The SNOMED-CT code mapped to the problem.
-  - `title: string`: The human-friendly renamed title of the problem.
+  - `care_team: <>[]`
+    - `practitioner: Practitioner`
+    - `role: string(pcp|ed|hospitalist|consult|student|nurse|...)`
+    - `start: date`
+    - `end: date`
+  - `concerns: Condition[]`: This condition list acts as the ED clinical impression differential diagnosis list.
+  - `diagnoses: Condition[]`: This condition list acts as the outpatient visit diagnoses list.
+  - `problems: Condition[]`: This condition list acts as the inpatient active/resolved problem list.
+  - `observations: Observation[]`: This acts as the equivalent of recorded observations in flowsheets.
+  - `history: <>`: 
+    - `allergies: <>[]`
+      - `substance: string`
+      - `reaction: string`
+      - `type: string(allergy|intolerance|side-effect)`
+      - `severity: string(low|high|unknown)`
+      - `verified: boolean`
+      - `resolved: boolean`
+      - `recorded: date`
+      - `recorder: Practitioner`
+      - `comment: string`
+    - `immunizations: <>[]`
+      - `vaccine: string`
+      - `received: date`
+      - `recorded: date`
+      - `recorder: Practitioner`
+- **`Status`**
+  - `value: string`: The status.
+  - `changed: date`: When this status was applied.
+  - `actor: Practitioner`: The Practitioner that applied this status.
+- **`Condition`**
+  - `code: string`: The SNOMED-CT code mapped to the condition.
+  - `title: string`: The human-friendly renamed title of the condition.
+  - `principal: boolean`
+  - `active: boolean`
+  - `hospital: boolean`
+  - `priority: number`
+  - `recorded: date`
+  - `recorder: Practitioner`
+  - `comment: string`
 - **`Observation`**
   - `code: string`: The code mapped to this observation (i.e. `pulse`, `systolic-bp`, etc.).
   - `value: string`: The value of the observation.
-- **`Result`**
+- **`Result`**:
   - `code: string`: The LOINC code mapped to this result.
   - `date: date`
   - `status: string`
   - `components: Component[]`
-    - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
-    - `value: string|number`: The value of the sub-component.
-    - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
-    - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
-    - `comment: string|null`: An optional comment about the component.
+  - `image: string|null`: A base64-encoded data-uri OR an external URL containing DICOM imaging data for this result, if applicable, otherwise `null`.
+  - Examples:
+    - `EKG={"11524-6", ..., "over-read", [{"RPT", "EKG report here"}], "data:image/dcm;base64,aGVsbG8="}`
+- **`Component`**
+  - `name: string`: The name of the sub-component of this result (i.e. `NA`, `TSH`, or `RPT`/`NARR`/`IMP` for imaging report).
+  - `value: string|number`: The value of the sub-component.
+  - `low: number|null`: The inclusive low end of the normal range for this component, or `null` if not applicable.
+  - `high: number|null`: The inclusive high end of the normal range for this component, or `null` if not applicable.
+  - `comment: string|null`: An optional comment about the component.
 - **`Order`**
+  - `created: date`
+  - `creator: Practitioner`
+  - `status: string`
+- **`Note`**
+  - `encounter: Encounter`
+  - `author: Practitioner`
+  - `cosigner: Practitioner[]|null`: A set of cosigners for the note, or `null` if not applicable for co-signing. An empty set indicates this note still requires co-sign before it is approved. Co-signing the note will create an addended version.
+  - `created_date: date`: The date the note was actually created.
+  - `service_date: date`: The service date for which the note contains information (which may be earlier, but never later than the `created_date`).
+  - `type: string(hp|progress|discharge|consult|staff)`
+  - `status: string(pended|signed|sign-with-visit|addended)`
+  - `replaced_by: Note|null`: If this note has been `status=addended`, this **MUST** point to the replacing note, otherwise it is `null`.
+  - `content: string`
+- **`Medication`**
   - `id: string`
+  - `name: string`: The generic name of the medication.
+  - `brandName: string`: The brand name of the medication.
+  - `dose: number`: The prescribed dosage.
+  - `unit: string`: The measurement unit (e.g., mg, mL).
+  - `frequency: string`: How often the medication should be taken.
+  - `startDate: date|null`: The date the medication was started.
+  - `endDate: date|null`: The date the medication was discontinued, or null if ongoing.
+  - `route: string`: The method of administration (e.g., Oral, IV).
+  - `possiblePrnReasons: string[]`: List of potential reasons for taking this medication as needed.
+  - `activePrnReasons: string[]`: List of active reasons for PRN (as needed) use.
+- **`LabTest`**
+  - `dateTime: date` – The date and time of the test.
+  - `test: string` – The name of the test performed.
+  - `status: string` – The current status of the test (e.g., completed, pending).
+  - `abnormal: boolean` – Whether the test result is flagged as abnormal.
+  - `expectedDate: date|null` – The expected date for results.
+  - `expiration: date|null` – The expiration date of the test result.
+  - `encounterProvider: Practitioner` – The provider who ordered the test.
+  - `labResults: LabResult[]` – A list of results from this test.
+- **`LabResult`**
+  - `name: string` – The name of the test component.
+  - `low: number|null` – The lower reference range, or `null` if not applicable.
+  - `high: number|null` – The upper reference range, or `null` if not applicable.
+  - `units: string|null` – The unit of measurement.
+  - `value: string|number` – The recorded value.
+  - `comment: string|null` – Additional comments on the result.
+- **`FamilyHistory`**
+  - `relationship: string` – The relationship to the patient (e.g., mother, father).
+  - `name: string` – The name of the family member, if recorded.
+  - `status: string` – The family member's health status (e.g., alive, deceased).
+  - `age: number` – The family member’s age.
+  - `problems: Condition[]` – A list of `Condition` affecting the family member.
+  
