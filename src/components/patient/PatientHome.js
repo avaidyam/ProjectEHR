@@ -15,6 +15,8 @@ import Medications from './tabs/medications/Medications.js';
 import Pdmp from './tabs/pdmp/Pdmp.js';
 import Immunizations from './tabs/immunizations/Immunizations.js';
 import Allergies from './tabs/allergies/Allergies.js';
+import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
 
 
 const bodySystems = [
@@ -331,6 +333,8 @@ const physicalExamBodySystems = [
 
 
 export const PatientHome = ({ ...props }) => {
+  const [enc] = useEncounterID();
+
   const drawerWidth = 250
   const [tab, setTab] = useState(0)
 
@@ -371,6 +375,9 @@ export const PatientHome = ({ ...props }) => {
   
   const [peState, setPEState] = useState(generateInitialPEState(physicalExamBodySystems));
   const [rosState, setRosState] = useState(generateInitialRosState(bodySystems));
+
+    const [patientMRN] = usePatientMRN();
+    const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
 
   return (
     <Box display="flex" direction="row" {...props}>
@@ -413,7 +420,13 @@ export const PatientHome = ({ ...props }) => {
          />}
          {tab === 8 && <Pdmp/>}
          {tab === 9 && <Immunizations/>}
-         {tab === 10 && <Allergies/>}
+         {tab === 10 && (
+          <Allergies
+            patientData={patientData}
+            setPatientData={setPatientData}
+            encounterId={enc}
+          />
+        )}
       </Box>
     </Box>
   )
