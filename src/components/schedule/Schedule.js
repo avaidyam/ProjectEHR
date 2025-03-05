@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+import Notification from '../../util/Notification';
+import { AuthContext } from '../login/AuthContext';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -11,17 +12,15 @@ import Select from '@mui/material/Select';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
-import Notification from '../../util/Notification';
-
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
+import React, { useContext, useState } from 'react';
 
-import { AuthContext } from '../login/AuthContext';
+import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
 import { useRouter } from '../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js'
 
 // json data
 import appt from '../../util/data/schedule.json';
@@ -199,28 +198,27 @@ const columns = [
     headerName: 'Patient Name/MRN/Age/Gender',
     width: 300,
     renderCell: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      return (<div>
-        <div style={{ float: 'left', marginRight: 10 }}>
-          <Avatar>
-            {data.firstName.charAt(0).concat(data.lastName.charAt(0))}
-          </Avatar>
-        </div>
-        <div style={{ float: 'right' }}>
-          <Typography>
-            {data.lastName}, {data.firstName} ({data.mrn})
-          </Typography>
-          <Typography color="textSecondary">
-            {data.age} years old / {data.gender}
-          </Typography>
-        </div>
-      </div>)
+      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn });
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
+          <Box sx={{ marginLeft: 1 }}>
+            <Typography>
+              {data.lastName}, {data.firstName} ({data.mrn})
+            </Typography>
+            <Typography color="textSecondary" fontSize="12px">
+              {data.age} years old / {data.gender}
+            </Typography>
+          </Box>
+        </Box>
+      );
     },
-    valueGetter: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      return `${data.lastName || ''}, ${data.firstName || ''} \n (${
-        data.mrn
-      }) ${data.age} years old / ${data.gender}`
+    valueGetter: (value, row) => {
+      console.log('Value', value, 'Row', row);
+      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
+        data.age
+      } years old / ${data.gender}`;
     },
   },
   {
@@ -232,11 +230,11 @@ const columns = [
         <span>{params.value}</span>
       </Tooltip>
     ),
-    /*valueGetter: (params) => {
+    /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
       const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[0] ?? ""
       return data2
-    },//*/
+    },// */
   },
   {
     field: 'notes',
@@ -247,20 +245,20 @@ const columns = [
         <span>{params.value}</span>
       </Tooltip>
     ),
-    /*valueGetter: (params) => {
+    /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
       const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[1] ?? ""
       return data2 // FIXME we need an actual appointment object still but this will do for now
-    },//*/
+    },// */
   },
   {
     field: 'fullProviderName',
     headerName: 'Provider Name',
     width: 200,
-    valueGetter: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.provider
-      return data2//`${data2.provider.lastName}, ${data2.provider.firstName}`
+    valueGetter: (value, row) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      const data2 = data.encounters.find((x) => x.id === row.patient.enc)?.provider;
+      return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
     },
   },
   { field: 'type', headerName: 'Type', width: 100 },
@@ -268,9 +266,9 @@ const columns = [
     field: 'insurName',
     headerName: 'Coverage',
     width: 200,
-    valueGetter: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      return `${data.insurance.carrierName}`
+    valueGetter: (value, row) => {
+      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      return `${data.insurance.carrierName}`;
     },
   },
 ];
@@ -281,15 +279,15 @@ export function Schedule() {
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
   const [preview, setPreview] = React.useState(100); // set width of table
   const [hide, setHide] = React.useState(0); // patient info hidden, will incr when checkbox marked
-  const [filterElem, setFilterElem] = React.useState(null); // for filter 
+  const [filterElem, setFilterElem] = React.useState(null); // for filter
   const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
   const [selPatient, setPatient] = React.useState(null);
 
   const patientScheduleClick = (params) => {
-    setPatient(params.row);  
+    setPatient(params.row);
   };
-  
+
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
 
   const showNotification = (message, severity = 'info') => {
@@ -319,27 +317,28 @@ export function Schedule() {
         </div>
         <div>
           {open && ( // shows text if preview box is checked
-          <Typography
-            sx={{
-              position: 'absolute',
-              top: '150px',
-              left: 'calc(50% + 100px)',
-              zIndex: -1,
-              fontSize: '20px',
-            }}
-          >
-            {selPatient ? 
-            (<>
-              Name: {selPatient.patient.firstName} {selPatient.patient.lastName} <br/>
-              Age: {selPatient.patient.age} <br/>
-              Gender: {selPatient.patient.gender} <br/>
-              CC: {selPatient.cc} <br/>
-              Notes: {selPatient.notes}
-            </>): 
-            <>No Patient Selected.</>
-            }
-          </Typography>
-        )}
+            <Typography
+              sx={{
+                position: 'absolute',
+                top: '150px',
+                left: 'calc(50% + 100px)',
+                zIndex: -1,
+                fontSize: '20px',
+              }}
+            >
+              {selPatient ? (
+                <>
+                  Name: {selPatient.patient.firstName} {selPatient.patient.lastName} <br />
+                  Age: {selPatient.patient.age} <br />
+                  Gender: {selPatient.patient.gender} <br />
+                  CC: {selPatient.cc} <br />
+                  Notes: {selPatient.notes}
+                </>
+              ) : (
+                <>No Patient Selected.</>
+              )}
+            </Typography>
+          )}
         </div>
         <div>
           <DataGrid
@@ -353,18 +352,27 @@ export function Schedule() {
               },
             }) => {
               if (enabledEncounters[selectedMRN] == null) {
-                showNotification('You cannot view this chart because no encounter is associated with this MRN.', 'warning');
+                showNotification(
+                  'You cannot view this chart because no encounter is associated with this MRN.',
+                  'warning'
+                );
                 return; // Prevent routing
               }
-              //if (!enabledEncounters[selectedMRN].includes(selectedEnc)) {
+              // if (!enabledEncounters[selectedMRN].includes(selectedEnc)) {
               //  alert("You cannot view this chart because this encounter is marked CONFIDENTIAL.");
               //  return; // Prevent routing
-              //} // FIXME later
-              if (!TEST_PATIENT_INFO({ patientMRN: selectedMRN }).encounters.map(x => x.id).includes(selectedEnc)) {
-                alert("You cannot view this chart because this encounter DOES NOT EXIST [system error].");
+              // } // FIXME later
+              if (
+                !TEST_PATIENT_INFO({ patientMRN: selectedMRN })
+                  .encounters.map((x) => x.id)
+                  .includes(selectedEnc)
+              ) {
+                alert(
+                  'You cannot view this chart because this encounter DOES NOT EXIST [system error].'
+                );
                 return; // Prevent routing
               }
-            
+
               onHandleClickRoute(`patient/${selectedMRN}/encounter/${selectedEnc}`); // Proceed with routing if an encounter is selected
             }}
             slots={{ toolbar: customFilterBar }}
