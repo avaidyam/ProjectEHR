@@ -12,6 +12,7 @@ import { HistoryTabContent } from './tabs/history/HistoryTabContent.js'
 import Orders from './tabs/orders/Orders.js';
 import OrdersMgmt from './tabs/orders/OrdersMgmt.js';
 import Medications from './tabs/medications/Medications.js';
+import ClinicalImpressions from './tabs/clinicalimpressions/ClinicalImpressions.js';
 import Pdmp from './tabs/pdmp/Pdmp.js';
 
 
@@ -386,6 +387,7 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="Orders Mgmt" />
           <Tab label="NoteWriter" />
           <Tab label="PDMP" />
+          <Tab label="Clinical Impressions" />
         </Tabs>
         <Divider />
         {tab === 0 && <SnapshotTabContent />}
@@ -408,6 +410,7 @@ export const PatientHome = ({ ...props }) => {
           // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
          />}
          {tab === 8 && <Pdmp/>}
+         {tab === 9 && <ClinicalImpressions />}
       </Box>
     </Box>
   )
