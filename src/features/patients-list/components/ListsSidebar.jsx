@@ -11,15 +11,6 @@ import {_data} from '../../../util/data/PatientSample';
 
 // TODO: Remove this once we have a real list
 const transformPatientData = (patients) => {
-  // Helper function to get the most recent encounter status
-  const getLatestEncounterStatus = (encounters) => {
-    if (!encounters || encounters.length === 0) return 'No encounters';
-    const latestEncounter = encounters.reduce((latest, current) => {
-      return new Date(current.date) > new Date(latest.date) ? current : latest;
-    });
-    return latestEncounter.status || 'Unknown';
-  };
-
   // Randomly assign patients to primary care or specialist
   const primaryCarePatients = patients.filter(patient => patient.PCP?.role === 'Primary Care Physician');
   const specialistPatients = patients.filter(patient => patient.PCP?.role !== 'Primary Care Physician');
@@ -160,7 +151,6 @@ export const ListsSidebar = () => {
       variant='outlined'
       sx={{
         minWidth: 280,
-        bgcolor: 'background.default',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',

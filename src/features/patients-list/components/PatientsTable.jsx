@@ -132,7 +132,6 @@ export const PatientsTable = () => {
         component={Paper}
         variant='outlined'
         sx={{
-          bgcolor: 'background.default',
           display: 'flex',
           flexDirection: 'column',
         }}
