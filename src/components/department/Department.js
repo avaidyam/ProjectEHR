@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
-import './Department.css';
-import { useNavigate } from 'react-router-dom'; // For navigating back to the login page
-import logo from './Logo.png';
 import Notification from '../../util/Notification';
+// For navigating back to the login page
+import logo from './Logo.png';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 
+import './Department.css';
 
 const departments = [
-  { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },
-  { id: 26, name: "ADULT MEDICINE PWAM PBB", identityId: 200612664, specialty: "Windsor Primary Care", location: "URBANA ON WINDSOR", serviceArea: "CARLE HOSPITAL" },
-  { id: 30, name: "CARDIOLOGY", identityId: 200703456, specialty: "Heart Care", location: "Main Building", serviceArea: "CARLE HOSPITAL" },
+  {
+    id: 20,
+    name: 'ABSTRACTION',
+    identityId: 200302050,
+    specialty: 'Hospital Services',
+    location: 'Pre-Registration',
+    serviceArea: 'CARLE HOSPITAL',
+  },
+  {
+    id: 26,
+    name: 'ADULT MEDICINE PWAM PBB',
+    identityId: 200612664,
+    specialty: 'Windsor Primary Care',
+    location: 'URBANA ON WINDSOR',
+    serviceArea: 'CARLE HOSPITAL',
+  },
+  {
+    id: 30,
+    name: 'CARDIOLOGY',
+    identityId: 200703456,
+    specialty: 'Heart Care',
+    location: 'Main Building',
+    serviceArea: 'CARLE HOSPITAL',
+  },
   // Add more rows as needed...
 ];
 
@@ -48,7 +70,7 @@ const Department = ({ onDepartmentSelect }) => {
           <div className="department-input-container">
             <button onClick={toggleDropdown} className="form-input dropdown-button">
               <span className="magnifying-glass">&#128269;</span> {/* Magnifying Glass Icon */}
-              {selectedDepartment || "Select a department"}
+              {selectedDepartment || 'Select a department'}
             </button>
             {isDropdownOpen && (
               <div className="dropdown-menu">
@@ -88,8 +110,12 @@ const Department = ({ onDepartmentSelect }) => {
           </div>
         </div>
         <div className="action-buttons">
-          <button onClick={handleSelect} className="continue-button">Continue</button>
-          <button onClick={handleCancel} className="cancel-button">Cancel</button>
+          <button onClick={handleSelect} className="continue-button">
+            Continue
+          </button>
+          <button onClick={handleCancel} className="cancel-button">
+            Cancel
+          </button>
         </div>
       </div>
 

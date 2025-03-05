@@ -7,7 +7,7 @@ import {
   Tooltip,
   Divider,
 } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import React, { createContext, useState, useContext } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';

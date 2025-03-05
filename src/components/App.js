@@ -2,7 +2,7 @@ import { PatientLists } from '../routes/app/patients-list.jsx';
 import { AuthContext } from './login/AuthContext';
 import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router';
 
 import Department from './department/Department.js';
 import Login from './login/Login.js';

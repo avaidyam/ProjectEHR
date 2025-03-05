@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams, generatePath, useParams } from 'react-router-dom';
+import { generatePath, useNavigate, useParams, useSearchParams } from 'react-router';
 
 /**
  * hook to extract mrn from url and set new one
@@ -8,12 +8,9 @@ import { useNavigate, useSearchParams, generatePath, useParams } from 'react-rou
  * *must* be used from within a functional component
  */
 export const usePatientMRN = () => {
-  const { mrn } = useParams()
-  const navigate = useNavigate()
-  return [
-    mrn,
-    (value) => navigate(generatePath('/patient/:mrn', { mrn: value })),
-  ];
+  const { mrn } = useParams();
+  const navigate = useNavigate();
+  return [mrn, (value) => navigate(generatePath('/patient/:mrn', { mrn: value }))];
 };
 
 /**
@@ -24,11 +21,11 @@ export const usePatientMRN = () => {
  * *must* be used from within a functional component
  */
 export const useEncounterID = () => {
-  const { mrn, enc } = useParams()
-  const navigate = useNavigate()
+  const { mrn, enc } = useParams();
+  const navigate = useNavigate();
   return [
     enc,
-    (value) => navigate(generatePath('/patient/:mrn/encounter/:enc', { mrn: mrn, enc: value })),
+    (value) => navigate(generatePath('/patient/:mrn/encounter/:enc', { mrn, enc: value })),
   ];
 };
 

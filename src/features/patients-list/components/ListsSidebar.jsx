@@ -2,7 +2,7 @@ import { Paper } from '@mui/material';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import React, { useEffect, useState } from 'react';
 import {
   usePatientLists

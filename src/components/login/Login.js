@@ -1,16 +1,21 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext.js';
-import './Login.css';
-import logo from './Logo.png'; // Import the EPIC logo image
-import ConfigureDialog from './ConfigureDialog'; // Import the dialog component
-import { Button } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
 import Notification from '../../util/Notification';
 import PromptDialog from '../../util/PromptDialog';
+// Import the EPIC logo image
+import ConfigureDialog from './ConfigureDialog';
+import logo from './Logo.png';
+import SettingsIcon from '@mui/icons-material/Settings';
+// Import the dialog component
+import { Button } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
-import schedule from '../../util/data/schedule.json'; // Import the schedule JSON file for mrns
+// Import the schedule JSON file for mrns
 import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import { AuthContext } from './AuthContext.js';
+
+import './Login.css';
+
+import schedule from '../../util/data/schedule.json';
 
 const Login = ({ setIsLoggedIn }) => {
   const [username, setUsername] = useState('');
@@ -28,7 +33,12 @@ const Login = ({ setIsLoggedIn }) => {
     setNotification({ open: true, message, severity });
   };
 
-  const [promptState, setPromptState] = useState({ open: false, title: '', placeholder: '', onConfirm: null });
+  const [promptState, setPromptState] = useState({
+    open: false,
+    title: '',
+    placeholder: '',
+    onConfirm: null,
+  });
 
   const showPrompt = (title, placeholder, onConfirm) => {
     setPromptState({ open: true, title, placeholder, onConfirm });

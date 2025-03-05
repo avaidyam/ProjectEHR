@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
 import { Box, Chip } from '@mui/material';
+import React, { useState } from 'react';
 
-import NoteWriterHPI from './NoteWriterHPI.js';
-import NoteWriterROS from './NoteWriterROS.js';
+import { NoteWriterHPI } from './NoteWriterHPI.js';
 import NoteWriterPE from './NoteWriterPE.js';
+import NoteWriterROS from './NoteWriterROS.js';
 
-const tabLabels = [
-  "HPI",
-  "ROS",
-  "Physical Exam"
-];
+const tabLabels = ['HPI', 'ROS', 'Physical Exam'];
 
-export const Notewriter = ({ editorState, setEditorState, 
-                            rosState, setRosState, 
-                            peState, setPEState,
-                            bodySystems, bodySystemsPE}) => {
+export const Notewriter = ({
+  editorState,
+  setEditorState,
+  rosState,
+  setRosState,
+  peState,
+  setPEState,
+  bodySystems,
+  bodySystemsPE,
+}) => {
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Zero is Index of the first tab (HPI)
   const [selectedTabLabel, setSelectedTabLabel] = useState('HPI');
 
@@ -31,24 +33,33 @@ export const Notewriter = ({ editorState, setEditorState,
             key={idx}
             label={label}
             onClick={() => handleTabChange(label, idx)}
-            variant={selectedTabIndex === idx ? "filled" : "outlined"}
-            color={selectedTabIndex === idx ? "primary" : "default"}
+            variant={selectedTabIndex === idx ? 'filled' : 'outlined'}
+            color={selectedTabIndex === idx ? 'primary' : 'default'}
             style={{ margin: 5 }}
           />
         ))}
       </Box>
       {selectedTabLabel === 'HPI' && (
-        <NoteWriterHPI editorState={editorState} setEditorState={setEditorState} />
+        // <NoteWriterHPI editorState={editorState} setEditorState={setEditorState} />
+        <NoteWriterHPI />
       )}
       {selectedTabLabel === 'ROS' && (
-        <NoteWriterROS 
-          editorState={editorState} setEditorState={setEditorState}
-          rosState={rosState} setRosState={setRosState} bodySystems={bodySystems} />
+        <NoteWriterROS
+          editorState={editorState}
+          setEditorState={setEditorState}
+          rosState={rosState}
+          setRosState={setRosState}
+          bodySystems={bodySystems}
+        />
       )}
       {selectedTabLabel === 'Physical Exam' && (
-        <NoteWriterPE 
-          editorState={editorState} setEditorState={setEditorState}
-          peState={peState} setPEState={setPEState} bodySystemsPE={bodySystemsPE}/>
+        <NoteWriterPE
+          editorState={editorState}
+          setEditorState={setEditorState}
+          peState={peState}
+          setPEState={setPEState}
+          bodySystemsPE={bodySystemsPE}
+        />
       )}
     </div>
   );
