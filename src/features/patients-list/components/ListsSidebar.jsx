@@ -1,107 +1,113 @@
 import { Paper } from '@mui/material';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useNavigate } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import {
   usePatientLists
 } from '../../../routes/app/patients-list';
+import {_data} from '../../../util/data/PatientSample';
 
-// Mock data - in a real app, this would come from an API
-const initialLists = [
-  {
-    id: 'my-1',
-    name: 'Primary Care Patients',
-    type: 'my',
-    patients: [
-      {
-        id: '1',
-        name: 'John Doe',
-        mrn: 'MRN001',
-        dob: '1980-01-01',
-        location: 'Room 101',
-        status: 'Admitted',
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        mrn: 'MRN002',
-        dob: '1975-03-15',
-        location: 'Room 102',
-        status: 'Discharged',
-      },
-    ],
-    columns: [
-      { id: 'name', label: 'Patient Name', selected: true, order: 0 },
-      { id: 'mrn', label: 'MRN', selected: true, order: 1 },
-      { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
-      { id: 'location', label: 'Location', selected: true, order: 3 },
-      { id: 'status', label: 'Status', selected: true, order: 4 },
-    ],
-  },
-  {
-    id: 'my-2',
-    name: "Today's Appointments",
-    type: 'my',
-    patients: [
-      {
-        id: '3',
-        name: 'Bob Johnson',
-        mrn: 'MRN003',
-        dob: '1990-07-22',
-        location: 'Room 201',
-        status: 'Admitted',
-      },
-    ],
-    columns: [
-      { id: 'name', label: 'Patient Name', selected: true, order: 0 },
-      { id: 'mrn', label: 'MRN', selected: true, order: 1 },
-      { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
-      { id: 'location', label: 'Location', selected: true, order: 3 },
-      { id: 'status', label: 'Status', selected: true, order: 4 },
-    ],
-  },
-  {
-    id: 'available-1',
-    name: 'Emergency Department',
-    type: 'available',
-    patients: [
-      {
-        id: '4',
-        name: 'Alice Brown',
-        mrn: 'MRN004',
-        dob: '1988-12-10',
-        location: 'ED Bay 1',
-        status: 'Waiting',
-      },
-      {
-        id: '5',
-        name: 'Charlie Davis',
-        mrn: 'MRN005',
-        dob: '1995-06-25',
-        location: 'ED Bay 2',
-        status: 'In Treatment',
-      },
-    ],
-  },
-  {
-    id: 'available-2',
-    name: 'Inpatient Ward',
-    type: 'available',
-    patients: [
-      {
-        id: '6',
-        name: 'Eve Franklin',
-        mrn: 'MRN006',
-        dob: '1970-03-30',
-        location: 'Room 301',
-        status: 'Admitted',
-      },
-    ],
-  },
-];
+// TODO: Remove this once we have a real list
+const transformPatientData = (patients) => {
+  // Helper function to get the most recent encounter status
+  const getLatestEncounterStatus = (encounters) => {
+    if (!encounters || encounters.length === 0) return 'No encounters';
+    const latestEncounter = encounters.reduce((latest, current) => {
+      return new Date(current.date) > new Date(latest.date) ? current : latest;
+    });
+    return latestEncounter.status || 'Unknown';
+  };
+
+  // Randomly assign patients to primary care or specialist
+  const primaryCarePatients = patients.filter(patient => patient.PCP?.role === 'Primary Care Physician');
+  const specialistPatients = patients.filter(patient => patient.PCP?.role !== 'Primary Care Physician');
+  const recentEncounterPatients = patients.filter(patient => {
+    const hasRecentEncounter = patient.encounters?.some(encounter => {
+      const encounterDate = new Date(encounter.date);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return encounterDate >= thirtyDaysAgo;
+    });
+    return hasRecentEncounter;
+  });
+
+  const transformPatient = (patient) => {
+    // Get the most recent encounter
+    const latestEncounter = patient.encounters?.reduce((latest, current) => {
+      return new Date(current.startDate) > new Date(latest.startDate) ? current : latest;
+    }, patient.encounters[0]);
+
+    return {
+      id: patient.mrn,
+      name: `${patient.firstName} ${patient.lastName}`,
+      mrn: patient.mrn,
+      dob: patient.dateOfBirth,
+      location: patient.address || 'Carle Foundation Hospital',
+      age: patient.age,
+      sex: patient.gender,
+      insuranceType: patient.insurance?.carrierName || 'Unknown',
+      attendingMD: latestEncounter?.provider || 'Not Assigned',
+      status: latestEncounter?.status || 'No encounters',
+      bedStatus: Math.random() > 0.5 ? 'In Room' : 'Out of Room',
+      admissionDate: latestEncounter?.startDate?.split(' ')[0] || 'N/A',
+      dischargeDate: latestEncounter?.endDate?.split(' ')[0] || 'N/A',
+      patientClass: latestEncounter?.type || 'N/A',
+      roomNumber: Math.random() > 0.5 ? '123' : '456',
+      visitReason: latestEncounter?.concerns?.[0] || 'N/A',
+      encounterData: latestEncounter ? {
+        patientId: patient.mrn,
+        encounterId: latestEncounter.id
+      } : null
+    };
+  };
+
+  // TODO: Look into re-ordering best practices
+  return [
+    {
+      id: 'my-1',
+      name: 'Primary Care Patients',
+      type: 'my',
+      patients: primaryCarePatients.map(transformPatient),
+      columns: [
+        { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+        { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+        { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+        { id: 'location', label: 'Location', selected: true, order: 3 },
+        { id: 'status', label: 'Status', selected: true, order: 4 },
+      ],
+    },
+    {
+      id: 'my-2',
+      name: 'Recent Encounters (30 days)',
+      type: 'my',
+      patients: recentEncounterPatients.map(transformPatient),
+      columns: [
+        { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+        { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+        { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+        { id: 'location', label: 'Location', selected: true, order: 3 },
+        { id: 'status', label: 'Status', selected: true, order: 4 },
+      ],
+    },
+    {
+      id: 'available-1',
+      name: 'Specialist Patients',
+      type: 'available',
+      patients: specialistPatients.map(transformPatient),
+      columns: [
+        { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+        { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+        { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+        { id: 'location', label: 'Location', selected: true, order: 3 },
+        { id: 'status', label: 'Status', selected: true, order: 4 },
+      ],
+    },
+  ];
+};
+
+const initialLists = transformPatientData(_data);
 
 const createTreeItems = (lists) => {
   const myLists = lists.filter((list) => list.type === 'my');
@@ -128,7 +134,10 @@ const createTreeItems = (lists) => {
 };
 
 export const ListsSidebar = () => {
-  const { selectedListId, setSelectedListId, lists, setLists } = usePatientLists();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { lists, setLists } = usePatientLists();
+  const selectedListId = searchParams.get('listId');
+  const [expandedItems, setExpandedItems] = useState(['my-lists', 'available-lists']);
 
   useEffect(() => {
     if (lists.length === 0) {
@@ -136,25 +145,21 @@ export const ListsSidebar = () => {
     }
   }, [lists.length, setLists]);
 
-  const handleSelectionChange = (
-    _event,
-    itemId,
-    isSelected
-  ) => {
+  const handleItemClick = (event, itemId) => {
     if (itemId !== 'my-lists' && itemId !== 'available-lists') {
-      if (isSelected) {
-        setSelectedListId(itemId);
-      } else {
-        setSelectedListId(null);
-      }
+      setSearchParams({ listId: itemId });
     }
+  };
+
+  const handleExpansionChange = (_event, nodeIds) => {
+    setExpandedItems(nodeIds);
   };
 
   return (
     <Paper
       variant='outlined'
       sx={{
-        width: 280,
+        minWidth: 280,
         bgcolor: 'background.default',
         display: 'flex',
         flexDirection: 'column',
@@ -167,10 +172,11 @@ export const ListsSidebar = () => {
           expandIcon: ChevronRightIcon,
           collapseIcon: ExpandMoreIcon,
         }}
-        expandedItems={['my-lists', 'available-lists']}
-        selectedItems={selectedListId || null}
-        onItemSelectionToggle={handleSelectionChange}
-        multiSelect={false}
+        expandedItems={expandedItems}
+        onExpandedItemsChange={handleExpansionChange}
+        selectedItems={selectedListId ? [selectedListId] : []}
+        onItemClick={handleItemClick}
+        disableSelection
         sx={{
           p: 1,
           flex: 1,

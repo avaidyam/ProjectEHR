@@ -1,11 +1,24 @@
-import { Box, Button, Container, Typography } from '@mui/material';
+import { 
+  Box, 
+  Button,  
+  Typography, 
+  Toolbar,
+  IconButton,
+  Tooltip,
+  Divider,
+} from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { ListsSidebar } from '../../features/patients-list/components/ListsSidebar';
+import React, { createContext, useState, useContext } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import PrintIcon from '@mui/icons-material/Print';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import SearchIcon from '@mui/icons-material/Search';
+import { ListFormModal } from '../../features/patients-list/components/ListFormModal';
 import { PatientsTable } from '../../features/patients-list/components/PatientsTable';
-import {
-    CreateListModal,
-} from '../../features/patients-list/components/CreateListModal';
+import { ListsSidebar } from '../../features/patients-list/components/ListsSidebar';
 
 // Create a context for patient lists data
 export const PatientListsContext = createContext();
@@ -15,15 +28,12 @@ export const usePatientLists = () => useContext(PatientListsContext);
 
 function PatientLists() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const listId = searchParams.get('listId');
-  const [selectedListId, setSelectedListId] = useState(null);
+  const selectedListId = searchParams.get('listId');
   const [lists, setLists] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Update the selected list ID when the URL changes
-  useEffect(() => {
-    setSelectedListId(listId || null);
-  }, [listId]);
+  const selectedList = lists.find(list => list.id === selectedListId);
 
   const handleCreateList = (name, columns) => {
     const columnConfig = columns.map((col, index) => ({
@@ -43,60 +53,121 @@ function PatientLists() {
 
     setLists((prevLists) => [...prevLists, newList]);
     setIsCreateModalOpen(false);
+    setSearchParams({ listId: newList.id }, { replace: true });
+  };
 
-    // Navigate to the newly created list
-    setSearchParams({ listId: newList.id });
+  const handleEditList = (name, columns) => {
+    setLists(prevLists => 
+      prevLists.map(list => 
+        list.id === selectedListId
+          ? { ...list, name, columns }
+          : list
+      )
+    );
+    setIsEditModalOpen(false);
   };
 
   // Create the context value object with all the state and functions
   const contextValue = {
     selectedListId,
-    setSelectedListId: (id) => {
-      if (id) {
-        setSearchParams({ listId: id });
-      } else {
-        setSearchParams({});
-      }
-    },
     lists,
     setLists
   };
 
   return (
     <PatientListsContext.Provider value={contextValue}>
-      <Container
-        maxWidth={false}
+      <Box
         sx={{
           height: '100%',
-          flexGrow: 1,
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
           p: 2,
+          gap: 2
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6">Patient Lists</Typography>
-          <Box>
-            <Button 
-              variant="contained" 
-              onClick={() => setIsCreateModalOpen(true)}
-            >
-              Create New List
-            </Button>
+        <Box 
+          sx={{ 
+            borderRadius: 1
+          }}
+        >
+          <Box sx={{ p: 2 }}>
+            <Typography variant="h5" gutterBottom>
+              Patient Lists
+            </Typography>
           </Box>
+          
+          <Toolbar variant="dense" sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                size="small"
+                startIcon={<AddIcon />}
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                New List
+              </Button>
+              <Button
+                size="small"
+                startIcon={<EditIcon />}
+                onClick={() => setIsEditModalOpen(true)}
+                disabled={!selectedList || selectedList.type !== 'my'}
+              >
+                Edit List
+              </Button>
+            </Box>
+            <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Tooltip title="Print">
+                <IconButton size="small">
+                  <PrintIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Refresh">
+                <IconButton size="small">
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Filter">
+                <IconButton size="small">
+                  <FilterListIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Search">
+                <IconButton size="small">
+                  <SearchIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Box sx={{ flexGrow: 1 }} />
+            <Tooltip title="More options">
+              <IconButton size="small">
+                <MoreVertIcon />
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
         </Box>
-        <Box sx={{ display: 'flex', flexGrow: 1, gap: 2, mt: 2 }}>
+
+        <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
           <ListsSidebar />
-          <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
             <PatientsTable />
           </Box>
         </Box>
-        <CreateListModal
+
+        <ListFormModal
           open={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
-          onCreateList={handleCreateList}
+          onSubmit={handleCreateList}
         />
-      </Container>
+        {selectedList && (
+          <ListFormModal
+            open={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onSubmit={handleEditList}
+            initialData={selectedList}
+          />
+        )}
+      </Box>
     </PatientListsContext.Provider>
   );
 }
