@@ -38,6 +38,9 @@
   - `diagnoses: Problem[]`
   - `problems: Problem[]`
   - `observations: Observation[]`
+  - `clinicalImpressions: string[]`  
+
+
 - **`Problem`**
   - `code: string`: The SNOMED-CT code mapped to the problem.
   - `title: string`: The human-friendly renamed title of the problem.
