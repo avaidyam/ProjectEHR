@@ -1,40 +1,46 @@
+import { PatientLists } from '../routes/app/patients-list.jsx';
+import { AuthContext } from './login/AuthContext';
+import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import { AppBar, IconButton, Toolbar, Typography, Box, Icon, Button } from '@mui/material';
-import { AuthProvider, AuthContext } from './login/AuthContext';
+
+import Department from './department/Department.js';
 import Login from './login/Login.js';
-import { Schedule } from './schedule/Schedule.js';
 import { PatientHome } from './patient/PatientHome.js';
-import Department from './department/Department.js'; // Import Department page
+// Import Department page
 import { OrderProvider } from './patient/tabs/orders/OrdersContext.js';
+import { Schedule } from './schedule/Schedule.js';
 
 export const NavBar = ({ onHandleClickRoute, onLogout }) => {
   return (
-  <>
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h6" color="inherit" component="div" style={{ marginRight: '8px' }}>
-            ProjectEHR
-          </Typography>
-          <IconButton color="inherit" onClick={() => onHandleClickRoute('/schedule')}>
-            <Icon>calendar_month</Icon>
-          </IconButton>
-        </Box>
-        <Box>
-          <Button color="inherit" onClick={onLogout}>
-            Logout
-          </Button>
-          <Button color="inherit" onClick={onLogout} style={{ marginLeft: '10px' }}>
-            Secure
-          </Button>
-        </Box>
-      </Toolbar>
-    </AppBar>
-    <Toolbar variant="dense" />
-  </>
-);
-}
+    <>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h6" color="inherit" component="div" style={{ marginRight: '8px' }}>
+              ProjectEHR
+            </Typography>
+            <IconButton color="inherit" onClick={() => onHandleClickRoute('/schedule')}>
+              <Icon>calendar_month</Icon>
+            </IconButton>
+            <IconButton color="inherit" onClick={() => onHandleClickRoute('/patients-list')}>
+              <Icon>people</Icon>
+            </IconButton>
+          </Box>
+          <Box>
+            <Button color="inherit" onClick={onLogout}>
+              Logout
+            </Button>
+            <Button color="inherit" onClick={onLogout} style={{ marginLeft: '10px' }}>
+              Secure
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Toolbar variant="dense" />
+    </>
+  );
+};
 
 // Main App Component
 export const App = () => {
@@ -98,6 +104,16 @@ export const App = () => {
             element={
               isLoggedIn && isDepartmentSelected ? (
                 <PatientHome />
+              ) : (
+                <Login setIsLoggedIn={setIsLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/patients-list"
+            element={
+              isLoggedIn && isDepartmentSelected ? (
+                <PatientLists />
               ) : (
                 <Login setIsLoggedIn={setIsLoggedIn} />
               )
