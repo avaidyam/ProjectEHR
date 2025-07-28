@@ -15,7 +15,7 @@ import Medications from './tabs/medications/Medications.js';
 import ResultsReview from "./tabs/resultsreview/ResultsReview";
 import Pdmp from './tabs/pdmp/Pdmp.js';
 import Immunizations from './tabs/immunizations/Immunizations.js';
-import Allergies from './tabs/allergies/AllergiesTab.js';
+import Allergies from './tabs/allergies/Allergies.js';
 import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
 

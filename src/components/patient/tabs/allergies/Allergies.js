@@ -1,162 +1,324 @@
+// export default Allergies;
 import React, { useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  Button
-} from '@mui/material';
+import { Box, Button, Typography, Icon } from '@mui/material';
 import dayjs from 'dayjs';
-import AllergyEditor from './AllergyEditor';
+import AllergiesTable from './AllergiesTable.js';
+import AllergyEditor from './AllergyEditor.js';
+import AgentSearchMenu from './AgentSearchMenu.js';
 
-function AllergyTabContent({ patientData, setPatientData, encounterId }) {
-  // Extract allergies from the patientData for the given encounter
-  const initialAllergies =
-    patientData.encounters?.find((x) => x.id === encounterId)?.allergies || [];
 
-  // Manage allergy list locally for rendering/editing
-  const [allergyList, setAllergyList] = useState(initialAllergies);
+const initialAllergies = [
+  {
+    id: 1,
+    agent: 'Penicillin',
+    type: 'Drug',
+    reaction: 'Rash',
+    severity: 'Moderate',
+    reactionType: 'Immediate',
+    onsetDate: '',
+    notes: 'Avoid all penicillin-based antibiotics.',
+  },
+  {
+    id: 2,
+    agent: 'Peanuts',
+    type: 'Food',
+    reaction: 'Anaphylaxis',
+    severity: 'High',
+    reactionType: 'Immediate',
+    onsetDate: '',
+    notes: 'Carry epinephrine injector.',
+  },
+];
 
-  // Track expanded rows (one per allergy, initially all false)
-  const [expandedRows, setExpandedRows] = useState(() =>
-    allergyList.map(() => false)
-  );
+const Allergies = () => {
+  const [allergies, setAllergies] = useState(initialAllergies);
+  const [editingAllergy, setEditingAllergy] = useState(null);
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
+  const [lastReviewed, setLastReviewed] = useState(null);
 
-  // Helper to update the underlying JSON patientData whenever allergyList changes
-  const updateUnderlyingJSON = (newAllergyList) => {
-    setPatientData((prevData) => {
-      const updatedEncounters = prevData.encounters.map((encounter) =>
-        encounter.id === encounterId ? { ...encounter, allergies: newAllergyList } : encounter
+  const handleEdit = (allergy) => {
+    setEditingAllergy(allergy);
+    setIsEditingMode(true);
+  };
+
+  const handleSaveAllergy = (newAllergyData) => {
+    if (editingAllergy && editingAllergy.id) {
+      setAllergies((prev) =>
+        prev.map((allergy) =>
+          allergy.id === editingAllergy.id
+            ? { ...allergy, ...newAllergyData }
+            : allergy
+        )
       );
-      return { ...prevData, encounters: updatedEncounters };
-    });
+    } else {
+      const newId = allergies.length > 0 ? Math.max(...allergies.map(a => a.id)) + 1 : 1;
+      setAllergies((prev) => [
+        ...prev,
+        { id: newId, ...newAllergyData }
+      ]);
+    }
+    setIsEditingMode(false);
+    setEditingAllergy(null);
+    setLastReviewed(null); // reset last reviewed date when saving new allergy
+
   };
 
-  const toggleRow = (index) => {
-    setExpandedRows((prev) => {
-      const newState = [...prev];
-      newState[index] = !newState[index];
-      return newState;
-    });
+  const handleDeleteAllergy = (id) => {
+    setAllergies((prev) => prev.filter((allergy) => allergy.id !== id));
+    if (editingAllergy?.id === id) {
+      setIsEditingMode(false);
+      setEditingAllergy(null);
+      setLastReviewed(null);
+    }
   };
 
-  const handleDelete = (index) => {
-    const updated = allergyList.filter((_, i) => i !== index);
-    setAllergyList(updated);
-    updateUnderlyingJSON(updated);
-    setExpandedRows(updated.map(() => false));
+  const handleAgentSelect = (agentObject) => {
+    setSelectedAgent(agentObject);  // store selected agent, do NOT open editor yet
   };
 
-  const handleAddAllergy = () => {
-    // Create a new allergy object with default values
-    const newAllergy = {
-      id: Date.now().toString(),
-      allergen: '',
-      reaction: '',
-      type: 'allergy',       // Allowed values: allergy|intolerance|side-effect
-      severity: 'low',       // Allowed values: low|high|unknown
-      verified: false,
-      resolved: false,
-      recorded: dayjs().format('YYYY-MM-DD'),
-      recorder: '',
-      comment: ''
-    };
+  // On Add button click, open editor with selectedAgent (or empty if none selected)
+  const handleAddClick = () => {
+    if (selectedAgent) {
+      setEditingAllergy({ ...selectedAgent, id: null });
+    } else {
+      setEditingAllergy({
+        agent: '',
+        allergenType: '',
+        reaction: '',
+        severity: '',
+        reactionType: '',
+        onsetDate: '',
+        notes: '',
+      });
+    }
+    setIsEditingMode(true);
+    setSelectedAgent(null);  // clear selected agent after opening editor
+    setLastReviewed(null); // reset last reviewed date when adding new allergy
+  };
 
-    const newAllergyList = [...allergyList, newAllergy];
-    setAllergyList(newAllergyList);
-    updateUnderlyingJSON(newAllergyList);
-    setExpandedRows([...expandedRows, true]);
+  const handleCancelEdit = () => {
+    setIsEditingMode(false);
+    setEditingAllergy(null);
+  };
+  const handleMarkAsReviewed = () => {
+    const now = dayjs().format('MMM D, YYYY h:mm A');
+    setLastReviewed(now);
   };
 
   return (
-    <>
-      <TableContainer component={Paper}>
-        <Table aria-label="allergy table">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  Allergy
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  Type
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  Reaction
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  Severity
-                </Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  Recorded
-                </Typography>
-              </TableCell>
-              <TableCell /> {/* For the Edit button */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allergyList.length > 0 ? (
-              allergyList.map((allergy, index) => (
-                <React.Fragment key={allergy.id}>
-                  <TableRow>
-                    <TableCell>{allergy.allergen}</TableCell>
-                    <TableCell>{allergy.type}</TableCell>
-                    <TableCell>{allergy.reaction}</TableCell>
-                    <TableCell>{allergy.severity}</TableCell>
-                    <TableCell>
-                      {allergy.recorded
-                        ? dayjs(allergy.recorded).format('YYYY-MM-DD')
-                        : ''}
-                    </TableCell>
-                    <TableCell>
-                      <Button onClick={() => toggleRow(index)}>Edit</Button>
-                    </TableCell>
-                  </TableRow>
-                  {expandedRows[index] && (
-                    <TableRow>
-                      <TableCell colSpan={6}>
-                        <AllergyEditor
-                          data={allergy}
-                          index={index}
-                          onDelete={handleDelete}
-                          onToggle={toggleRow}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6}>
-                  <Typography variant="body2" style={{ fontStyle: 'italic', color: '#666' }}>
-                    No allergies on file
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div style={{ marginTop: '16px', textAlign: 'center' }}>
-        <Button variant="contained" onClick={handleAddAllergy}>
-          Add Allergy
-        </Button>
-      </div>
-    </>
-  );
-}
+    <Box sx={{height: '100vh', display: 'flex', flexDirection: 'column', p: 3, bgcolor: 'background.paper'}}>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Allergies / Contraindications
+      </Typography>
 
-export default AllergyTabContent;
+      <Box display="flex" alignItems="center" mb={2} gap={2}>
+        <AgentSearchMenu onAgentSelect={handleAgentSelect} />
+            <Button
+              variant="outlined"
+              startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>} 
+              onClick={handleAddClick}>
+              Add
+            </Button>
+      </Box>
+
+      <Box sx={{flexGrow: 1, overflowY: 'auto', mb: 2}}>
+        <AllergiesTable
+          allergies={allergies}
+          onEdit={handleEdit}
+          onDelete={handleDeleteAllergy}
+        />
+        {isEditingMode && (
+          <AllergyEditor
+            initialData={editingAllergy}
+            onSave={handleSaveAllergy}
+            onCancel={handleCancelEdit}
+          />
+        )}
+      </Box>
+
+      <Box
+              sx={{
+          borderTop: 1,
+          borderColor: 'divider',
+          pt: 1,
+          display: 'flex',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          gap: 2,
+          flexWrap: 'wrap'
+        }}>
+        <Button variant="outlined" onClick={handleMarkAsReviewed}> Mark as Reviewed </Button>
+        <Button variant="outlined">Unable to Assess</Button>
+        <Typography variant="body2"sx={{color: lastReviewed ? 'green' : 'gray',fontStyle: 'italic'}}>
+          {lastReviewed ? `Last Reviewed at ${lastReviewed}` : 'Not Reviewed'}
+        </Typography>
+
+            </Box>
+    </Box>
+  );
+};
+
+export default Allergies;
+
+
+
+// import React, { useState } from 'react';
+// import { Box, Button, Typography, Icon } from '@mui/material';
+// import dayjs from 'dayjs';
+// import AllergiesTable from './AllergiesTable.js';
+// import AllergyEditor from './AllergyEditor.js';
+// import AgentSearchMenu from './AgentSearchMenu.js';
+
+// const Allergies = ({ patientData, setPatientData, encounterId }) => {
+//   const allergies =
+//     patientData.encounters?.find((x) => x.id === encounterId)?.allergies || [];
+
+//   const [editingAllergy, setEditingAllergy] = useState(null);
+//   const [isEditingMode, setIsEditingMode] = useState(false);
+//   const [selectedAgent, setSelectedAgent] = useState(null);
+//   const [lastReviewed, setLastReviewed] = useState(null);
+
+//   const updateAllergiesInPatientData = (newAllergyList) => {
+//     setPatientData((prevData) => {
+//       const updatedEncounters = prevData.encounters.map((encounter) =>
+//         encounter.id === encounterId
+//           ? { ...encounter, allergies: newAllergyList }
+//           : encounter
+//       );
+//       return { ...prevData, encounters: updatedEncounters };
+//     });
+//   };
+
+//   const handleEdit = (allergy) => {
+//     setEditingAllergy(allergy);
+//     setIsEditingMode(true);
+//   };
+
+//   const handleSaveAllergy = (newAllergyData) => {
+//     const isEditingExisting = editingAllergy && editingAllergy.id;
+//     let updatedAllergies;
+
+//     if (isEditingExisting) {
+//       updatedAllergies = allergies.map((allergy) =>
+//         allergy.id === editingAllergy.id
+//           ? { ...allergy, ...newAllergyData }
+//           : allergy
+//       );
+//     } else {
+//       const newId = allergies.length > 0 ? Math.max(...allergies.map((a) => a.id)) + 1 : 1;
+//       updatedAllergies = [...allergies, { id: newId, ...newAllergyData }];
+//     }
+
+//     updateAllergiesInPatientData(updatedAllergies);
+//     setIsEditingMode(false);
+//     setEditingAllergy(null);
+//     setLastReviewed(null);
+//   };
+
+//   const handleDeleteAllergy = (id) => {
+//     const updated = allergies.filter((a) => a.id !== id);
+//     updateAllergiesInPatientData(updated);
+//     if (editingAllergy?.id === id) {
+//       setIsEditingMode(false);
+//       setEditingAllergy(null);
+//       setLastReviewed(null);
+//     }
+//   };
+
+//   const handleAgentSelect = (agentObject) => {
+//     setSelectedAgent(agentObject);
+//   };
+
+//   const handleAddClick = () => {
+//     if (selectedAgent) {
+//       setEditingAllergy({ ...selectedAgent, id: null });
+//     } else {
+//       setEditingAllergy({
+//         agent: '',
+//         allergenType: '',
+//         reaction: '',
+//         severity: '',
+//         reactionType: '',
+//         onsetDate: '',
+//         notes: '',
+//       });
+//     }
+//     setIsEditingMode(true);
+//     setSelectedAgent(null);
+//     setLastReviewed(null);
+//   };
+
+//   const handleCancelEdit = () => {
+//     setIsEditingMode(false);
+//     setEditingAllergy(null);
+//   };
+
+//   const handleMarkAsReviewed = () => {
+//     const now = dayjs().format('MMM D, YYYY h:mm A');
+//     setLastReviewed(now);
+//   };
+
+//   return (
+//     <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', p: 3, bgcolor: 'background.paper' }}>
+//       <Typography variant="h5" sx={{ mb: 2 }}>
+//         Allergies / Contraindications
+//       </Typography>
+
+//       <Box display="flex" alignItems="center" mb={2} gap={2}>
+//         <AgentSearchMenu onAgentSelect={handleAgentSelect} />
+//         <Button
+//           variant="outlined"
+//           startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>}
+//           onClick={handleAddClick}
+//         >
+//           Add
+//         </Button>
+//       </Box>
+
+//       <Box sx={{ flexGrow: 1, overflowY: 'auto', mb: 2 }}>
+//         <AllergiesTable
+//           allergies={allergies}
+//           onEdit={handleEdit}
+//           onDelete={handleDeleteAllergy}
+//         />
+//         {isEditingMode && (
+//           <AllergyEditor
+//             initialData={editingAllergy}
+//             onSave={handleSaveAllergy}
+//             onCancel={handleCancelEdit}
+//           />
+//         )}
+//       </Box>
+
+//       <Box
+//         sx={{
+//           borderTop: 1,
+//           borderColor: 'divider',
+//           pt: 1,
+//           display: 'flex',
+//           justifyContent: 'flex-start',
+//           alignItems: 'center',
+//           gap: 2,
+//           flexWrap: 'wrap',
+//         }}
+//       >
+//         <Button variant="outlined" onClick={handleMarkAsReviewed}>
+//           Mark as Reviewed
+//         </Button>
+//         <Button variant="outlined">Unable to Assess</Button>
+//         <Typography
+//           variant="body2"
+//           sx={{
+//             color: lastReviewed ? 'green' : 'gray',
+//             fontStyle: 'italic',
+//           }}
+//         >
+//           {lastReviewed ? `Last Reviewed at ${lastReviewed}` : 'Not Reviewed'}
+//         </Typography>
+//       </Box>
+//     </Box>
+//   );
+// };
+
+// export default Allergies;
