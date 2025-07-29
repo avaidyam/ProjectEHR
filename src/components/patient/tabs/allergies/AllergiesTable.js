@@ -17,6 +17,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from 'dayjs';
+import { blue } from '@mui/material/colors';
 
 
 // NOTE: dummyAllergies will now be managed by the parent AllergiesTab to allow edits
@@ -48,6 +49,10 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
           </TableHead>
           <TableBody>
             {allergies.map((allergy) => (
+              //               const isHighSeverity = allergy.severity === 'High';
+//               const severityNotSpecified =
+//                 !allergy.severity || allergy.severity === 'Not Specified';
+
               <TableRow
                 key={allergy.id}
                 onClick={() => onEdit(allergy)} // Click anywhere on the row to edit
@@ -60,7 +65,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
               },
                 }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" sx= {{color: blue[500]}}>
                   {allergy.agent}
                 </TableCell>
                 <TableCell >{allergy.type}</TableCell>

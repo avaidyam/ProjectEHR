@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import AllergiesTable from './AllergiesTable.js';
 import AllergyEditor from './AllergyEditor.js';
 import AgentSearchMenu from './AgentSearchMenu.js';
+import { blue, deepOrange,grey } from '@mui/material/colors';
 
 
 const initialAllergies = [
@@ -107,12 +108,13 @@ const Allergies = () => {
   };
 
   return (
-    <Box sx={{height: '100vh', display: 'flex', flexDirection: 'column', p: 3, bgcolor: 'background.paper'}}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
+    <Box sx={{height: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper'}}>
+      <Box sx={{ bgcolor: 'grey.100',pt: 4, pb: 1, px:3, borderRadius: 1, mb: 2 }}>
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: blue[500]}}> 
         Allergies / Contraindications
       </Typography>
 
-      <Box display="flex" alignItems="center" mb={2} gap={2}>
+      <Box display="flex" alignItems="center" mb={2} gap={2} >
         <AgentSearchMenu onAgentSelect={handleAgentSelect} />
             <Button
               variant="outlined"
@@ -122,7 +124,10 @@ const Allergies = () => {
             </Button>
       </Box>
 
-      <Box sx={{flexGrow: 1, overflowY: 'auto', mb: 2}}>
+      </Box>
+
+
+      <Box sx={{flexGrow: 1, overflowY: 'auto',p:3, mb: 2}}>
         <AllergiesTable
           allergies={allergies}
           onEdit={handleEdit}
@@ -138,18 +143,34 @@ const Allergies = () => {
       </Box>
 
       <Box
-              sx={{
+          sx={{
+          bgcolor: 'grey.100',
           borderTop: 1,
           borderColor: 'divider',
-          pt: 1,
+          p: 2,
           display: 'flex',
           justifyContent: 'flex-start',
           alignItems: 'center',
           gap: 2,
           flexWrap: 'wrap'
+
         }}>
-        <Button variant="outlined" onClick={handleMarkAsReviewed}> Mark as Reviewed </Button>
-        <Button variant="outlined">Unable to Assess</Button>
+        <Button variant="outlined" onClick={handleMarkAsReviewed} sx={{
+    color: grey[600],
+    borderColor: grey[600],
+    '&:hover': {
+      borderColor: grey[600],
+      backgroundColor: grey[300], // subtle hover effect
+    },
+  }}> Mark as Reviewed </Button>
+        <Button variant="outlined" sx={{
+    color: grey[600],
+    borderColor: grey[600],
+    '&:hover': {
+      borderColor: grey[600],
+      backgroundColor: grey[300], // subtle hover effect
+    },
+  }}>Unable to Assess</Button>
         <Typography variant="body2"sx={{color: lastReviewed ? 'green' : 'gray',fontStyle: 'italic'}}>
           {lastReviewed ? `Last Reviewed at ${lastReviewed}` : 'Not Reviewed'}
         </Typography>

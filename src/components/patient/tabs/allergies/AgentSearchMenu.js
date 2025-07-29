@@ -115,6 +115,7 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
             label="Select an agent"
             variant="outlined"
             size="small"
+            sx={{bgcolor: 'white',borderRadius: 1}}
           />
         )}
         renderOption={(props, option) => (
