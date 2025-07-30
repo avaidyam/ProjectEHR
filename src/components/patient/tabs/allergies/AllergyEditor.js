@@ -17,7 +17,7 @@ const reactions = [
   'Dyspnea', 'Hypotension', 'Other, see comment', 'Atopic Dermatitis', 'Blood Pressure Drop',
   'Contact Dermatitis', 'Cough', 'Diarrhea', 'Dizzy', 'Excessive drowsiness', 'GI Cramps',
   'GI upset', 'Hallucinations', 'Headache', 'Loss of Consciousness', 'Muscle Myalgia',
-  'Ocular Itching and/or Swelling', 'Palpitations', 'Rhinitis', 'Nausea & Vomiting'
+  'Ocular Itching and/or Swelling', 'Other; see comment', 'Palpitations', 'Rhinitis', 'Nausea & Vomiting'
 ];
 
 const AllergyEditor = ({ initialData, onSave, onCancel }) => {
