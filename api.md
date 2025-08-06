@@ -150,4 +150,7 @@
   - `status: string` – The family member's health status (e.g., alive, deceased).
   - `age: number` – The family member’s age.
   - `problems: Condition[]` – A list of `Condition` affecting the family member.
-  
+- **`Administration`**
+  - `order: Order.id`: The medication order that this administration entry corresponds to.
+  - `date: Date`: The date/time that this administration entry occurred.
+  - `action: string<Given | Missed | Refused | Canceled Entry | Held | New Bag | Restarted | Stopped | Rate Change | MAR Hold | MAR Unhold | Bolus | Push | Rate Verify | See Alternative | Paused | Prepared | Pending | Automatically Held | Due>`
