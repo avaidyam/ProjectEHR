@@ -5,6 +5,13 @@
 - **`Object`**
   - `id: string`: A UUID representing the object.
   - `type: string`: The type of this object.
+- **`Unit`**: For example, a quantity with only a mass unit might be a dosage, a quantity with mass and volume units would be a concentration, and a quantity with volume and time units would be a rate (i.e. for IV infusion).
+  - `mass: string|null`: The mass units of this quantity (i.e. `mg`, `mg/ml`, or `mg/kg`), if applicable.
+  - `volume: string|null`: The volume units of this quantity (i.e. `ml`), if applicable. 
+  - `time: string|null`: The time units of this quantity (i.e. `ml/min`), if applicable.
+- **`Quantity`**: Denotes a numeric value with units (i.e. dosage). 
+  - `value: number`: The amount of this quantity.
+  - `unit: Unit`: The units of this quantity.
 - **`Patient`**
   - `id: string`: Note: this `id` field is the same as `Object`, and acts as the patient's `mrn` (medical records number).
   - `name: string`
@@ -157,5 +164,7 @@
   - `performed_by: Practitioner`: The practitioner that performed this action.
   - `documented_by: Practitioner`: The practitioner that documented this action.
   - `action: string<Given | Missed | Refused | Canceled Entry | Held | New Bag | Restarted | Stopped | Rate Change | MAR Hold | MAR Unhold | Bolus | Push | Rate Verify | See Alternative | Paused | Prepared | Pending | Automatically Held | Due>`
-  - `dose: string`: The dosage rate (if IV infusion) or quantity (if IV push or PO, etc.).
+  - `dose: Quantity`: The infusion rate (if IV GTT) or quantity (if IV push or PO, etc.) and units (i.e. `mg/ml` or `mg`).
   - `route: string`: See [SNOMED CT route codes](https://build.fhir.org/valueset-route-codes.html) and [method codes](https://build.fhir.org/valueset-administration-method-codes.html).
+  - `site: string`: The site location that this medication was administered.
+  - `duration: number`: The length of time this administration took, in seconds.
