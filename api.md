@@ -150,7 +150,12 @@
   - `status: string` – The family member's health status (e.g., alive, deceased).
   - `age: number` – The family member’s age.
   - `problems: Condition[]` – A list of `Condition` affecting the family member.
-- **`Administration`**
-  - `order: Order.id`: The medication order that this administration entry corresponds to.
-  - `date: Date`: The date/time that this administration entry occurred.
+- **`MedicationAdministration`**
+  - `order: Order.id`: The original order that this medication administration entry corresponds to.
+  - `medication: Medication.id`: The medication that this medication administration entry corresponds to. This should be identical to `order.medication`.
+  - `taken: Date`: The date/time that this medication administration entry occurred.
+  - `performed_by: Practitioner`: The practitioner that performed this action.
+  - `documented_by: Practitioner`: The practitioner that documented this action.
   - `action: string<Given | Missed | Refused | Canceled Entry | Held | New Bag | Restarted | Stopped | Rate Change | MAR Hold | MAR Unhold | Bolus | Push | Rate Verify | See Alternative | Paused | Prepared | Pending | Automatically Held | Due>`
+  - `dose: string`: The dosage rate (if IV infusion) or quantity (if IV push or PO, etc.).
+  - `route: string`: See [SNOMED CT route codes](https://build.fhir.org/valueset-route-codes.html) and [method codes](https://build.fhir.org/valueset-administration-method-codes.html).
