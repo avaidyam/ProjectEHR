@@ -157,6 +157,15 @@
   - `status: string` – The family member's health status (e.g., alive, deceased).
   - `age: number` – The family member’s age.
   - `problems: Condition[]` – A list of `Condition` affecting the family member.
+- **`ImmunizationHistory`**: This documents **historical** immunizations only (i.e. those that were not ordered and administered as part of an encounter). TODO: This needs to be merged or aligned in some capacity with `MedicationAdministration`.
+  - `name: string` – The name of the immunization. This should match the `Medication` order name for the same immunization.
+  - `date: date` – The approximate date/time that this immunization was administered to the patient.
+  - `given_by: Practitioner|null` – The practitioner that administered this immunization.
+  - `facility: string|null` – The facility that administered this immunization.
+  - `site: string|null` – The site of administration. (See `MedicationAdministration`).
+  - `route: string|null` - The route of administration. (See `MedicationAdministration`).
+  - `lot: string|null` – The lot number for the immunization.
+  - `manufacturer: string|null` – The manufacturer for the immunization.
 - **`MedicationAdministration`**
   - `order: Order.id`: The original order that this medication administration entry corresponds to.
   - `medication: Medication.id`: The medication that this medication administration entry corresponds to. This should be identical to `order.medication`.
