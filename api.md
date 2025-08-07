@@ -12,6 +12,22 @@
 - **`Quantity`**: Denotes a numeric value with units (i.e. dosage). 
   - `value: number`: The amount of this quantity.
   - `unit: Unit`: The units of this quantity.
+- **`Period`**: TODO
+  - `start: date`
+  - `end: date`
+  - `limit: number`
+  - `limit_unit: string<doses|days|weeks|...>`
+  - `every: number`
+  - `every_unit: string<hours|months|weeks|...>`
+- **`MedSig`**: Represents the "sig" of a medication (dosage instructions).
+  - `dose: Quantity`:
+  - `frequency: Period`
+  - `site: string`
+  - `route: string`
+  - `duration: number`
+  - `prn: boolean`
+  - `prn_comment: string`
+  - `comment: string`
 - **`Patient`**
   - `id: string`: Note: this `id` field is the same as `Object`, and acts as the patient's `mrn` (medical records number).
   - `name: string`
@@ -73,11 +89,7 @@
       - `recorded: date`
       - `recorder: Practitioner`
       - `comment: string`
-    - `immunizations: <>[]`
-      - `vaccine: string`
-      - `received: date`
-      - `recorded: date`
-      - `recorder: Practitioner`
+    - `immunizations: ImmunizationHistory[]`: TODO: each visit-administered immunization (MAR entry) will ALSO need a corresponding history item.
 - **`Status`**
   - `value: string`: The status.
   - `changed: date`: When this status was applied.
@@ -162,6 +174,7 @@
   - `date: date` – The approximate date/time that this immunization was administered to the patient.
   - `given_by: Practitioner|null` – The practitioner that administered this immunization.
   - `facility: string|null` – The facility that administered this immunization.
+  - `dose: Quantity`: The infusion rate (if IV GTT) or quantity (if IV push or PO, etc.) and units (i.e. `mg/ml` or `mg`).
   - `site: string|null` – The site of administration. (See `MedicationAdministration`).
   - `route: string|null` - The route of administration. (See `MedicationAdministration`).
   - `lot: string|null` – The lot number for the immunization.
