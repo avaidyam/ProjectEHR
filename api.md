@@ -1,17 +1,20 @@
 # Data Model 
 
-## Resource Types
+## Unit Types
 
 - **`Object`**
-  - `id: string`: A UUID representing the object.
-  - `type: string`: The type of this object.
+  - `id: UUID`: A UUID representing the object.
+  - `type: string`: The type of this object. _(Set automatically by subclasses.)_
+
 - **`Unit`**: For example, a quantity with only a mass unit might be a dosage, a quantity with mass and volume units would be a concentration, and a quantity with volume and time units would be a rate (i.e. for IV infusion).
   - `mass: string|null`: The mass units of this quantity (i.e. `mg`, `mg/ml`, or `mg/kg`), if applicable.
   - `volume: string|null`: The volume units of this quantity (i.e. `ml`), if applicable. 
   - `time: string|null`: The time units of this quantity (i.e. `ml/min`), if applicable.
+
 - **`Quantity`**: Denotes a numeric value with units (i.e. dosage). 
   - `value: number`: The amount of this quantity.
   - `unit: Unit`: The units of this quantity.
+
 - **`Period`**: TODO
   - `start: date`
   - `end: date`
@@ -19,6 +22,7 @@
   - `limit_unit: string<doses|days|weeks|...>`
   - `every: number`
   - `every_unit: string<hours|months|weeks|...>`
+
 - **`MedSig`**: Represents the "sig" of a medication (dosage instructions).
   - `dose: Quantity`:
   - `frequency: Period`
@@ -28,24 +32,43 @@
   - `prn: boolean`
   - `prn_comment: string`
   - `comment: string`
-- **`Patient`**
-  - `id: string`: Note: this `id` field is the same as `Object`, and acts as the patient's `mrn` (medical records number).
-  - `name: string`
-  - `birthdate: date`
-  - `gender: string`
-  - `language: string`
-  - `address: string`
-  - `insurance: string`
-- **`Practitioner`**
-  - `name: string`
-  - `schedule: Schedule[]`
-- **`Location`**
-  - `name: string`
-  - `schedule: Schedule[]`
+
+## Resource Types
+
+- **`Facility: Object`**: A place that medical care takes place (i.e. `My Cool Hospital`).
+  - `name: string`: The name of the facility.
+  - `departments: Department[]`: 
+
+- **`Department: Object`**: A subunit of a facility.
+  - `facility: Facility.id`: 
+  - `name: string`: 
+  - `locations: Location[]`:
+
+- **`Location: Object`**: A location within the department (i.e. a room `12` or bed `6210A`).
+  - `department: Department.id`: 
+  - `name: string`: 
+  - `schedules: Schedule[]`: 
+
+- **`Practitioner: Object`**: An individual providing care to patients in the facility. 
+  - `facility: Facility.id`: 
+  - `name: string`: 
+  - `schedules: Schedule[]`: 
+  - `lists: List[]`: 
+
+- **`Patient: Object`**
+  - `id: UUID`: Note: this `id` field is the same as one inherited from `Object`, and also serves as the patient's `mrn` (medical records number).
+  - `name: string`: 
+  - `birthdate: date`: 
+  - `gender: string`: 
+  - `language: string`: 
+  - `address: string`: 
+  - `insurance: string`: 
+
 - **`Schedule`**
   - `department: string`
   - `period: date-temporal`: TODO.
   - `comment: string`
+
 - **`Appointment`**
   - `patient: Patient`
   - `practitioner: Practitioner`
@@ -56,12 +79,14 @@
   - `flag: string`
   - `concern: string`: The reason-for-visit (RFV) or chief-complaint (CC) for the appointment.
   - `comment: string`: Any miscellaneous notes for this appointment.
+
 - **`List`**
   - `name: string`
   - `parent: List`
   - `owner: Practitioner|null`: The owner of the list, or `null` if this is a system-wide accessible list.
   - `shared: Practitioner[]|null`: A set of Practitioners that have read-write access, or `null` if not shared.
   - `patients: Patient[]`
+
 - **`Encounter`**
   - `appointment: Appointment|null`: The originating appointment for this encounter, if applicable (i.e. outpatient clinic setting).
   - `start: date`
