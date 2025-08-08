@@ -2,7 +2,7 @@ import { PatientLists } from '../routes/app/patients-list.jsx';
 import { AuthContext } from './login/AuthContext';
 import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 
 import Login from './login/Login.js';
 import { PatientHome } from './patient/PatientHome.js';
@@ -12,7 +12,7 @@ import { Schedule } from './schedule/Schedule.js';
 export const NavBar = ({ onHandleClickRoute, onLogout }) => {
   return (
     <>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="h6" color="inherit" component="div" style={{ marginRight: '8px' }}>
@@ -71,7 +71,13 @@ export const App = () => {
           <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
         )}
         <Routes>
-          <Route path="/" element={<Login setIsLoggedIn={handleLogin} />} />
+          <Route path="/" element={
+            isLoggedIn ? (
+                <Navigate replace to="/schedule" />
+              ) : (
+                <Login setIsLoggedIn={handleLogin} />
+              )
+          } />
           <Route
             path="/schedule"
             element={

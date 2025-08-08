@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
-import { Box, Tab, Tabs, Divider,  Paper} from '@mui/material'
+import { Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
+import { Menu } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 
 import { Storyboard } from './Storyboard.js'
@@ -338,6 +341,10 @@ export const PatientHome = ({ ...props }) => {
 
   const drawerWidth = 250
   const [tab, setTab] = useState("1")
+  const [storyboardOpen, setStoryboardOpen] = useState(true)
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
@@ -380,13 +387,49 @@ export const PatientHome = ({ ...props }) => {
   const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
   return (
     <Box display="flex" direction="row" sx={{ overflowY: 'hidden', ...props.sx }} {...props}>
-      <Paper square elevation={8} sx={{ width: drawerWidth, height: '100vh', overflow: 'auto', flexShrink: 0, flexGrow: 0, backgroundColor: 'primary.main', color: 'primary.contrastText', p: 1 }}>
-          <Storyboard /> 
-      </Paper>
+      <Drawer
+        variant={isMobile ? "temporary" : "persistent"}
+        anchor="left"
+        open={!isMobile || storyboardOpen}
+        onOpen={() => setStoryboardOpen(true)}
+        onClose={() => setStoryboardOpen(false)}
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            marginTop: 6, 
+            boxSizing: 'border-box',
+            overflow: 'auto', 
+            flexShrink: 0, 
+            flexGrow: 0, 
+            backgroundColor: 'primary.main', 
+            color: 'primary.contrastText', 
+            p: 1
+          },
+        }}
+      >
+        <Storyboard /> 
+      </Drawer>
       <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', bgcolor: 'background.paper' }}>
         <TabContext value={tab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
-            <TabList variant="scrollable" scrollButtons allowScrollButtonsMobile onChange={(event, newValue) => setTab(newValue)}>
+          <Stack direction="row" sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+            <IconButton
+              color="inherit"
+              onClick={() => setStoryboardOpen(!storyboardOpen)}
+              edge="start"
+              sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
+            >
+              <Menu />
+            </IconButton>
+            <TabList 
+              variant="scrollable" 
+              textColor="inherit"
+              scrollButtons 
+              allowScrollButtonsMobile 
+              TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+              onChange={(event, newValue) => setTab(newValue)}
+            >
               <Tab value="1" label="SnapShot" />
               <Tab value="2" label="Chart Review" />
               <Tab value="3" label="Problem List" />
@@ -400,7 +443,7 @@ export const PatientHome = ({ ...props }) => {
               <Tab value="11" label="Immunizations" />
               <Tab value="12" label="Allergies" />
             </TabList>
-          </Box>
+          </Stack>
           <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
           <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
           <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>

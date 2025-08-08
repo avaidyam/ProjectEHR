@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       ...prev,
       ...newEncounters, // Merge new MRNs into the existing state
     }));
+    localStorage.setItem('enabledEncounters', JSON.stringify(enabledEncounters))
   };
 
   // Function to generate a random salt
