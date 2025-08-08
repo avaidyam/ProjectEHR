@@ -6,6 +6,11 @@
   - `id: UUID`: A UUID representing the object.
   - `type: string`: The type of this object. _(Set automatically by subclasses.)_
 
+- **`Contact`**: Contact information.
+  - `phone: string`: 
+  - `address: string`: 
+  - `email: string`: 
+
 - **`Unit`**: For example, a quantity with only a mass unit might be a dosage, a quantity with mass and volume units would be a concentration, and a quantity with volume and time units would be a rate (i.e. for IV infusion).
   - `mass: string|null`: The mass units of this quantity (i.e. `mg`, `mg/ml`, or `mg/kg`), if applicable.
   - `volume: string|null`: The volume units of this quantity (i.e. `ml`), if applicable. 
@@ -38,30 +43,34 @@
 - **`Facility: Object`**: A place that medical care takes place (i.e. `My Cool Hospital`).
   - `name: string`: The name of the facility.
   - `departments: Department[]`: 
+  - `contact: Contact`: 
 
 - **`Department: Object`**: A subunit of a facility.
   - `facility: Facility.id`: 
   - `name: string`: 
   - `locations: Location[]`:
+  - `contact: Contact`:
 
 - **`Location: Object`**: A location within the department (i.e. a room `12` or bed `6210A`).
   - `department: Department.id`: 
   - `name: string`: 
   - `schedules: Schedule[]`: 
+  - `contact: Contact`:
 
 - **`Practitioner: Object`**: An individual providing care to patients in the facility. 
   - `facility: Facility.id`: 
   - `name: string`: 
   - `schedules: Schedule[]`: 
   - `lists: List[]`: 
+  - `contact: Contact`:
 
 - **`Patient: Object`**
   - `id: UUID`: Note: this `id` field is the same as one inherited from `Object`, and also serves as the patient's `mrn` (medical records number).
   - `name: string`: 
   - `birthdate: date`: 
-  - `gender: string`: 
+  - `gender: string<male|female|...> | null`: 
   - `language: string`: 
-  - `address: string`: 
+  - `contact: Contact`:
   - `insurance: string`: 
 
 - **`Schedule`**
