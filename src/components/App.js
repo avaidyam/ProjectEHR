@@ -42,10 +42,9 @@ export const NavBar = ({ onHandleClickRoute, onLogout }) => {
 
 // Main App Component
 export const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Tracks login status
-
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useContext(AuthContext);
+  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated); // Tracks login status
 
   // Handles navigation between routes
   const handleClickRoute = (route) => {
@@ -54,6 +53,7 @@ export const App = () => {
 
   // Logs out and resets state
   const handleLogout = () => {
+    logout()
     setIsLoggedIn(false); // Hide NavBar
     navigate('/'); // Redirect to the login page
   };

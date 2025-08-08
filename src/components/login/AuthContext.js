@@ -5,7 +5,9 @@ import React, { createContext, useState } from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem('userLoginDetails')
+  });
 
   // Check if a password is already set in localStorage
   const [isPasswordSet, setIsPasswordSet] = useState(() => {
@@ -65,8 +67,14 @@ export const AuthProvider = ({ children }) => {
   };
 
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const login = (username, password, department) => {
+    localStorage.setItem('userLoginDetails', JSON.stringify({ username, password, department }))
+    setIsAuthenticated(true)
+  }
+  const logout = () =>  {
+    localStorage.removeItem('userLoginDetails')
+    setIsAuthenticated(false)
+  }
 
   return (
     <AuthContext.Provider

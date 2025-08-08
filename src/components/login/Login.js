@@ -21,6 +21,7 @@ const Login = ({ setIsLoggedIn }) => {
   const [displayDepts, setDisplayDepts] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [department, setDepartment] = useState();
   const navigate = useNavigate();
   const { login, verifyPassword, updateEncounters, enabledEncounters } = useContext(AuthContext);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
@@ -77,7 +78,7 @@ const Login = ({ setIsLoggedIn }) => {
   // Handle login submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(username, password); // Authenticate user
+    login(username, password, department); // Authenticate user
     setIsLoggedIn(true); // Update parent state
   };
 
@@ -156,6 +157,8 @@ const Login = ({ setIsLoggedIn }) => {
             fullWidth
             autoHighlight
             openOnFocus
+            value={department}
+            onChange={(e, v) => setDepartment(v)}
             options={departments}
             getOptionLabel={(option) => option.name}
             groupBy={(option) => 1 /* we only want one group total to draw the table header */}
@@ -250,65 +253,3 @@ const Login = ({ setIsLoggedIn }) => {
 };
 
 export default Login;
-
-
-
-/* 
-
-
-    <div className="login-container">
-      <div className="background-image" />
-      <div className="logo-container">
-      </div>
-      <div className="login-box">
-        <h2 className="department-header">Department:</h2>
-        <div className="form-group">
-          <div className="department-input-container">
-            <button onClick={toggleDropdown} className="form-input dropdown-button">
-              <span className="magnifying-glass">&#128269;</span> {/* Magnifying Glass Icon }
-              {selectedDepartment || "Select a department"}
-            </button>
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                <table className="dropdown-table">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Department</th>
-                      <th>Identity ID</th>
-                      <th>Specialty</th>
-                      <th>Location</th>
-                      <th>Service Area</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {departments.map((dept) => (
-                      <tr
-                        key={dept.id}
-                        className="table-row"
-                        onClick={() => {
-                          setSelectedDepartment(dept.name);
-                          setIsDropdownOpen(false);
-                        }}
-                      >
-                        <td>{dept.id}</td>
-                        <td>{dept.name}</td>
-                        <td>{dept.identityId}</td>
-                        <td>{dept.specialty}</td>
-                        <td>{dept.location}</td>
-                        <td>{dept.serviceArea}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="action-buttons">
-          <button onClick={handleSelect} className="continue-button">Continue</button>
-          <button onClick={handleCancel} className="cancel-button">Cancel</button>
-        </div>
-      </div>
-
-*/
