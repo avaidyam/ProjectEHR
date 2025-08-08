@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Box, Tab, Tabs, Divider,  Paper} from '@mui/material'
-import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
+import { Box, Tab, Tabs, Divider, Paper } from '@mui/material'
+import BottomBar from '../../features/patient-chart/components/BottomBar.jsx';
+import DiagnosesSearchModal from '../../features/diagnosis/components/DiagnosesSearchModal.jsx';
+import { EditorState } from 'draft-js'; // Modifier, ContentState (Maybe)
 
 import { Storyboard } from './Storyboard.js'
 import { ChartReview } from './tabs/chartreview/ChartReviewTabContent.js'
@@ -151,18 +153,18 @@ const physicalExamBodySystems = [
     subsections: [
       {
         // subsectionTitle: 'General', 
-        checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'], 
-        symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'], 
-      }, 
+        checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'],
+        symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'],
+      },
     ],
   },
-  { 
-    title: 'Neck', 
-    subsections: [ 
-      { 
-        checkboxes: ['ROM Normal', 'Supple'], 
-        symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'], 
-      }, 
+  {
+    title: 'Neck',
+    subsections: [
+      {
+        checkboxes: ['ROM Normal', 'Supple'],
+        symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'],
+      },
     ],
   },
   {
@@ -294,20 +296,20 @@ const physicalExamBodySystems = [
       },
       {
         subsectionTitle: 'Ears (Left)',
-        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'], 
-        symptoms: ['Impacted Cerumen'], 
-      }, 
-      { 
-        subsectionTitle: 'Nose', 
-        checkboxes: ['Nose Normal'], 
-        symptoms: ['Congestion', 'Rhinorrhea'], 
-      }, 
-      { 
-        subsectionTitle: 'Mouth/Throat', 
-        checkboxes: ['Moist'], 
-        symptoms: ['Clear', 'Exudate', 'Erythema'], 
-      }, 
-    ], 
+        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'],
+        symptoms: ['Impacted Cerumen'],
+      },
+      {
+        subsectionTitle: 'Nose',
+        checkboxes: ['Nose Normal'],
+        symptoms: ['Congestion', 'Rhinorrhea'],
+      },
+      {
+        subsectionTitle: 'Mouth/Throat',
+        checkboxes: ['Moist'],
+        symptoms: ['Clear', 'Exudate', 'Erythema'],
+      },
+    ],
   },
   {
     title: 'Cardiovascular',
@@ -340,10 +342,11 @@ export const PatientHome = ({ ...props }) => {
   const [tab, setTab] = useState(0)
 
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [isDxModalOpen, setIsDxModalOpen] = useState(false);
 
   const generateInitialRosState = (systems) => {
     const initialState = {};
-  
+
     systems.forEach(system => {
       const systemState = {};
       system.symptoms.forEach(symptom => {
@@ -352,40 +355,40 @@ export const PatientHome = ({ ...props }) => {
       systemState['custom'] = null; // Add a custom entry for custom ROS text (DescriptionIcon)
       initialState[system.title.toLowerCase()] = systemState;
     });
-  
+
     return initialState;
   };
 
   const generateInitialPEState = (systems) => {
     // We need a separate function to generate the initial state for the physical exam because it has subsections
     const initialState = {};
-  
+
     systems.forEach(system => {
       const systemState = {};
       system.subsections.forEach((subsection, idx) => {
         const subsectionTitle = subsection.subsectionTitle ? subsection.subsectionTitle.toLowerCase() : '';
-        systemState[subsectionTitle] = {symptoms: null, checkboxes: null}; // Initial state for each subsection is null
+        systemState[subsectionTitle] = { symptoms: null, checkboxes: null }; // Initial state for each subsection is null
       });
       initialState[system.title.toLowerCase()] = systemState;
       systemState['custom'] = null; // Add a custom entry for custom PE text (DescriptionIcon)
     });
-  
+
     return initialState;
   };
-  
-  
+
+
   const [peState, setPEState] = useState(generateInitialPEState(physicalExamBodySystems));
   const [rosState, setRosState] = useState(generateInitialRosState(bodySystems));
 
-    const [patientMRN] = usePatientMRN();
-    const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
+  const [patientMRN] = usePatientMRN();
+  const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
 
   return (
     <Box display="flex" direction="row" {...props}>
       <Paper square elevation={8} sx={{ width: drawerWidth, height: '100vh', overflow: 'auto', flexShrink: 0, flexGrow: 0, backgroundColor: 'primary.main', color: 'primary.contrastText', p: 1 }}>
-          <Storyboard /> 
+        <Storyboard />
       </Paper>
-      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}>
+      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <Tabs value={tab} onChange={(event, newValue) => setTab(newValue)}>
           <Tab label="SnapShot" />
           <Tab label="Chart Review" />
@@ -401,36 +404,44 @@ export const PatientHome = ({ ...props }) => {
           <Tab label="Allergies" />
         </Tabs>
         <Divider />
-        {tab === 0 && <SnapshotTabContent />}
-        {tab === 1 && <ChartReview />}
-        {tab === 2 && <ProblemListTabContent />}
-        {tab === 3 && <HistoryTabContent />}
-        {tab === 4 && <Medications />}
-        {tab === 5 && <Orders />}
-        {tab === 6 && <OrdersMgmt/>}
-        {tab === 7 && <NotesTabContent 
-          editorState={editorState}
-          setEditorState={setEditorState}
-          rosState={rosState} 
-          setRosState={setRosState}
-          peState={peState} 
-          setPEState={setPEState}
-          bodySystems={bodySystems}
-          bodySystemsPE={physicalExamBodySystems}
+        <Box sx={{ flex: 1, overflow: 'auto', pb: 7 }}>
+          {tab === 0 && <SnapshotTabContent />}
+          {tab === 1 && <ChartReview />}
+          {tab === 2 && <ProblemListTabContent />}
+          {tab === 3 && <HistoryTabContent />}
+          {tab === 4 && <Medications />}
+          {tab === 5 && <Orders />}
+          {tab === 6 && <OrdersMgmt />}
+          {tab === 7 && <NotesTabContent
+            editorState={editorState}
+            setEditorState={setEditorState}
+            rosState={rosState}
+            setRosState={setRosState}
+            peState={peState}
+            setPEState={setPEState}
+            bodySystems={bodySystems}
+            bodySystemsPE={physicalExamBodySystems}
           // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
           // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
-         />}
-         {tab === 8 && <Pdmp/>}
-         {tab === 9 && <ResultsReview/>}
-         {tab === 10 && <Immunizations/>}
-         {tab === 11 && (
-          <Allergies
-            patientData={patientData}
-            setPatientData={setPatientData}
-            encounterId={enc}
-          />
-        )}
+          />}
+          {tab === 8 && <Pdmp />}
+          {tab === 9 && <ResultsReview />}
+          {tab === 10 && <Immunizations />}
+          {tab === 11 && (
+            <Allergies
+              patientData={patientData}
+              setPatientData={setPatientData}
+              encounterId={enc}
+            />
+          )}
+        </Box>
+        <BottomBar
+          onAddOrder={() => { /* TODO: wire to orders flow */ }}
+          onAddDx={() => setIsDxModalOpen(true)}
+          onSignEncounter={() => { /* TODO: sign encounter */ }}
+        />
       </Box>
+      <DiagnosesSearchModal open={isDxModalOpen} onClose={() => setIsDxModalOpen(false)} />
     </Box>
   )
 }
