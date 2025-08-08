@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Box, Tab, Tabs, Divider,  Paper} from '@mui/material'
+import { TabContext, TabList, TabPanel } from '@mui/lab';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 
 import { Storyboard } from './Storyboard.js'
@@ -18,7 +19,6 @@ import Immunizations from './tabs/immunizations/Immunizations.js';
 import Allergies from './tabs/allergies/Allergies.js';
 import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
-
 
 const bodySystems = [
   {
@@ -376,60 +376,61 @@ export const PatientHome = ({ ...props }) => {
   
   const [peState, setPEState] = useState(generateInitialPEState(physicalExamBodySystems));
   const [rosState, setRosState] = useState(generateInitialRosState(bodySystems));
-
-    const [patientMRN] = usePatientMRN();
-    const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
-
+  const [patientMRN] = usePatientMRN();
+  const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
   return (
-    <Box display="flex" direction="row" {...props}>
+    <Box display="flex" direction="row" sx={{ overflowY: 'hidden', ...props.sx }} {...props}>
       <Paper square elevation={8} sx={{ width: drawerWidth, height: '100vh', overflow: 'auto', flexShrink: 0, flexGrow: 0, backgroundColor: 'primary.main', color: 'primary.contrastText', p: 1 }}>
           <Storyboard /> 
       </Paper>
-      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}>
-        <Tabs value={tab} onChange={(event, newValue) => setTab(newValue)}>
-          <Tab label="SnapShot" />
-          <Tab label="Chart Review" />
-          <Tab label="Problem List" />
-          <Tab label="History" />
-          <Tab label="Medications" />
-          <Tab label="Orders" />
-          <Tab label="Orders Mgmt" />
-          <Tab label="NoteWriter" />
-          <Tab label="Results Review" />
-          <Tab label="PDMP" />
-          <Tab label="Immunizations" />
-          <Tab label="Allergies" />
-        </Tabs>
-        <Divider />
-        {tab === 0 && <SnapshotTabContent />}
-        {tab === 1 && <ChartReview />}
-        {tab === 2 && <ProblemListTabContent />}
-        {tab === 3 && <HistoryTabContent />}
-        {tab === 4 && <Medications />}
-        {tab === 5 && <Orders />}
-        {tab === 6 && <OrdersMgmt/>}
-        {tab === 7 && <NotesTabContent 
-          editorState={editorState}
-          setEditorState={setEditorState}
-          rosState={rosState} 
-          setRosState={setRosState}
-          peState={peState} 
-          setPEState={setPEState}
-          bodySystems={bodySystems}
-          bodySystemsPE={physicalExamBodySystems}
-          // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
-          // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
-         />}
-         {tab === 8 && <Pdmp/>}
-         {tab === 9 && <ResultsReview/>}
-         {tab === 10 && <Immunizations/>}
-         {tab === 11 && (
-          <Allergies
-            patientData={patientData}
-            setPatientData={setPatientData}
-            encounterId={enc}
-          />
-        )}
+      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', bgcolor: 'background.paper' }}>
+        <TabContext value={tab}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+            <TabList variant="scrollable" scrollButtons allowScrollButtonsMobile onChange={(event, newValue) => setTab(newValue)}>
+              <Tab value="1" label="SnapShot" />
+              <Tab value="2" label="Chart Review" />
+              <Tab value="3" label="Problem List" />
+              <Tab value="4" label="History" />
+              <Tab value="5" label="Medications" />
+              <Tab value="6" label="Orders" />
+              <Tab value="7" label="Orders Mgmt" />
+              <Tab value="8" label="NoteWriter" />
+              <Tab value="9" label="Results Review" />
+              <Tab value="10" label="PDMP" />
+              <Tab value="11" label="Immunizations" />
+              <Tab value="12" label="Allergies" />
+            </TabList>
+          </Box>
+          <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="8">
+            <NotesTabContent 
+              editorState={editorState}
+              setEditorState={setEditorState}
+              rosState={rosState} 
+              setRosState={setRosState}
+              peState={peState} 
+              setPEState={setPEState}
+              bodySystems={bodySystems}
+              bodySystemsPE={physicalExamBodySystems}
+              // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
+              // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
+            />
+          </TabPanel>
+          <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
+          <TabPanel sx={{ p: 0 }} value="12"><Allergies
+              patientData={patientData}
+              setPatientData={setPatientData}
+              encounterId={enc}
+            /></TabPanel>
+        </TabContext>
       </Box>
     </Box>
   )
