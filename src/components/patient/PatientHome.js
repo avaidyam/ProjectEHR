@@ -386,7 +386,7 @@ export const PatientHome = ({ ...props }) => {
           <Storyboard /> 
       </Paper>
       <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto' }}>
-        <Tabs value={tab} onChange={(event, newValue) => setTab(newValue)}>
+        <Tabs variant="scrollable" scrollButtons allowScrollButtonsMobile value={tab} onChange={(event, newValue) => setTab(newValue)}>
           <Tab label="SnapShot" />
           <Tab label="Chart Review" />
           <Tab label="Problem List" />
