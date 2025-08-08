@@ -337,7 +337,7 @@ export const PatientHome = ({ ...props }) => {
   const [enc] = useEncounterID();
 
   const drawerWidth = 250
-  const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState("1")
 
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
