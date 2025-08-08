@@ -38,6 +38,7 @@
     "luxon": "^3.4.3",
     "magic-wand-tool": "^1.1.7",
     "react": "^18.2.0",
+    "react-datasheet": "^1.4.12",
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "1.15.0",
     "react-jsonschema-form": "^1.8.1",

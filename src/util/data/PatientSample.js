@@ -126,7 +126,12 @@ export const _data = [
             resultingAgency: 'Carle Foundational Hospital',
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash' }],
+        allergies: [{id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        immunizations: [
+          {vaccine: 'Covid-19', received: '2022-12-12', recorded: '2022-12-12', recorder: 'Practitioner'},
+          {vaccine: 'Covid-19', received: '2023-1-1', recorded: '2023-1-1', recorder: 'Practitioner'},
+          {vaccine: 'Influenza', received: '2025-1-1', recorded: '2025-1-1', recorder: 'Practitioner'}
+        ],
         history: {
           medical: [],
           surgical: [],
@@ -436,7 +441,8 @@ export const _data = [
             resultingAgency: 'Carle Foundational Hospital',
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash' }],
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        immunizations: [],
         history: {
           medical: [],
           surgical: [],
@@ -582,6 +588,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [],
           surgical: [],
@@ -634,6 +641,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [
             {
@@ -724,6 +732,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [],
           surgical: [],
@@ -776,6 +785,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [
             {
@@ -866,6 +876,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [],
           surgical: [],
@@ -918,6 +929,7 @@ export const _data = [
         ],
         documents: [],
         allergies: [],
+        immunizations: [],
         history: {
           medical: [
             {
@@ -1073,157 +1085,159 @@ export const _data = [
             },
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash' }],
-        history: {
-          medical: [
-            {
-              diagnosis: 'Hypertension',
-              date: '2010-01-15',
-              age: '52',
-            },
-            {
-              diagnosis: 'Hyperlipidemia',
-              date: '2015-02-20',
-              age: '57',
-            },
-            {
-              diagnosis: 'Non-insulin-dependent diabetes mellitus (NIDDM)',
-              date: '2018-03-10',
-              age: '60',
-            },
-            {
-              diagnosis: 'Osteoarthritis',
-              date: '2020-04-05',
-              age: '62',
-            },
-            {
-              diagnosis: 'History of right foot fracture',
-              date: '2021-05-20',
-              age: '63',
-            },
-            {
-              diagnosis: 'Gastroesophageal reflux disease (GERD)',
-              date: '2022-06-10',
-              age: '64',
-            },
-          ],
-          surgical: [
-            {
-              procedure: 'Cholecystectomy',
-              laterality: '',
-              date: '1994-06-15',
-              age: '48',
-              comment: '',
-            },
-            {
-              procedure: 'Foot surgery',
-              laterality: '',
-              date: '2019-04-22',
-              age: '61',
-              comment: '',
-            },
-          ],
-          family: [
-            {
-              relationship: 'Father',
-              name: '',
-              status: 'Deceased',
-              age: 65,
-              problems: [
-                {
-                  description: 'Heart disease',
-                  ageOfOnset: '65',
-                },
-              ],
-            },
-            {
-              relationship: 'Mother',
-              name: '',
-              status: 'Deceased',
-              age: 78,
-              problems: [
-                {
-                  description: 'Breast cancer',
-                  ageOfOnset: '78',
-                },
-              ],
-            },
-            {
-              relationship: 'Brother',
-              name: '',
-              status: '',
-              age: 62,
-              problems: [
-                {
-                  description: 'Coronary artery disease with MI',
-                  ageOfOnset: '62',
-                },
-                {
-                  description: 'Coronary artery bypass graft surgery',
-                  ageOfOnset: '62',
-                },
-              ],
-            },
-          ],
-          SubstanceSexualHealth: {
-            tobacco: {
-              smokingStatus: 'Everyday',
-              types: ['Cigarette'],
-              startDate: '1980-01-01',
-              packsPerDay: 1,
-              packYears: 50,
-              smokelessStatus: {
-                smokelessStatus: 'Never',
-                comments: '',
-              },
-            },
-            alcohol: {
-              alcoholStatus: 'Yes',
-              drinksPerWeek: {
-                wineGlasses: 0,
-                beerCans: 3,
-                liquorShots: 0,
-                drinksContainingAlcohol: 0,
-                standardDrinks: 0,
-              },
-            },
-            drugs: {
-              drugStatus: 'Not Currently',
-              drugTypes: [],
-              usePerWeek: '',
-              comments: '',
-            },
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        immunizations: [],
+        history: {"medical": [
+          {
+            "diagnosis": "Hypertension",
+            "date": "2010-01-15",
+            "age": "52"
           },
-          Socioeconomic: {
-            occupation: 'Delivery truck driver',
-            employer: 'Local furniture store',
-            occupationalHistory: [
+          {
+            "diagnosis": "Hyperlipidemia",
+            "date": "2015-02-20",
+            "age": "57"
+          },
+          {
+            "diagnosis": "Non-insulin-dependent diabetes mellitus (NIDDM)",
+            "date": "2018-03-10",
+            "age": "60"
+          },
+          {
+            "diagnosis": "Osteoarthritis",
+            "date": "2020-04-05",
+            "age": "62"
+          },
+          {
+            "diagnosis": "History of right foot fracture",
+            "date": "2021-05-20",
+            "age": "63"
+          },
+          {
+            "diagnosis": "Gastroesophageal reflux disease (GERD)",
+            "date": "2022-06-10",
+            "age": "64"
+          }
+        ],
+        "surgical": [
+          {
+            "procedure": "Cholecystectomy",
+            "laterality": "",
+            "date": "1994-06-15",
+            "age": "48",
+            "comment": ""
+          },
+          {
+            "procedure": "Foot surgery",
+            "laterality": "",
+            "date": "2019-04-22",
+            "age": "61",
+            "comment": ""
+          }
+        ],
+        "family": [
+          {
+            "relationship": "Father",
+            "name": "",
+            "status": "Deceased",
+            "age": 65,
+            "problems": [
               {
-                occupation: 'Floor manager',
-                employer: 'Printing facility',
+                "description": "Heart disease",
+                "ageOfOnset": "65"
+              }
+            ]
+          },
+          {
+            "relationship": "Mother",
+            "name": "",
+            "status": "Deceased",
+            "age": 78,
+            "problems": [
+              {
+                "description": "Breast cancer",
+                "ageOfOnset": "78"
+              }
+            ]
+          },
+          {
+            "relationship": "Brother",
+            "name": "",
+            "status": "",
+            "age": 62,
+            "problems": [
+              {
+                "description": "Coronary artery disease with MI",
+                "ageOfOnset": "62"
               },
               {
-                occupation: 'Delivery truck driver',
-                employer: 'Local furniture store',
-              },
-              {
-                occupation: 'Odd jobs worker',
-                employer: 'Local construction and concrete laying companies',
-              },
+                "description": "Coronary artery bypass graft surgery",
+                "ageOfOnset": "62"
+              }
+            ]
+          }
+        ],
+        "SubstanceSexualHealth": {
+          "tobacco": {
+            "smokingStatus": "Everyday",
+            "types": [
+              "Cigarette"
             ],
-            demographics: {
-              maritalStatus: 'Married',
-              spouseName: 'Unknown',
-              numberOfChildren: 2,
-              yearsOfEducation: 0,
-              highestEducationLevel: 'Some College',
-              preferredLanguage: '',
-              ethnicGroup: '',
-              race: '',
-            },
+            "startDate": "1980-01-01",
+            "packsPerDay": 1,
+            "packYears": 50,
+            "smokelessStatus": {
+              "smokelessStatus": "Never",
+              "comments": ""
+            }
           },
-          SocialDocumentation: {
-            textbox: `
+          "alcohol": {
+            "alcoholStatus": "Yes",
+            "drinksPerWeek": {
+              "wineGlasses": 0,
+              "beerCans": 3,
+              "liquorShots": 0,
+              "drinksContainingAlcohol": 0,
+              "standardDrinks": 0
+            }
+          },
+          "drugs": {
+            "drugStatus": "Not Currently",
+            "drugTypes": [],
+            "usePerWeek": "",
+            "comments": ""
+          }
+        },
+        "Socioeconomic": {
+          "occupation": "Delivery truck driver",
+          "employer": "Local furniture store",
+          "occupationalHistory": [
+            {
+              "occupation": "Floor manager",
+              "employer": "Printing facility"
+            },
+            {
+              "occupation": "Delivery truck driver",
+              "employer": "Local furniture store"
+            },
+            {
+              "occupation": "Odd jobs worker",
+              "employer": "Local construction and concrete laying companies"
+            }
+          ],
+          "demographics": {
+            "maritalStatus": "Married",
+            "spouseName": "Unknown",
+            "numberOfChildren": 2,
+            "yearsOfEducation": 0,
+            "highestEducationLevel": "Some College",
+            "preferredLanguage": "",
+            "ethnicGroup": "",
+            "race": ""
+          }
+        },
+        "SocialDocumentation": {
+          "textbox":`
         John Hanson was a floor manager at a printing facility in Mattoon, IL, where he
         worked for 22 years before the factory shut down and he lost his job. He currently works as a part-
         time delivery truck driver for a local furniture store. He also works odd jobs at a local construction
@@ -2461,157 +2475,159 @@ export const _data = [
             },
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash' }],
-        history: {
-          medical: [
-            {
-              diagnosis: 'Hypertension',
-              date: '2010-01-15',
-              age: '52',
-            },
-            {
-              diagnosis: 'Hyperlipidemia',
-              date: '2015-02-20',
-              age: '57',
-            },
-            {
-              diagnosis: 'Non-insulin-dependent diabetes mellitus (NIDDM)',
-              date: '2018-03-10',
-              age: '60',
-            },
-            {
-              diagnosis: 'Osteoarthritis',
-              date: '2020-04-05',
-              age: '62',
-            },
-            {
-              diagnosis: 'History of right foot fracture',
-              date: '2021-05-20',
-              age: '63',
-            },
-            {
-              diagnosis: 'Gastroesophageal reflux disease (GERD)',
-              date: '2022-06-10',
-              age: '64',
-            },
-          ],
-          surgical: [
-            {
-              procedure: 'Cholecystectomy',
-              laterality: '',
-              date: '1994-06-15',
-              age: '48',
-              comment: '',
-            },
-            {
-              procedure: 'Foot surgery',
-              laterality: '',
-              date: '2019-04-22',
-              age: '61',
-              comment: '',
-            },
-          ],
-          family: [
-            {
-              relationship: 'Father',
-              name: '',
-              status: 'Deceased',
-              age: 65,
-              problems: [
-                {
-                  description: 'Heart disease',
-                  ageOfOnset: '65',
-                },
-              ],
-            },
-            {
-              relationship: 'Mother',
-              name: '',
-              status: 'Deceased',
-              age: 78,
-              problems: [
-                {
-                  description: 'Breast cancer',
-                  ageOfOnset: '78',
-                },
-              ],
-            },
-            {
-              relationship: 'Brother',
-              name: '',
-              status: '',
-              age: 62,
-              problems: [
-                {
-                  description: 'Coronary artery disease with MI',
-                  ageOfOnset: '62',
-                },
-                {
-                  description: 'Coronary artery bypass graft surgery',
-                  ageOfOnset: '62',
-                },
-              ],
-            },
-          ],
-          SubstanceSexualHealth: {
-            tobacco: {
-              smokingStatus: 'Everyday',
-              types: ['Cigarette'],
-              startDate: '1980-01-01',
-              packsPerDay: 1,
-              packYears: 50,
-              smokelessStatus: {
-                smokelessStatus: 'Never',
-                comments: '',
-              },
-            },
-            alcohol: {
-              alcoholStatus: 'Yes',
-              drinksPerWeek: {
-                wineGlasses: 0,
-                beerCans: 3,
-                liquorShots: 0,
-                drinksContainingAlcohol: 0,
-                standardDrinks: 0,
-              },
-            },
-            drugs: {
-              drugStatus: 'Not Currently',
-              drugTypes: [],
-              usePerWeek: '',
-              comments: '',
-            },
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        immunizations: [],
+        history: {"medical": [
+          {
+            "diagnosis": "Hypertension",
+            "date": "2010-01-15",
+            "age": "52"
           },
-          Socioeconomic: {
-            occupation: 'Delivery truck driver',
-            employer: 'Local furniture store',
-            occupationalHistory: [
+          {
+            "diagnosis": "Hyperlipidemia",
+            "date": "2015-02-20",
+            "age": "57"
+          },
+          {
+            "diagnosis": "Non-insulin-dependent diabetes mellitus (NIDDM)",
+            "date": "2018-03-10",
+            "age": "60"
+          },
+          {
+            "diagnosis": "Osteoarthritis",
+            "date": "2020-04-05",
+            "age": "62"
+          },
+          {
+            "diagnosis": "History of right foot fracture",
+            "date": "2021-05-20",
+            "age": "63"
+          },
+          {
+            "diagnosis": "Gastroesophageal reflux disease (GERD)",
+            "date": "2022-06-10",
+            "age": "64"
+          }
+        ],
+        "surgical": [
+          {
+            "procedure": "Cholecystectomy",
+            "laterality": "",
+            "date": "1994-06-15",
+            "age": "48",
+            "comment": ""
+          },
+          {
+            "procedure": "Foot surgery",
+            "laterality": "",
+            "date": "2019-04-22",
+            "age": "61",
+            "comment": ""
+          }
+        ],
+        "family": [
+          {
+            "relationship": "Father",
+            "name": "",
+            "status": "Deceased",
+            "age": 65,
+            "problems": [
               {
-                occupation: 'Floor manager',
-                employer: 'Printing facility',
+                "description": "Heart disease",
+                "ageOfOnset": "65"
+              }
+            ]
+          },
+          {
+            "relationship": "Mother",
+            "name": "",
+            "status": "Deceased",
+            "age": 78,
+            "problems": [
+              {
+                "description": "Breast cancer",
+                "ageOfOnset": "78"
+              }
+            ]
+          },
+          {
+            "relationship": "Brother",
+            "name": "",
+            "status": "",
+            "age": 62,
+            "problems": [
+              {
+                "description": "Coronary artery disease with MI",
+                "ageOfOnset": "62"
               },
               {
-                occupation: 'Delivery truck driver',
-                employer: 'Local furniture store',
-              },
-              {
-                occupation: 'Odd jobs worker',
-                employer: 'Local construction and concrete laying companies',
-              },
+                "description": "Coronary artery bypass graft surgery",
+                "ageOfOnset": "62"
+              }
+            ]
+          }
+        ],
+        "SubstanceSexualHealth": {
+          "tobacco": {
+            "smokingStatus": "Everyday",
+            "types": [
+              "Cigarette"
             ],
-            demographics: {
-              maritalStatus: 'Married',
-              spouseName: 'Unknown',
-              numberOfChildren: 2,
-              yearsOfEducation: 0,
-              highestEducationLevel: 'Some College',
-              preferredLanguage: '',
-              ethnicGroup: '',
-              race: '',
-            },
+            "startDate": "1980-01-01",
+            "packsPerDay": 1,
+            "packYears": 50,
+            "smokelessStatus": {
+              "smokelessStatus": "Never",
+              "comments": ""
+            }
           },
-          SocialDocumentation: {
-            textbox: `
+          "alcohol": {
+            "alcoholStatus": "Yes",
+            "drinksPerWeek": {
+              "wineGlasses": 0,
+              "beerCans": 3,
+              "liquorShots": 0,
+              "drinksContainingAlcohol": 0,
+              "standardDrinks": 0
+            }
+          },
+          "drugs": {
+            "drugStatus": "Not Currently",
+            "drugTypes": [],
+            "usePerWeek": "",
+            "comments": ""
+          }
+        },
+        "Socioeconomic": {
+          "occupation": "Delivery truck driver",
+          "employer": "Local furniture store",
+          "occupationalHistory": [
+            {
+              "occupation": "Floor manager",
+              "employer": "Printing facility"
+            },
+            {
+              "occupation": "Delivery truck driver",
+              "employer": "Local furniture store"
+            },
+            {
+              "occupation": "Odd jobs worker",
+              "employer": "Local construction and concrete laying companies"
+            }
+          ],
+          "demographics": {
+            "maritalStatus": "Married",
+            "spouseName": "Unknown",
+            "numberOfChildren": 2,
+            "yearsOfEducation": 0,
+            "highestEducationLevel": "Some College",
+            "preferredLanguage": "",
+            "ethnicGroup": "",
+            "race": ""
+          }
+        },
+        "SocialDocumentation": {
+          "textbox":`
         John Hanson was a floor manager at a printing facility in Mattoon, IL, where he
         worked for 22 years before the factory shut down and he lost his job. He currently works as a part-
         time delivery truck driver for a local furniture store. He also works odd jobs at a local construction

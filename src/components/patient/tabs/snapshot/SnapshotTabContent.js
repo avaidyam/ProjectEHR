@@ -1,5 +1,6 @@
 import { Box, Typography, Icon, Grid } from '@mui/material';
 import React, { useContext  } from 'react';
+import groupBy from 'lodash/groupBy';
 
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
@@ -65,6 +66,27 @@ const SnapshotTabContent = ({ children, ...other }) => {
           </div>
         </TitledCard>
       </Grid>
+
+      <Grid item xs={12} md={6}>
+      <TitledCard title="Immunizations" color="#74c9cc">
+        <div>
+          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.immunizations) ? (
+            <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+          ) : (
+            Object.entries(
+              groupBy(ptInfo.encounters?.find(x => x.id === enc)?.immunizations, 'vaccine')
+            ).map(([vaccine, records]) => (
+              <div key={vaccine}>
+                <strong>{vaccine}</strong>{' '}
+                <span style={{ color: '#9F3494' }}>
+                  {records.map(rec => rec.received).join(', ')}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </TitledCard>
+    </Grid>
       <Grid item xs={12} md={6}>
         <TitledCard title="Medical History" color='#9F3494'>
           <div>
