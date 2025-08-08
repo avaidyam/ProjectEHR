@@ -60,7 +60,9 @@
 - **`Practitioner: Object`**: An individual providing care to patients in the facility. 
   - `facility: Facility.id`: 
   - `name: string`: 
+  - `license: string`: The NPI or other license number.
   - `schedules: Schedule[]`: 
+  - `specialty: Department.id`: 
   - `lists: List[]`: 
   - `contact: Contact`:
 
@@ -68,7 +70,8 @@
   - `id: UUID`: Note: this `id` field is the same as one inherited from `Object`, and also serves as the patient's `mrn` (medical records number).
   - `name: string`: 
   - `birthdate: date`: 
-  - `gender: string<male|female|...> | null`: 
+  - `sex: string<male|female|...> | null`: 
+  - `tax_id: string`: The patient's government ID number (i.e. SSN).
   - `language: string`: 
   - `contact: Contact`:
   - `insurance: string`: 
