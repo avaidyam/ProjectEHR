@@ -61,7 +61,7 @@ export const App = () => {
   // Handles department selection and navigates to the schedule page
   const handleLogin = (department) => {
     setIsLoggedIn(true)
-    navigate('/schedule');
+    navigate(0)
   };
 
   return (
