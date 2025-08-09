@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
-import { Box, Tab, Tabs, Divider,  Paper} from '@mui/material'
+import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
+import { Menu } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 
 import { Storyboard } from './Storyboard.js'
@@ -337,7 +340,11 @@ export const PatientHome = ({ ...props }) => {
   const [enc] = useEncounterID();
 
   const drawerWidth = 250
-  const [tab, setTab] = useState(0)
+  const [tab, setTab] = useState("1")
+  const [storyboardOpen, setStoryboardOpen] = useState(true)
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
@@ -380,13 +387,49 @@ export const PatientHome = ({ ...props }) => {
   const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
   return (
     <Box display="flex" direction="row" sx={{ overflowY: 'hidden', ...props.sx }} {...props}>
-      <Paper square elevation={8} sx={{ width: drawerWidth, height: '100vh', overflow: 'auto', flexShrink: 0, flexGrow: 0, backgroundColor: 'primary.main', color: 'primary.contrastText', p: 1 }}>
-          <Storyboard /> 
-      </Paper>
-      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', bgcolor: 'background.paper' }}>
+      <Drawer
+        variant={isMobile ? "temporary" : "persistent"}
+        anchor="left"
+        open={!isMobile || storyboardOpen}
+        onOpen={() => setStoryboardOpen(true)}
+        onClose={() => setStoryboardOpen(false)}
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            marginTop: 6, 
+            boxSizing: 'border-box',
+            overflow: 'auto', 
+            flexShrink: 0, 
+            flexGrow: 0, 
+            backgroundColor: 'primary.main', 
+            color: 'primary.contrastText', 
+            p: 1
+          },
+        }}
+      >
+        <Storyboard /> 
+      </Drawer>
+      <Box sx={{ flexGrow: 1, height: '100vh', overflowY: 'hidden', bgcolor: 'background.paper' }}>
         <TabContext value={tab}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
-            <TabList variant="scrollable" scrollButtons allowScrollButtonsMobile onChange={(event, newValue) => setTab(newValue)}>
+          <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+            <IconButton
+              color="inherit"
+              onClick={() => setStoryboardOpen(!storyboardOpen)}
+              edge="start"
+              sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
+            >
+              <Menu />
+            </IconButton>
+            <TabList 
+              variant="scrollable" 
+              textColor="inherit"
+              scrollButtons 
+              allowScrollButtonsMobile 
+              TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+              onChange={(event, newValue) => setTab(newValue)}
+            >
               <Tab value="1" label="SnapShot" />
               <Tab value="2" label="Chart Review" />
               <Tab value="3" label="Problem List" />
@@ -400,36 +443,38 @@ export const PatientHome = ({ ...props }) => {
               <Tab value="11" label="Immunizations" />
               <Tab value="12" label="Allergies" />
             </TabList>
+          </Stack>
+          <Box sx={{ overflowY: 'auto' }}>
+            <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="8">
+              <NotesTabContent 
+                editorState={editorState}
+                setEditorState={setEditorState}
+                rosState={rosState} 
+                setRosState={setRosState}
+                peState={peState} 
+                setPEState={setPEState}
+                bodySystems={bodySystems}
+                bodySystemsPE={physicalExamBodySystems}
+                // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
+                // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
+              />
+            </TabPanel>
+            <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="12"><Allergies
+                patientData={patientData}
+                setPatientData={setPatientData}
+                encounterId={enc}
+              /></TabPanel>
           </Box>
-          <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="8">
-            <NotesTabContent 
-              editorState={editorState}
-              setEditorState={setEditorState}
-              rosState={rosState} 
-              setRosState={setRosState}
-              peState={peState} 
-              setPEState={setPEState}
-              bodySystems={bodySystems}
-              bodySystemsPE={physicalExamBodySystems}
-              // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
-              // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
-            />
-          </TabPanel>
-          <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="12"><Allergies
-              patientData={patientData}
-              setPatientData={setPatientData}
-              encounterId={enc}
-            /></TabPanel>
         </TabContext>
       </Box>
     </Box>
