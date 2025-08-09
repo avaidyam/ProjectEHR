@@ -11,9 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import {
-  usePatientLists
-} from '../../../routes/app/patients-list';
+import { usePatientLists } from '../../../components/contexts/PatientListContext.jsx';
   
   export const AddToListModal = ({
     open,

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Chip } from '@mui/material';
 
-import NoteWriterHPI from './components/NoteWriterHPI.js';
-import NoteWriterROS from './components/NoteWriterROS.js';
-import NoteWriterPE from './components/NoteWriterPE.js';
+import NoteWriterHPI from './components/NoteWriterHPI.jsx';
+import NoteWriterROS from './components/NoteWriterROS.jsx';
+import NoteWriterPE from './components/NoteWriterPE.jsx';
 
 const tabLabels = [
   "HPI",

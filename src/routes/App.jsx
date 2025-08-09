@@ -4,10 +4,10 @@ import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 
-import Login from './Login/Login.js';
-import { PatientHome } from './Patient/PatientHome.js';
-import { OrderProvider } from '../components/contexts/OrdersContext.js';
-import { Schedule } from './Schedule/Schedule.js';
+import Login from './Login/Login.jsx';
+import { PatientHome } from './Patient/Patient.jsx';
+import { OrderProvider } from '../components/contexts/OrdersContext.jsx';
+import { Schedule } from './Schedule/Schedule.jsx';
 
 export const NavBar = ({ onHandleClickRoute, onLogout }) => {
   return (

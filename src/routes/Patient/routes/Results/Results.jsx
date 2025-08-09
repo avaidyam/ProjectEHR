@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DataSheet from "react-datasheet";
 import "react-datasheet/lib/react-datasheet.css";
-import "./ResultsReview.css";
+import "./components/Results.css";
 
 const ResultsReview = () => {
   const [grid, setGrid] = useState([

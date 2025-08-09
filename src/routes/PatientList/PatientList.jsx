@@ -16,15 +16,9 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
-import { ListFormModal } from './components/ListFormModal';
-import { PatientsTable } from './components/PatientsTable';
-import { ListsSidebar } from './components/ListsSidebar';
-
-// Create a context for patient lists data
-export const PatientListsContext = createContext();
-
-// Custom hook to use the patient lists context
-export const usePatientLists = () => useContext(PatientListsContext);
+import { ListFormModal } from './components/ListFormModal.jsx';
+import { PatientsTable } from './components/PatientsTable.jsx';
+import { ListsSidebar } from './components/ListsSidebar.jsx';
 
 function PatientLists() {
   const [searchParams, setSearchParams] = useSearchParams();

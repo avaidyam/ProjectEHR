@@ -4,8 +4,8 @@ import {
 } from '@mui/material';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import LabReport from './components/LabReportTab.js';
-import ImagingTabContent from './components/ImagingTabContent.js';
+import LabReport from './components/LabReportTab.jsx';
+import ImagingTabContent from './components/ImagingTabContent.jsx';
 
 const tabLabels = [
   "Encounters",

@@ -4,10 +4,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import {
-  usePatientLists
-} from '../PatientList';
-import {_data} from '../../../util/data/PatientSample';
+import { usePatientLists } from '../../../components/contexts/PatientListContext.jsx';
+import {_data} from '../../../util/data/PatientSample.js';
 
 // TODO: Remove this once we have a real list
 const transformPatientData = (patients) => {

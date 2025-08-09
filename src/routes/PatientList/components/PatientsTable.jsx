@@ -14,10 +14,8 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    usePatientLists
-} from '../../../routes/app/patients-list';
-import { AddToListModal } from './AddToListModal';
+import { usePatientLists } from '../../../components/contexts/PatientListContext.jsx';
+import { AddToListModal } from './AddToListModal.jsx';
 
 // Helper function to get status color
 const getStatusColor = (status) => {

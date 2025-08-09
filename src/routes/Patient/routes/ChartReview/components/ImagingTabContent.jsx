@@ -7,7 +7,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useState } from 'react';
 import { usePatientMRN, useEncounterID } from '../../../../../util/urlHelpers.js';
-import DWVViewer from './DWVViewer.js';
+import DWVViewer from './DWVViewer.jsx';
 
 // The following are nice utilities but should be cleaned up eventually.
 

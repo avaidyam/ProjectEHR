@@ -6,7 +6,7 @@ import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
 import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import ProblemListEditor from './components/ProblemListEditor.js';
+import ProblemListEditor from './components/ProblemListEditor.jsx';
 
 function formatSnomedData(data) {
   return data.map((item) => ({
