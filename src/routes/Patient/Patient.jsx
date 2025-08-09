@@ -410,7 +410,7 @@ export const PatientHome = ({ ...props }) => {
       >
         <Storyboard /> 
       </Drawer>
-      <Box sx={{ flexGrow: 1, height: '100vh', overflowY: 'hidden', bgcolor: 'background.paper' }}>
+      <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
         <TabContext value={tab}>
           <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
             <IconButton

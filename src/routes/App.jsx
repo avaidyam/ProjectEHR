@@ -66,7 +66,7 @@ export const App = () => {
 
   return (
     <OrderProvider>
-      <Box sx={{ minHeight: '100vh', overflow: 'none' }}>
+      <Box sx={{ }}>
         {isLoggedIn && (
           <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
         )}
