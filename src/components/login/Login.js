@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { AuthContext } from './AuthContext.js';
+import { AuthContext } from '../contexts/AuthContext.js';
 import ConfigureDialog from './ConfigureDialog.js'; // Import the dialog component
 import Notification from '../../util/Notification.js';
 import PromptDialog from '../../util/PromptDialog.js';

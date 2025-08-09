@@ -7,7 +7,7 @@ import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDou
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import ProblemListEditor from './ProblemListEditor.js';
-import { AuthContext } from '../../../login/AuthContext';
+import { AuthContext } from '../../../contexts/AuthContext.js';
 
 function formatSnomedData(data) {
   return data.map((item) => ({

@@ -1,5 +1,5 @@
 import { PatientLists } from '../routes/app/patients-list.jsx';
-import { AuthContext } from './login/AuthContext';
+import { AuthContext } from './contexts/AuthContext.js';
 import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';

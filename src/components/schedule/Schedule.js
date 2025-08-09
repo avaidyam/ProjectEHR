@@ -1,5 +1,5 @@
 import Notification from '../../util/Notification';
-import { AuthContext } from '../login/AuthContext';
+import { AuthContext } from '../contexts/AuthContext.js';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';

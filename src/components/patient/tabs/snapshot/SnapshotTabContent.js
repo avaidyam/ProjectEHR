@@ -4,7 +4,7 @@ import groupBy from 'lodash/groupBy';
 
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
-import { AuthContext } from '../../../login/AuthContext';
+import { AuthContext } from '../../../contexts/AuthContext.js';
 
 const TitledCard = ({ children, title, color}) => {
   // At some point I will need to use a URLBuilder to link the title to corresponding pages

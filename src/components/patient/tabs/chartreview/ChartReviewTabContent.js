@@ -6,7 +6,7 @@ import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 import LabReport from '../snapshot/LabReportTab.js';
 import ImagingTabContent from './ImagingTabContent.js';
-import { AuthContext } from '../../../login/AuthContext.js';
+import { AuthContext } from '../../../contexts/AuthContext.js';
 
 const tabLabels = [
   "Encounters",
