@@ -351,7 +351,7 @@ export function Schedule() {
                 patient: { mrn: selectedMRN, enc: selectedEnc },
               },
             }) => {
-              if (enabledEncounters[selectedMRN] == null) {
+              if (!!enabledEncounters[selectedMRN] && enabledEncounters[selectedMRN] == null) {
                 showNotification(
                   'You cannot view this chart because no encounter is associated with this MRN.',
                   'warning'

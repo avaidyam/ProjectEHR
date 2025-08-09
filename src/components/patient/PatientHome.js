@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
+import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
 import { Menu } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -411,9 +411,9 @@ export const PatientHome = ({ ...props }) => {
       >
         <Storyboard /> 
       </Drawer>
-      <Box sx={{ flexGrow: 1, height: '100vh', overflow: 'auto', bgcolor: 'background.paper' }}>
+      <Box sx={{ flexGrow: 1, height: '100vh', overflowY: 'hidden', bgcolor: 'background.paper' }}>
         <TabContext value={tab}>
-          <Stack direction="row" sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+          <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
             <IconButton
               color="inherit"
               onClick={() => setStoryboardOpen(!storyboardOpen)}
@@ -444,35 +444,37 @@ export const PatientHome = ({ ...props }) => {
               <Tab value="12" label="Allergies" />
             </TabList>
           </Stack>
-          <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="8">
-            <NotesTabContent 
-              editorState={editorState}
-              setEditorState={setEditorState}
-              rosState={rosState} 
-              setRosState={setRosState}
-              peState={peState} 
-              setPEState={setPEState}
-              bodySystems={bodySystems}
-              bodySystemsPE={physicalExamBodySystems}
-              // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
-              // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
-            />
-          </TabPanel>
-          <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
-          <TabPanel sx={{ p: 0 }} value="12"><Allergies
-              patientData={patientData}
-              setPatientData={setPatientData}
-              encounterId={enc}
-            /></TabPanel>
+          <Box sx={{ overflowY: 'auto' }}>
+            <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="8">
+              <NotesTabContent 
+                editorState={editorState}
+                setEditorState={setEditorState}
+                rosState={rosState} 
+                setRosState={setRosState}
+                peState={peState} 
+                setPEState={setPEState}
+                bodySystems={bodySystems}
+                bodySystemsPE={physicalExamBodySystems}
+                // Want to have ROS & Editor State Here as want it preserved as user is going thru the chart to fill in details (do
+                // not want it to reset each time user switches tabs. This may change down the line, but for now, this is the plan)
+              />
+            </TabPanel>
+            <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="12"><Allergies
+                patientData={patientData}
+                setPatientData={setPatientData}
+                encounterId={enc}
+              /></TabPanel>
+          </Box>
         </TabContext>
       </Box>
     </Box>
