@@ -4,41 +4,11 @@ import { AppBar, Box, Button, Icon, IconButton, Toolbar, Typography } from '@mui
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 
+import { Titlebar } from '../components/ui/Titlebar.jsx';
 import Login from './Login/Login.jsx';
 import { PatientHome } from './Patient/Patient.jsx';
 import { OrderProvider } from '../components/contexts/OrdersContext.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';
-
-export const NavBar = ({ onHandleClickRoute, onLogout }) => {
-  return (
-    <>
-      <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar variant="dense" style={{ width: '100%', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="h6" color="inherit" component="div" style={{ marginRight: '8px' }}>
-              ProjectEHR
-            </Typography>
-            <IconButton color="inherit" onClick={() => onHandleClickRoute('/schedule')}>
-              <Icon>calendar_month</Icon>
-            </IconButton>
-            <IconButton color="inherit" onClick={() => onHandleClickRoute('/patients-list')}>
-              <Icon>people</Icon>
-            </IconButton>
-          </Box>
-          <Box>
-            <Button color="inherit" onClick={onLogout}>
-              Logout
-            </Button>
-            <Button color="inherit" onClick={onLogout} style={{ marginLeft: '10px' }}>
-              Secure
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      <Toolbar variant="dense" />
-    </>
-  );
-};
 
 // Main App Component
 export const App = () => {
@@ -68,7 +38,7 @@ export const App = () => {
     <OrderProvider>
       <Box sx={{ }}>
         {isLoggedIn && (
-          <NavBar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
+          <Titlebar onHandleClickRoute={handleClickRoute} onLogout={handleLogout} />
         )}
         <Routes>
           <Route path="/" element={

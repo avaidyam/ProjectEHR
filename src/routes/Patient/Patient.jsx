@@ -6,7 +6,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 
-import { Storyboard } from './components/Storyboard.js'
+import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
 import ProblemListTabContent from './routes/ProblemList/ProblemList.jsx'
 import SnapshotTabContent from './routes/Snapshot/Snapshot.jsx'
