@@ -9,17 +9,22 @@ export const Titlebar = ({ onLogout }) => {
   const navigate = useNavigate()
   const [open, setOpen] = useState(null)
   
-  const patientMRN = location.pathname.split('/')?.[2] ?? null
-  const activeTab = patientMRN ?? location.pathname // FIXME
-  const mrnToName = (mrn) => {
+  const [tabHistory, setTabHistory] = useState([])
+  useEffect(() => { 
+    if (tabHistory.find(tab => tab === location.pathname) === undefined)
+      setTabHistory((prev) => [...prev, location.pathname])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
+  const removePathnameFromHistory = (pathname) => {
+    setTabHistory((prev) => prev.filter(t => t !== pathname))
+    if (pathname === location.pathname) 
+      navigate('/')
+  }
+  const pathnameToTab = (path) => {
+    const mrn = path.split('/')?.[2] ?? null
     const info = TEST_PATIENT_INFO({ patientMRN: mrn })
     return `${info.firstName} ${info.lastName}`
   }
-
-  // TODO: handle tab back-stack
-  const [tabHistory, setTabHistory] = useState([])
-  useEffect(() => { 
-  }, [location.pathname])
 
   return (
     <>
@@ -33,18 +38,20 @@ export const Titlebar = ({ onLogout }) => {
             textColor="inherit"
             scrollButtons={false} 
             TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-            value={activeTab}
+            value={location.pathname}
             onChange={(event, newValue) => {}}
             sx={{ flexGrow: 1, justifyContent: 'center' }}
           >
             <Tab value="/schedule" label={<Icon>calendar_month</Icon>} onClick={() => navigate('/schedule')} sx={{ minWidth: 45 }} />
             <Tab value="/list" label={<Icon>people</Icon>} onClick={() => navigate('/list')} sx={{ minWidth: 45 }} />
-            {patientMRN && <Tab value={patientMRN} label={
-              <span>
-                {mrnToName(patientMRN)}
-                <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={() => navigate('/')}>close</IconButton>
-              </span>
-            } />}
+            {tabHistory.filter(x => x.startsWith('/patient')).map((pathname, index) => (
+              <Tab onClick={() => navigate(pathname)} value={pathname} label={
+                <span>
+                  {pathnameToTab(pathname)}
+                  <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={() => removePathnameFromHistory(pathname)}>close</IconButton>
+                </span>
+              } />
+            ))}
           </Tabs>
           <HStack>
             <Tooltip title="Account settings">
