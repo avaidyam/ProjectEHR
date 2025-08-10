@@ -7,6 +7,7 @@ import {
   Button as MUIButton, 
   IconButton as MUIIconButton,
   Icon as MUIIcon,
+  Avatar as MUIAvatar,
   Divider as MUIDivider,
   Table as MUITable,
   TableHead as MUITableHead,
@@ -65,7 +66,11 @@ export const IconButton = ({ size = "medium", color = "inherit", children, iconP
   </MUIIconButton>
 )
 
-export const Icon = ({ children, ...props }) => (
+export const Icon = ({ avatar = false, size = undefined, children, avatarProps, ...props }) => avatar ? (
+  <MUIAvatar sx={{ width: size, height: size, ...avatarProps?.sx}} {...avatarProps}>
+    <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>
+  </MUIAvatar>
+) : (
   <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>
 )
 
