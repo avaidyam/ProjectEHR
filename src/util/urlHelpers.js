@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams, generatePath, useParams } from 'react-rou
  *
  * usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
  *
- * *must* be used from within a functional component
+ * *must* be used from within a functional component INSIDE a <Route>! (i.e. This will NOT work from Titlebar if it is not rendered within a route.)
  */
 export const usePatientMRN = () => {
   const { mrn } = useParams()

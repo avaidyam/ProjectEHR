@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
-import { Menu } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
+import { Icon } from '../../components/ui/Core.jsx';
 
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
@@ -419,7 +419,7 @@ export const PatientHome = ({ ...props }) => {
               edge="start"
               sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
             >
-              <Menu />
+              <Icon>menu</Icon>
             </IconButton>
             <TabList 
               variant="scrollable" 

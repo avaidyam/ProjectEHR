@@ -23,19 +23,19 @@ export const Box = ({ children, ...props }) => (
     </MUIBox>
 )
 
-export const VStack = ({ children, spacing = 2, ...props }) => (
+export const VStack = ({ spacing = 2, children, ...props }) => (
   <MUIStack direction="column" spacing={spacing} {...props}>
     {children}
   </MUIStack>
 )
 
-export const HStack = ({ children, spacing = 2, ...props }) => (
+export const HStack = ({ spacing = 2, children, ...props }) => (
   <MUIStack direction="row" spacing={spacing} {...props}>
     {children}
   </MUIStack>
 )
 
-export const Label = ({ children, variant = 'body1', bold = false, italic = false, ...props }) => (
+export const Label = ({ variant = 'body1', bold = false, italic = false, children, ...props }) => (
     <MUITypography color="inherit" variant={variant} sx={{ fontWeight: bold ? 900 : undefined, fontStyle: italic ? "italic" : undefined, ...props.sx }} {...props}>
         {children}
     </MUITypography>
@@ -52,20 +52,24 @@ export const TextField = ({ label, value, onChange, ...props }) => (
     />
 )
 
-export const Button = ({ children, contained = false, outlined = false, color = 'inherit', ...props }) => (
+export const Button = ({ contained = false, outlined = false, color = 'inherit', children, ...props }) => (
     // eslint-disable-next-line no-nested-ternary
     <MUIButton variant={contained ? "contained" : outlined ? "outlined" : "text"} color={color} {...props}>
         {children}
     </MUIButton>
 )
 
-export const IconButton = ({ children, ...props }) => (
-  <MUIIconButton color="inherit" { ...props }>
-    <MUIIcon>{children}</MUIIcon>
+export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
+  <MUIIconButton size={size} color={color} { ...props }>
+    <MUIIcon fontSize={size} {...iconProps}>{children}</MUIIcon>
   </MUIIconButton>
 )
 
-export const Divider = (props) => (
+export const Icon = ({ children, ...props }) => (
+  <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>
+)
+
+export const Divider = ({ children, ...props }) => (
   <MUIDivider {...props} />
 )
 
