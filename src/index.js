@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { App } from './components/App.js'; 
-import { AuthProvider } from './components/login/AuthContext.js';
+import { App } from './routes/App.jsx'; 
+import { AuthProvider } from './components/contexts/AuthContext.jsx';
 
 const theme = createTheme({
   palette: {
