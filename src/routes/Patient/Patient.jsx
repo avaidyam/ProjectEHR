@@ -6,6 +6,9 @@ import { useTheme } from '@mui/material/styles';
 import {EditorState} from 'draft-js'; // Modifier, ContentState (Maybe)
 import { Icon } from '../../components/ui/Core.jsx';
 
+import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
 import ProblemListTabContent from './routes/ProblemList/ProblemList.jsx'
@@ -19,8 +22,7 @@ import ResultsReview from "./routes/Results/Results.jsx";
 import Pdmp from './routes/PDMP/PDMP.jsx';
 import Immunizations from './routes/Immunizations/Immunizations.jsx';
 import Allergies from './routes/Allergies/Allergies.jsx';
-import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import Chat from "./routes/Chat/Chat.jsx";
 
 const bodySystems = [
   {
@@ -441,6 +443,7 @@ export const PatientHome = ({ ...props }) => {
               <Tab value="10" label="PDMP" />
               <Tab value="11" label="Immunizations" />
               <Tab value="12" label="Allergies" />
+              <Tab value="13" label="Chat" />
             </TabList>
           </Stack>
           <Box sx={{ overflowY: 'auto' }}>
@@ -473,6 +476,7 @@ export const PatientHome = ({ ...props }) => {
                 setPatientData={setPatientData}
                 encounterId={enc}
               /></TabPanel>
+            <TabPanel sx={{ p: 0 }} value="13"><Chat /></TabPanel>
           </Box>
         </TabContext>
       </Box>
