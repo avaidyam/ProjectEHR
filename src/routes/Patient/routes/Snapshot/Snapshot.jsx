@@ -1,35 +1,14 @@
-import { Box, Typography, Icon, Grid } from '@mui/material';
-import React, { useContext  } from 'react';
+import React from 'react';
+import { Grid } from '@mui/material';
 import groupBy from 'lodash/groupBy';
-
+import { TitledCard } from '../../../../components/ui/Core.jsx';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
-//import { AuthContext } from '../../../contexts/AuthContext.js';
 
-const TitledCard = ({ children, title, color}) => {
-  // At some point I will need to use a URLBuilder to link the title to corresponding pages
-  // Leaving it for now because I don't know if that's within scope
-  return(
-    <div style={{ 
-      borderLeftWidth: 15,
-      borderLeftColor: color,
-      borderLeftStyle: 'solid',  // Define the left border style
-      borderTop: '1px solid #ccc',  // Other borders individually defined
-      borderRight: '1px solid #ccc',
-      borderBottom: '1px solid #ccc', 
-      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', 
-      marginBottom: '8px',
-      padding: '16px',
-      borderRadius: '8px',
-      overflow: 'hidden',
-      position: 'relative'
-    }}>
-      <h3 style={{ fontSize: "1.2em", marginTop: 0, color: color}}>{title}</h3>
-      <div style={{ margin: 0 }}>{children}</div>
-    </div>
-  )
-}
-  
+// FIXME: TitledCard
+// At some point I will need to use a URLBuilder to link the title to corresponding pages
+// Leaving it for now because I don't know if that's within scope
+
 const SnapshotTabContent = ({ children, ...other }) => {
   const [patientMRN, setPatientMRN] = usePatientMRN();
   const [enc, setEnc] = useEncounterID()

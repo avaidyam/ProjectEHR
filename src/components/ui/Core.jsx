@@ -9,6 +9,7 @@ import {
   Icon as MUIIcon,
   Avatar as MUIAvatar,
   Divider as MUIDivider,
+  Paper as MUIPaper,
   Table as MUITable,
   TableHead as MUITableHead,
   TableBody as MUITableBody,
@@ -107,3 +108,25 @@ export const TableCell = ({ children, ...props }) => (
     {children}
   </MUITableCell>
 )
+
+export const TitledCard = ({ title, color, children, ...props }) => {
+  return(
+    <MUIPaper sx={{ 
+      borderLeftWidth: 15,
+      borderLeftColor: color,
+      borderLeftStyle: 'solid',  // Define the left border style
+      borderTop: '1px solid #ccc',  // Other borders individually defined
+      borderRight: '1px solid #ccc',
+      borderBottom: '1px solid #ccc', 
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+      marginBottom: '8px',
+      padding: '16px',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      position: 'relative'
+    }} {...props}>
+      <Label bold variant="h3" style={{ fontSize: "1.2em", marginTop: 0, color}}>{title}</Label>
+      <Box style={{ margin: 0 }}>{children}</Box>
+    </MUIPaper>
+  )
+}
