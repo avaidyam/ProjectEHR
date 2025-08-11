@@ -29,14 +29,15 @@ export const Titlebar = ({ onLogout }) => {
   return (
     <>
       <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
+        <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
           <HStack alignItems="center">
             <Button text sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
           </HStack>
           <Tabs 
             variant="scrollable" 
             textColor="inherit"
-            scrollButtons={false} 
+            scrollButtons="auto"
+            allowScrollButtonsMobile
             TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
             value={location.pathname}
             onChange={(event, newValue) => {}}

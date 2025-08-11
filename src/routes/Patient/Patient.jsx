@@ -424,7 +424,7 @@ export const PatientHome = ({ ...props }) => {
             <TabList 
               variant="scrollable" 
               textColor="inherit"
-              scrollButtons 
+              scrollButtons="auto"
               allowScrollButtonsMobile 
               TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
               onChange={(event, newValue) => setTab(newValue)}

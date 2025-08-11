@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import {
-  Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
+  Tabs, Tab, Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
@@ -106,10 +106,9 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 };
 
 export const ChartReview = ({ ...props }) => {
-  const [subValue, setValue] = useState(0);
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc, setEnc] = useEncounterID()
+  const [enc] = useEncounterID()
   const { encounters } = TEST_PATIENT_INFO({ patientMRN });
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
@@ -117,7 +116,7 @@ export const ChartReview = ({ ...props }) => {
   // or logic to advance from one encounter to the next
   const currentEncDate = encounters?.find(x => x.id === enc).startDate
   const documents = encounters?.filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
-  const encounters_data = encounters.map(x => ({
+  const encountersData = encounters.map(x => ({
     kind: 'Encounters',
     data: {
       date: x.startDate,
@@ -131,21 +130,23 @@ export const ChartReview = ({ ...props }) => {
   return (
     <div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        {tabLabels.map((label, idx) => (
-          <Chip
-            key={idx}
-            label={label}
-            onClick={() => {
-              setValue(idx);
-              setSelectedTabLabel(label);
-            }}
-            variant={subValue === idx ? "filled" : "outlined"}
-            color={subValue === idx ? "primary" : "default"}
-            style={{ margin: 5 }}
-          />
-        ))}
+        <Tabs 
+          variant="scrollable" 
+          textColor="inherit"
+          scrollButtons="auto"
+          allowScrollButtonsMobile 
+          value={selectedTabLabel}
+          onChange={(event, newValue) => setSelectedTabLabel(newValue)}>
+          {tabLabels.map((label) => (
+            <Tab
+              key={label}
+              value={label}
+              label={label}
+            />
+          ))}
+        </Tabs>
       </Box>
-      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encounters_data, ...documents]} />
+      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
     </div>
   );
 };

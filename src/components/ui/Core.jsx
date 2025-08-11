@@ -36,8 +36,8 @@ export const HStack = ({ spacing = 2, children, ...props }) => (
   </MUIStack>
 )
 
-export const Label = ({ variant = 'body1', bold = false, italic = false, children, ...props }) => (
-    <MUITypography color="inherit" variant={variant} sx={{ fontWeight: bold ? 900 : undefined, fontStyle: italic ? "italic" : undefined, ...props.sx }} {...props}>
+export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
+    <MUITypography component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold ? 900 : undefined, fontStyle: italic ? "italic" : undefined, ...props.sx }} {...props}>
         {children}
     </MUITypography>
 )
