@@ -1,7 +1,7 @@
 import React from 'react';
-import { Grid } from '@mui/material';
+import { Masonry } from '@mui/lab';
 import groupBy from 'lodash/groupBy';
-import { TitledCard } from '../../../../components/ui/Core.jsx';
+import { Box, TitledCard } from '../../../../components/ui/Core.jsx';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
 
@@ -21,16 +21,14 @@ const SnapshotTabContent = ({ children, ...other }) => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ p: 2 }}>
-      <Grid item xs={12} md={6}>
+    <Box sx={{ p: 2 }}>
+      <Masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard title="Patient" color='#5EA1F8'>
           <b>Name:</b> {ptInfo.firstName + ' ' + ptInfo.lastName}<br/>
           <b>Age:</b> {ptInfo.age}<br/>
           <b>Date of Birth:</b> {ptInfo.dateOfBirth}<br/>
           <b>Address:</b> {ptInfo.address}<br/>
         </TitledCard>
-      </Grid>
-      <Grid item xs={12} md={6}>
         <TitledCard title="Allergies" color='#9F3494'>
           <div>
             {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.allergies ) ? (
@@ -44,29 +42,24 @@ const SnapshotTabContent = ({ children, ...other }) => {
             )}
           </div>
         </TitledCard>
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-      <TitledCard title="Immunizations" color="#74c9cc">
-        <div>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.immunizations) ? (
-            <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
-          ) : (
-            Object.entries(
-              groupBy(ptInfo.encounters?.find(x => x.id === enc)?.immunizations, 'vaccine')
-            ).map(([vaccine, records]) => (
-              <div key={vaccine}>
-                <strong>{vaccine}</strong>{' '}
-                <span style={{ color: '#9F3494' }}>
-                  {records.map(rec => rec.received).join(', ')}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </TitledCard>
-    </Grid>
-      <Grid item xs={12} md={6}>
+        <TitledCard title="Immunizations" color="#74c9cc">
+          <div>
+            {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.immunizations) ? (
+              <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
+            ) : (
+              Object.entries(
+                groupBy(ptInfo.encounters?.find(x => x.id === enc)?.immunizations, 'vaccine')
+              ).map(([vaccine, records]) => (
+                <div key={vaccine}>
+                  <strong>{vaccine}</strong>{' '}
+                  <span style={{ color: '#9F3494' }}>
+                    {records.map(rec => rec.received).join(', ')}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </TitledCard>
         <TitledCard title="Medical History" color='#9F3494'>
           <div>
             {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.medical) ? (
@@ -83,8 +76,6 @@ const SnapshotTabContent = ({ children, ...other }) => {
             )}
           </div>
         </TitledCard>
-      </Grid>
-      <Grid item xs={12} md={6}>
         <TitledCard title="Medications" color='#9E49E2'>
           <div>
             {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.medications) ? (
@@ -98,8 +89,6 @@ const SnapshotTabContent = ({ children, ...other }) => {
             )}
           </div>
         </TitledCard>
-      </Grid>
-      <Grid item xs={12} md={6}>
         <TitledCard title="Surgical History" color='#9F3494'>
           <div>
             {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.surgical) ? (
@@ -116,8 +105,6 @@ const SnapshotTabContent = ({ children, ...other }) => {
             )}
           </div>
         </TitledCard>
-      </Grid>
-      <Grid item xs={12} md={6}>
         <TitledCard title="Family History" color='#9F3494'>
           <div>
             {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.family) ? (
@@ -132,8 +119,8 @@ const SnapshotTabContent = ({ children, ...other }) => {
             )}
           </div>
         </TitledCard>
-      </Grid>
-    </Grid>
+      </Masonry>
+    </Box>
   );
 };
 
