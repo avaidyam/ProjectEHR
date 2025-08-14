@@ -86,6 +86,27 @@ export const Divider = ({ children, ...props }) => (
   <MUIDivider {...props} />
 )
 
+// FIXME: Pass props for TableHead, TableBody, TableRow, and TableCell.
+// Usage: <KeyValueTable>{myCoolObject}</KeyValueTable>
+export const KeyValueTable = ({ children, ...props }) => (
+  <MUITable {...props}>
+    <MUITableHead>
+      <MUITableRow>
+        <MUITableCell>Key</MUITableCell>
+        <MUITableCell>Value</MUITableCell>
+      </MUITableRow>
+    </MUITableHead>
+    <MUITableBody>
+      {Object.entries(children).map(([tag, value]) => (
+        <MUITableRow key={tag}>
+          <MUITableCell>{tag}</MUITableCell>
+          <MUITableCell>{value.toString()}</MUITableCell>
+        </MUITableRow>
+      ))}
+    </MUITableBody>
+  </MUITable>
+)
+
 export const Table = ({ children, ...props }) => (
   <MUITable {...props}>
     {children}

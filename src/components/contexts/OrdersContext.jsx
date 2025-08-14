@@ -1,23 +1,18 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 
-
-// Create a Context 
 const OrderContext = createContext();
-
-class Drug {
-    constructor(type, name, dose, freq, route, refill, startDate) {
-      this.type = type;
-      this.name = name;
-      this.dose = dose;
-      this.freq = freq;
-      this.route = route;
-      this.refill = refill;
-      this.startDate = startDate;
-    }
+export class Drug {
+  constructor(type, name, dose, freq, route, refill, startDate) {
+    this.type = type;
+    this.name = name;
+    this.dose = dose;
+    this.freq = freq;
+    this.route = route;
+    this.refill = refill;
+    this.startDate = startDate;
   }
+}
 
-
-// Context Provider overarching Orders and OrdersMgmt
 export const OrderProvider = ({ children }) => {
   const [tempMed, setTempMed] = useState(null);
   const [openSearchList, setOpenSearchList] = useState(false);
@@ -89,7 +84,6 @@ export const OrderProvider = ({ children }) => {
   );
 };
 
-// Custom hook for using the Order context
 export const useOrder = () => {
   const context = useContext(OrderContext);
   if (!context) {
@@ -97,5 +91,3 @@ export const useOrder = () => {
   }
   return context;
 };
-
-export {Drug};

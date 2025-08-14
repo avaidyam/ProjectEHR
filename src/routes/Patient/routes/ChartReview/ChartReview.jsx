@@ -2,10 +2,11 @@ import React, { useState, useContext } from 'react';
 import {
   Tabs, Tab, Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
+import { useSplitView } from '../../../../components/contexts/SplitViewContext.jsx';
 import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
 import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import LabReport from './components/LabReportTab.jsx';
-import ImagingTabContent from './components/ImagingTabContent.jsx';
+import LabReport from '../LabReport/LabReport.jsx';
+import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 
 const tabLabels = [
   "Encounters",
@@ -24,6 +25,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
+  const [customTabs, setCustomTabs] = useSplitView()
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
@@ -34,9 +36,17 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   );
 
   const handleRowClick = (row) => {
-    setSelectedRow(row);
-    setIsWindowOpen(true);
-    setTableWidth('50%');
+    //setSelectedRow(row);
+    //setIsWindowOpen(true);
+    //setTableWidth('50%');
+
+    // Open new tabs in the main view
+    if (selectedTabLabel === 'Lab')
+      setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+    if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test')
+      setCustomTabs(prev => [...prev, {"Imaging Viewer": { selectedRow: row }}])
+    if (selectedTabLabel === 'Note')
+      setCustomTabs(prev => [...prev, {"Note": { selectedRow: row }}])
   };
 
   const handleCloseWindow = () => {

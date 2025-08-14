@@ -19,6 +19,8 @@
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@jsonforms/material-renderers": "^3.6.0",
+    "@jsonforms/react": "^3.6.0",
     "@humeai/voice-react": "^0.2.2",
     "@mui/icons-material": "^6.4.6",
     "@mui/lab": "^6.0.1-beta.36",
