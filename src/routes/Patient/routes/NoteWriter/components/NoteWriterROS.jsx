@@ -193,6 +193,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
 const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bodySystems }) => {
 
   
+  console.dir({ rosState });
   useEffect(() => {
     const newEditorState = replaceROSText(editorState, rosState);
     
