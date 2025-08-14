@@ -16,6 +16,7 @@ import {
   TableRow as MUITableRow,
   TableCell as MUITableCell
 } from '@mui/material'
+import { EditorReadOnly } from './Editor.jsx'
 
 // TODO: Create a tooltip wrapped version of each of these.
 
@@ -43,6 +44,11 @@ export const Label = ({ variant = 'body1', inline = false, bold = false, italic 
     </MUITypography>
 )
 
+// Render HTML rich text content in a read-only view.
+export const RichText = ({ children, ...props }) => (
+    <EditorReadOnly value={children} {...props} />
+)
+
 export const TextField = ({ label, value, onChange, ...props }) => (
     <MUITextField
         label={label}
@@ -67,6 +73,7 @@ export const IconButton = ({ size = "medium", color = "inherit", children, iconP
   </MUIIconButton>
 )
 
+// To see a complete list of icons, visit: https://fonts.google.com/icons
 export const Icon = ({ avatar = false, size = undefined, children, avatarProps, ...props }) => avatar ? (
   <MUIAvatar sx={{ width: size, height: size, ...avatarProps?.sx}} {...avatarProps}>
     <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>

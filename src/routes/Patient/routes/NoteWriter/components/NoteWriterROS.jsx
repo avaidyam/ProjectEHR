@@ -4,12 +4,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { FormControlLabel, Checkbox, Box, Typography, IconButton, Grid } from '@mui/material';
-import { EditorState, Modifier, SelectionState } from 'draft-js';
 
 import DescriptionIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import CustomNoteModal from './CustomNoteModal'; // Import the custom note modal component
+import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
 
 
 const replaceROSText = (editorState, rosState) => {
@@ -88,7 +87,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
   };
 
   const handleCustomNote = () => {
-    const existingNote = systemState.custom || '';
+    const existingNote = systemState?.custom || '';
     setCurrentCustomNote(existingNote); // Set the current note
     setIsModalOpen(true); // Open the modal
   };
@@ -101,7 +100,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
     setIsModalOpen(false); // Close the modal
   };
 
-  const allNegative = Object.values(systemState).every((state) => state === false);
+  const allNegative = Object.values(systemState ?? {}).every((state) => state === false);
 
   const handleSymptomClick = (symptomName, newState) => {
     updateSystemState({
@@ -116,7 +115,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
         <Grid item>
           <IconButton onClick={handleCustomNote}>
             <DescriptionIcon
-              sx={{ color: systemState.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
+              sx={{ color: systemState?.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
             />
           </IconButton>
         </Grid>
@@ -192,8 +191,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
 
 const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bodySystems }) => {
 
-  
-  console.dir({ rosState });
+  /*
   useEffect(() => {
     const newEditorState = replaceROSText(editorState, rosState);
     
@@ -202,6 +200,7 @@ const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bod
       setEditorState(newEditorState);
     }
   }, [rosState, setEditorState]); // Remove `editorState` from the dependency array
+  */
 
   return (
     <Box sx={{ padding: 2 }}>
