@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-const LabReport = ({ labReport }) => {
+const LabReport = ({ labReport, ...props }) => {
   const { data, labResults, collected, resulted, resultingAgency, labReportComment } = labReport;
 
   // Extract the test name
@@ -155,6 +155,13 @@ const LabReport = ({ labReport }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {Object.keys(labReport.data).map((key, index) => (
+        (key !== 'content' && key !== 'image') && (
+          <Box key={index}>
+            <strong>{key}:</strong> {labReport.data[key]}
+          </Box>
+        )
+      ))}
     </div>
   );
 };
