@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton} from '@mui/material'
+import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
+import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton, Chip } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -23,13 +24,31 @@ import Immunizations from './routes/Immunizations/Immunizations.jsx';
 import { Allergies } from './routes/Allergies/Allergies.jsx';
 import Chat from "./routes/Chat/Chat.jsx";
 
-export const PatientHome = ({ ...props }) => {
+const ALL_TABS = {
+  "SnapShot": () => <SnapshotTabContent />,
+  "Chart Review": () => <ChartReview />,
+  "Problem List": () => <ProblemListTabContent />,
+  "History": () => <HistoryTabContent />,
+  "Medications": () => <Medications />,
+  "Orders": () => <Orders />,
+  "Orders Mgmt": () => <OrdersMgmt />,
+  "NoteWriter": () => <NotesTabContent />,
+  "Results Review": () => <ResultsReview />,
+  "PDMP": () => <Pdmp />,
+  "Immunizations": () => <Immunizations />,
+  "Allergies": () => <Allergies />,
+  "Chat": () => <Chat />
+}
+
+export const Patient = ({ ...props }) => {
   const [enc] = useEncounterID();
   const [patientMRN] = usePatientMRN();
   const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
 
   const drawerWidth = 250
-  const [tab, setTab] = useState("1")
+  const [sideTabs, setSideTabs] = useState(["Orders", "PDMP", "Chat"])
+  const [mainTab, setMainTab] = useState("SnapShot")
+  const [sideTab, setSideTab] = useState("Orders")
   const [storyboardOpen, setStoryboardOpen] = useState(true)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
@@ -60,55 +79,69 @@ export const PatientHome = ({ ...props }) => {
         <Storyboard /> 
       </Drawer>
       <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
-        <TabContext value={tab}>
-          <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-            <IconButton
-              color="inherit"
-              onClick={() => setStoryboardOpen(!storyboardOpen)}
-              edge="start"
-              sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
-            >
-              <Icon>menu</Icon>
-            </IconButton>
-            <TabList 
-              variant="scrollable" 
-              textColor="inherit"
-              scrollButtons="auto"
-              allowScrollButtonsMobile 
-              TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-              onChange={(event, newValue) => setTab(newValue)}
-            >
-              <Tab value="1" label="SnapShot" />
-              <Tab value="2" label="Chart Review" />
-              <Tab value="3" label="Problem List" />
-              <Tab value="4" label="History" />
-              <Tab value="5" label="Medications" />
-              <Tab value="6" label="Orders" />
-              <Tab value="7" label="Orders Mgmt" />
-              <Tab value="8" label="NoteWriter" />
-              <Tab value="9" label="Results Review" />
-              <Tab value="10" label="PDMP" />
-              <Tab value="11" label="Immunizations" />
-              <Tab value="12" label="Allergies" />
-              <Tab value="13" label="Chat" />
-            </TabList>
-          </Stack>
-          <Box sx={{ overflowY: 'auto' }}>
-            <TabPanel sx={{ p: 0 }} value="1"><SnapshotTabContent /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="2"><ChartReview /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="3"><ProblemListTabContent /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="4"><HistoryTabContent /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="5"><Medications /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="6"><Orders /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="7"><OrdersMgmt/></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="8"><NotesTabContent /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="9"><ResultsReview/></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="10"><Pdmp/></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="11"><Immunizations/></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="12"><Allergies /></TabPanel>
-            <TabPanel sx={{ p: 0 }} value="13"><Chat /></TabPanel>
-          </Box>
-        </TabContext>
+        <PanelGroup direction="horizontal">
+          <Panel defaultSize={50} minSize={35}>
+            <TabContext value={mainTab}>
+              <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                <IconButton
+                  color="inherit"
+                  onClick={() => setStoryboardOpen(!storyboardOpen)}
+                  edge="start"
+                  sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
+                >
+                  <Icon>menu</Icon>
+                </IconButton>
+                <TabList 
+                  variant="scrollable" 
+                  textColor="inherit"
+                  scrollButtons="auto"
+                  allowScrollButtonsMobile 
+                  TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+                  onChange={(event, newValue) => setMainTab(newValue)}
+                >
+                  {Object.keys(ALL_TABS).filter(x => isMobile || !sideTabs.includes(x)).map((tab, index) => (
+                    <Tab key={tab} value={tab} label={tab} />
+                  ))}
+                </TabList>
+              </Stack>
+              <Box sx={{ overflowY: 'auto', height: "100%" }}>
+                {Object.keys(ALL_TABS).map((tab, index) => (
+                  <TabPanel sx={{ p: 0 }} key={tab} value={tab}>{ALL_TABS[tab]()}</TabPanel>
+                ))}
+              </Box>
+            </TabContext>
+          </Panel>
+          {(!isMobile && sideTabs.length > 0) && 
+            <PanelResizeHandle>
+              <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
+            </PanelResizeHandle>
+          }
+          {(!isMobile && sideTabs.length > 0) &&
+            <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
+              <TabContext value={sideTab}>
+                <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                  <TabList 
+                    variant="scrollable" 
+                    textColor="inherit"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile 
+                    TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+                    onChange={(event, newValue) => setSideTab(newValue)}
+                  >
+                    {Object.keys(ALL_TABS).filter(x => sideTabs.includes(x)).map((tab, index) => (
+                      <Tab key={tab} value={tab} label={tab} />
+                    ))}
+                  </TabList>
+                </Stack>
+                <Box sx={{ overflowY: 'auto', height: "100%" }}>
+                  {Object.keys(ALL_TABS).map((tab, index) => (
+                    <TabPanel sx={{ p: 0 }} key={tab} value={tab}>{ALL_TABS[tab]()}</TabPanel>
+                  ))}
+                </Box>
+              </TabContext>
+            </Panel>
+          }
+        </PanelGroup>
       </Box>
     </Box>
   )

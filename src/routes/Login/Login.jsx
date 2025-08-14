@@ -17,7 +17,7 @@ const departments = [
   // Add more rows as needed...
 ];
 
-const Login = ({ setIsLoggedIn }) => {
+export const Login = ({ setIsLoggedIn }) => {
   const [displayDepts, setDisplayDepts] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -251,5 +251,3 @@ const Login = ({ setIsLoggedIn }) => {
     </Box>
   );
 };
-
-export default Login;

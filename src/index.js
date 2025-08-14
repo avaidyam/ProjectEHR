@@ -7,14 +7,15 @@ import { App } from './routes/App.jsx';
 import { AuthProvider } from './components/contexts/AuthContext.jsx';
 
 const theme = createTheme({
-  palette: {
-    //mode: 'dark',
+  colorSchemes: {
+    light: true,
+    dark: true,
   },
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} defaultMode="system">
       <CssBaseline />
       <HashRouter>
       <AuthProvider>

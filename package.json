@@ -45,6 +45,7 @@
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "1.15.0",
     "react-jsonschema-form": "^1.8.1",
+    "react-resizable-panels": "^3.0.4",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {
