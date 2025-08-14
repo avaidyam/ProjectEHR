@@ -26,7 +26,7 @@ const dummyMedicalHistory = [
   { id: 3, diagnosis: 'PVD (peripheral vascular disease) (CMS-HCC) [I73.9]', date: '03/20/2022', age: '67 years old', comment: 'stents in both legs', src: 'From', problemList: true },
 ];
 
-export default function MedicalHistory() {
+export const MedicalHistory = () => {
   const [history, setHistory] = useState(dummyMedicalHistory);
   const [editingId, setEditingId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
