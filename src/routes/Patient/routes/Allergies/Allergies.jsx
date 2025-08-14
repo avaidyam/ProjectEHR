@@ -1,12 +1,13 @@
 // export default Allergies;
 import React, { useState } from 'react';
 import { Box, Button, Typography, Icon } from '@mui/material';
+import { blue, deepOrange,grey } from '@mui/material/colors';
 import dayjs from 'dayjs';
 import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
-import { blue, deepOrange,grey } from '@mui/material/colors';
-
+import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
 
 const initialAllergies = [
   {
@@ -31,7 +32,11 @@ const initialAllergies = [
   },
 ];
 
-const Allergies = () => {
+export const Allergies = () => {
+  const [patientMRN] = usePatientMRN();
+  const [encounterId] = useEncounterID();
+  const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
+
   const [allergies, setAllergies] = useState(initialAllergies);
   const [editingAllergy, setEditingAllergy] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
@@ -179,5 +184,3 @@ const Allergies = () => {
     </Box>
   );
 };
-
-export default Allergies;

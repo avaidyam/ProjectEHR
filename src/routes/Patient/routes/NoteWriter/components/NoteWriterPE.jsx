@@ -4,8 +4,7 @@ import { Box, Grid, Typography, IconButton, Checkbox } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { EditorState, Modifier, SelectionState } from 'draft-js';
-import CustomNoteModal from './CustomNoteModal'; // Import the custom note modal component
+import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
 
 
 // Function to replace Physical Exam text in the editor based on peState
@@ -276,6 +275,8 @@ const PhysicalExamBodySystemComponent = ({ title, subsections = [], peState, upd
 
 
 const NoteWriterPE = ({ editorState, setEditorState, peState, setPEState, bodySystemsPE }) => {
+
+  /*
   useEffect(() => {
     const newEditorState = replacePEText(editorState, peState);
 
@@ -284,6 +285,7 @@ const NoteWriterPE = ({ editorState, setEditorState, peState, setPEState, bodySy
       setEditorState(newEditorState);
     }
   }, [peState, setEditorState]);
+  */
 
   return (
     <Box sx={{ padding: 2 }}>
