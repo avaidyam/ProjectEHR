@@ -127,7 +127,7 @@ export const Storyboard = ({ ...props }) => {
     encounters,
     insurance,
   } = TEST_PATIENT_INFO({ patientMRN });
-  console.dir(enc, encounters?.find(x => x.id === enc))
+
   // Extract the first encounter
   const {
     problems,

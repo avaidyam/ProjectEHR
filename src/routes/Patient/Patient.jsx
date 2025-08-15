@@ -4,6 +4,7 @@ import { AppBar, Box, Tab, Tabs, Divider, Drawer, Stack, IconButton, Chip, Menu,
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea/dnd";
 import { Icon } from '../../components/ui/Core.jsx';
 import { SplitViewContext, SplitViewProvider, useSplitView } from '../../components/contexts/SplitViewContext.jsx';
 
@@ -41,13 +42,32 @@ const ALL_TABS = {
   "PDMP": (props) => <Pdmp {...props} />,
   "Immunizations": (props) => <Immunizations {...props} />,
   "Allergies": (props) => <Allergies {...props} />,
-  "Chat": (props) => <Chat {...props} />
-}
-
-const CUSTOM_TABS = {
+  "Chat": (props) => <Chat {...props} />,
   "Lab Report": (props) => <LabReport {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
+}
+
+const DraggableTab = ({ index, child, ...props }) => {
+  return (
+    <Draggable
+      draggableId={`${index}`}
+      index={index}
+      disableInteractiveElementBlocking
+    >
+      {(draggableProvided) => (
+        <div
+          ref={draggableProvided.innerRef}
+          {...draggableProvided.draggableProps}
+        >
+          {React.cloneElement(child, {
+            ...props,
+            ...draggableProvided.dragHandleProps
+          })}
+        </div>
+      )}
+    </Draggable>
+  );
 }
 
 const TabWithMenu = ({ onMove, onClose, ...props }) => {
@@ -78,12 +98,13 @@ export const Patient = ({ ...props }) => {
   const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
 
   const drawerWidth = 250
-  const [customTabs, setCustomTabs] = useState([])
-  const [sideTabs, setSideTabs] = useState(["Orders", "PDMP", "Chat"])
-  const [mainTab, setMainTab] = useState("SnapShot")
-  const [sideTab, setSideTab] = useState("Orders")
   const [storyboardOpen, setStoryboardOpen] = useState(true)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
+
+  const [mainTabs, setMainTabs] = useState([{"SnapShot": {}}, {"Chart Review": {}}, {"Problem List": {}}, {"History": {}}, {"Medications": {}}, {"Orders Mgmt": {}}, {"NoteWriter": {}}, {"Results Review": {}}, {"Immunizations": {}}, {"Allergies": {}}])
+  const [sideTabs, setSideTabs] = useState([{"Orders": {}}, {"PDMP": {}}, {"Chat": {}}])
+  const [mainTab, setMainTab] = useState(0)
+  const [sideTab, setSideTab] = useState(0)
 
   return (
     <Box display="flex" direction="row" sx={{ overflowY: 'hidden', ...props.sx }} {...props}>
@@ -112,7 +133,7 @@ export const Patient = ({ ...props }) => {
         <Storyboard /> 
       </Drawer>
       <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
-        <SplitViewContext.Provider value={[customTabs, setCustomTabs]}>
+        <SplitViewContext.Provider value={[mainTabs, setMainTabs]}>
           <PanelGroup direction="horizontal">
             <Panel defaultSize={50} minSize={35}>
               <TabContext value={mainTab}>
@@ -125,28 +146,52 @@ export const Patient = ({ ...props }) => {
                   >
                     <Icon>menu</Icon>
                   </IconButton>
-                  <TabList 
-                    variant="scrollable" 
-                    textColor="inherit"
-                    scrollButtons="auto"
-                    allowScrollButtonsMobile 
-                    TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                    onChange={(event, newValue) => setMainTab(newValue)}
-                  >
-                    {Object.keys(ALL_TABS).filter(x => isMobile || !sideTabs.includes(x)).map((tab, index) => (
-                      <TabWithMenu key={tab} value={tab} label={tab} onMove={() => setSideTabs(prev => [...prev, tab])} />
-                    ))}
-                    {customTabs.flatMap(x => Object.entries(x)).filter(([k, v]) => Object.keys(CUSTOM_TABS).includes(k)).map(([k, v], i) => (
-                      <TabWithMenu key={`${k}-${i}`} value={`${k}-${i}`} label={k} onClose={() => setCustomTabs(prev => prev.filter((x2, i2) => i2 !== i))} />
-                    ))}
-                  </TabList>
+                  <DragDropContext onDragEnd={(result) => {
+                    if (result.destination == null) return;
+                    const newTabs = [...mainTabs];
+                    const draggedTab = newTabs.splice(result.source.index, 1)[0];
+                    newTabs.splice(result.destination.index, 0, draggedTab);
+                    setMainTabs(newTabs);
+                    setMainTab(result.destination.index)
+                  }}>
+                    <Droppable droppableId="1" direction="horizontal"> 
+                      {(droppable) => (
+                        <TabList 
+                          ref={droppable.innerRef}
+                          {...droppable.droppableProps}
+                          variant="scrollable" 
+                          textColor="inherit"
+                          scrollButtons="auto"
+                          allowScrollButtonsMobile 
+                          TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+                          onChange={(event, newValue) => setMainTab(newValue)}
+                        >
+                          {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
+                            <DraggableTab
+                              label={k}
+                              index={i}
+                              value={i}
+                              key={i}
+                              child={<TabWithMenu 
+                                onClose={() => {
+                                  setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                }}
+                                onMove={() => {
+                                  setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                  setSideTabs(prev => [...prev, {[k]: v}])
+                                }}
+                              />}
+                            />
+                          )}
+                          {droppable ? droppable.placeholder : null}
+                        </TabList>
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                 </Stack>
                 <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                  {Object.keys(ALL_TABS).map((tab, index) => (
-                    <TabPanel sx={{ p: 0 }} key={tab} value={tab}>{ALL_TABS[tab]()}</TabPanel>
-                  ))}
-                  {customTabs.flatMap(x => Object.entries(x)).filter(([k, v]) => Object.keys(CUSTOM_TABS).includes(k)).map(([k, v], i) => (
-                    <TabPanel sx={{ p: 0 }} key={`${k}-${i}`} value={`${k}-${i}`}>{CUSTOM_TABS[k](v)}</TabPanel>
+                  {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                    <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
                   ))}
                 </Box>
               </TabContext>
@@ -160,22 +205,52 @@ export const Patient = ({ ...props }) => {
               <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
                 <TabContext value={sideTab}>
                   <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                    <TabList 
-                      variant="scrollable" 
-                      textColor="inherit"
-                      scrollButtons="auto"
-                      allowScrollButtonsMobile 
-                      TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                      onChange={(event, newValue) => setSideTab(newValue)}
-                    >
-                      {Object.keys(ALL_TABS).filter(x => sideTabs.includes(x)).map((tab, index) => (
-                        <TabWithMenu key={tab} value={tab} label={tab} onMove={() => setSideTabs(prev => prev.filter((x, i) => i !== index))} />
-                      ))}
-                    </TabList>
+                    <DragDropContext onDragEnd={(result) => {
+                      if (result.destination == null) return;
+                      const newTabs = [...sideTabs];
+                      const draggedTab = newTabs.splice(result.source.index, 1)[0];
+                      newTabs.splice(result.destination.index, 0, draggedTab);
+                      setSideTabs(newTabs);
+                      setSideTab(result.destination.index)
+                    }}>
+                      <Droppable droppableId="2" direction="horizontal"> 
+                        {(droppable) => (
+                          <TabList 
+                            ref={droppable.innerRef}
+                            {...droppable.droppableProps}
+                            variant="scrollable" 
+                            textColor="inherit"
+                            scrollButtons="auto"
+                            allowScrollButtonsMobile 
+                            TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
+                            onChange={(event, newValue) => setSideTab(newValue)}
+                          >
+                            {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
+                              <DraggableTab
+                                label={k}
+                                index={i}
+                                value={i}
+                                key={i}
+                                child={<TabWithMenu 
+                                  onClose={() => {
+                                    setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                  }}
+                                  onMove={() => {
+                                    setMainTabs(prev => [...prev, {[k]: v}])
+                                    setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                  }}
+                                />}
+                              />
+                            )}
+                            {droppable ? droppable.placeholder : null}
+                          </TabList>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
                   </Stack>
                   <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                    {Object.keys(ALL_TABS).map((tab, index) => (
-                      <TabPanel sx={{ p: 0 }} key={tab} value={tab}>{ALL_TABS[tab]()}</TabPanel>
+                    {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                      <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
                     ))}
                   </Box>
                 </TabContext>
