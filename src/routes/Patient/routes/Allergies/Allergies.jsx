@@ -3,11 +3,10 @@ import React, { useState } from 'react';
 import { Box, Button, Typography, Icon } from '@mui/material';
 import { blue, deepOrange,grey } from '@mui/material/colors';
 import dayjs from 'dayjs';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 const initialAllergies = [
   {
@@ -33,9 +32,7 @@ const initialAllergies = [
 ];
 
 export const Allergies = () => {
-  const [patientMRN] = usePatientMRN();
-  const [encounterId] = useEncounterID();
-  const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
+  const { patient: patientMRN, encounter: encounterId, patientData, setPatientData } = usePatient();
 
   const [allergies, setAllergies] = useState(initialAllergies);
   const [editingAllergy, setEditingAllergy] = useState(null);

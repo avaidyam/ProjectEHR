@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
-  Tabs, Tab, Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
+  Tabs, Tab, Box, Divider, Table, TableHead, TableRow, TableCell, Button
 } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 
@@ -116,10 +115,8 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 };
 
 export const ChartReview = ({ ...props }) => {
+  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc] = useEncounterID()
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown

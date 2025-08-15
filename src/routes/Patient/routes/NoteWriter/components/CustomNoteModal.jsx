@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Window } from 'components/ui/Core.jsx';
 
 const CustomNoteModal = ({ 
   open, 
@@ -28,9 +28,7 @@ const CustomNoteModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleCancel} maxWidth="sm" fullWidth>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
+    <Window title={title} open={open} onClose={handleCancel} maxWidth="sm" fullWidth>
         <TextField
           autoFocus
           fullWidth
@@ -42,16 +40,15 @@ const CustomNoteModal = ({
           placeholder="Type your custom note here..."
           variant="outlined"
         />
-      </DialogContent>
-      <DialogActions>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
         <Button onClick={handleCancel} color="secondary">
           Cancel
         </Button>
         <Button onClick={handleSave} color="primary">
           Save
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Window>
   );
 };
 

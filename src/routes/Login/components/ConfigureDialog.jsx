@@ -1,7 +1,8 @@
 // This module represents the login configure modal popup that allows the admin to select the viewable pts and encounter values
 
 import React, { useState } from 'react';
-import { Modal, Box, Typography, MenuItem, Select, Button } from '@mui/material';
+import { MenuItem, Select } from '@mui/material';
+import { Box, Label, Button, Window } from 'components/ui/Core.jsx';
 
 const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
   const [selectedEncounters, setSelectedEncounters] = useState({});
@@ -27,7 +28,7 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts })
   
       return (
         <Box key={`pt${pIndex}`} sx={{ marginBottom: 2 }}>
-          <Typography variant="h6">{patient}</Typography>
+          <Label variant="h6">{patient}</Label>
           <Select
             value={selectedValue}
             onChange={(e) => handleSelectEncounter(patient, e.target.value)}
@@ -59,7 +60,7 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts })
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Window open={open} onClose={onClose}>
       <Box
         sx={{
           position: 'absolute',
@@ -73,9 +74,9 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts })
           p: 4,
         }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Label variant="h5" gutterBottom>
           Configure Patients and Encounters
-        </Typography>
+        </Label>
         <Box>{renderTree()}</Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 3 }}>
           <Button variant="outlined" onClick={onClose}>
@@ -86,7 +87,7 @@ const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts })
           </Button>
         </Box>
       </Box>
-    </Modal>
+    </Window>
   );
 };
 

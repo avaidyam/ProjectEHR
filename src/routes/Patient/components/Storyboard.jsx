@@ -3,10 +3,9 @@ import _ from 'lodash';
 import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
 import { AuthContext } from 'components/contexts/AuthContext.jsx'; 
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 import DateHelpers from 'util/DateHelpers.js';
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js'
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
@@ -90,8 +89,8 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   );
 };
 
-export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) => {
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+export const PatientSidebarVitalsOverview = ({ ...props }) => {
+  const { patient: patientMRN, encounter: encID, data: { encounters } } = usePatient()
   const vitals = (encounters?.find(x => x.id === encID) ?? {}).vitals;
 
   /** sort most recent to older */
@@ -114,9 +113,7 @@ export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) =>
 };
 
 export const Storyboard = ({ ...props }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN()
-  const [enc, setEnc] = useEncounterID()
-  const {
+  const { patient: patientMRN, encounter: enc, data: {
     firstName,
     lastName,
     dateOfBirth,
@@ -126,7 +123,7 @@ export const Storyboard = ({ ...props }) => {
     PCP,
     encounters,
     insurance,
-  } = TEST_PATIENT_INFO({ patientMRN });
+  } } = usePatient()
 
   // Extract the first encounter
   const {

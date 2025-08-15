@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Chip } from '@mui/material';
-
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 import NoteWriterHPI from './components/NoteWriterHPI.jsx';
 import NoteWriterROS from './components/NoteWriterROS.jsx';
@@ -332,9 +330,7 @@ const physicalExamBodySystems = [
 const temporaryStorage = {};
 
 export const Notewriter = () => {
-  const [enc] = useEncounterID();
-  const [patientMRN] = usePatientMRN();
-  const [patientData, setPatientData] = useState(TEST_PATIENT_INFO({ patientMRN }));
+  const { patient: patientMRN, encounter: enc, data } = usePatient()
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Zero is Index of the first tab (HPI)
   const [selectedTabLabel, setSelectedTabLabel] = useState('HPI');

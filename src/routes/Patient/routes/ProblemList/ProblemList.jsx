@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext  } from 'react';
 import { Typography, TextField, Button, Icon, Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box } from '@mui/material';
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 import ProblemListEditor from './components/ProblemListEditor.jsx';
 
 function formatSnomedData(data) {
@@ -37,17 +36,12 @@ async function getSnomed(term) {
 }
 
 const ProblemListTabContent = ({ children, ...other }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc, setEnc] = useEncounterID()
-
-  const patientData = TEST_PATIENT_INFO({ patientMRN });
+  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [diagnosesArray, setDiagnosesArray] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
 
   const [problems, setProblems] = useState(encounters?.find(x => x.id === enc)?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));

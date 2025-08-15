@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { Icon, Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
-import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 function ImmunizationsTabContent() {
-  const [patientMRN] = usePatientMRN();
-  const [enc] = useEncounterID();
-
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
   const immunizations = encounters?.find(x => x.id === enc)?.immunizations || [];
 
   // Group immunizations by vaccine type
