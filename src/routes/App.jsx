@@ -1,11 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { PatientLists } from './PatientList/PatientList.jsx';
-import { AuthContext } from '../components/contexts/AuthContext.jsx';
-import { Titlebar } from '../components/ui/Titlebar.jsx';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
+import { Titlebar } from 'components/ui/Titlebar.jsx';
 import { Login } from './Login/Login.jsx';
 import { Patient } from './Patient/Patient.jsx';
-import { OrderProvider } from '../components/contexts/OrdersContext.jsx';
+import { OrderProvider } from 'components/contexts/OrdersContext.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';
 
 // Main App Component

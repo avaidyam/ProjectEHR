@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItem, Grid } from '@mui/material';
-import {useOrder, Drug} from '../../../../components/contexts/OrdersContext.jsx';
+import {useOrder, Drug} from 'components/contexts/OrdersContext.jsx';
 
 // need to link to actions in orders later
 const mockMedicationData = () => ({

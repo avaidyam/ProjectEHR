@@ -2,13 +2,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { AuthContext } from '../../components/contexts/AuthContext.jsx';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the dialog component
-import Notification from '../../util/Notification.js';
-import PromptDialog from '../../util/PromptDialog.js';
+import Notification from './components/Notification.jsx';
+import PromptDialog from './components/PromptDialog.jsx';
 
-import schedule from '../../util/data/schedule.json'; // Import the schedule JSON file for mrns
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import schedule from 'util/data/schedule.json'; // Import the schedule JSON file for mrns
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 const departments = [
   { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },

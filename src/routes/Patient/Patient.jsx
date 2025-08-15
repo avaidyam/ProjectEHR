@@ -5,11 +5,11 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea/dnd";
-import { Icon } from '../../components/ui/Core.jsx';
-import { SplitViewContext, SplitViewProvider, useSplitView } from '../../components/contexts/SplitViewContext.jsx';
+import { Icon } from 'components/ui/Core.jsx';
+import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext.jsx';
 
-import { usePatientMRN, useEncounterID } from '../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Masonry } from '@mui/lab';
 import groupBy from 'lodash/groupBy';
-import { Box, TitledCard } from '../../../../components/ui/Core.jsx';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
+import { Box, TitledCard } from 'components/ui/Core.jsx';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js'
 
 // FIXME: TitledCard
 // At some point I will need to use a URLBuilder to link the title to corresponding pages

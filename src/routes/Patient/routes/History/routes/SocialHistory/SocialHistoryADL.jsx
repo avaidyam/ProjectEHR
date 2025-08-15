@@ -1,6 +1,6 @@
 // SocialHistoryADL.jsx
 import React from 'react';
-import { VStack, Label } from '../../../../../../components/ui/Core.jsx';
+import { VStack, Label } from 'components/ui/Core.jsx';
 
 export const SocialHistoryADL = () => {
   return (

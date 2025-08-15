@@ -2,11 +2,11 @@ import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
 import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
 import { blue, deepOrange } from '@mui/material/colors';
-import { AuthContext } from '../../../components/contexts/AuthContext.jsx'; 
+import { AuthContext } from 'components/contexts/AuthContext.jsx'; 
 
-import DateHelpers from '../../../util/DateHelpers.js';
-import { usePatientMRN, useEncounterID } from '../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../util/data/PatientSample.js'
+import DateHelpers from 'util/DateHelpers.js';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js'
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese

@@ -2,9 +2,9 @@ import React, { useState, useContext } from 'react';
 import {
   Tabs, Tab, Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
 } from '@mui/material';
-import { useSplitView } from '../../../../components/contexts/SplitViewContext.jsx';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 

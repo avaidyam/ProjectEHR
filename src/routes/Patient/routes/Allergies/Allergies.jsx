@@ -6,8 +6,8 @@ import dayjs from 'dayjs';
 import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 const initialAllergies = [
   {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Chip } from '@mui/material';
 
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 import NoteWriterHPI from './components/NoteWriterHPI.jsx';
 import NoteWriterROS from './components/NoteWriterROS.jsx';

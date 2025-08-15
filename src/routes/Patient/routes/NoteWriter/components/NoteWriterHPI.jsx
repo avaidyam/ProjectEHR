@@ -1,7 +1,7 @@
 // NoteWriterHPI.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Button, FormControl, MenuItem, Select, TextField, List, ListItem, Paper, Icon } from '@mui/material';
-import { Editor } from '../../../../../components/ui/Editor.jsx';
+import { Editor } from 'components/ui/Editor.jsx';
 
 // Eventually this will be much more robust, and will have a map to each of the HPI Forms, but for now it's just a simple map
 const HPI_FORM_MAP = { 

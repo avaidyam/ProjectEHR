@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { HStack, Box, Label } from '../../../../components/ui/Core.jsx';
+import { HStack, Box, Label } from 'components/ui/Core.jsx';
 
 import { MedicalHistory } from './routes/MedicalHistory/MedicalHistory.jsx';
 import { SurgicalHistory } from './routes/SurgicalHistory/SurgicalHistory.jsx';

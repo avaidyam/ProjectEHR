@@ -16,7 +16,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchIcon from '@mui/icons-material/Search';
-import { PatientListsContext } from '../../components/contexts/PatientListContext.jsx';
+import { PatientListsContext } from 'components/contexts/PatientListContext.jsx';
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';

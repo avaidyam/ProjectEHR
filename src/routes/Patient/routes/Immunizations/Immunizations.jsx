@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
 
 function ImmunizationsTabContent() {
   const [patientMRN] = usePatientMRN();

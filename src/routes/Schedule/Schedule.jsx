@@ -1,5 +1,5 @@
-import Notification from '../../util/Notification.js';
-import { AuthContext } from '../../components/contexts/AuthContext.jsx';
+import Notification from '../Login/components/Notification.jsx';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import CircleIcon from '@mui/icons-material/Circle';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
@@ -19,11 +19,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
 
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
-import { useRouter } from '../../util/urlHelpers.js';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { useRouter } from 'util/urlHelpers.js';
 
 // json data
-import appt from '../../util/data/schedule.json';
+import appt from 'util/data/schedule.json';
 
 // get today's date and display in text box
 function dateLocal() {

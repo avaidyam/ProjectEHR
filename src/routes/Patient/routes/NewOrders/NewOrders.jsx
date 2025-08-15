@@ -8,8 +8,8 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 // import json orders master list
-import { getRxTerms } from '../../../../util/getRxTerms.js';
-import {useOrder} from '../../../../components/contexts/OrdersContext.jsx';
+import { getRxTerms } from 'util/getRxTerms.js';
+import {useOrder} from 'components/contexts/OrdersContext.jsx';
 
 // display + add # days on date picker
 function dateLocal(addDay) {
