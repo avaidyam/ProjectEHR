@@ -1,7 +1,6 @@
 // export default Allergies;
 import React, { useState } from 'react';
-import { Box, Button, Typography, Icon } from '@mui/material';
-import { blue, deepOrange,grey } from '@mui/material/colors';
+import { Box, Button, Typography, Icon, colors } from '@mui/material';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import AllergiesTable from './components/AllergiesTable.jsx';
@@ -112,7 +111,7 @@ export const Allergies = () => {
   return (
     <Box sx={{height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper'}}>
       <Box sx={{ bgcolor: 'grey.100',pt: 4, pb: 1, px:3, borderRadius: 1, mb: 1 }}>
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: blue[500]}}> 
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: colors.blue[500]}}> 
         Allergies / Contraindications
       </Typography>
 
@@ -158,19 +157,19 @@ export const Allergies = () => {
 
         }}>
         <Button variant="outlined" onClick={handleMarkAsReviewed} sx={{
-    color: grey[700],
-    borderColor: grey[700],
+    color: colors.grey[700],
+    borderColor: colors.grey[700],
     '&:hover': {
-      borderColor: grey[700],
-      backgroundColor: grey[300], // subtle hover effect
+      borderColor: colors.grey[700],
+      backgroundColor: colors.grey[300], // subtle hover effect
     },
   }}> Mark as Reviewed </Button>
         <Button variant="outlined" sx={{
-    color: grey[700],
-    borderColor: grey[700],
+    color: colors.grey[700],
+    borderColor: colors.grey[700],
     '&:hover': {
-      borderColor: grey[700],
-      backgroundColor: grey[300], // subtle hover effect
+      borderColor: colors.grey[700],
+      backgroundColor: colors.grey[300], // subtle hover effect
     },
   }}>Unable to Assess</Button>
         <Typography variant="body2"sx={{color: lastReviewed ? 'green' : 'gray',fontStyle: 'italic'}}>

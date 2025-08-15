@@ -1,36 +1,4 @@
-import { useNavigate, useSearchParams, generatePath, useParams } from 'react-router-dom';
-
-/**
- * hook to extract mrn from url and set new one
- *
- * usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
- *
- * *must* be used from within a functional component INSIDE a <Route>! (i.e. This will NOT work from Titlebar if it is not rendered within a route.)
- */
-export const usePatientMRN = () => {
-  const { mrn } = useParams()
-  const navigate = useNavigate()
-  return [
-    mrn,
-    (value) => navigate(generatePath('/patient/:mrn', { mrn: value })),
-  ];
-};
-
-/**
- * hook to extract mrn from url and set new one
- *
- * usage: `const [enc, setEnc] = useEncounterID()`
- *
- * *must* be used from within a functional component
- */
-export const useEncounterID = () => {
-  const { mrn, enc } = useParams()
-  const navigate = useNavigate()
-  return [
-    enc,
-    (value) => navigate(generatePath('/patient/:mrn/encounter/:enc', { mrn: mrn, enc: value })),
-  ];
-};
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 /**
  *

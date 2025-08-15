@@ -1,9 +1,7 @@
 import React, { useState } from 'react'
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
-import { Box, Tab, Stack, Menu, MenuItem } from '@mui/material'
+import { Box, Tab, Stack, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea/dnd";
 import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext.jsx';
 

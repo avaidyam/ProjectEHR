@@ -1,8 +1,6 @@
 import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
-import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
-import { blue, deepOrange } from '@mui/material/colors';
-import { AuthContext } from 'components/contexts/AuthContext.jsx'; 
+import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 import DateHelpers from 'util/DateHelpers.js';
@@ -145,7 +143,7 @@ export const Storyboard = ({ ...props }) => {
       <div style={{ display: 'flex', flexDirection: "column" }}>
         <Avatar
           source={avatarUrl}
-          sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
+          sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
         >
           {[firstName, lastName].map(x => x.charAt(0)).join("")}
         </Avatar>
@@ -166,7 +164,7 @@ export const Storyboard = ({ ...props }) => {
       <div style={{ display: 'flex', marginBottom: '0.5em' }}>
         <Avatar
           source={PCP.avatarUrl}
-          sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+          sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
         >
           {PCP.name.split(" ").map(x => x.charAt(0)).join("")}
         </Avatar>

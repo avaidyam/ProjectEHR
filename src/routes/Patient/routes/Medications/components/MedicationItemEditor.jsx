@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography, styled } from '@mui/material';
 import medications from 'util/data/medications_list.json';
 
 const routesOfAdministration = [

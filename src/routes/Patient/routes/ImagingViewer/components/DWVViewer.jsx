@@ -4,9 +4,9 @@ import {
     MenuItem,
     Box,
     LinearProgress,
-    IconButton
+    IconButton,
+    styled
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import {
     App,
     decoderScripts

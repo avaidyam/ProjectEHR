@@ -1,7 +1,6 @@
 // MedicalHistory.jsx
 import React, { useState } from 'react';
-import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, Icon, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, Icon, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled } from '@mui/material';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {

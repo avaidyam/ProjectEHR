@@ -12,10 +12,10 @@ import {
   IconButton,
   Box,
   Typography,
-  Icon
+  Icon,
+  colors
 } from '@mui/material';
 import dayjs from 'dayjs';
-import { blue } from '@mui/material/colors';
 
 const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
   const handleDelete = (id) => {
@@ -62,7 +62,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                   component="th"
                   scope="row"
                   sx={{
-                    color: allergy.severity === 'High' ? 'text.primary' : blue[500],
+                    color: allergy.severity === 'High' ? 'text.primary' : colors.blue[500],
                     fontWeight: allergy.severity === 'High' ? 'bold' : 'normal',
                     
                   }}
