@@ -1,11 +1,12 @@
-import { Paper } from '@mui/material';
+import { Paper, Icon } from '@mui/material';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
 import {_data} from 'util/data/PatientSample.js';
+
+const ExpandMoreIcon = () => <Icon>expand_more</Icon>
+const ChevronRightIcon = () => <Icon>chevron_right</Icon>
 
 // TODO: Remove this once we have a real list
 const transformPatientData = (patients) => {

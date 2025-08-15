@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { Icon, Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
 import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 import { usePatientMRN, useEncounterID } from 'util/urlHelpers.js';
 
@@ -55,7 +54,7 @@ function ImmunizationsTabContent() {
                 <TableRow>
                   <TableCell>
                     <IconButton onClick={() => toggleGroup(vaccine)}>
-                      {openGroups[vaccine] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                      {openGroups[vaccine] ? <Icon>keyboard_arrow_up</Icon> : <Icon>keyboard_arrow_down</Icon>}
                     </IconButton>
                   </TableCell>
                   <TableCell>

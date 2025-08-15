@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import {
     Dialog,
     Slide,
@@ -9,8 +8,7 @@ import {
     LinearProgress,
     IconButton
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
 import {
     App,
     decoderScripts

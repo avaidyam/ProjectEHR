@@ -10,9 +10,9 @@ import {
     ListItem, ListItemText,
     Paper,
     TextField,
-    Typography
+    Typography,
+    Icon
 } from '@mui/material';
-import {Add as AddIcon, Remove as RemoveIcon, KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon} from '@mui/icons-material';
 import React from 'react';
 
 const availableColumns = [
@@ -176,7 +176,7 @@ export const ListFormModal = ({
                                                     size='small'
                                                     onClick={() => handleAddColumn(column)}
                                                 >
-                                                    <AddIcon />
+                                                    <Icon>add</Icon>
                                                 </IconButton>
                                             }
                                         >
@@ -207,7 +207,7 @@ export const ListFormModal = ({
                                                         onClick={() => handleMoveColumn(index, 'up')}
                                                         disabled={index === 0}
                                                     >
-                                                        <KeyboardArrowUpIcon />
+                                                        <Icon>keyboard_arrow_up</Icon>
                                                     </IconButton>
                                                     <IconButton
                                                         edge='end'
@@ -215,14 +215,14 @@ export const ListFormModal = ({
                                                         onClick={() => handleMoveColumn(index, 'down')}
                                                         disabled={index === selectedColumns.length - 1}
                                                     >
-                                                        <KeyboardArrowDownIcon />
+                                                        <Icon>keyboard_arrow_down</Icon>
                                                     </IconButton>
                                                     <IconButton
                                                         edge='end'
                                                         size='small'
                                                         onClick={() => handleRemoveColumn(column)}
                                                     >
-                                                        <RemoveIcon />
+                                                        <Icon>remove</Icon>
                                                     </IconButton>
                                                 </Box>
                                             }

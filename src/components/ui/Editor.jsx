@@ -3,7 +3,6 @@
 
 import React, { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { useTheme, Box, Button, Stack, Typography, Icon } from "@mui/material";
-import { Lock, LockOpen, TextFields } from "@mui/icons-material";
 
 import { Blockquote } from "@tiptap/extension-blockquote";
 import { Bold } from "@tiptap/extension-bold";
@@ -81,6 +80,10 @@ import {
   MenuSelectTextAlign,
   isTouchDevice,
 } from "mui-tiptap";
+
+const LockIcon = () => <Icon>lock</Icon>
+const LockOpenIcon = () => <Icon>lock_open</Icon>
+const TextFieldsIcon = () => <Icon>text_fields</Icon>
 
 // Don't treat the end cursor as "inclusive" of the Link mark, so that users can
 // actually "exit" a link if it's the last element in the editor (see
@@ -514,7 +517,7 @@ export function Editor({ disableStickyMenuBar, initialContent, onSave }) {
                 setShowMenuBar((currentState) => !currentState);
               }}
               selected={showMenuBar}
-              IconComponent={TextFields}
+              IconComponent={TextFieldsIcon}
             />
 
             <MenuButton
@@ -529,7 +532,7 @@ export function Editor({ disableStickyMenuBar, initialContent, onSave }) {
                 setIsEditable((currentState) => !currentState);
               }}
               selected={!isEditable}
-              IconComponent={isEditable ? Lock : LockOpen}
+              IconComponent={isEditable ? LockIcon : LockOpenIcon}
             />
 
             <Button

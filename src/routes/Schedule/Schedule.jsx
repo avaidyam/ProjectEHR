@@ -1,29 +1,14 @@
-import Notification from '../Login/components/Notification.jsx';
-import { AuthContext } from 'components/contexts/AuthContext.jsx';
-import CircleIcon from '@mui/icons-material/Circle';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
-// for calendar/dates
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
-
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
+import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
+import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 import { useRouter } from 'util/urlHelpers.js';
-
-// json data
 import appt from 'util/data/schedule.json';
+import Notification from '../Login/components/Notification.jsx';
 
 // get today's date and display in text box
 function dateLocal() {
@@ -51,7 +36,7 @@ function customFilterBar({ setFilterElem }) {
 function changeBadge(badgeColor) {
   return (
     <Badge>
-      <CircleIcon style={{ color: badgeColor }} />
+      <Icon style={{ color: badgeColor }}>circle</Icon>
     </Badge>
   );
 }

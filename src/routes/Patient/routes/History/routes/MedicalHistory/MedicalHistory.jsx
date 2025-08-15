@@ -1,11 +1,6 @@
 // MedicalHistory.jsx
 import React, { useState } from 'react';
-import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, Icon, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
@@ -79,7 +74,7 @@ export const MedicalHistory = () => {
     <Box sx={{ p: 2, backgroundColor: 'white' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Past Medical History</Typography>
-        <Button startIcon={<AddIcon />} variant="contained" onClick={handleAddClick} sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+        <Button startIcon={<Icon>add</Icon>} variant="contained" onClick={handleAddClick} sx={{ backgroundColor: 'primary.main', color: 'white' }}>
           Add Medical History
         </Button>
       </Box>
@@ -106,11 +101,11 @@ export const MedicalHistory = () => {
                 <TableCell>{entry.comment}</TableCell>
                 <TableCell>{entry.src}</TableCell>
                 <TableCell>
-                  {entry.problemList ? <CheckCircleOutlineIcon color="success" /> : <CancelIcon color="error" />}
+                  {entry.problemList ? <Icon color="success">check_circle_outline</Icon> : <Icon color="error">cancel</Icon>}
                 </TableCell>
                 <TableCell>
-                  <IconButton size="small" onClick={() => handleEdit(entry)}><EditIcon fontSize="small" /></IconButton>
-                  <IconButton size="small" onClick={() => handleDelete(entry.id)}><DeleteIcon fontSize="small" /></IconButton>
+                  <IconButton size="small" onClick={() => handleEdit(entry)}><Icon fontSize="small">edit</Icon></IconButton>
+                  <IconButton size="small" onClick={() => handleDelete(entry.id)}><Icon fontSize="small">delete</Icon></IconButton>
                 </TableCell>
               </StyledTableRow>
             ))}

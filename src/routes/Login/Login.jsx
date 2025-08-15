@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
+import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the dialog component
 import Notification from './components/Notification.jsx';
@@ -219,7 +218,7 @@ export const Login = ({ setIsLoggedIn }) => {
           sx={{ position: "absolute", bottom: 20, left: 20, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }} 
           onClick={handleConfigure}
         >
-          <SettingsIcon style={{ fontSize: '36px', cursor: 'pointer' }} />
+          <Icon style={{ fontSize: '36px', cursor: 'pointer' }}>settings</Icon>
         </Box>
       </Paper>
 

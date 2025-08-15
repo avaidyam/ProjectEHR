@@ -1,7 +1,6 @@
 // AllergiesTab.jsx
 import React, { useState } from 'react';
-import { Box, Button, Typography, Paper } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Button, Typography, Paper, Icon } from '@mui/material';
 import AllergiesTable from './AllergiesTable';
 import AllergyEditor from './AllergyEditor'; // Renamed import
 import AgentSearchMenu from './AgentSearchMenu';
@@ -141,7 +140,7 @@ const AllergiesTab = () => {
             its logic would need to be added. Keeping it hidden as before for now. */}
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<Icon>add</Icon>}
           sx={{ ml: 2, visibility: 'hidden' }}
         >
           Add

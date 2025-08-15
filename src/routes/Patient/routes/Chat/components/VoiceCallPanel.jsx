@@ -1,8 +1,5 @@
 import React from "react"
-import { Box, Paper, Typography, Button, Avatar, Stack } from "@mui/material";
-import CallIcon from "@mui/icons-material/Call";
-import CallEndIcon from "@mui/icons-material/CallEnd";
-import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+import { Box, Paper, Typography, Button, Avatar, Stack, Icon } from "@mui/material";
 import { useVoice, VoiceReadyState } from "@humeai/voice-react";
 
 export default function VoiceCallPanel({ accessToken }) {
@@ -58,7 +55,7 @@ export default function VoiceCallPanel({ accessToken }) {
         variant="contained"
         size="large"
         color={inCall ? "error" : "secondary"}
-        startIcon={inCall ? <CallEndIcon /> : <CallIcon />}
+        startIcon={inCall ? <Icon>call_end</Icon> : <Icon>call</Icon>}
         onClick={handleToggleCall}
       >
         {inCall ? "End Call" : "Start Call"}
@@ -66,7 +63,7 @@ export default function VoiceCallPanel({ accessToken }) {
 
       {inCall && (
         <Stack alignItems="center" spacing={1}>
-          <PhoneInTalkIcon sx={{ fontSize: 40, color: "primary.main" }} />
+          <Icon sx={{ fontSize: 40, color: "primary.main" }}>phone_in_talk</Icon>
           <Typography variant="caption" color="text.secondary">
             Connected
           </Typography>
