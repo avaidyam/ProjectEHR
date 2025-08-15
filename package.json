@@ -23,7 +23,6 @@
     "@humeai/voice-react": "^0.2.2",
     "@jsonforms/material-renderers": "^3.6.0",
     "@jsonforms/react": "^3.6.0",
-    "@mui/icons-material": "^6.4.6",
     "@mui/lab": "^6.0.1-beta.36",
     "@mui/material": "^6.4.6",
     "@mui/x-data-grid": "^7.27.2",
