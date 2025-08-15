@@ -134,27 +134,53 @@ export const Patient = ({ ...props }) => {
       </Drawer>
       <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
         <SplitViewContext.Provider value={[mainTabs, setMainTabs]}>
-          <PanelGroup direction="horizontal">
-            <Panel defaultSize={50} minSize={35}>
-              <TabContext value={mainTab}>
-                <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                  <IconButton
-                    color="inherit"
-                    onClick={() => setStoryboardOpen(!storyboardOpen)}
-                    edge="start"
-                    sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
-                  >
-                    <Icon>menu</Icon>
-                  </IconButton>
-                  <DragDropContext onDragEnd={(result) => {
-                    if (result.destination == null) return;
-                    const newTabs = [...mainTabs];
-                    const draggedTab = newTabs.splice(result.source.index, 1)[0];
-                    newTabs.splice(result.destination.index, 0, draggedTab);
-                    setMainTabs(newTabs);
-                    setMainTab(result.destination.index)
-                  }}>
-                    <Droppable droppableId="1" direction="horizontal"> 
+          <DragDropContext onDragEnd={({ source, destination }) => {
+            if (destination == null) return;
+            if (source.droppableId === "main" && destination.droppableId === "main") {
+              const newTabs = [...mainTabs];
+              const draggedTab = newTabs.splice(source.index, 1)[0];
+              newTabs.splice(destination.index, 0, draggedTab);
+              setMainTabs(newTabs);
+              setMainTab(destination.index)
+            } else if (source.droppableId === "side" && destination.droppableId === "side") {
+              const newTabs = [...sideTabs];
+              const draggedTab = newTabs.splice(source.index, 1)[0];
+              newTabs.splice(destination.index, 0, draggedTab);
+              setSideTabs(newTabs);
+              setSideTab(destination.index)
+            } else if (source.droppableId === "main" && destination.droppableId === "side") {
+              const newMainTabs = [...mainTabs];
+              const newSideTabs = [...sideTabs];
+              const draggedTab = newMainTabs.splice(source.index, 1)[0];
+              newSideTabs.splice(destination.index, 0, draggedTab);
+              setMainTabs(newMainTabs);
+              setSideTabs(newSideTabs);
+              setMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+              setSideTab(destination.index);
+            } else if (source.droppableId === "side" && destination.droppableId === "main") { 
+              const newMainTabs = [...mainTabs];
+              const newSideTabs = [...sideTabs];
+              const draggedTab = newSideTabs.splice(source.index, 1)[0];
+              newMainTabs.splice(destination.index, 0, draggedTab);
+              setMainTabs(newMainTabs);
+              setSideTabs(newSideTabs);
+              setMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+              setSideTab(destination.index);
+            }           
+          }}>
+            <PanelGroup direction="horizontal">
+              <Panel defaultSize={50} minSize={35}>
+                <TabContext value={mainTab}>
+                  <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                    <IconButton
+                      color="inherit"
+                      onClick={() => setStoryboardOpen(!storyboardOpen)}
+                      edge="start"
+                      sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
+                    >
+                      <Icon>menu</Icon>
+                    </IconButton>
+                    <Droppable droppableId="main" direction="horizontal"> 
                       {(droppable) => (
                         <TabList 
                           ref={droppable.innerRef}
@@ -187,33 +213,24 @@ export const Patient = ({ ...props }) => {
                         </TabList>
                       )}
                     </Droppable>
-                  </DragDropContext>
-                </Stack>
-                <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                  {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                    <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
-                  ))}
-                </Box>
-              </TabContext>
-            </Panel>
-            {(!isMobile && sideTabs.length > 0) && 
-              <PanelResizeHandle>
-                <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
-              </PanelResizeHandle>
-            }
-            {(!isMobile && sideTabs.length > 0) &&
-              <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
-                <TabContext value={sideTab}>
-                  <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                    <DragDropContext onDragEnd={(result) => {
-                      if (result.destination == null) return;
-                      const newTabs = [...sideTabs];
-                      const draggedTab = newTabs.splice(result.source.index, 1)[0];
-                      newTabs.splice(result.destination.index, 0, draggedTab);
-                      setSideTabs(newTabs);
-                      setSideTab(result.destination.index)
-                    }}>
-                      <Droppable droppableId="2" direction="horizontal"> 
+                  </Stack>
+                  <Box sx={{ overflowY: 'auto', height: "100%" }}>
+                    {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                      <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
+                    ))}
+                  </Box>
+                </TabContext>
+              </Panel>
+              {(!isMobile && sideTabs.length > 0) && 
+                <PanelResizeHandle>
+                  <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
+                </PanelResizeHandle>
+              }
+              {(!isMobile && sideTabs.length > 0) &&
+                <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
+                  <TabContext value={sideTab}>
+                    <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                      <Droppable droppableId="side" direction="horizontal"> 
                         {(droppable) => (
                           <TabList 
                             ref={droppable.innerRef}
@@ -246,17 +263,17 @@ export const Patient = ({ ...props }) => {
                           </TabList>
                         )}
                       </Droppable>
-                    </DragDropContext>
-                  </Stack>
-                  <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                    {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                      <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
-                    ))}
-                  </Box>
-                </TabContext>
-              </Panel>
-            }
-          </PanelGroup>
+                    </Stack>
+                    <Box sx={{ overflowY: 'auto', height: "100%" }}>
+                      {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                        <TabPanel sx={{ p: 0 }} key={i} value={i}>{ALL_TABS[k](v)}</TabPanel>
+                      ))}
+                    </Box>
+                  </TabContext>
+                </Panel>
+              }
+            </PanelGroup>
+          </DragDropContext>
         </SplitViewContext.Provider>
       </Box>
     </Box>
