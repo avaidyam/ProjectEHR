@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-    Dialog,
-    Slide,
     Menu,
     MenuItem,
     Box,
