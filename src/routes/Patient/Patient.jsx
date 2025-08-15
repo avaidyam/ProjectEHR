@@ -164,8 +164,8 @@ export const Patient = ({ ...props }) => {
               newMainTabs.splice(destination.index, 0, draggedTab);
               setMainTabs(newMainTabs);
               setSideTabs(newSideTabs);
-              setMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-              setSideTab(destination.index);
+              setSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+              setMainTab(destination.index);
             }           
           }}>
             <PanelGroup direction="horizontal">
