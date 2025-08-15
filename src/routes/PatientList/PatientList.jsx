@@ -6,17 +6,11 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  Icon
 } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import React, { createContext, useState, useContext } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import PrintIcon from '@mui/icons-material/Print';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import SearchIcon from '@mui/icons-material/Search';
-import { PatientListsContext } from '../../components/contexts/PatientListContext.jsx';
+import { PatientListsContext } from 'components/contexts/PatientListContext.jsx';
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';
@@ -96,14 +90,14 @@ function PatientLists() {
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
                 size="small"
-                startIcon={<AddIcon />}
+                startIcon={<Icon>add</Icon>}
                 onClick={() => setIsCreateModalOpen(true)}
               >
                 New List
               </Button>
               <Button
                 size="small"
-                startIcon={<EditIcon />}
+                startIcon={<Icon>edit</Icon>}
                 onClick={() => setIsEditModalOpen(true)}
                 disabled={!selectedList || selectedList.type !== 'my'}
               >
@@ -114,29 +108,29 @@ function PatientLists() {
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Print">
                 <IconButton size="small">
-                  <PrintIcon />
+                  <Icon>print</Icon>
                 </IconButton>
               </Tooltip>
               <Tooltip title="Refresh">
                 <IconButton size="small">
-                  <RefreshIcon />
+                  <Icon>refresh</Icon>
                 </IconButton>
               </Tooltip>
               <Tooltip title="Filter">
                 <IconButton size="small">
-                  <FilterListIcon />
+                  <Icon>filter_list</Icon>
                 </IconButton>
               </Tooltip>
               <Tooltip title="Search">
                 <IconButton size="small">
-                  <SearchIcon />
+                  <Icon>search</Icon>
                 </IconButton>
               </Tooltip>
             </Box>
             <Box sx={{ flexGrow: 1 }} />
             <Tooltip title="More options">
               <IconButton size="small">
-                <MoreVertIcon />
+                <Icon>more_vert</Icon>
               </IconButton>
             </Tooltip>
           </Toolbar>

@@ -1,8 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { App } from './routes/App.jsx'; 
 import { AuthProvider } from './components/contexts/AuthContext.jsx';
 

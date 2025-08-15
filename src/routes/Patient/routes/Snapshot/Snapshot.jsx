@@ -1,21 +1,17 @@
 import React from 'react';
 import { Masonry } from '@mui/lab';
 import groupBy from 'lodash/groupBy';
-import { Box, TitledCard } from '../../../../components/ui/Core.jsx';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js'
+import { Box, TitledCard } from 'components/ui/Core.jsx';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 // FIXME: TitledCard
 // At some point I will need to use a URLBuilder to link the title to corresponding pages
 // Leaving it for now because I don't know if that's within scope
 
 const SnapshotTabContent = ({ children, ...other }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc, setEnc] = useEncounterID()
-  const ptInfo = TEST_PATIENT_INFO({ patientMRN });
-//  const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
+  const { patient, encounter: enc, data: ptInfo, updateData } = usePatient()
+  // const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
-  // Helper function to check if a section is empty
   const isSectionEmpty = (section) => {
     return !section || section.length === 0;
   };

@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import { Box, Button, TextField, Window } from 'components/ui/Core.jsx';
 
 const PromptDialog = ({ open, onClose, onConfirm, title, placeholder = '' }) => {
   const [inputValue, setInputValue] = useState('');
@@ -33,9 +28,7 @@ const PromptDialog = ({ open, onClose, onConfirm, title, placeholder = '' }) => 
   };
 
   return (
-    <Dialog open={open} onClose={handleCancel}>
-      <DialogTitle>{title || 'Enter a Value'}</DialogTitle>
-      <DialogContent>
+    <Window title={title || 'Enter a Value'} open={open} onClose={handleCancel}>
         <TextField
           autoFocus
           fullWidth
@@ -44,16 +37,15 @@ const PromptDialog = ({ open, onClose, onConfirm, title, placeholder = '' }) => 
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyPress} // Listen for Enter key
         />
-      </DialogContent>
-      <DialogActions>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
         <Button onClick={handleCancel} color="secondary">
           Cancel
         </Button>
         <Button onClick={handleConfirm} color="primary">
           Confirm
         </Button>
-      </DialogActions>
-    </Dialog>
+      </Box>
+    </Window>
   );
 };
 

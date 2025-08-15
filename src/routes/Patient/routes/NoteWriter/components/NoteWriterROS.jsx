@@ -3,11 +3,7 @@
 // Depending on what the user selects, the ROS text will be updated automatically in the editor.
 
 import React, { useState, useEffect } from 'react';
-import { FormControlLabel, Checkbox, Box, Typography, IconButton, Grid } from '@mui/material';
-
-import DescriptionIcon from '@mui/icons-material/Description';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { FormControlLabel, Checkbox, Box, Typography, IconButton, Icon, Grid } from '@mui/material';
 import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
 
 
@@ -114,9 +110,9 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between">
         <Grid item>
           <IconButton onClick={handleCustomNote}>
-            <DescriptionIcon
+            <Icon
               sx={{ color: systemState?.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
-            />
+            >description</Icon>
           </IconButton>
         </Grid>
         <Grid item xs>
@@ -161,13 +157,13 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
                     onClick={() => handleSymptomClick(symptom, true)}
                     sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
                   >
-                    <AddIcon />
+                    <Icon>add</Icon>
                   </IconButton>
                   <IconButton
                     onClick={() => handleSymptomClick(symptom, false)}
                     sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
                   >
-                    <RemoveIcon />
+                    <Icon>remove</Icon>
                   </IconButton>
                 </Box>
               </Box>

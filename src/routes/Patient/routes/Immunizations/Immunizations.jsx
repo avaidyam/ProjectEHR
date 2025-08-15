@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
+import { Icon, Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 function ImmunizationsTabContent() {
-  const [patientMRN] = usePatientMRN();
-  const [enc] = useEncounterID();
-
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
   const immunizations = encounters?.find(x => x.id === enc)?.immunizations || [];
 
   // Group immunizations by vaccine type
@@ -55,7 +50,7 @@ function ImmunizationsTabContent() {
                 <TableRow>
                   <TableCell>
                     <IconButton onClick={() => toggleGroup(vaccine)}>
-                      {openGroups[vaccine] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                      {openGroups[vaccine] ? <Icon>keyboard_arrow_up</Icon> : <Icon>keyboard_arrow_down</Icon>}
                     </IconButton>
                   </TableCell>
                   <TableCell>

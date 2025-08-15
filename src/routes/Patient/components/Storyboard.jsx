@@ -1,12 +1,9 @@
 import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
-import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
-import { blue, deepOrange } from '@mui/material/colors';
-import { AuthContext } from '../../../components/contexts/AuthContext.jsx'; 
+import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
-import DateHelpers from '../../../util/DateHelpers.js';
-import { usePatientMRN, useEncounterID } from '../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../util/data/PatientSample.js'
+import DateHelpers from 'util/DateHelpers.js';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
@@ -90,8 +87,8 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   );
 };
 
-export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) => {
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+export const PatientSidebarVitalsOverview = ({ ...props }) => {
+  const { patient: patientMRN, encounter: encID, data: { encounters } } = usePatient()
   const vitals = (encounters?.find(x => x.id === encID) ?? {}).vitals;
 
   /** sort most recent to older */
@@ -114,9 +111,7 @@ export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) =>
 };
 
 export const Storyboard = ({ ...props }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN()
-  const [enc, setEnc] = useEncounterID()
-  const {
+  const { patient: patientMRN, encounter: enc, data: {
     firstName,
     lastName,
     dateOfBirth,
@@ -126,8 +121,8 @@ export const Storyboard = ({ ...props }) => {
     PCP,
     encounters,
     insurance,
-  } = TEST_PATIENT_INFO({ patientMRN });
-  console.dir(enc, encounters?.find(x => x.id === enc))
+  } } = usePatient()
+
   // Extract the first encounter
   const {
     problems,
@@ -148,7 +143,7 @@ export const Storyboard = ({ ...props }) => {
       <div style={{ display: 'flex', flexDirection: "column" }}>
         <Avatar
           source={avatarUrl}
-          sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
+          sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
         >
           {[firstName, lastName].map(x => x.charAt(0)).join("")}
         </Avatar>
@@ -169,7 +164,7 @@ export const Storyboard = ({ ...props }) => {
       <div style={{ display: 'flex', marginBottom: '0.5em' }}>
         <Avatar
           source={PCP.avatarUrl}
-          sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+          sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
         >
           {PCP.name.split(" ").map(x => x.charAt(0)).join("")}
         </Avatar>

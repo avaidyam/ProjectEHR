@@ -11,12 +11,11 @@ import {
   Paper,
   IconButton,
   Box,
-  Typography
+  Typography,
+  Icon,
+  colors
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import dayjs from 'dayjs';
-import { blue } from '@mui/material/colors';
 
 const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
   const handleDelete = (id) => {
@@ -63,7 +62,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                   component="th"
                   scope="row"
                   sx={{
-                    color: allergy.severity === 'High' ? 'text.primary' : blue[500],
+                    color: allergy.severity === 'High' ? 'text.primary' : colors.blue[500],
                     fontWeight: allergy.severity === 'High' ? 'bold' : 'normal',
                     
                   }}
@@ -105,7 +104,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                     }}
                     size="small"
                   >
-                    <EditIcon fontSize="small" />
+                    <Icon fontSize="small">edit</Icon>
                   </IconButton>
                   <IconButton
                     aria-label="delete"
@@ -115,7 +114,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                     }}
                     size="small"
                   >
-                    <DeleteIcon fontSize="small" />
+                    <Icon fontSize="small">delete</Icon>
                   </IconButton>
                 </TableCell>
               </TableRow>

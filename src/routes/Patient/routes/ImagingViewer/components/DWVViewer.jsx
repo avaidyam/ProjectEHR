@@ -1,16 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import {
-    Dialog,
-    Slide,
     Menu,
     MenuItem,
     Box,
     LinearProgress,
-    IconButton
+    IconButton,
+    styled
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { styled } from '@mui/system';
 import {
     App,
     decoderScripts

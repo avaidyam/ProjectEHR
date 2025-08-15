@@ -14,17 +14,26 @@ import {
   TableHead as MUITableHead,
   TableBody as MUITableBody,
   TableRow as MUITableRow,
-  TableCell as MUITableCell
+  TableCell as MUITableCell,
+  Dialog as MUIDialog,
+  DialogActions as MUIDialogActions,
+  DialogContent as MUIDialogContent,
+  DialogContentText as MUIDialogContentText,
+  DialogTitle as MUIDialogTitle,
 } from '@mui/material'
+import { 
+  default as MUIDraggable 
+} from 'react-draggable'
 import { EditorReadOnly } from './Editor.jsx'
 
 // TODO: Create a tooltip wrapped version of each of these.
 
-export const Box = ({ children, ...props }) => (
-    <MUIBox {...props}>
-        {children}
-    </MUIBox>
-)
+// This component doubles as Box and Paper.
+export const Box = ({ paper, children, ...props }) => {
+  if (paper === true)
+    return (<MUIPaper {...props}>{children}</MUIPaper>)
+  return (<MUIBox {...props}>{children}</MUIBox>)
+}
 
 export const VStack = ({ spacing = 2, children, ...props }) => (
   <MUIStack direction="column" spacing={spacing} {...props}>
@@ -157,4 +166,52 @@ export const TitledCard = ({ title, color, children, ...props }) => {
       <Box style={{ margin: 0 }}>{children}</Box>
     </MUIPaper>
   )
+}
+
+function _MUIDraggablePaperComponent(props) {
+  const nodeRef = React.useRef(null);
+  return (
+    <MUIDraggable
+      nodeRef={nodeRef}
+      handle="#draggable-dialog-title"
+      cancel={'[class*="MuiDialogContent-root"]'}
+    >
+      <MUIPaper {...props} ref={nodeRef} />
+    </MUIDraggable>
+  );
+}
+
+export const Window = ({ title, open, onClose, children, ...props }) => {
+  return (
+    <MUIDialog
+      open={open}
+      onClose={onClose}
+      PaperComponent={_MUIDraggablePaperComponent}
+      {...props}
+    >
+      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+        {title}
+        <MUIIconButton
+          onClick={onClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <MUIIcon>close</MUIIcon>
+        </MUIIconButton>
+      </MUIDialogTitle>
+      <MUIDialogContent dividers>
+        {children}
+      </MUIDialogContent>
+      {/*
+      <MUIDialogActions>
+        <MUIButton autoFocus onClick={onClose}>Cancel</MUIButton>
+        <MUIButton onClick={onClose}>Okay</MUIButton>
+      </MUIDialogActions> 
+      */}
+    </MUIDialog>
+  );
 }

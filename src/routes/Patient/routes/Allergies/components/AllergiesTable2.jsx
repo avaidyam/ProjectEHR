@@ -11,10 +11,9 @@ import {
   IconButton,
   Box,
   Typography,
-  Button
+  Button,
+  Icon
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 // NOTE: dummyAllergies will now be managed by the parent AllergiesTab to allow edits
 // and additions to be reflected. This component will receive them via props.
@@ -74,14 +73,14 @@ const AllergiesTable2 = ({ allergies, onEdit, onDelete }) => {
                     onClick={(e) => { e.stopPropagation(); onEdit(allergy); }} // Stop propagation to prevent row click
                     size="small"
                   >
-                    <EditIcon fontSize="small" />
+                    <Icon fontSize="small">edit</Icon>
                   </IconButton>
                   <IconButton
                     aria-label="delete"
                     onClick={(e) => { e.stopPropagation(); handleDelete(allergy.id); }} // Stop propagation
                     size="small"
                   >
-                    <DeleteIcon fontSize="small" />
+                    <Icon fontSize="small">delete</Icon>
                   </IconButton>
                 </TableCell>
               </TableRow>

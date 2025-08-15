@@ -10,11 +10,11 @@ import {
     Box,
     Typography,
     Chip,
+    Icon
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePatientLists } from '../../../components/contexts/PatientListContext.jsx';
+import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
 import { AddToListModal } from './AddToListModal.jsx';
 
 // Helper function to get status color
@@ -181,7 +181,7 @@ export const PatientsTable = () => {
                   <TableCell align='right'>
                     <Button
                       variant='text'
-                      startIcon={<AddIcon />}
+                      startIcon={<Icon>add</Icon>}
                       onClick={() => setSelectedPatient(patient)}
                       sx={{ minWidth: 'auto' }}
                     >

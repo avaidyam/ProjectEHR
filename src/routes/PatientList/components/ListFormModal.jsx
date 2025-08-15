@@ -1,19 +1,6 @@
-import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    List,
-    ListItem, ListItemText,
-    Paper,
-    TextField,
-    Typography
-} from '@mui/material';
-import {Add as AddIcon, Remove as RemoveIcon, KeyboardArrowUp as KeyboardArrowUpIcon, KeyboardArrowDown as KeyboardArrowDownIcon} from '@mui/icons-material';
 import React from 'react';
+import { List, ListItem, ListItemText } from '@mui/material';
+import { Box, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core.jsx';
 
 const availableColumns = [
     { id: 'name', label: 'Patient Name', selected: true, order: 0 },
@@ -140,9 +127,7 @@ export const ListFormModal = ({
     };
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth='md' fullWidth>
-            <DialogTitle>{isEditMode ? 'Edit List' : 'Create List'}</DialogTitle>
-            <DialogContent>
+        <Window title={isEditMode ? 'Edit List' : 'Create List'} open={open} onClose={onClose} maxWidth='md' fullWidth>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
                     <TextField
                         label='Name'
@@ -162,10 +147,10 @@ export const ListFormModal = ({
                     />
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <Box sx={{ flex: 1 }}>
-                            <Typography variant='subtitle2' gutterBottom>
+                            <Label variant='subtitle2' gutterBottom>
                                 Available Columns
-                            </Typography>
-                            <Paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
+                            </Label>
+                            <Box paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
                                 <List dense>
                                     {unselectedColumns.map((column) => (
                                         <ListItem
@@ -176,7 +161,7 @@ export const ListFormModal = ({
                                                     size='small'
                                                     onClick={() => handleAddColumn(column)}
                                                 >
-                                                    <AddIcon />
+                                                    <Icon>add</Icon>
                                                 </IconButton>
                                             }
                                         >
@@ -184,17 +169,17 @@ export const ListFormModal = ({
                                         </ListItem>
                                     ))}
                                 </List>
-                            </Paper>
+                            </Box>
                         </Box>
                         <Box sx={{ flex: 1 }}>
-                            <Typography variant='subtitle2' gutterBottom>
+                            <Label variant='subtitle2' gutterBottom>
                                 Selected Columns {selectedColumns.length === 0 && (
-                                    <Typography component="span" color="error" variant="caption">
+                                    <Label component="span" color="error" variant="caption">
                                         (At least one column required)
-                                    </Typography>
+                                    </Label>
                                 )}
-                            </Typography>
-                            <Paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
+                            </Label>
+                            <Box paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
                                 <List dense>
                                     {selectedColumns.map((column, index) => (
                                         <ListItem
@@ -207,7 +192,7 @@ export const ListFormModal = ({
                                                         onClick={() => handleMoveColumn(index, 'up')}
                                                         disabled={index === 0}
                                                     >
-                                                        <KeyboardArrowUpIcon />
+                                                        <Icon>keyboard_arrow_up</Icon>
                                                     </IconButton>
                                                     <IconButton
                                                         edge='end'
@@ -215,14 +200,14 @@ export const ListFormModal = ({
                                                         onClick={() => handleMoveColumn(index, 'down')}
                                                         disabled={index === selectedColumns.length - 1}
                                                     >
-                                                        <KeyboardArrowDownIcon />
+                                                        <Icon>keyboard_arrow_down</Icon>
                                                     </IconButton>
                                                     <IconButton
                                                         edge='end'
                                                         size='small'
                                                         onClick={() => handleRemoveColumn(column)}
                                                     >
-                                                        <RemoveIcon />
+                                                        <Icon>remove</Icon>
                                                     </IconButton>
                                                 </Box>
                                             }
@@ -231,12 +216,11 @@ export const ListFormModal = ({
                                         </ListItem>
                                     ))}
                                 </List>
-                            </Paper>
+                            </Box>
                         </Box>
                     </Box>
                 </Box>
-            </DialogContent>
-            <DialogActions>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
                     onClick={handleSubmit}
@@ -245,8 +229,8 @@ export const ListFormModal = ({
                 >
                     {isEditMode ? 'Save Changes' : 'Create List'}
                 </Button>
-            </DialogActions>
-        </Dialog>
+            </Box>
+        </Window>
     );
 };
   
