@@ -1352,30 +1352,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    An oral loading dose of Clopidogrel, 600 mg was given to John Hanson in the cath lab after the stent placement and he was continued on aspirin 81 mg and clopidogrel 75 mg once daily. He was then transferred to cardiac critical care unit
-    He was started on
-    •atorvastatin 80 mg once daily
-    •carvediolol 3.125 mg twice a day
-    •lisinopril 10 mg once daily
-    He was then admitted to cardiac critical care unit where an echocardiogram was ordered.
-            
-    ---
-            
-    Echocardiogram findings:
-    •     The anterior wall is hypokinetic.
-    •     The overall left ventricular function is  severely reduced.
-    •     Ejection Fraction = 25 - 30%
-    He was started on an aldosterone antagonist, Eplerenone 25 mg once daily.
-    He was discharged home after a brief hospital stay.
-            
-    ---
-            
-    He started cardiac rehab 3 days after his discharge.
-    He was seen regularly in an outpatient cardiology clinic and medications optimized.
-    He had a repeat echocardiogram in 2 months.  
-    Ejection fraction was normal at 55% and wall motion abnormalities were resolved. 
-    `,
+              content: `<p>An oral loading dose of Clopidogrel, 600 mg was given to John Hanson in the cath lab after the stent placement and he was continued on aspirin 81 mg and clopidogrel 75 mg once daily. He was then transferred to cardiac critical care unit</p><p>He was started on</p><ul><li>atorvastatin 80 mg once daily</li><li>carvediolol 3.125 mg twice a day</li><li>lisinopril 10 mg once daily</li><li>He was then admitted to cardiac critical care unit where an echocardiogram was ordered.</li></ul><hr /><p>Echocardiogram findings:</p><ul><li>The anterior wall is hypokinetic.</li><li>The overall left ventricular function is severely reduced.</li><li>Ejection Fraction = 25 - 30%</li></ul><p>He was started on an aldosterone antagonist, Eplerenone 25 mg once daily.</p><p>He was discharged home after a brief hospital stay.</p><hr /><p>He started cardiac rehab 3 days after his discharge.</p><p>He was seen regularly in an outpatient cardiology clinic and medications optimized.</p><p>He had a repeat echocardiogram in 2 months.</p><p>Ejection fraction was normal at 55% and wall motion abnormalities were resolved.</p>`,
             },
           },
           {
@@ -1393,9 +1370,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    A Percutaneous coronary intervention (PCI) was performed by the Interventional cardiologist and blood flow was successfully restored to the occluded left anterior descending artery (LAD) by placement of a stent (Everolimus-eluting platinum chromium stent)
-    `,
+              content: `<p>A Percutaneous coronary intervention (PCI) was performed by the Interventional cardiologist and blood flow was successfully restored to the occluded left anterior descending artery (LAD) by placement of a stent (Everolimus-eluting platinum chromium stent)</p>`,
             },
           },
           {
@@ -1413,16 +1388,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    1. What is a typical ECG tracing collected on standard leads I, II and III? What will happen if electrode has a
-    poor electrical contact or it falls off? What is the amplitude and duration of a single ECG tracing? How
-    cardiac vector changes over time? Identify all ECG waveforms (p, q, r, s, t, u), how they are generated?
-    2. Discuss the resting and action potential and where ECG signal originates from?
-    3. Using Goldman-Hodgkin-Katz (GHK) equation calculate the resting potential using the concentrations and
-    permeability’s of Na+, K+ and Cl- ions.
-    4. Based on provided circuit model for an ECG electrode, graph frequency response (impedance vs.
-    frequency).
-    `,
+              content: `<ol><li>What is a typical ECG tracing collected on standard leads I, II and III? What will happen if electrode has a poor electrical contact or it falls off? What is the amplitude and duration of a single ECG tracing? How cardiac vector changes over time? Identify all ECG waveforms (p, q, r, s, t, u), how they are generated?</li><li>Discuss the resting and action potential and where ECG signal originates from?</li><li>Using Goldman-Hodgkin-Katz (GHK) equation calculate the resting potential using the concentrations and permeability&rsquo;s of Na+, K+ and Cl- ions.</li><li>Based on provided circuit model for an ECG electrode, graph frequency response (impedance vs. frequency).</li></ol>`,
             },
           },
           {
@@ -1440,19 +1406,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    In the ED, he was assessed by an ED physician. EKG was
-    reviewed and an intravenous catheter was placed. He was
-    administered:
-    • Heparin (4000 units IV, followed by 1000 units per hour by
-    infusion)
-    • Morphine (4mg IV)
-    • O2 by nasal catheter (2 liters/minute)
-    • Sublingual NTG 0.4 mg was given
-    He was then emergently transferred to Carle Cardiac
-    catherization lab after discussion with the on-call
-    Interventional cardiologist
-    `,
+              content: `<p>In the ED, he was assessed by an ED physician. EKG was reviewed and an intravenous catheter was placed. He was administered:</p><ul><li>Heparin (4000 units IV, followed by 1000 units per hour by infusion)</li><li>Morphine (4mg IV)</li><li>O2 by nasal catheter (2 liters/minute)</li><li>Sublingual NTG 0.4 mg was given</li></ul><p>He was then emergently transferred to Carle Cardiac catherization lab after discussion with the on-call Interventional cardiologist.</p>`,
             },
           },
           {
@@ -1470,10 +1424,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    After review of his EKG, aspirin 325 mg was given orally and he was emergently transferred to the
-    emergency room via ambulance.
-    `,
+              content: `<p>After review of his EKG, aspirin 325 mg was given orally and he was emergently transferred to the emergency room via ambulance.</p>`,
             },
           },
           {
@@ -1491,21 +1442,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    Physical examination:
-    General appearance : anxious, diaphoretic man in obvious distress.
-    Vitals BP: 150/90, Temp: 36.5 °C (97.7 °F), Heart Rate 110 BPM, Weight: 320 lb. (145.15 kg), Ht. 6 ft. (182.8cm), BMI
-    43.4, SpO2: 95 % on room air
-    Ear, nose, throat exam: normal.
-    Neck: no lymphadenopathy, no carotid bruit.
-    Lungs: a few crackles at lung bases, noted bilaterally.
-    Chest wall: no tenderness.
-    Heart: S1, S2 normal, S4 heard. No murmurs noted.
-    Abdomen: soft, non-tender, bowel sounds normal.
-    Extremities: no edema.
-    Pulses: bilateral brachial, radial, femoral, dorsalis pedis pulses equal and palpable, 2+.
-    Neurologic: Alert and oriented X 3, no focal neurological deficits.
-    `,
+              content: `<p><strong>Physical examination:</strong></p><p><strong>General appearance:</strong> anxious, diaphoretic man in obvious distress.</p><p><strong>Vitals BP:</strong> 150/90, Temp: 36.5 &deg;C (97.7 &deg;F), Heart Rate 110 BPM, Weight: 320 lb. (145.15 kg), Ht. 6 ft. (182.8cm), BMI 43.4, SpO2: 95 % on room air</p><p><strong>Ear, nose, throat exam:</strong> normal.</p><p><strong>Neck:</strong> no lymphadenopathy, no carotid bruit.</p><p><strong>Lungs:</strong> a few crackles at lung bases, noted bilaterally.</p><p><strong>Chest wall:</strong> no tenderness.</p><p><strong>Heart:</strong> S1, S2 normal, S4 heard. No murmurs noted.</p><p><strong>Abdomen:</strong> soft, non-tender, bowel sounds normal.</p><p><strong>Extremities:</strong> no edema.</p><p><strong>Pulses:</strong> bilateral brachial, radial, femoral, dorsalis pedis pulses equal and palpable, 2+.</p><p><strong>Neurologic:</strong> Alert and oriented X 3, no focal neurological deficits.</p>`,
             },
           },
           {
@@ -1523,15 +1460,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    Review of Systems:
-    General: fatigued and tired since morning. No fever
-    Cardiovascular: chest pain, no syncopal episodes
-    Pulmonary: shortness of breath, no cough and wheezing
-    Gastrointestinal nausea. No abdominal pain, diarrhea, vomiting
-    Musculoskeletal: right knee and foot pain, no back pain
-    Neurological: no focal numbness tingling or weakness
-    `,
+              content: `<p><strong>Review of Systems:</strong></p><p><strong>General:</strong> fatigued and tired since morning. No fever</p><p><strong>Cardiovascular:</strong> chest pain, no syncopal episodes</p><p><strong>Pulmonary:</strong> shortness of breath, no cough and wheezing</p><p><strong>Gastrointestinal:</strong> nausea. No abdominal pain, diarrhea, vomiting</p><p><strong>Musculoskeletal:</strong> right knee and foot pain, no back pain</p><p><strong>Neurological:</strong> no focal numbness tingling or weakness</p>`,
             },
           },
           {
@@ -1549,20 +1478,7 @@ export const _data = [
               tag: 'Medical',
               encounterProvider: 'Dr. Samantha Jones',
               noteType: 'Progress Note',
-              content: `
-    John Hanson is a 66 year old male, who walked into the clinic complaining of chest pain.
-    He reports that after a week of heavy rains, his yard was overgrown, and the soil was wet and water logged.
-    He did not want to use his heavy riding mower. He decided to mow the grass with his push mower. After
-    pushing the mower for about 15 minutes (he reports he had to use substantial effort to make progress with
-    the push mower) he started having a dull ache in his chest; which worsened as he kept pushing the mower.
-    He got concerned about his pain and stopped mowing. The pain resolved over the next 10 minutes. He
-    decided to stop mowing as he was not feeling very well and came inside and laid down on the living room
-    couch to rest.
-    The pain started again after 30 minutes, he felt sick but did not want to go the ED. He drove himself to the
-    clinic and insisted on seeing his primary care physician. He complains of persistent chest pain, which has
-    worsened since he arrived at the clinic, grades it as 8/10, and radiating to his neck and jaw. He reports he
-    feels nauseous, and is having trouble breathing, and feels short of breath.
-    `,
+              content: `<p>John Hanson is a 66 year old male, who walked into the clinic complaining of chest pain. He reports that after a week of heavy rains, his yard was overgrown, and the soil was wet and water logged. He did not want to use his heavy riding mower. He decided to mow the grass with his push mower. After pushing the mower for about 15 minutes (he reports he had to use substantial effort to make progress with the push mower) he started having a dull ache in his chest; which worsened as he kept pushing the mower. He got concerned about his pain and stopped mowing. The pain resolved over the next 10 minutes. He decided to stop mowing as he was not feeling very well and came inside and laid down on the living room couch to rest.</p><p>The pain started again after 30 minutes, he felt sick but did not want to go the ED. He drove himself to the clinic and insisted on seeing his primary care physician. He complains of persistent chest pain, which has worsened since he arrived at the clinic, grades it as 8/10, and radiating to his neck and jaw. He reports he feels nauseous, and is having trouble breathing, and feels short of breath.</p>`,
             },
           },
           {

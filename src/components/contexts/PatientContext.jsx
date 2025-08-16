@@ -16,6 +16,7 @@ export const PatientProvider = ({ patient, encounter, children }) => {
 }
 
 // Usage: `const { patient, encounter, data, updateData } = usePatient()`
+// Usage: `updateData(prev => ...)`
 export const usePatient = () => {
   const ctx = React.useContext(PatientContext)
   if (ctx === undefined) {

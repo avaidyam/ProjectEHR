@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, RichText } from 'components/ui/Core.jsx';
 
-export const NoteViewer = ({ selectedRow }) => {
+const NoteViewer = ({ selectedRow }) => {
   return (
     <>
     {Object.keys(selectedRow.data).map((key, index) => (
@@ -11,7 +11,7 @@ export const NoteViewer = ({ selectedRow }) => {
           </Box>
         )
       ))}
-    <Box sx={{ whiteSpace: "pre-wrap" }}>{selectedRow.data.content}</Box>
+    <RichText>{selectedRow.data.content}</RichText>
     </>
   );
 };
