@@ -1,11 +1,16 @@
 import * as React from 'react'
 import { useNavigate, generatePath, useParams } from 'react-router-dom';
+import createStore from "teaful";
 import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 export const PatientContext = React.createContext()
 
+// FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
+// We need to actually useEffect() to set the "database" value to the new patient data.
+
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider = ({ patient, encounter, children }) => {
+  // const { useStore } = createStore(TEST_PATIENT_INFO({ patientMRN: patient }))
   const [data, setData] = React.useState(TEST_PATIENT_INFO({ patientMRN: patient }))
   const value = React.useMemo(() => ({ patient, encounter, data, updateData: setData }), [patient, encounter, data])
   return (
