@@ -7,6 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { styled } from '@mui/material/styles';
+import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { usePatientMRN } from '../../../../util/urlHelpers.js';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -20,14 +22,17 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const dummyMedicalHistory = [
-  { id: 1, diagnosis: 'HFpEF heart failure with preserved ejection fraction', date: '11/05/2020', age: '65 years old', comment: '', src: 'Approved', problemList: true },
-  { id: 2, diagnosis: 'Atrial fibrillation', date: '01/15/2021', age: '66 years old', comment: '', src: 'Approved', problemList: false },
-  { id: 3, diagnosis: 'PVD (peripheral vascular disease) (CMS-HCC) [I73.9]', date: '03/20/2022', age: '67 years old', comment: 'stents in both legs', src: 'From', problemList: true },
-];
-
 export default function MedicalHistory() {
-  const [history, setHistory] = useState(dummyMedicalHistory);
+  const [patientMRN] = usePatientMRN();
+  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
+  
+  const sortedEncounters = [...encounters].sort((a, b) => b.id - a.id);
+  const mostRecentHistory = sortedEncounters[0]?.history?.medical || [];
+
+  const [history, setHistory] = useState(mostRecentHistory.map((item, index) => ({
+    ...item,
+    id: index,
+  })));
   const [editingId, setEditingId] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [newEntry, setNewEntry] = useState({ id: null, diagnosis: '', date: '', age: '', comment: '', src: 'Approved', problemList: false });
@@ -44,7 +49,7 @@ export default function MedicalHistory() {
   };
 
   const handleSave = () => {
-    if (editingId) {
+    if (editingId !== null) {
       setHistory(history.map(entry => entry.id === editingId ? newEntry : entry));
       setEditingId(null);
     } else {
@@ -61,8 +66,8 @@ export default function MedicalHistory() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewEntry({ ...newEntry, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setNewEntry({ ...newEntry, [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleAddClick = () => {
@@ -106,7 +111,7 @@ export default function MedicalHistory() {
                 <TableCell>{entry.comment}</TableCell>
                 <TableCell>{entry.src}</TableCell>
                 <TableCell>
-                  {entry.problemList ? <CheckCircleOutlineIcon color="success" /> : <CancelIcon color="error" />}
+                  {entry.problemList === 'True' ? <CheckCircleOutlineIcon color="success" /> : <CancelIcon color="error" />}
                 </TableCell>
                 <TableCell>
                   <IconButton size="small" onClick={() => handleEdit(entry)}><EditIcon fontSize="small" /></IconButton>
@@ -120,7 +125,7 @@ export default function MedicalHistory() {
 
       {(isAdding || editingId !== null) && (
         <Paper sx={{ p: 2, mt: 2, border: '1px solid #e0e0e0' }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>{editingId ? 'Edit Entry' : 'Add New Entry'}</Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>{editingId !== null ? 'Edit Entry' : 'Add New Entry'}</Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField label="Diagnosis" name="diagnosis" value={newEntry.diagnosis} onChange={handleChange} fullWidth />
@@ -136,7 +141,7 @@ export default function MedicalHistory() {
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
-                control={<Checkbox checked={newEntry.problemList} onChange={(e) => setNewEntry({ ...newEntry, problemList: e.target.checked })} />}
+                control={<Checkbox checked={newEntry.problemList === 'True'} onChange={(e) => setNewEntry({ ...newEntry, problemList: e.target.checked ? 'True' : 'False' })} />}
                 label="Add to Problem List"
               />
             </Grid>
