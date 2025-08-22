@@ -80,7 +80,6 @@ const SnapshotTabContent = ({ children, ...other }) => {
               </div>
             ))
           )}
-          <Button onClick={() =>  { console.log("clicked"); setMedicalHx(prev => [{id: 0, date: "2025-08-21", diagnosis: "Testing!"}, ...prev]) }}>Test</Button>
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>} color='#9E49E2'>
           {isSectionEmpty(medicationHx) ? (
