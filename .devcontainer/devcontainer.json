@@ -11,9 +11,7 @@
      "vscode": {
          "extensions": [
              "dbaeumer.vscode-eslint",
-             "github.vscode-pull-request-github",
-             "eamodio.gitlens",
-             "christian-kohler.npm-intellisense"
+             "github.vscode-pull-request-github"
          ]
      }
   },
