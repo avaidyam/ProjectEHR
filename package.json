@@ -95,6 +95,9 @@
     "serve": "^14.2.1",
     "typescript": "^5.9.2"
   },
+  "overrides": {
+    "typescript": "^5.9.2"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
