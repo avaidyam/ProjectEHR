@@ -21,6 +21,7 @@ import Chat from "./routes/Chat/Chat.jsx";
 import LabReport from './routes/LabReport/LabReport.jsx';
 import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
+import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -34,6 +35,7 @@ const ALL_TABS = {
   "Results Review": (props) => <ResultsReview {...props} />,
   "PDMP": (props) => <Pdmp {...props} />,
   "Immunizations": (props) => <Immunizations {...props} />,
+  "Clinical Impressions": (props) => <ClinicalImpressions {...props} />,
   "Allergies": (props) => <Allergies {...props} />,
   "Chat": (props) => <Chat {...props} />,
   "Lab Report": (props) => <LabReport {...props} />,
@@ -45,7 +47,7 @@ const DEFAULT_MAIN_TABS = [
   {"SnapShot": {}}, {"Chart Review": {}}, {"Problem List": {}}, 
   {"History": {}}, {"Medications": {}}, {"Orders Mgmt": {}}, 
   {"NoteWriter": {}}, {"Results Review": {}}, {"Immunizations": {}}, 
-  {"Allergies": {}}
+  {"Allergies": {}}, {"Clinical Impressions": {}}
 ]
 
 const DEFAULT_SIDE_TABS = [
