@@ -192,17 +192,16 @@ const columns = [
               {data.lastName}, {data.firstName} ({data.id})
             </Typography>
             <Typography color="textSecondary" fontSize="12px">
-              {data.age} years old / {data.gender}
+              {new Date(data.birthdate).age()} years old / {data.gender}
             </Typography>
           </Box>
         </Box>
       );
     },
     valueGetter: (value, row) => {
-      console.log('Value', value, 'Row', row);
       const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
       return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
-        data.age
+        new Date(data.birthdate).age()
       } years old / ${data.gender}`;
     },
   },
@@ -313,9 +312,9 @@ export function Schedule() {
             >
               {selPatient ? (
                 <>
-                  Name: {selPatient.patient.firstName} {selPatient.patient.lastName} <br />
-                  Age: {selPatient.patient.age} <br />
-                  Gender: {selPatient.patient.gender} <br />
+                  Name: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).firstName} {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).lastName} <br />
+                  Age: {new Date(TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).birthdate).age()} <br />
+                  Gender: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
                 </>
