@@ -13,8 +13,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
   const [{
     firstName,
     lastName,
-    age,
-    dateOfBirth,
+    birthdate,
     address
   }, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
@@ -37,8 +36,8 @@ const SnapshotTabContent = ({ children, ...other }) => {
       <Masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Patient</>} color='#5EA1F8'>
           <b>Name:</b> {`${firstName} ${lastName}`}<br/>
-          <b>Age:</b> {age}<br/>
-          <b>Date of Birth:</b> {dateOfBirth}<br/>
+          <b>Age:</b> {new Date(birthdate).age()}<br/>
+          <b>Date of Birth:</b> {birthdate}<br/>
           <b>Address:</b> {address}<br/>
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Allergies</>} color='#9F3494'>

@@ -2,7 +2,6 @@ import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
-
 import DateHelpers from 'util/helpers.js';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
@@ -118,7 +117,7 @@ export const Storyboard = ({ ...props }) => {
     id: patientMRN,
     firstName,
     lastName,
-    dateOfBirth,
+    birthdate,
     preferredLanguage,
     avatarUrl,
     gender,
@@ -141,7 +140,6 @@ export const Storyboard = ({ ...props }) => {
     { id: '2', name: 'COVID Booster #9' },
   ] // FIXME this should later be computed based on the "not on file" items in snapshot 
 
-  const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
     <>
       <div style={{ display: 'flex', flexDirection: "column" }}>
@@ -154,8 +152,8 @@ export const Storyboard = ({ ...props }) => {
         <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
           <strong>{firstName} {lastName}</strong>
           <span>Sex: {gender}</span>
-          <span>Age: {patientAgeInYears} years old</span>
-          <span>DOB: {DateHelpers.standardFormat(dateOfBirth)}</span>
+          <span>Age: {new Date(birthdate).age()} years old</span>
+          <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
           <span>MRN: {patientMRN}</span>
           <strong>Preferred language: {preferredLanguage}</strong>
           {preferredLanguage !== 'English' && 

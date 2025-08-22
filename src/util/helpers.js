@@ -12,10 +12,20 @@ import { DateTime } from 'luxon';
  * @returns A number in the range [min, max]
  * @type Number
  */
-// eslint-disable-next-line no-extend-native
-Number.prototype.clamp = function(min, max) {
-  return Math.min(Math.max(this, min), max);
-};
+Number.prototype.clamp = function(min, max) { // eslint-disable-line no-extend-native, func-names
+  return Math.min(Math.max(this, min), max)
+}
+
+/**
+ * Calculates age in years since the given birth date.
+ * 
+ * @param {Date|String} other The birth date to calculate age from
+ * @returns Age, in years
+ * @type Number
+ */
+Date.prototype.age = function() { // eslint-disable-line no-extend-native, func-names
+  return Math.floor((Date.now() - this.getTime()) / (1000 * 60 * 60 * 24 * 365))
+}
 
 /**
  * Decimal adjustment of a number.
