@@ -14,7 +14,7 @@
     "eject": "react-scripts eject",
     "serve": "serve -s build"
   },
-  "main": "index.js",
+  "main": "index.tsx",
   "dependencies": {
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.11.1",
@@ -76,6 +76,10 @@
     "@babel/preset-env": "^7.22.15",
     "@babel/preset-react": "^7.22.15",
     "@trivago/prettier-plugin-sort-imports": "^3.1.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
     "eslint": "^8.6.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -88,7 +92,8 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.5.1",
     "react-scripts": "^5.0.1",
-    "serve": "^14.2.1"
+    "serve": "^14.2.1",
+    "typescript": "^5.9.2"
   },
   "browserslist": {
     "production": [
