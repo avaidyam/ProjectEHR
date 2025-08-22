@@ -13,7 +13,7 @@ const theme = createTheme({
     dark: true,
   },
 });
-
+// document.body.style.overflow = "hidden"
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider theme={theme} defaultMode="system">

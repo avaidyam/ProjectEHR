@@ -153,6 +153,12 @@ export const TableCell = ({ children, ...props }) => (
   </MUITableCell>
 )
 
+/**
+ To provide an icon for the title:
+ ```
+ title={<><Icon>token</Icon> Title</>}
+ ```
+ */
 export const TitledCard = ({ emphasized, title, color, children, ...props }) => {
   return(
     <MUIPaper sx={{ 
@@ -233,3 +239,7 @@ export const Window = ({ title, open, onClose, children, ...props }) => {
     </MUIDialog>
   );
 }
+
+export const Scrollable = ({ children }) => React.Children.map(children, child =>
+  React.cloneElement(child, { style: { ...child.props.style, overflow: 'visible' } })
+)
