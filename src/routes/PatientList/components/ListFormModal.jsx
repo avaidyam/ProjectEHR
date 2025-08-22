@@ -11,12 +11,7 @@ const availableColumns = [
     { id: 'age', label: 'Age', selected: false, order: 5 },
     { id: 'sex', label: 'Sex', selected: false, order: 6 },
     { id: 'bedStatus', label: 'Bed Status', selected: false, order: 7 },
-    {
-      id: 'admissionDate',
-      label: 'Last Admission Date',
-      selected: false,
-      order: 8,
-    },
+    { id: 'admissionDate', label: 'Last Admission Date', selected: false, order: 8 },
     { id: 'dischargeDate', label: 'Discharge Date', selected: false, order: 9 },
     { id: 'patientClass', label: 'Patient Class', selected: false, order: 10 },
     { id: 'attendingMD', label: 'Attending MD', selected: false, order: 11 },

@@ -36,14 +36,14 @@ async function getSnomed(term) {
 }
 
 const ProblemListTabContent = ({ children, ...other }) => {
-  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
+  const { useChart, useEncounter } = usePatient()
+  const [problems, setProblems] = useEncounter().problems()
 
   const [searchTerm, setSearchTerm] = useState('');
   const [diagnosesArray, setDiagnosesArray] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [problems, setProblems] = useState(encounters?.find(x => x.id === enc)?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);
