@@ -1,5 +1,6 @@
-export const _data = [
-  {
+export const _data = {
+  '1230001': {
+    id: '1230001',
     firstName: 'Alex',
     lastName: 'Bowman',
     dateOfBirth: '1993-05-15',
@@ -8,7 +9,6 @@ export const _data = [
     address: null,
     preferredLanguage: 'English',
     gender: 'Female',
-    mrn: '1230001',
     PCP: {
       name: 'Chris Nelson',
       title: 'MD',
@@ -527,7 +527,8 @@ export const _data = [
       },
     },
   },
-  {
+  '1230006': {
+    id: '1230006',
     firstName: 'Xiao-Mei',
     lastName: 'Chen',
     dateOfBirth: '1958-05-15',
@@ -536,7 +537,6 @@ export const _data = [
     address: null,
     preferredLanguage: 'Cantonese',
     gender: 'Female',
-    mrn: '1230006',
     PCP: {
       name: 'Chris Nelson',
       title: 'MD',
@@ -671,7 +671,8 @@ export const _data = [
       },
     },
   },
-  {
+  '1230007': {
+    id: '1230007',
     firstName: 'Nestor',
     lastName: 'Ortega-Rodriguez',
     dateOfBirth: '1958-05-15',
@@ -680,7 +681,6 @@ export const _data = [
     address: null,
     preferredLanguage: 'Spanish',
     gender: 'Male',
-    mrn: '1230007',
     PCP: {
       name: 'Chris Nelson',
       title: 'MD',
@@ -815,7 +815,8 @@ export const _data = [
       },
     },
   },
-  {
+  '1230008': {
+    id: '1230008',
     firstName: 'Nina',
     lastName: 'Ortega-Rodriguez',
     dateOfBirth: '1958-05-15',
@@ -824,7 +825,6 @@ export const _data = [
     address: null,
     preferredLanguage: 'Spanish',
     gender: 'Female',
-    mrn: '1230008',
     PCP: {
       name: 'Chris Nelson',
       title: 'MD',
@@ -959,7 +959,8 @@ export const _data = [
       },
     },
   },
-  {
+  '4641821': {
+    id: '4641821',
     firstName: 'John',
     lastName: 'Hanson',
     dateOfBirth: '1958-05-15',
@@ -968,7 +969,6 @@ export const _data = [
     address: null,
     preferredLanguage: 'English',
     gender: 'Male',
-    mrn: '4641821',
     PCP: {
       name: 'Chris Nelson',
       title: 'MD',
@@ -2563,7 +2563,6 @@ export const _data = [
       },
     },
   },
-];
+}
 
-export const TEST_PATIENT_INFO = ({ patientMRN }) =>
-  _data.filter((x) => x.mrn === patientMRN)[0] ?? null;
+export const TEST_PATIENT_INFO = ({ patientMRN }) => _data[patientMRN]

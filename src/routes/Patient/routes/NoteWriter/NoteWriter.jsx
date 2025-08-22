@@ -331,7 +331,7 @@ const temporaryStorage = {};
 
 export const Notewriter = () => {
   const { useChart, useEncounter } = usePatient()
-  const [{ mrn: patientMRN }, setChart] = useChart()()
+  const [{ id: patientMRN }, setChart] = useChart()()
   const [{ id: enc }, setEncounter] = useEncounter()()
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Zero is Index of the first tab (HPI)

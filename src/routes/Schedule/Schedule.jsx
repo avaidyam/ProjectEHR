@@ -189,7 +189,7 @@ const columns = [
           <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
           <Box sx={{ marginLeft: 1 }}>
             <Typography>
-              {data.lastName}, {data.firstName} ({data.mrn})
+              {data.lastName}, {data.firstName} ({data.id})
             </Typography>
             <Typography color="textSecondary" fontSize="12px">
               {data.age} years old / {data.gender}

@@ -91,8 +91,6 @@ export const PatientSidebarVitalsOverview = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [{ vitals }, setEncounter] = useEncounter()()
 
-  console.dir(vitals)
-
   /** sort most recent to older */
   const [mostRecentVitals, ...olderVitals] = _.sortBy(
     vitals || [],
@@ -116,9 +114,8 @@ export const Storyboard = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
-  console.dir({ chart, encounter })
   const {
-    mrn: patientMRN,
+    id: patientMRN,
     firstName,
     lastName,
     dateOfBirth,
