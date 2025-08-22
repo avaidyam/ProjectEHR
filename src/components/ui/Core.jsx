@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  alpha as MUIalpha,
   Box as MUIBox, 
   Stack as MUIStack, 
   Typography as MUITypography, 
@@ -155,7 +156,7 @@ export const TableCell = ({ children, ...props }) => (
 export const TitledCard = ({ emphasized, title, color, children, ...props }) => {
   return(
     <MUIPaper sx={{ 
-      borderLeftWidth: 15,
+      borderLeftWidth: 8,
       borderLeftColor: color,
       borderLeftStyle: 'solid',
       borderTop: '1px solid #ccc',
@@ -172,8 +173,8 @@ export const TitledCard = ({ emphasized, title, color, children, ...props }) => 
         sx={{ 
           display: "inline-block",
           fontSize: "1.2em", 
-          bgcolor: emphasized ? color : "background.paper",
-          color: emphasized ? "background.paper" : "color.inherit",
+          bgcolor: emphasized ? MUIalpha(color, 0.25) : "background.paper",
+          color: emphasized ? color : "color.inherit",
           borderRadius: emphasized ? '0px 100em 100em 0px' : 0,
           p: 0.5, pr: 2.5,
         }}
