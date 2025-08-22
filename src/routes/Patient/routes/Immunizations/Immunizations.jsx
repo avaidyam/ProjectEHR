@@ -3,8 +3,8 @@ import { Icon, Table, TableBody, TableCell, TableContainer, TableRow, TableHead,
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 function ImmunizationsTabContent() {
-  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
-  const immunizations = encounters?.find(x => x.id === enc)?.immunizations || [];
+  const { useChart, useEncounter } = usePatient()
+  const [immunizations, setImmunizations] = useEncounter().immunizations()
 
   // Group immunizations by vaccine type
   const grouped = immunizations.reduce((acc, record) => {

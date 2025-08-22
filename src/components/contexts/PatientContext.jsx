@@ -10,9 +10,18 @@ export const PatientContext = React.createContext()
 
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider = ({ patient, encounter, children }) => {
-  // const { useStore } = createStore(TEST_PATIENT_INFO({ patientMRN: patient }))
-  const [data, setData] = React.useState(TEST_PATIENT_INFO({ patientMRN: patient }))
-  const value = React.useMemo(() => ({ patient, encounter, data, updateData: setData }), [patient, encounter, data])
+
+  // 
+  const initialStore = TEST_PATIENT_INFO({ patientMRN: patient })
+  const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
+    // TODO: ...
+  })
+  // const [data, setData] = useStore() // React.useState(TEST_PATIENT_INFO({ patientMRN: patient }))
+  
+  // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const value = React.useMemo(() => ({ useChart: () => useStore, useEncounter: () => useStore.encounters[encounter] }), [patient, encounter])
+  
   return (
     <PatientContext.Provider value={value}>
       {children}
@@ -20,8 +29,20 @@ export const PatientProvider = ({ patient, encounter, children }) => {
   )
 }
 
-// Usage: `const { patient, encounter, data, updateData } = usePatient()`
-// Usage: `updateData(prev => ...)`
+/** 
+  Usage:
+  ```
+  const { useChart, useEncounter } = usePatient()
+  const [chart, setChart] = useChart()()
+  const [encounter, setEncounter] = useEncounter()()
+  ```
+
+  Usage: 
+  ```
+  const [medicalHx, setMedicalHx] = useEncounter().history.medical()
+  setMedicalHx(prev => [...prev, { new item here }])
+  ```
+ */
 export const usePatient = () => {
   const ctx = React.useContext(PatientContext)
   if (ctx === undefined) {
@@ -31,9 +52,11 @@ export const usePatient = () => {
 }
 
 /**
- * hook to extract mrn from url and set new one
- * *must* be used from within a functional component INSIDE a <Route>! (i.e. This will NOT work from Titlebar if it is not rendered within a route.)
- * Usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
+ hook to extract mrn from url and set new one
+
+ *must* be used from within a functional component INSIDE a <Route>! (i.e. This will NOT work from Titlebar if it is not rendered within a route.)
+
+ Usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
  */
 export const usePatientMRN = () => {
   const { mrn } = useParams()

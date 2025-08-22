@@ -4,8 +4,8 @@ import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 const ClinicalImpressions = () => {
   const [impression, setImpression] = useState('');
-  const { patient: patientMRN, encounter: enc, data: patientData, updateData } = usePatient()
-  const encounter = patientData.encounters?.find(x => x.id === enc); // Find the current encounter
+  const { useChart, useEncounter } = usePatient()
+  const [encounter, setEncounter] = useEncounter()()
 
   // If encounter exists, initialize clinical impressions
   const initialClinicalImpressions = encounter?.clinicalImpressions || [];

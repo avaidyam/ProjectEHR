@@ -217,7 +217,7 @@ const columns = [
     ),
     /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[0] ?? ""
+      const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
       return data2
     },// */
   },
@@ -232,7 +232,7 @@ const columns = [
     ),
     /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[1] ?? ""
+      const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
       return data2 // FIXME we need an actual appointment object still but this will do for now
     },// */
   },
@@ -242,7 +242,7 @@ const columns = [
     width: 200,
     valueGetter: (value, row) => {
       const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
-      const data2 = data.encounters.find((x) => x.id === row.patient.enc)?.provider;
+      const data2 = data.encounters[row.patient.enc]?.provider;
       return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
     },
   },
@@ -348,8 +348,8 @@ export function Schedule() {
               //  return; // Prevent routing
               // } // FIXME later
               if (
-                !TEST_PATIENT_INFO({ patientMRN: selectedMRN })
-                  .encounters.map((x) => x.id)
+                !(Object.values(TEST_PATIENT_INFO({ patientMRN: selectedMRN })
+                  .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {
                 alert(

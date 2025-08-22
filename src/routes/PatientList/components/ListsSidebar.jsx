@@ -14,7 +14,7 @@ const transformPatientData = (patients) => {
   const primaryCarePatients = patients.filter(patient => patient.PCP?.role === 'Primary Care Physician');
   const specialistPatients = patients.filter(patient => patient.PCP?.role !== 'Primary Care Physician');
   const recentEncounterPatients = patients.filter(patient => {
-    const hasRecentEncounter = patient.encounters?.some(encounter => {
+    const hasRecentEncounter = Object.values(patient.encounters).some(encounter => {
       const encounterDate = new Date(encounter.date);
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -25,9 +25,9 @@ const transformPatientData = (patients) => {
 
   const transformPatient = (patient) => {
     // Get the most recent encounter
-    const latestEncounter = patient.encounters?.reduce((latest, current) => {
+    const latestEncounter = Object.values(patient.encounters).reduce((latest, current) => {
       return new Date(current.startDate) > new Date(latest.startDate) ? current : latest;
-    }, patient.encounters[0]);
+    }, Object.values(patient.encounters)[0]);
 
     return {
       id: patient.mrn,

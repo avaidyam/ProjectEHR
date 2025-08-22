@@ -18,8 +18,8 @@ export const _data = [
     insurance: {
       carrierName: 'UnitedHealthcare',
     },
-    encounters: [
-      {
+    encounters: {
+      '1': {
         id: '1',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -214,7 +214,7 @@ export const _data = [
           },
         },
       },
-      {
+      '2': {
         id: '2',
         startDate: '2022-09-15 12:30',
         endDate: '2022-09-15 12:50',
@@ -525,7 +525,7 @@ export const _data = [
           },
         },
       },
-    ],
+    },
   },
   {
     firstName: 'Xiao-Mei',
@@ -546,8 +546,8 @@ export const _data = [
     insurance: {
       carrierName: 'UnitedHealthcare',
     },
-    encounters: [
-      {
+    encounters: {
+      '8': {
         id: '8',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -600,7 +600,7 @@ export const _data = [
           },
         },
       },
-      {
+      '9': {
         id: '9',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -669,7 +669,7 @@ export const _data = [
           },
         },
       },
-    ],
+    },
   },
   {
     firstName: 'Nestor',
@@ -690,8 +690,8 @@ export const _data = [
     insurance: {
       carrierName: 'UnitedHealthcare',
     },
-    encounters: [
-      {
+    encounters: {
+      '12': {
         id: '12',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -744,7 +744,7 @@ export const _data = [
           },
         },
       },
-      {
+      '13': {
         id: '13',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -813,7 +813,7 @@ export const _data = [
           },
         },
       },
-    ],
+    },
   },
   {
     firstName: 'Nina',
@@ -834,8 +834,8 @@ export const _data = [
     insurance: {
       carrierName: 'UnitedHealthcare',
     },
-    encounters: [
-      {
+    encounters: {
+      '14': {
         id: '14',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -888,7 +888,7 @@ export const _data = [
           },
         },
       },
-      {
+      '15': {
         id: '15',
         startDate: '2024-04-02 12:30',
         endDate: '2024-04-02 12:50',
@@ -957,7 +957,7 @@ export const _data = [
           },
         },
       },
-    ],
+    },
   },
   {
     firstName: 'John',
@@ -978,8 +978,8 @@ export const _data = [
     insurance: {
       carrierName: 'UnitedHealthcare',
     },
-    encounters: [
-      {
+    encounters: {
+      '3': {
         id: '3',
         startDate: '2024-09-15 12:30',
         endDate: '2024-09-15 12:50',
@@ -1255,7 +1255,7 @@ export const _data = [
           },
         },
       },
-      {
+      '4': {
         id: '4',
         startDate: '2022-09-15 12:30',
         endDate: '2022-09-15 12:50',
@@ -2561,7 +2561,7 @@ export const _data = [
           },
         },
       },
-    ],
+    },
   },
 ];
 

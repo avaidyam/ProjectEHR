@@ -1,7 +1,7 @@
 import React from 'react';
 import { Masonry } from '@mui/lab';
 import groupBy from 'lodash/groupBy';
-import { Box, Icon, TitledCard } from 'components/ui/Core.jsx';
+import { Box, Button, Icon, TitledCard } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 // FIXME: TitledCard
@@ -9,7 +9,22 @@ import { usePatient } from 'components/contexts/PatientContext.jsx';
 // Leaving it for now because I don't know if that's within scope
 
 const SnapshotTabContent = ({ children, ...other }) => {
-  const { patient, encounter: enc, data: ptInfo, updateData } = usePatient()
+  const { useChart, useEncounter } = usePatient()
+  const [{
+    firstName,
+    lastName,
+    age,
+    dateOfBirth,
+    address
+  }, setChart] = useChart()()
+  const [encounter, setEncounter] = useEncounter()()
+  const [allergiesHx, setAllergiesHx] = useEncounter().allergies()
+  const [immunizationHx, setImmunizationHx] = useEncounter().immunizations()
+  const [medicalHx, setMedicalHx] = useEncounter().history.medical()
+  const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical()
+  const [familyHx, setFamilyHx] = useEncounter().history.family()
+  const [medicationHx, setMedicationHx] = useEncounter().history.medications()
+
   // const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
   const isSectionEmpty = (section) => {
@@ -21,16 +36,16 @@ const SnapshotTabContent = ({ children, ...other }) => {
       {/* The wrapping Box is necessary to avoid the last element of the Masonry from wrapping incorrectly */}
       <Masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Patient</>} color='#5EA1F8'>
-          <b>Name:</b> {`${ptInfo.firstName} ${ptInfo.lastName}`}<br/>
-          <b>Age:</b> {ptInfo.age}<br/>
-          <b>Date of Birth:</b> {ptInfo.dateOfBirth}<br/>
-          <b>Address:</b> {ptInfo.address}<br/>
+          <b>Name:</b> {`${firstName} ${lastName}`}<br/>
+          <b>Age:</b> {age}<br/>
+          <b>Date of Birth:</b> {dateOfBirth}<br/>
+          <b>Address:</b> {address}<br/>
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Allergies</>} color='#9F3494'>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.allergies ) ? (
+          {isSectionEmpty(allergiesHx ) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            ptInfo.encounters?.find(x => x.id === enc)?.allergies.map((allergy) => (
+            allergiesHx.map((allergy) => (
               <div key={allergy.id}>
                 <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
               </div>
@@ -38,11 +53,11 @@ const SnapshotTabContent = ({ children, ...other }) => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Immunizations</>} color="#74c9cc">
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.immunizations) ? (
+          {isSectionEmpty(immunizationHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             Object.entries(
-              groupBy(ptInfo.encounters?.find(x => x.id === enc)?.immunizations, 'vaccine')
+              groupBy(immunizationHx, 'vaccine')
             ).map(([vaccine, records]) => (
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
@@ -54,10 +69,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medical History</>} color='#9F3494'>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.medical) ? (
+          {isSectionEmpty(medicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            ptInfo.encounters?.find(x => x.id === enc)?.history.medical.map((condition) => (
+            medicalHx.map((condition) => (
               <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {condition.date}
@@ -66,12 +81,13 @@ const SnapshotTabContent = ({ children, ...other }) => {
               </div>
             ))
           )}
+          <Button onClick={() =>  { console.log("clicked"); setMedicalHx(prev => [{id: 0, date: "2025-08-21", diagnosis: "Testing!"}, ...prev]) }}>Test</Button>
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>} color='#9E49E2'>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.medications) ? (
+          {isSectionEmpty(medicationHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            ptInfo.encounters?.find(x => x.id === enc)?.medications.map((medication) => (
+            medicationHx.map((medication) => (
               <div key={medication.id} style={{ color: '#9E49E2' }}>
                 {medication.name} {medication.dosage} {medication.frequency}
               </div>
@@ -79,10 +95,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Surgical History</>} color='#9F3494'>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.surgical) ? (
+          {isSectionEmpty(surgicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            ptInfo.encounters?.find(x => x.id === enc)?.history.surgical.map((condition) => (
+            surgicalHx.map((condition) => (
               <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {condition.date}
@@ -93,10 +109,10 @@ const SnapshotTabContent = ({ children, ...other }) => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color='#9F3494'>
-          {isSectionEmpty(ptInfo.encounters?.find(x => x.id === enc)?.history.family) ? (
+          {isSectionEmpty(familyHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            ptInfo.encounters?.find(x => x.id === enc)?.history.family.map((relative) => (
+            familyHx.map((relative) => (
               <div key={relative.id}>
                 <span style={{color:'#bbbbbb'}}>{relative.relationship}</span>
                 <span style={{marginLeft:'35px'}}>{relative.problems.map(x => x.description).join(', ')}</span>

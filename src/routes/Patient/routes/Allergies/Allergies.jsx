@@ -31,8 +31,6 @@ const initialAllergies = [
 ];
 
 export const Allergies = () => {
-  const { patient: patientMRN, encounter: encounterId, patientData, setPatientData } = usePatient();
-
   const [allergies, setAllergies] = useState(initialAllergies);
   const [editingAllergy, setEditingAllergy] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
