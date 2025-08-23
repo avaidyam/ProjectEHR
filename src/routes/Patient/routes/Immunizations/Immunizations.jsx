@@ -1,22 +1,38 @@
 import React, { useState } from 'react';
-import { Icon, Table, TableBody, TableCell, TableContainer, TableRow, TableHead, Paper, IconButton, Collapse, Box, Typography } from '@mui/material';
+import { 
+  Icon, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableRow, 
+  TableHead, 
+  Paper, 
+  IconButton, 
+  Collapse, 
+  Typography,
+  colors
+} from '@mui/material';
+import { Box, Label, Button, TitledCard } from 'components/ui/Core.jsx';
+import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
+import ImmunizationItemEditor from './components/ImmunizationItemEditor.jsx';
+import {
+  formatDose,
+  formatDate,
+  groupImmunizationsByType,
+  sortImmunizationsByDate
+} from './utils/immunizationUtils.js';
 
-function ImmunizationsTabContent() {
+export default function Immunizations() {
   const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
-  const immunizations = encounters?.find(x => x.id === enc)?.immunizations || [];
+  const currentEncounter = encounters?.find(x => x.id === enc);
+  const patientImmunizations = currentEncounter?.immunizations || [];
+  const [immunizations, setImmunizations] = useState(patientImmunizations);
+  const [editingImmunization, setEditingImmunization] = useState(null);
 
-  // Group immunizations by vaccine type
-  const grouped = immunizations.reduce((acc, record) => {
-    const key = record.vaccine;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(record);
-    return acc;
-  }, {});
+  const grouped = groupImmunizationsByType(immunizations);
 
-  // Set up toggle state for each group (arrow on left)
   const initialState = Object.keys(grouped).reduce((acc, key) => {
     acc[key] = false;
     return acc;
@@ -27,83 +43,189 @@ function ImmunizationsTabContent() {
     setOpenGroups(prev => ({ ...prev, [vaccine]: !prev[vaccine] }));
   };
 
+  const handleEdit = (immunization) => {
+    setEditingImmunization(immunization);
+  };
+
+  const handleSave = (updatedImmunization) => {
+    setImmunizations((prevImmunizations) =>
+      prevImmunizations.map((imm) => {
+        const immId = imm.id || imm.vaccine + imm.received;
+        const updatedId = updatedImmunization.id || updatedImmunization.vaccine + updatedImmunization.received;
+        return immId === updatedId ? updatedImmunization : imm;
+      })
+    );
+    setEditingImmunization(null);
+  };
+
+  const handleCancel = () => {
+    setEditingImmunization(null);
+  };
+
+  const handleDelete = (immunizationId) => {
+    setImmunizations(prev => prev.filter(imm => {
+      // Create a unique identifier for comparison
+      const immId = imm.id || imm.vaccine + imm.received;
+      return immId !== immunizationId;
+    }));
+  };
+
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="immunizations table">
-        <TableHead>
-          <TableRow>
-            <TableCell style={{ width: '5%' }} />
-            <TableCell>
-              <Typography  variant="h5" style={{ fontWeight: 'bold' }}>Immunization Family</Typography>
-            </TableCell>
-            <TableCell>
-              <Typography  variant="h5" style={{ fontWeight: 'bold' }}>Admin Dates</Typography>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Object.entries(grouped).map(([vaccine, records]) => {
-            // Create a comma-separated string of administration dates for the top row
-            const adminDates = records.map(r => r.received).join(', ');
-            return (
-              <React.Fragment key={vaccine}>
+    <Box sx={{height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper'}}>
+      <Box sx={{ bgcolor: 'grey.100',pt: 4, pb: 1, px:3, borderRadius: 1, mb: 1 }}>
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: colors.blue[500]}}> 
+          Immunizations - All Types
+        </Typography>
+      </Box>
+
+      <Box sx={{flexGrow: 1, overflowY: 'auto',px: 3, py:1 , mb: 1}}>
+        <Box sx={{ mt: 2 }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 650 }} aria-label="immunizations table">
+              <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <IconButton onClick={() => toggleGroup(vaccine)}>
-                      {openGroups[vaccine] ? <Icon>keyboard_arrow_up</Icon> : <Icon>keyboard_arrow_down</Icon>}
-                    </IconButton>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6">{vaccine}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="h6">{adminDates}</Typography>
-                  </TableCell>
+                  <TableCell style={{ width: '5%' }} />
+                  <TableCell>Immunization Family</TableCell>
+                  <TableCell>Admin Dates</TableCell>
+                  <TableCell>Next Due</TableCell>
                 </TableRow>
-                <TableRow>
-                  <TableCell colSpan={3} style={{ padding: 0 }}>
-                    <Collapse in={openGroups[vaccine]} timeout="auto" unmountOnExit>
-                      <Box margin={1}>
-                        <Table size="small">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Date</TableCell>
-                              <TableCell>Name</TableCell>
-                              <TableCell>Provider</TableCell>
-                              <TableCell>Recorded</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {records.map((record, idx) => (
-                              <TableRow key={idx}>
-                                <TableCell>{record.received}</TableCell>
-                                <TableCell>{record.vaccine}</TableCell>
-                                <TableCell>{record.recorder}</TableCell>
-                                <TableCell>{record.recorded}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            );
-          })}
-          {immunizations.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={3}>
-                <Typography variant="body2" style={{ fontStyle: 'italic', color: '#666' }}>
-                  No immunizations on file
-                </Typography>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              </TableHead>
+              <TableBody>
+                {Object.entries(grouped).map(([vaccine, records]) => {
+                  // Sort records by date, most recent first
+                  const sortedRecords = sortImmunizationsByDate(records);
+                  const adminDates = sortedRecords.map(r => formatDate(r.received)).join(', ');
+                  
+                  return (
+                    <React.Fragment key={vaccine}>
+                      <TableRow
+                        onClick={() => toggleGroup(vaccine)}
+                        sx={{
+                          '&:last-child td, &:last-child th': { border: 0 },
+                          cursor: 'pointer',
+                          '&:hover': {
+                            backgroundColor: 'action.hover',
+                          },
+                          '& td': {
+                            verticalAlign: 'top',
+                          },
+                        }}
+                      >
+                        <TableCell>
+                          <IconButton onClick={(e) => {
+                            e.stopPropagation();
+                            toggleGroup(vaccine);
+                          }}>
+                            {openGroups[vaccine] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                          </IconButton>
+                        </TableCell>
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          sx={{
+                            color: colors.blue[500],
+                            fontWeight: 'normal',
+                          }}
+                        >
+                          <Typography variant="body1" style={{ fontWeight: 'bold' }}>
+                            {vaccine}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body1">
+                            {adminDates}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body1" style={{ fontStyle: 'italic', color: '#666' }}>
+                            {/* Next due calculation would go here */}
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell colSpan={5} style={{ padding: 0 }}>
+                          <Collapse in={openGroups[vaccine]} timeout="auto" unmountOnExit>
+                            <Box margin={1}>
+                              <Table size="small">
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>Recorder</TableCell>
+                                    <TableCell align="right">Actions</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {sortedRecords.map((record, idx) => (
+                                    <React.Fragment key={record.id}>
+                                      <TableRow>
+                                        <TableCell>{formatDate(record.received)}</TableCell>
+                                        <TableCell>{record.vaccine}</TableCell>
+                                        <TableCell>{record.recorder}</TableCell>
+                                        <TableCell align="right">
+                                          <IconButton
+                                            aria-label="edit"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleEdit(record);
+                                            }}
+                                            size="small"
+                                          >
+                                            <Icon fontSize="small">edit</Icon>
+                                          </IconButton>
+                                          <IconButton
+                                            aria-label="delete"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleDelete(record.id || record.vaccine + record.received);
+                                            }}
+                                            size="small"
+                                          >
+                                            <Icon fontSize="small">delete</Icon>
+                                          </IconButton>
+                                        </TableCell>
+                                      </TableRow>
+                                      {editingImmunization && (() => {
+                                          const editingId = editingImmunization.id || editingImmunization.vaccine + editingImmunization.received;
+                                          const recordId = record.id || record.vaccine + record.received;
+                                          return editingId === recordId;
+                                        })() && (
+                                          <TableRow>
+                                            <TableCell colSpan={4}>
+                                              <ImmunizationItemEditor
+                                                immunization={editingImmunization}
+                                                onSave={handleSave}
+                                                onCancel={handleCancel}
+                                              />
+                                            </TableCell>
+                                          </TableRow>
+                                        )}
+                                    </React.Fragment>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </TableRow>
+                    </React.Fragment>
+                  );
+                })}
+                {immunizations.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5}>
+                      <Typography variant="body2" style={{ fontStyle: 'italic', color: '#666', textAlign: 'center' }}>
+                        No immunizations on file
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 
-export default ImmunizationsTabContent;

@@ -129,8 +129,8 @@ export const _data = [
         allergies: [{id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
         immunizations: [
           {vaccine: 'Covid-19', received: '2022-12-12', recorded: '2022-12-12', recorder: 'Practitioner'},
-          {vaccine: 'Covid-19', received: '2023-1-1', recorded: '2023-1-1', recorder: 'Practitioner'},
-          {vaccine: 'Influenza', received: '2025-1-1', recorded: '2025-1-1', recorder: 'Practitioner'}
+          {vaccine: 'Covid-19', received: '2023-01-01', recorded: '2023-01-01', recorder: 'Practitioner'},
+          {vaccine: 'Influenza', received: '2025-01-01', recorded: '2025-01-01', recorder: 'Practitioner'}
         ],
         history: {
           medical: [],
