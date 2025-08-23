@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, IconButton, Collapse, Box, Typography
+  TableRow, Paper, IconButton, Collapse, Box, Typography, Icon
 } from '@mui/material';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
 // Sample data in FHIR-compliant structure
 const fhirData = [
@@ -74,7 +73,7 @@ function Pdmp() {
               <TableRow>
                 <TableCell style={{ width: '5%' }}>
                   <IconButton size="small" onClick={() => handleToggle(index)}>
-                    {open[index] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    {open[index] ? <Icon>keyboard_arrow_up</Icon> : <Icon>keyboard_arrow_down</Icon>}
                   </IconButton>
                 </TableCell>
                 <TableCell align="left" colSpan={1}>

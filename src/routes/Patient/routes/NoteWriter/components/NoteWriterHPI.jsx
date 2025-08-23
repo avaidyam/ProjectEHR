@@ -1,9 +1,7 @@
 // NoteWriterHPI.js
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Button, FormControl, MenuItem, Select, TextField, List, ListItem, Paper } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import { Editor } from 'react-draft-wysiwyg';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { Box, Button, FormControl, MenuItem, Select, TextField, List, ListItem, Paper, Icon } from '@mui/material';
+import { Editor } from 'components/ui/Editor.jsx';
 
 // Eventually this will be much more robust, and will have a map to each of the HPI Forms, but for now it's just a simple map
 const HPI_FORM_MAP = { 
@@ -46,12 +44,7 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
   return (
     <form style={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ position: 'relative', flexGrow: 1 }}>
-        <Editor
-          onEditorStateChange={setEditorState}
-          editorState={editorState}
-          wrapperStyle={{ height: '100%' }}
-          editorStyle={{ height: 'calc(100% - 64px)', overflowY: 'auto' }}
-        />
+        <Editor initialContent={editorState} onSave={setEditorState} />
         <Box 
           ref={textFieldRef}
           sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1, width: '300px' }}
@@ -60,7 +53,7 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
           <TextField
             fullWidth
             label="Search and add an HPI Form"
-            InputProps={{ endAdornment: <SearchIcon /> }}
+            InputProps={{ endAdornment: <Icon>search</Icon> }}
             value={searchTerm}
             onChange={handleSearchChange}
             onClick={handleTextFieldClick}
@@ -91,8 +84,7 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
             <MenuItem value="">Sign when Signing Visit</MenuItem>
           </Select>
         </FormControl>
-        {/* Getting rid of the submit changing MRN for now (may want to add some submit
-         funcitonality prior to backend, what this is tho*/}
+        {/* Getting rid of the submit changing MRN for now (may want to add some submit funcitonality prior to backend, what this is tho*/}
         <Button variant="contained" >
           Submit
         </Button>

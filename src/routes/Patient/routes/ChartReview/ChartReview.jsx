@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
-  Tabs, Tab, Box, Chip, Divider, Table, TableHead, TableRow, TableCell, Dialog, DialogContent, Typography, Button
+  Tabs, Tab, Box, Divider, Table, TableHead, TableRow, TableCell, Button
 } from '@mui/material';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import LabReport from './components/LabReportTab.jsx';
-import ImagingTabContent from './components/ImagingTabContent.jsx';
+import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
+import LabReport from '../LabReport/LabReport.jsx';
+import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 
 const tabLabels = [
   "Encounters",
@@ -24,6 +24,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
+  const [customTabs, setCustomTabs] = useSplitView()
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
@@ -34,9 +35,17 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   );
 
   const handleRowClick = (row) => {
-    setSelectedRow(row);
-    setIsWindowOpen(true);
-    setTableWidth('50%');
+    //setSelectedRow(row);
+    //setIsWindowOpen(true);
+    //setTableWidth('50%');
+
+    // Open new tabs in the main view
+    if (selectedTabLabel === 'Lab')
+      setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+    if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test')
+      setCustomTabs(prev => [...prev, {"Imaging Viewer": { selectedRow: row }}])
+    if (selectedTabLabel === 'Note')
+      setCustomTabs(prev => [...prev, {"Note": { selectedRow: row }}])
   };
 
   const handleCloseWindow = () => {
@@ -106,17 +115,18 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 };
 
 export const ChartReview = ({ ...props }) => {
+  const { useChart, useEncounter } = usePatient()
+  const [chart, setChart] = useChart()()
+  const [encounter, setEncounter] = useEncounter()()
+
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc] = useEncounterID()
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
   // or logic to advance from one encounter to the next
-  const currentEncDate = encounters?.find(x => x.id === enc).startDate
-  const documents = encounters?.filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
-  const encountersData = encounters.map(x => ({
+  const currentEncDate = encounter.startDate
+  const documents = Object.values(chart.encounters).filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
+  const encountersData = Object.values(chart.encounters).map(x => ({
     kind: 'Encounters',
     data: {
       date: x.startDate,

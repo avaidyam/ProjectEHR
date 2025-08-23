@@ -1,11 +1,7 @@
 // NoteWriterPE.js
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Typography, IconButton, Checkbox } from '@mui/material';
-import DescriptionIcon from '@mui/icons-material/Description';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import { EditorState, Modifier, SelectionState } from 'draft-js';
-import CustomNoteModal from './CustomNoteModal'; // Import the custom note modal component
+import { Box, Grid, Typography, IconButton, Checkbox, Icon } from '@mui/material';
+import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
 
 
 // Function to replace Physical Exam text in the editor based on peState
@@ -180,7 +176,7 @@ const PhysicalExamBodySystemComponent = ({ title, subsections = [], peState, upd
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between">
         <Grid item>
           <IconButton onClick={handleCustomNote}>
-            <DescriptionIcon sx={{ color: peState[title.toLowerCase()]?.custom ? '#2e8fff' : 'inherit' }} />
+            <Icon sx={{ color: peState[title.toLowerCase()]?.custom ? '#2e8fff' : 'inherit' }}>description</Icon>
           </IconButton>
         </Grid>
         <Grid item xs>
@@ -244,13 +240,13 @@ const PhysicalExamBodySystemComponent = ({ title, subsections = [], peState, upd
                           onClick={() => handleSymptomClick(subTitle, symptom, true)}
                           sx={{ color: peState[title.toLowerCase()]?.[subTitle]?.symptoms?.[symptom] === true ? 'white' : 'inherit' }}
                         >
-                          <AddIcon />
+                          <Icon>add</Icon>
                         </IconButton>
                         <IconButton
                           onClick={() => handleSymptomClick(subTitle, symptom, false)}
                           sx={{ color: peState[title.toLowerCase()]?.[subTitle]?.symptoms?.[symptom] === false ? 'white' : 'inherit' }}
                         >
-                          <RemoveIcon />
+                          <Icon>remove</Icon>
                         </IconButton>
                       </Box>
                     </Box>
@@ -276,6 +272,8 @@ const PhysicalExamBodySystemComponent = ({ title, subsections = [], peState, upd
 
 
 const NoteWriterPE = ({ editorState, setEditorState, peState, setPEState, bodySystemsPE }) => {
+
+  /*
   useEffect(() => {
     const newEditorState = replacePEText(editorState, peState);
 
@@ -284,6 +282,7 @@ const NoteWriterPE = ({ editorState, setEditorState, peState, setPEState, bodySy
       setEditorState(newEditorState);
     }
   }, [peState, setEditorState]);
+  */
 
   return (
     <Box sx={{ padding: 2 }}>

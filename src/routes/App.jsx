@@ -1,15 +1,13 @@
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
-import { Box } from '../components/ui/Core.jsx';
-import { PatientLists } from './PatientList/PatientList.jsx';
-import { AuthContext } from '../components/contexts/AuthContext.jsx';
-import { Titlebar } from '../components/ui/Titlebar.jsx';
-import Login from './Login/Login.jsx';
-import { PatientHome } from './Patient/Patient.jsx';
-import { OrderProvider } from '../components/contexts/OrdersContext.jsx';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
+import { Titlebar } from 'components/ui/Titlebar.jsx';
+import { OrderProvider } from 'components/contexts/OrdersContext.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';
+import { PatientLists } from './PatientList/PatientList.jsx';
+import { Login } from './Login/Login.jsx';
+import { Patient } from './Patient/Patient.jsx';
 
-// Main App Component
 export const App = () => {
   const navigate = useNavigate()
   const { isAuthenticated, logout } = useContext(AuthContext)
@@ -17,7 +15,7 @@ export const App = () => {
   const handleLogin = () => { setIsLoggedIn(true); navigate(0) }
   const handleLogout = () => { logout(); setIsLoggedIn(false); navigate('/') }
   return (
-    <OrderProvider>
+    <OrderProvider> {/* FIXME: OrderProvider needs to be moved inside of Patient */}
         {isLoggedIn && <Titlebar onLogout={handleLogout} />}
         <Routes>
           <Route 
@@ -34,7 +32,7 @@ export const App = () => {
           />
           <Route 
             path="/patient/:mrn/encounter/:enc" 
-            element={isLoggedIn ? <PatientHome /> : <Login setIsLoggedIn={handleLogin} />} 
+            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />} 
           />
           <Route path="*" render={() => <Navigate replace to="/" />} />
         </Routes>

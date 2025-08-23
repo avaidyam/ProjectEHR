@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useContext  } from 'react';
 import { Typography, TextField, Button, Icon, Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
-import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
-import PentagonOutlinedIcon from '@mui/icons-material/PentagonOutlined';
-import KeyboardDoubleArrowDownOutlinedIcon from '@mui/icons-material/KeyboardDoubleArrowDownOutlined';
-import { usePatientMRN, useEncounterID } from '../../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 import ProblemListEditor from './components/ProblemListEditor.jsx';
 
 function formatSnomedData(data) {
@@ -41,19 +36,14 @@ async function getSnomed(term) {
 }
 
 const ProblemListTabContent = ({ children, ...other }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN();
-  const [enc, setEnc] = useEncounterID()
-
-  const patientData = TEST_PATIENT_INFO({ patientMRN });
+  const { useChart, useEncounter } = usePatient()
+  const [problems, setProblems] = useEncounter().problems()
 
   const [searchTerm, setSearchTerm] = useState('');
   const [diagnosesArray, setDiagnosesArray] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-
-  const [problems, setProblems] = useState(encounters?.find(x => x.id === enc)?.problems); // State to hold problems array
   const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);
@@ -184,16 +174,16 @@ const ProblemListTabContent = ({ children, ...other }) => {
                       <Checkbox name="hospitalCheckbox" />
                     </TableCell>
                     <TableCell>
-                      <Button><PentagonOutlinedIcon /></Button>
+                      <Button><Icon>pentagon</Icon></Button>
                     </TableCell>
                     <TableCell>
-                      <Button><ChangeHistoryIcon /></Button>
+                      <Button><Icon>change_history</Icon></Button>
                     </TableCell>
                     <TableCell>
-                      <Button><ClearIcon /></Button>
+                      <Button><Icon>clear</Icon></Button>
                     </TableCell>
                     <TableCell>
-                      <Button onClick={() => handleExpandRow(index)}><KeyboardDoubleArrowDownOutlinedIcon /></Button>
+                      <Button onClick={() => handleExpandRow(index)}><Icon>keyboard_double_arrow_down_outlined</Icon></Button>
                     </TableCell>
                   </TableRow>
                   {expandedRows[index] && (

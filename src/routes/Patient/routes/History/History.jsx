@@ -1,150 +1,94 @@
 // HistoryTabContent.jsx
 import React, { useState } from 'react';
-import { Box, Typography, Tabs, Tab, Grid, Paper } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import MedicalHistory from './MedicalHistory';
-import SurgicalHistory from './SurgicalHistory';
-import FamilyHistory from './FamilyHistory';
-import SocialHistorySubstance from './SocialHistorySubstance';
-import SocialHistoryECig from './SocialHistoryECig';
-import SocialHistorySocioeconomic from './SocialHistorySocioeconomic';
-import SocialHistoryADL from './SocialHistoryADL';
+import { Tab } from '@mui/material';
+import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { HStack, Box, Label } from 'components/ui/Core.jsx';
 
-const VerticalTabs = styled(Tabs)({
-  borderRight: `1px solid #e0e0e0`,
-  '& .MuiTabs-indicator': {
-    left: 0,
-  },
-});
-
-const StyledTab = styled(Tab)({
-  textAlign: 'left',
-  justifyContent: 'flex-start',
-  paddingLeft: 16,
-  minHeight: 48,
-  textTransform: 'none',
-});
-
-const SectionHeader = styled(Typography)({
-  padding: '16px 16px 8px 16px',
-  textAlign: 'left',
-  color: 'text.secondary',
-  fontSize: '0.8rem',
-  fontWeight: 'bold',
-});
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-      style={{ width: '100%' }}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
-}
+import { MedicalHistory } from './routes/MedicalHistory/MedicalHistory.jsx';
+import { SurgicalHistory } from './routes/SurgicalHistory/SurgicalHistory.jsx';
+import { FamilyHistory } from './routes/FamilyHistory/FamilyHistory.jsx';
+import { SocialHistorySubstance } from './routes/SocialHistory/SocialHistorySubstance.jsx';
+import { SocialHistoryECig } from './routes/SocialHistory/SocialHistoryECig.jsx';
+import { SocialHistorySocioeconomic } from './routes/SocialHistory/SocialHistorySocioeconomic.jsx';
+import { SocialHistoryADL } from './routes/SocialHistory/SocialHistoryADL.jsx';
 
 export default function HistoryTabContent() {
-  const [value, setValue] = useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
+  const [value, setValue] = useState("Medical")
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', height: '100%', flexDirection: 'column' }}>
       <Box sx={{ p: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>History</Typography>
+        <Label variant="h4" sx={{ fontWeight: 'bold' }}>History</Label>
       </Box>
-      <Grid container sx={{ flexGrow: 1 }}>
-        <Grid item>
+      <TabContext value={value}>
+      <HStack>
           <Box sx={{ borderRight: 1, borderColor: 'divider', minWidth: 200, display: 'flex', flexDirection: 'column' }}>
-            <SectionHeader>GENERAL</SectionHeader>
-            <VerticalTabs
+            <TabList
               orientation="vertical"
               variant="scrollable"
-              value={value}
-              onChange={handleChange}
-              aria-label="Vertical history tabs"
+              onChange={(event, newValue) => { setValue(newValue) }}
             >
-              <StyledTab label="Medical" {...a11yProps(0)} />
-              <StyledTab label="Surgical" {...a11yProps(1)} />
-              <StyledTab label="Family" {...a11yProps(2)} />
-              <SectionHeader>SOCIAL</SectionHeader>
-              <StyledTab label="Substance & Sexual..." {...a11yProps(3)} />
-              <StyledTab label="E-cigarette/Vaping" {...a11yProps(4)} />
-              <StyledTab label="Socioeconomic" {...a11yProps(5)} />
-              <StyledTab label="ADL" {...a11yProps(6)} />
-              <StyledTab label="Social Documentation" {...a11yProps(7)} />
-              <StyledTab label="Social Determinants" {...a11yProps(8)} />
-              <SectionHeader>SPECIALTY</SectionHeader>
-              <StyledTab label="Birth" {...a11yProps(9)} />
-              <StyledTab label="OB/Gyn" {...a11yProps(10)} />
-              <StyledTab label="Pap Tracking" {...a11yProps(11)} />
-            </VerticalTabs>
+              <Label variant="overline">GENERAL</Label>
+              <Tab value="Medical" label="Medical" />
+              <Tab value="Surgical" label="Surgical" />
+              <Tab value="Family" label="Surgical" />
+              <Label variant="overline">SOCIAL</Label>
+              <Tab value="Substance & Sexual History" label="Substance & Sexual History" />
+              <Tab value="E-cigarette/Vaping" label="E-cigarette/Vaping" />
+              <Tab value="Socioeconomic" label="Socioeconomic" />
+              <Tab value="ADL" label="ADL" />
+              <Tab value="Social Documentation" label="Social Documentation" />
+              <Tab value="Social Determinants" label="Social Determinants" />
+              <Label variant="overline">SPECIALTY</Label>
+              <Tab value="Birth" label="Birth" />
+              <Tab value="OB/Gyn" label="OB/Gyn" />
+              <Tab value="Pap Tracking" label="Pap Tracking" />
+            </TabList>
           </Box>
-        </Grid>
-        <Grid item xs sx={{ backgroundColor: 'background.paper' }}>
-          <TabPanel value={value} index={0}>
+          <Box>
+          <TabPanel value="Medical">
             <MedicalHistory />
           </TabPanel>
-          <TabPanel value={value} index={1}>
+          <TabPanel value="Surgical">
             <SurgicalHistory />
           </TabPanel>
-          <TabPanel value={value} index={2}>
+          <TabPanel value="Family">
             <FamilyHistory />
           </TabPanel>
-          <TabPanel value={value} index={3}>
+          <TabPanel value="Substance & Sexual History">
             <SocialHistorySubstance />
           </TabPanel>
-          <TabPanel value={value} index={4}>
+          <TabPanel value="E-cigarette/Vaping">
             <SocialHistoryECig />
           </TabPanel>
-          <TabPanel value={value} index={5}>
+          <TabPanel value="Socioeconomic">
             <SocialHistorySocioeconomic />
           </TabPanel>
-          <TabPanel value={value} index={6}>
+          <TabPanel value="ADL">
             <SocialHistoryADL />
           </TabPanel>
-          <TabPanel value={value} index={7}>
-            <Typography variant="h6">Social Documentation</Typography>
-            <Typography>Placeholder for Social Documentation content.</Typography>
+          <TabPanel value="Social Documentation">
+            <Label variant="h6">Social Documentation</Label>
+            <Label>Placeholder for Social Documentation content.</Label>
           </TabPanel>
-          <TabPanel value={value} index={8}>
-            <Typography variant="h6">Social Determinants</Typography>
-            <Typography>Placeholder for Social Determinants content.</Typography>
+          <TabPanel value="Social Determinants">
+            <Label variant="h6">Social Determinants</Label>
+            <Label>Placeholder for Social Determinants content.</Label>
           </TabPanel>
-          <TabPanel value={value} index={9}>
-            <Typography variant="h6">Birth</Typography>
-            <Typography>Placeholder for Birth content.</Typography>
+          <TabPanel value="Birth">
+            <Label variant="h6">Birth</Label>
+            <Label>Placeholder for Birth content.</Label>
           </TabPanel>
-          <TabPanel value={value} index={10}>
-            <Typography variant="h6">OB/Gyn</Typography>
-            <Typography>Placeholder for OB/Gyn content.</Typography>
+          <TabPanel value="OB/Gyn">
+            <Label variant="h6">OB/Gyn</Label>
+            <Label>Placeholder for OB/Gyn content.</Label>
           </TabPanel>
-          <TabPanel value={value} index={11}>
-            <Typography variant="h6">Pap Tracking</Typography>
-            <Typography>Placeholder for Pap Tracking content.</Typography>
+          <TabPanel value="Pap Tracking">
+            <Label variant="h6">Pap Tracking</Label>
+            <Label>Placeholder for Pap Tracking content.</Label>
           </TabPanel>
-        </Grid>
-      </Grid>
+          </Box>
+      </HStack>
+      </TabContext>
     </Box>
   );
 }

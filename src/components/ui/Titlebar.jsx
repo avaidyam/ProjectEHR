@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
-import { Button, HStack, Label, IconButton, Divider, Icon } from './Core.jsx'
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import { Button, HStack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 export const Titlebar = ({ onLogout }) => {
   const location = useLocation()

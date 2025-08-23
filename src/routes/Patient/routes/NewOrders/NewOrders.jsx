@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { Box, Button, Card, Dialog, DialogActions, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
+import { Box, Button, Card, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
   MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material';
+import { Window } from 'components/ui/Core.jsx';
 
 // for calendar/dates
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,8 +9,8 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 
 // import json orders master list
-import { getRxTerms } from '../../../../util/getRxTerms.js';
-import {useOrder} from '../../../../components/contexts/OrdersContext.jsx';
+import { getRxTerms } from 'util/getRxTerms.js';
+import {useOrder} from 'components/contexts/OrdersContext.jsx';
 
 // display + add # days on date picker
 function dateLocal(addDay) {
@@ -160,7 +161,7 @@ export default function Orders() {
         </Card>
 
         <div>
-          <Dialog fullWidth maxWidth="md" onClose={() => { setOpenSearchList(false) }} open={openSearchList}>
+          <Window fullWidth maxWidth="md" onClose={() => { setOpenSearchList(false) }} open={openSearchList}>
             <List>
             <TextField
                 label="Add orders or order sets"
@@ -199,15 +200,15 @@ export default function Orders() {
                 ))
               )}
             </List>
-          </Dialog>
+          </Window>
 
-          <Dialog fullWidth maxWidth="md" onClose={() => { setOpenOrder(false) }} open={openOrder}>
+          <Window fullWidth maxWidth="md" onClose={() => { setOpenOrder(false) }} open={openOrder}>
             <Box sx={{ backgroundColor: "info.dark", color: "primary.contrastText", height: "40px" }}>
               {tempMed ? tempMed.name : ''}
-              <DialogActions style={{ float: "right" }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
                 <Button sx={{ color: "primary.contrastText" }} onClick={() => { closeOrder(true) }}><Icon color="success.light">check</Icon>Accept</Button>
                 <Button sx={{ color: "primary.contrastText" }} onClick={() => { closeOrder(false) }}><Icon color="error">clear</Icon>Cancel</Button>
-              </DialogActions>
+              </Box>
             </Box>
 
             {tempMed && tempMed.fields.route && (
@@ -395,7 +396,7 @@ export default function Orders() {
                 <Button sx={{color: "primary.contrastText"}} onClick={() => { closeOrder(false) }}><Icon color="error">clear</Icon>Cancel</Button>
               </div>
             </Box>
-          </Dialog>
+          </Window>
 
 
             {categories.map((name) => {

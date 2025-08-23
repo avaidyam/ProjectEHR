@@ -84,7 +84,7 @@ export default function MedicalHistory() {
     <Box sx={{ p: 2, backgroundColor: 'white' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Past Medical History</Typography>
-        <Button startIcon={<AddIcon />} variant="contained" onClick={handleAddClick} sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+        <Button startIcon={<Icon>add</Icon>} variant="contained" onClick={handleAddClick} sx={{ backgroundColor: 'primary.main', color: 'white' }}>
           Add Medical History
         </Button>
       </Box>
@@ -114,8 +114,8 @@ export default function MedicalHistory() {
                   {entry.problemList === 'True' ? <CheckCircleOutlineIcon color="success" /> : <CancelIcon color="error" />}
                 </TableCell>
                 <TableCell>
-                  <IconButton size="small" onClick={() => handleEdit(entry)}><EditIcon fontSize="small" /></IconButton>
-                  <IconButton size="small" onClick={() => handleDelete(entry.id)}><DeleteIcon fontSize="small" /></IconButton>
+                  <IconButton size="small" onClick={() => handleEdit(entry)}><Icon fontSize="small">edit</Icon></IconButton>
+                  <IconButton size="small" onClick={() => handleDelete(entry.id)}><Icon fontSize="small">delete</Icon></IconButton>
                 </TableCell>
               </StyledTableRow>
             ))}

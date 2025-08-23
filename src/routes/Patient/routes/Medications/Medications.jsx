@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Checkbox, Table, TableHead, TableRow, TableCell, Icon, Box, TextField, Button, TableBody, Typography } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
 import MedicationItemEditor from './components/MedicationItemEditor.jsx';
 
 const mockMedicationData = () => ({
@@ -197,7 +196,7 @@ export default function Medications() {
                         <Checkbox />
                       </TableCell>
                       <TableCell>
-                        <Button><ClearIcon /></Button>
+                        <Button><Icon>clear</Icon></Button>
                       </TableCell>
                     </TableRow>
                     {editingMedication && editingMedication.id === medication.id && (

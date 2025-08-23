@@ -1,15 +1,7 @@
 import React from 'react';
-import TableContainer from '@mui/material/TableContainer';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TableBody from '@mui/material/TableBody';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography, Box } from '@mui/material';
 
-const LabReport = ({ labReport }) => {
+const LabReport = ({ labReport, ...props }) => {
   const { data, labResults, collected, resulted, resultingAgency, labReportComment } = labReport;
 
   // Extract the test name
@@ -155,6 +147,13 @@ const LabReport = ({ labReport }) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {Object.keys(labReport.data).map((key, index) => (
+        (key !== 'content' && key !== 'image') && (
+          <Box key={index}>
+            <strong>{key}:</strong> {labReport.data[key]}
+          </Box>
+        )
+      ))}
     </div>
   );
 };

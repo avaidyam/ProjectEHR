@@ -1,8 +1,14 @@
 module.exports = {
-  parser: '@babel/eslint-parser',
+  parser: '@typescript-eslint/parser',
   settings: {
     react: {
       version: 'detect',
+    },
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts'],
+        moduleDirectory: ['node_modules', 'src/'],
+      },
     },
   },
   parserOptions: {

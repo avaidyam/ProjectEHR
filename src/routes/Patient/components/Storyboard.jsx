@@ -1,12 +1,8 @@
 import React, { useState, useContext  } from 'react';
 import _ from 'lodash';
-import { Box, Tab, Tabs, Divider, Alert, Toolbar, Typography, Avatar, Fade, Paper, Popper, TextField } from '@mui/material';
-import { blue, deepOrange } from '@mui/material/colors';
-import { AuthContext } from '../../../components/contexts/AuthContext.jsx'; 
-
-import DateHelpers from '../../../util/DateHelpers.js';
-import { usePatientMRN, useEncounterID } from '../../../util/urlHelpers.js';
-import { TEST_PATIENT_INFO } from '../../../util/data/PatientSample.js'
+import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
+import DateHelpers from 'util/helpers.js';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
@@ -90,9 +86,9 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   );
 };
 
-export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) => {
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  const vitals = (encounters?.find(x => x.id === encID) ?? {}).vitals;
+export const PatientSidebarVitalsOverview = ({ ...props }) => {
+  const { useChart, useEncounter } = usePatient()
+  const [{ vitals }, setEncounter] = useEncounter()()
 
   /** sort most recent to older */
   const [mostRecentVitals, ...olderVitals] = _.sortBy(
@@ -114,49 +110,50 @@ export const PatientSidebarVitalsOverview = ({ patientMRN, encID, ...props }) =>
 };
 
 export const Storyboard = ({ ...props }) => {
-  const [patientMRN, setPatientMRN] = usePatientMRN()
-  const [enc, setEnc] = useEncounterID()
+  const { useChart, useEncounter } = usePatient()
+  const [chart, setChart] = useChart()()
+  const [encounter, setEncounter] = useEncounter()()
   const {
+    id: patientMRN,
     firstName,
     lastName,
-    dateOfBirth,
+    birthdate,
     preferredLanguage,
     avatarUrl,
     gender,
     PCP,
-    encounters,
     insurance,
-  } = TEST_PATIENT_INFO({ patientMRN });
-  console.dir(enc, encounters?.find(x => x.id === enc))
-  // Extract the first encounter
+  } = chart
   const {
+    type, 
+    startDate,
+    concerns,
     problems,
     vitals,
     documents,
     allergies,
     history
-  } = (encounters?.find(x => x.id === enc) ?? {}); // Safely access the first encounter
+  } = encounter
 
   const careGaps = [
     { id: '1', name: 'COVID Booster #8' },
     { id: '2', name: 'COVID Booster #9' },
   ] // FIXME this should later be computed based on the "not on file" items in snapshot 
 
-  const patientAgeInYears = DateHelpers.getDifference(dateOfBirth, 'years', 0);
   return (
     <>
       <div style={{ display: 'flex', flexDirection: "column" }}>
         <Avatar
           source={avatarUrl}
-          sx={{ bgcolor: deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
+          sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
         >
-          {[firstName, lastName].map(x => x.charAt(0)).join("")}
+          {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
         </Avatar>
         <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
           <strong>{firstName} {lastName}</strong>
           <span>Sex: {gender}</span>
-          <span>Age: {patientAgeInYears} years old</span>
-          <span>DOB: {DateHelpers.standardFormat(dateOfBirth)}</span>
+          <span>Age: {new Date(birthdate).age()} years old</span>
+          <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
           <span>MRN: {patientMRN}</span>
           <strong>Preferred language: {preferredLanguage}</strong>
           {preferredLanguage !== 'English' && 
@@ -168,28 +165,28 @@ export const Storyboard = ({ ...props }) => {
       <div style={{ display: 'flex', flexDirection: "column" }} {...props}>
       <div style={{ display: 'flex', marginBottom: '0.5em' }}>
         <Avatar
-          source={PCP.avatarUrl}
-          sx={{ bgcolor: blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+          source={PCP?.avatarUrl}
+          sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
         >
-          {PCP.name.split(" ").map(x => x.charAt(0)).join("")}
+          {PCP?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
         </Avatar>
         <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
-          <span>{PCP.name}, {PCP.title}</span>
-          <strong>{PCP.role}</strong>
+          <span>{PCP?.name}, {PCP?.title}</span>
+          <strong>{PCP?.role}</strong>
         </div>
       </div>
-      <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance.carrierName}</span></span>
+      <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
     </div>
       <Divider color="inherit" />
       <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {encounters?.find(x => x.id === enc)?.type}</Typography>
-      <Typography>Date: {encounters?.find(x => x.id === enc)?.startDate}</Typography>
-      <Typography>Reason: {encounters?.find(x => x.id === enc)?.concerns.join(", ")}</Typography>
+      <Typography>Type: {type}</Typography>
+      <Typography>Date: {startDate}</Typography>
+      <Typography>Reason: {concerns?.join(", ")}</Typography>
       <Divider color="inherit" />
-      <PatientSidebarVitalsOverview patientMRN={patientMRN} encID={enc} />
+      <PatientSidebarVitalsOverview />
       <Divider color="inherit" />
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Care Gaps ({careGaps.length})
+        Care Gaps ({careGaps?.length})
       </Typography>
       <div style={{ display: 'flex', flexDirection: "column" }}>
         {careGaps.map((c) => (
@@ -198,10 +195,15 @@ export const Storyboard = ({ ...props }) => {
       </div>
       <Divider color="inherit" />
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Problem List ({problems.length})
+        Problem List ({problems?.length})
       </Typography>
+      {history?.medical.map((condition) => (
+        <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
+        </div>
+      ))}
       <div style={{ display: 'flex', flexDirection: "column" }}>
-        {problems.map((p) => (
+        {problems?.map((p) => (
           <div key={p.id}>{p.name}</div>
         ))}
       </div>

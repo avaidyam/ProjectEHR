@@ -1,17 +1,7 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from '@mui/material';
 import React from 'react';
-import { usePatientLists } from '../../../components/contexts/PatientListContext.jsx';
+import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Button, Label, Window } from 'components/ui/Core.jsx';
+import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
   
   export const AddToListModal = ({
     open,
@@ -40,12 +30,10 @@ import { usePatientLists } from '../../../components/contexts/PatientListContext
     };
   
     return (
-      <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
-        <DialogTitle>Add Patient to List</DialogTitle>
-        <DialogContent>
-          <Typography variant='subtitle1' gutterBottom>
+      <Window title="Add Patient to List" open={open} onClose={onClose} maxWidth='sm' fullWidth>
+          <Label variant='subtitle1' gutterBottom>
             Select a list to add {patient.name}
-          </Typography>
+          </Label>
           <List>
             {userLists.map((list) => (
               <ListItem key={list.id} disablePadding>
@@ -73,11 +61,8 @@ import { usePatientLists } from '../../../components/contexts/PatientListContext
               </ListItem>
             )}
           </List>
-        </DialogContent>
-        <DialogActions>
           <Button onClick={onClose}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+      </Window>
     );
   };
   

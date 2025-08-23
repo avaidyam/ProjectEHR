@@ -3,13 +3,8 @@
 // Depending on what the user selects, the ROS text will be updated automatically in the editor.
 
 import React, { useState, useEffect } from 'react';
-import { FormControlLabel, Checkbox, Box, Typography, IconButton, Grid } from '@mui/material';
-import { EditorState, Modifier, SelectionState } from 'draft-js';
-
-import DescriptionIcon from '@mui/icons-material/Description';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import CustomNoteModal from './CustomNoteModal'; // Import the custom note modal component
+import { FormControlLabel, Checkbox, Box, Typography, IconButton, Icon, Grid } from '@mui/material';
+import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
 
 
 const replaceROSText = (editorState, rosState) => {
@@ -88,7 +83,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
   };
 
   const handleCustomNote = () => {
-    const existingNote = systemState.custom || '';
+    const existingNote = systemState?.custom || '';
     setCurrentCustomNote(existingNote); // Set the current note
     setIsModalOpen(true); // Open the modal
   };
@@ -101,7 +96,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
     setIsModalOpen(false); // Close the modal
   };
 
-  const allNegative = Object.values(systemState).every((state) => state === false);
+  const allNegative = Object.values(systemState ?? {}).every((state) => state === false);
 
   const handleSymptomClick = (symptomName, newState) => {
     updateSystemState({
@@ -115,9 +110,9 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between">
         <Grid item>
           <IconButton onClick={handleCustomNote}>
-            <DescriptionIcon
-              sx={{ color: systemState.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
-            />
+            <Icon
+              sx={{ color: systemState?.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
+            >description</Icon>
           </IconButton>
         </Grid>
         <Grid item xs>
@@ -162,13 +157,13 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
                     onClick={() => handleSymptomClick(symptom, true)}
                     sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
                   >
-                    <AddIcon />
+                    <Icon>add</Icon>
                   </IconButton>
                   <IconButton
                     onClick={() => handleSymptomClick(symptom, false)}
                     sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
                   >
-                    <RemoveIcon />
+                    <Icon>remove</Icon>
                   </IconButton>
                 </Box>
               </Box>
@@ -192,7 +187,7 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
 
 const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bodySystems }) => {
 
-  
+  /*
   useEffect(() => {
     const newEditorState = replaceROSText(editorState, rosState);
     
@@ -201,6 +196,7 @@ const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bod
       setEditorState(newEditorState);
     }
   }, [rosState, setEditorState]); // Remove `editorState` from the dependency array
+  */
 
   return (
     <Box sx={{ padding: 2 }}>

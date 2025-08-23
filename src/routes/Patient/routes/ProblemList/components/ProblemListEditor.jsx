@@ -1,14 +1,6 @@
 // This file represnets the Problem List Editor that is formed as a dropdown from the ProblemList 
 import React, { useState, useEffect } from 'react';
-import { Grid, Typography, TextField, InputAdornment, Button } from '@mui/material';
-
-import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
+import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
 
 // Date Picker Imports
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -115,7 +107,7 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
             endAdornment: (
               // Want deferred funciton call
               <IconButton onClick={() => onOpenModal(index)}>
-                <SearchIcon />
+                <Icon>search</Icon>
               </IconButton>
             )
           }}
@@ -202,10 +194,10 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
       </Grid>
       <Grid item xs={4}/>
       <Grid item xs={2}>
-        <Button variant="outlined" color="success" onClick={handleEditorAccept}><CheckIcon />Accept</Button>
+        <Button variant="outlined" color="success" onClick={handleEditorAccept}><Icon>check</Icon>Accept</Button>
       </Grid>
       <Grid item xs={2}>
-        <Button variant="outlined" color="error" onClick={handleEditorCancel}><CloseIcon />Cancel</Button>
+        <Button variant="outlined" color="error" onClick={handleEditorCancel}><Icon>close</Icon>Cancel</Button>
       </Grid>
 
     </Grid>

@@ -1,14 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { AuthContext } from '../../components/contexts/AuthContext.jsx';
+import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the dialog component
-import Notification from '../../util/Notification.js';
-import PromptDialog from '../../util/PromptDialog.js';
+import Notification from './components/Notification.jsx';
+import PromptDialog from './components/PromptDialog.jsx';
 
-import schedule from '../../util/data/schedule.json'; // Import the schedule JSON file for mrns
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
+import schedule from 'util/data/schedule.json'; // Import the schedule JSON file for mrns
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 
 const departments = [
   { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },
@@ -17,7 +16,7 @@ const departments = [
   // Add more rows as needed...
 ];
 
-const Login = ({ setIsLoggedIn }) => {
+export const Login = ({ setIsLoggedIn }) => {
   const [displayDepts, setDisplayDepts] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -219,7 +218,7 @@ const Login = ({ setIsLoggedIn }) => {
           sx={{ position: "absolute", bottom: 20, left: 20, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }} 
           onClick={handleConfigure}
         >
-          <SettingsIcon style={{ fontSize: '36px', cursor: 'pointer' }} />
+          <Icon style={{ fontSize: '36px', cursor: 'pointer' }}>settings</Icon>
         </Box>
       </Paper>
 
@@ -251,5 +250,3 @@ const Login = ({ setIsLoggedIn }) => {
     </Box>
   );
 };
-
-export default Login;

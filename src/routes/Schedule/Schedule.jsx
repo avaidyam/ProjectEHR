@@ -1,29 +1,14 @@
-import Notification from '../../util/Notification.js';
-import { AuthContext } from '../../components/contexts/AuthContext.jsx';
-import CircleIcon from '@mui/icons-material/Circle';
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
-// for calendar/dates
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
-
-import { TEST_PATIENT_INFO } from '../../util/data/PatientSample.js';
-import { useRouter } from '../../util/urlHelpers.js';
-
-// json data
-import appt from '../../util/data/schedule.json';
+import { AuthContext } from 'components/contexts/AuthContext.jsx';
+import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
+import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import { useRouter } from 'util/urlHelpers.js';
+import appt from 'util/data/schedule.json';
+import Notification from '../Login/components/Notification.jsx';
 
 // get today's date and display in text box
 function dateLocal() {
@@ -51,7 +36,7 @@ function customFilterBar({ setFilterElem }) {
 function changeBadge(badgeColor) {
   return (
     <Badge>
-      <CircleIcon style={{ color: badgeColor }} />
+      <Icon style={{ color: badgeColor }}>circle</Icon>
     </Badge>
   );
 }
@@ -204,20 +189,19 @@ const columns = [
           <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
           <Box sx={{ marginLeft: 1 }}>
             <Typography>
-              {data.lastName}, {data.firstName} ({data.mrn})
+              {data.lastName}, {data.firstName} ({data.id})
             </Typography>
             <Typography color="textSecondary" fontSize="12px">
-              {data.age} years old / {data.gender}
+              {new Date(data.birthdate).age()} years old / {data.gender}
             </Typography>
           </Box>
         </Box>
       );
     },
     valueGetter: (value, row) => {
-      console.log('Value', value, 'Row', row);
       const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
       return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
-        data.age
+        new Date(data.birthdate).age()
       } years old / ${data.gender}`;
     },
   },
@@ -232,7 +216,7 @@ const columns = [
     ),
     /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[0] ?? ""
+      const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
       return data2
     },// */
   },
@@ -247,7 +231,7 @@ const columns = [
     ),
     /* valueGetter: (params) => {
       const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
-      const data2 = data.encounters.find(x => x.id === params.row.patient.enc)?.concerns[1] ?? ""
+      const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
       return data2 // FIXME we need an actual appointment object still but this will do for now
     },// */
   },
@@ -257,7 +241,7 @@ const columns = [
     width: 200,
     valueGetter: (value, row) => {
       const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
-      const data2 = data.encounters.find((x) => x.id === row.patient.enc)?.provider;
+      const data2 = data.encounters[row.patient.enc]?.provider;
       return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
     },
   },
@@ -328,9 +312,9 @@ export function Schedule() {
             >
               {selPatient ? (
                 <>
-                  Name: {selPatient.patient.firstName} {selPatient.patient.lastName} <br />
-                  Age: {selPatient.patient.age} <br />
-                  Gender: {selPatient.patient.gender} <br />
+                  Name: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).firstName} {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).lastName} <br />
+                  Age: {new Date(TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).birthdate).age()} <br />
+                  Gender: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
                 </>
@@ -363,8 +347,8 @@ export function Schedule() {
               //  return; // Prevent routing
               // } // FIXME later
               if (
-                !TEST_PATIENT_INFO({ patientMRN: selectedMRN })
-                  .encounters.map((x) => x.id)
+                !(Object.values(TEST_PATIENT_INFO({ patientMRN: selectedMRN })
+                  .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {
                 alert(
