@@ -33,7 +33,7 @@
   - `type: string`
   - `status: string`
   - `department: string`
-  - `practioner: Practitioner[]`
+  - `practitioner: Practitioner[]`
   - `concerns: Problem[]`
   - `diagnoses: Problem[]`
   - `problems: Problem[]`

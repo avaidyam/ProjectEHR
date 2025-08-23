@@ -152,16 +152,35 @@ export default function Immunizations() {
                                     <TableCell>Date</TableCell>
                                     <TableCell>Name</TableCell>
                                     <TableCell>Recorder</TableCell>
+                                    <TableCell>Given By</TableCell>
+                                    <TableCell>Facility</TableCell>
+                                    <TableCell>Dose</TableCell>
+                                    <TableCell>Route/Site</TableCell>
+                                    <TableCell>Lot/Manufacturer</TableCell>
                                     <TableCell align="right">Actions</TableCell>
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
                                   {sortedRecords.map((record, idx) => (
-                                    <React.Fragment key={record.id}>
+                                    <React.Fragment key={record.id || idx}>
                                       <TableRow>
                                         <TableCell>{formatDate(record.received)}</TableCell>
                                         <TableCell>{record.vaccine}</TableCell>
                                         <TableCell>{record.recorder}</TableCell>
+                                        <TableCell>{record.given_by || 'N/A'}</TableCell>
+                                        <TableCell>{record.facility || 'N/A'}</TableCell>
+                                        <TableCell>{formatDose(record.dose) || 'N/A'}</TableCell>
+                                        <TableCell>
+                                          {record.route || 'N/A'} {record.site && `• ${record.site}`}
+                                        </TableCell>
+                                        <TableCell>
+                                          <Typography variant="body2">
+                                            {record.lot || 'N/A'}
+                                          </Typography>
+                                          <Typography variant="caption" color="textSecondary">
+                                            {record.manufacturer || 'N/A'}
+                                          </Typography>
+                                        </TableCell>
                                         <TableCell align="right">
                                           <IconButton
                                             aria-label="edit"
@@ -191,7 +210,7 @@ export default function Immunizations() {
                                           return editingId === recordId;
                                         })() && (
                                           <TableRow>
-                                            <TableCell colSpan={4}>
+                                            <TableCell colSpan={9}>
                                               <ImmunizationItemEditor
                                                 immunization={editingImmunization}
                                                 onSave={handleSave}

@@ -90,20 +90,17 @@ export const IMMUNIZATION_ROUTES = {
   export const validateImmunization = (immunization) => {
     const errors = [];
     
-    if (!immunization.name?.trim()) {
-      errors.push('Immunization name is required');
+    // Don't validate vaccine name since it's read-only and auto-filled
+    // if (!immunization.vaccine || immunization.vaccine.trim() === '') {
+    //   errors.push('Immunization name is required');
+    // }
+    
+    if (!immunization.received) {
+      errors.push('Date received is required');
     }
     
-    if (!immunization.date) {
-      errors.push('Administration date is required');
-    }
-    
-    if (immunization.dose?.value <= 0) {
-      errors.push('Dose value must be greater than 0');
-    }
-    
-    if (!immunization.route) {
-      errors.push('Route of administration is required');
+    if (!immunization.recorder || immunization.recorder.trim() === '') {
+      errors.push('Recorder is required');
     }
     
     return errors;

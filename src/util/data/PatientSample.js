@@ -126,7 +126,7 @@ export const _data = [
             resultingAgency: 'Carle Foundational Hospital',
           },
         ],
-        allergies: [{id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        allergies: [{id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practitioner', comment:null }],
         immunizations: [
           {vaccine: 'Covid-19', received: '2022-12-12', recorded: '2022-12-12', recorder: 'Practitioner'},
           {vaccine: 'Covid-19', received: '2023-01-01', recorded: '2023-01-01', recorder: 'Practitioner'},
@@ -441,7 +441,7 @@ export const _data = [
             resultingAgency: 'Carle Foundational Hospital',
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practitioner', comment:null }],
         immunizations: [],
         history: {
           medical: [],
@@ -1085,7 +1085,7 @@ export const _data = [
             },
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practitioner', comment:null }],
         immunizations: [],
         history: {"medical": [
           {
@@ -2475,7 +2475,7 @@ export const _data = [
             },
           },
         ],
-        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practioner', comment:null }],
+        allergies: [{ id: 'uiduid', allergen: 'Penicillin', reaction: 'rash', type:'allergy', severity:'high', verified:true, resovled:false, recorded:'2022-12-12',recorder: 'Practitioner', comment:null }],
         immunizations: [],
         history: {"medical": [
           {
