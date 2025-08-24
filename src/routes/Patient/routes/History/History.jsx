@@ -50,7 +50,6 @@ export default function HistoryTabContent() {
               <Tab value="Socioeconomic" label="Socioeconomic" />
               <Tab value="ADL" label="ADL" />
               <Tab value="Social Documentation" label="Social Documentation" />
-              <Tab value="Social Determinants" label="Social Determinants" />
               <Label variant="overline">SPECIALTY</Label>
               <Tab value="Birth" label="Birth" />
               {isFemale && <Tab value="OB/Gyn" label="OB/Gyn" />}
