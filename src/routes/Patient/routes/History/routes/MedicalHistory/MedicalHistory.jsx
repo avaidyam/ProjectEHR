@@ -1,14 +1,28 @@
 // MedicalHistory.jsx
 import React, { useState } from 'react';
-import { Box, Button, Checkbox, FormControlLabel, Grid, IconButton, TextField, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Label,
+} from 'components/ui/Core.jsx';
+import {
+  Checkbox,
+  FormControlLabel,
+  Grid,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelIcon from '@mui/icons-material/Cancel';
 import { styled } from '@mui/material/styles';
-import { TEST_PATIENT_INFO } from '../../../../util/data/PatientSample.js';
-import { usePatientMRN } from '../../../../util/urlHelpers.js';
+import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -23,112 +37,143 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function MedicalHistory() {
-  const [patientMRN] = usePatientMRN();
-  const { encounters } = TEST_PATIENT_INFO({ patientMRN });
-  
-  const sortedEncounters = [...encounters].sort((a, b) => b.id - a.id);
-  const mostRecentHistory = sortedEncounters[0]?.history?.medical || [];
+  const { useEncounter } = usePatient();
+  const [medicalHx, setMedicalHx] = useEncounter().history.medical();
 
-  const [history, setHistory] = useState(mostRecentHistory.map((item, index) => ({
-    ...item,
-    id: index,
-  })));
-  const [editingId, setEditingId] = useState(null);
-  const [isAdding, setIsAdding] = useState(false);
-  const [newEntry, setNewEntry] = useState({ id: null, diagnosis: '', date: '', age: '', comment: '', src: 'Approved', problemList: false });
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newEntry, setNewEntry] = useState({
+    id: null,
+    diagnosis: '',
+    date: '',
+    age: '',
+    src: '',
+    problemList: '',
+  });
   const [reviewed, setReviewed] = useState(false);
 
   const handleEdit = (entry) => {
-    setEditingId(entry.id);
+    setEditingEntry(entry);
     setNewEntry(entry);
-    setIsAdding(false);
   };
 
   const handleDelete = (id) => {
-    setHistory(history.filter(entry => entry.id !== id));
-  };
-
-  const handleSave = () => {
-    if (editingId !== null) {
-      setHistory(history.map(entry => entry.id === editingId ? newEntry : entry));
-      setEditingId(null);
-    } else {
-      setHistory([...history, { ...newEntry, id: Date.now() }]);
-      setIsAdding(false);
-    }
-    setNewEntry({ id: null, diagnosis: '', date: '', age: '', comment: '', src: 'Approved', problemList: false });
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setIsAdding(false);
-    setNewEntry({ id: null, diagnosis: '', date: '', age: '', comment: '', src: 'Approved', problemList: false });
+    const updatedHistory = medicalHx.filter(entry => entry.id !== id);
+    setMedicalHx(updatedHistory);
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewEntry({ ...newEntry, [name]: type === 'checkbox' ? checked : value });
+    const { name, value } = e.target;
+    setNewEntry({ ...newEntry, [name]: value });
   };
 
-  const handleAddClick = () => {
-    setIsAdding(true);
-    setEditingId(null);
-    setNewEntry({ id: null, diagnosis: '', date: '', age: '', comment: '', src: 'Approved', problemList: false });
+  const handleSave = () => {
+    let updatedHistory = [];
+    if (editingEntry) {
+      updatedHistory = medicalHx.map(entry =>
+        entry.id === editingEntry.id ? { ...newEntry, id: entry.id } : entry
+      );
+    } else {
+      const newId = medicalHx.length > 0 ? Math.max(...medicalHx.map(e => e.id)) + 1 : 1;
+      updatedHistory = [...medicalHx, { ...newEntry, id: newId }];
+    }
+    setMedicalHx(updatedHistory);
+    
+    setEditingEntry(null);
+    setIsAddingNew(false);
+    setNewEntry({
+      id: null,
+      diagnosis: '',
+      date: '',
+      age: '',
+      src: '',
+      problemList: '',
+    });
   };
 
-  const handleReviewedChange = (event) => {
-    setReviewed(event.target.checked);
+  const handleCancel = () => {
+    setEditingEntry(null);
+    setIsAddingNew(false);
+    setNewEntry({
+      id: null,
+      diagnosis: '',
+      date: '',
+      age: '',
+      src: '',
+      problemList: '',
+    });
+  };
+
+  const handleReviewedChange = (e) => {
+    setReviewed(e.target.checked);
   };
 
   return (
     <Box sx={{ p: 2, backgroundColor: 'white' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Past Medical History</Typography>
-        <Button startIcon={<Icon>add</Icon>} variant="contained" onClick={handleAddClick} sx={{ backgroundColor: 'primary.main', color: 'white' }}>
-          Add Medical History
+        <Label variant="h6" sx={{ fontWeight: 'bold' }}>Medical History</Label>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setIsAddingNew(true)}
+          sx={{ backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }}
+        >
+          New
         </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
+      <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
         <Table sx={{ minWidth: 650 }} aria-label="medical history table">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Diagnosis</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Diagnosis</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Age</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Comment</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Src.</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>PL</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Source</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Added to Problem List</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {history.map((entry) => (
-              <StyledTableRow key={entry.id}>
+            {medicalHx.map((entry, index) => (
+              <StyledTableRow key={index}>
+                <TableCell component="th" scope="row">
+                  {entry.date}
+                </TableCell>
                 <TableCell>{entry.diagnosis}</TableCell>
-                <TableCell>{entry.date}</TableCell>
                 <TableCell>{entry.age}</TableCell>
-                <TableCell>{entry.comment}</TableCell>
                 <TableCell>{entry.src}</TableCell>
                 <TableCell>
-                  {entry.problemList === 'True' ? <CheckCircleOutlineIcon color="success" /> : <CancelIcon color="error" />}
+                  <Checkbox
+                    checked={entry.problemList === 'True'}
+                    disabled
+                    color="primary"
+                    icon={<CheckCircleOutlineIcon />}
+                    checkedIcon={<CheckCircleOutlineIcon />}
+                  />
                 </TableCell>
                 <TableCell>
-                  <IconButton size="small" onClick={() => handleEdit(entry)}><Icon fontSize="small">edit</Icon></IconButton>
-                  <IconButton size="small" onClick={() => handleDelete(entry.id)}><Icon fontSize="small">delete</Icon></IconButton>
+                  <IconButton onClick={() => handleEdit(entry)} color="primary">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(entry.id)} color="secondary">
+                    <DeleteIcon />
+                  </IconButton>
                 </TableCell>
               </StyledTableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </Box>
 
-      {(isAdding || editingId !== null) && (
-        <Paper sx={{ p: 2, mt: 2, border: '1px solid #e0e0e0' }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>{editingId !== null ? 'Edit Entry' : 'Add New Entry'}</Typography>
+      {(isAddingNew || editingEntry) && (
+        <Box sx={{ p: 2, mt: 4, border: '1px solid #e0e0e0' }}>
+          <Label variant="h6" gutterBottom>
+            {editingEntry ? 'Edit Entry' : 'Add New Entry'}
+          </Label>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField label="Diagnosis" name="diagnosis" value={newEntry.diagnosis} onChange={handleChange} fullWidth />
+              <TextField label="Diagnosis" name="diagnosis" value={newEntry.diagnosis} onChange={handleChange} fullWidth placeholder="e.g. Chronic kidney disease" />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField label="Date" name="date" value={newEntry.date} onChange={handleChange} fullWidth placeholder="mm/dd/yyyy" />
@@ -136,8 +181,8 @@ export default function MedicalHistory() {
             <Grid item xs={12} sm={3}>
               <TextField label="Age" name="age" value={newEntry.age} onChange={handleChange} fullWidth placeholder="e.g. 65 years old" />
             </Grid>
-            <Grid item xs={12}>
-              <TextField label="Comment" name="comment" value={newEntry.comment} onChange={handleChange} fullWidth multiline rows={2} />
+            <Grid item xs={12} sm={6}>
+              <TextField label="Source" name="src" value={newEntry.src} onChange={handleChange} fullWidth placeholder="e.g. Hospital record" />
             </Grid>
             <Grid item xs={12}>
               <FormControlLabel
@@ -150,7 +195,7 @@ export default function MedicalHistory() {
               <Button onClick={handleCancel} variant="outlined">Cancel</Button>
             </Grid>
           </Grid>
-        </Paper>
+        </Box>
       )}
 
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
@@ -159,9 +204,9 @@ export default function MedicalHistory() {
           label="Mark as Reviewed"
         />
         {reviewed && (
-          <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-            Last Reviewed by [User Name] on [Date]
-          </Typography>
+          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
+            All medical history entries have been reviewed.
+          </Label>
         )}
       </Box>
     </Box>

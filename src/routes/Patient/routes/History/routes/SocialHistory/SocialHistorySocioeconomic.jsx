@@ -1,8 +1,7 @@
 // SocialHistorySocioeconomic.jsx
 import React from 'react';
 import { VStack, Label } from 'components/ui/Core.jsx';
-
-export const SocialHistorySocioeconomic = () => {
+const SocialHistorySocioeconomic = () => {
   return (
     <VStack spacing={2}>
       <Label variant="h6" bold>Socioeconomic</Label>
@@ -10,3 +9,5 @@ export const SocialHistorySocioeconomic = () => {
     </VStack>
   )
 }
+
+export default SocialHistorySocioeconomic;

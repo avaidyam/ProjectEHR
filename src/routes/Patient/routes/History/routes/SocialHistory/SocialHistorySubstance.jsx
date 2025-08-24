@@ -2,7 +2,7 @@
 import React from 'react';
 import { VStack, Label } from 'components/ui/Core.jsx';
 
-export const SocialHistorySubstance = () => {
+const SocialHistorySubstance = () => {
   return (
     <VStack spacing={2}>
       <Label variant="h6" bold>Substance & Sexual History</Label>
@@ -10,3 +10,4 @@ export const SocialHistorySubstance = () => {
     </VStack>
   )
 }
+export default SocialHistorySubstance;

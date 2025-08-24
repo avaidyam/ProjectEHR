@@ -4,16 +4,19 @@ import { Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { HStack, Box, Label } from 'components/ui/Core.jsx';
 
-import { MedicalHistory } from './routes/MedicalHistory/MedicalHistory.jsx';
-import { SurgicalHistory } from './routes/SurgicalHistory/SurgicalHistory.jsx';
-import { FamilyHistory } from './routes/FamilyHistory/FamilyHistory.jsx';
-import { SocialHistorySubstance } from './routes/SocialHistory/SocialHistorySubstance.jsx';
-import { SocialHistoryECig } from './routes/SocialHistory/SocialHistoryECig.jsx';
-import { SocialHistorySocioeconomic } from './routes/SocialHistory/SocialHistorySocioeconomic.jsx';
-import { SocialHistoryADL } from './routes/SocialHistory/SocialHistoryADL.jsx';
+import MedicalHistory from './routes/MedicalHistory/MedicalHistory.jsx';
+import SurgicalHistory from './routes/SurgicalHistory/SurgicalHistory.jsx';
+import FamilyHistory from './routes/FamilyHistory/FamilyHistory.jsx';
+import SocialHistorySubstance from './routes/SocialHistory/SocialHistorySubstance.jsx';
+import SocialHistoryECig from './routes/SocialHistory/SocialHistoryECig.jsx';
+import SocialHistorySocioeconomic from './routes/SocialHistory/SocialHistorySocioeconomic.jsx';
+import SocialHistoryADL from './routes/SocialHistory/SocialHistoryADL.jsx';
+
 
 export default function HistoryTabContent() {
   const [value, setValue] = useState("Medical")
+  
+
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', height: '100%', flexDirection: 'column' }}>
       <Box sx={{ p: 2 }}>
@@ -30,7 +33,7 @@ export default function HistoryTabContent() {
               <Label variant="overline">GENERAL</Label>
               <Tab value="Medical" label="Medical" />
               <Tab value="Surgical" label="Surgical" />
-              <Tab value="Family" label="Surgical" />
+              <Tab value="Family" label="Family" />
               <Label variant="overline">SOCIAL</Label>
               <Tab value="Substance & Sexual History" label="Substance & Sexual History" />
               <Tab value="E-cigarette/Vaping" label="E-cigarette/Vaping" />
