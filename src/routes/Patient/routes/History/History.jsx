@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { HStack, Box, Label } from 'components/ui/Core.jsx';
+import { usePatient } from '../../../../components/contexts/PatientContext.jsx';
 
 import MedicalHistory from './routes/MedicalHistory/MedicalHistory.jsx';
 import SurgicalHistory from './routes/SurgicalHistory/SurgicalHistory.jsx';
@@ -11,10 +12,19 @@ import SocialHistorySubstance from './routes/SocialHistory/SocialHistorySubstanc
 import SocialHistoryECig from './routes/SocialHistory/SocialHistoryECig.jsx';
 import SocialHistorySocioeconomic from './routes/SocialHistory/SocialHistorySocioeconomic.jsx';
 import SocialHistoryADL from './routes/SocialHistory/SocialHistoryADL.jsx';
+import SocialHistoryDocumentation from './routes/SocialHistory/SocialHistoryDocumentation.jsx';
+import SocialHistoryBirth from './routes/Specialty/SpecialtyBirth.jsx';
+import SpecialtyOB from './routes/Specialty/SpecialtyOB.jsx';
+import SpecialtyPap from './routes/Specialty/SpecialtyPap.jsx';
 
 
 export default function HistoryTabContent() {
   const [value, setValue] = useState("Medical")
+
+  const { useChart } = usePatient();
+  const [{ gender }] = useChart()();
+  
+  const isFemale = gender === 'Female';
   
 
   return (
@@ -43,7 +53,7 @@ export default function HistoryTabContent() {
               <Tab value="Social Determinants" label="Social Determinants" />
               <Label variant="overline">SPECIALTY</Label>
               <Tab value="Birth" label="Birth" />
-              <Tab value="OB/Gyn" label="OB/Gyn" />
+              {isFemale && <Tab value="OB/Gyn" label="OB/Gyn" />}
               <Tab value="Pap Tracking" label="Pap Tracking" />
             </TabList>
           </Box>
@@ -70,24 +80,18 @@ export default function HistoryTabContent() {
             <SocialHistoryADL />
           </TabPanel>
           <TabPanel value="Social Documentation">
-            <Label variant="h6">Social Documentation</Label>
-            <Label>Placeholder for Social Documentation content.</Label>
-          </TabPanel>
-          <TabPanel value="Social Determinants">
-            <Label variant="h6">Social Determinants</Label>
-            <Label>Placeholder for Social Determinants content.</Label>
+            <SocialHistoryDocumentation />
           </TabPanel>
           <TabPanel value="Birth">
-            <Label variant="h6">Birth</Label>
-            <Label>Placeholder for Birth content.</Label>
+            <SocialHistoryBirth />
           </TabPanel>
-          <TabPanel value="OB/Gyn">
-            <Label variant="h6">OB/Gyn</Label>
-            <Label>Placeholder for OB/Gyn content.</Label>
-          </TabPanel>
+          {isFemale && (
+            <TabPanel value="OB/Gyn">
+              <SpecialtyOB />
+            </TabPanel>
+          )}
           <TabPanel value="Pap Tracking">
-            <Label variant="h6">Pap Tracking</Label>
-            <Label>Placeholder for Pap Tracking content.</Label>
+            <SpecialtyPap />
           </TabPanel>
           </Box>
       </HStack>

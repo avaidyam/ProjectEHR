@@ -208,10 +208,10 @@ export const _data = {
             },
           },
           SocialDocumentation: {
-            textbox: `
-        Lives with spouse and daughter in Savoy, IL. Married for 5 years
-        `,
+            textbox: 'Lives with spouse and daughter in Savoy, IL. Married for 5 years',
           },
+          BirthHistory: {},
+          OBGynHistory: {},
         },
       },
       '2': {
@@ -529,6 +529,8 @@ export const _data = {
         Lives with spouse and daughter in Savoy, IL. Married for 5 years
         `,
           },
+          BirthHistory: {},
+          OBGynHistory: {},
         },
       },
     },
@@ -604,6 +606,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '9': {
@@ -680,6 +684,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -755,6 +761,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '13': {
@@ -831,6 +839,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -915,6 +925,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '15': {
@@ -1033,6 +1045,8 @@ export const _data = {
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -1330,6 +1344,7 @@ export const _data = {
         given his odd shift hours including night shifts.
         `,
           },
+        "BirthHistory": {},
         },
       },
       '4': {
@@ -2636,6 +2651,7 @@ export const _data = {
         given his odd shift hours including night shifts.
         `,
           },
+        "BirthHistory": {}
         },
       },
     },
