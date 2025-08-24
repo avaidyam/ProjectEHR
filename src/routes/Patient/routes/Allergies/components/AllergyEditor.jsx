@@ -7,6 +7,8 @@ import {
   TextField,
   Typography,
   MenuItem,
+  Icon,
+  colors,
   Grid
 } from '@mui/material';
 
@@ -131,14 +133,43 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
         </Grid>
       </Grid>
 
-      <Box mt={3} display="flex" justifyContent="flex-end" gap={2}>
-        <Button variant="outlined" color="error" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          Accept
-        </Button>
-      </Box>
+<Box mt={3} display="flex" justifyContent="space-between" alignItems="center">
+  {/* Left side buttons */}
+   {/* placeholder buttons so it looks like Epic, currently non-functional */}
+  <Box display="flex" gap={2}>
+    <Button variant="outlined" sx={{
+        color: colors.grey[700],
+        borderColor: colors.grey[700],
+        '&:hover': {
+          borderColor: colors.grey[700],
+          backgroundColor: colors.grey[200], // subtle hover effect
+        },
+      }}>
+      Past Updates
+    </Button>
+    <Button variant="outlined" sx={{
+        color: colors.grey[700],
+        borderColor: colors.grey[700],
+        '&:hover': {
+          borderColor: colors.grey[700],
+          backgroundColor: colors.grey[200], // subtle hover effect
+        },
+      }}>
+      <Icon>clear</Icon>Delete
+      </Button>
+  </Box>
+
+  {/* Right side buttons */}
+  <Box display="flex" gap={2}>
+    <Button variant="outlined" color="success" onClick={handleSave}>
+      <Icon>check</Icon>Accept
+    </Button>
+    <Button variant="outlined" color="error" onClick={onCancel}>
+      <Icon>clear</Icon>Cancel
+    </Button>
+  </Box>
+</Box>
+
     </Paper>
   );
 };

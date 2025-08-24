@@ -175,7 +175,30 @@ export const Storyboard = ({ ...props }) => {
           <strong>{PCP?.role}</strong>
         </div>
       </div>
-      <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
+<span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
+
+{/* Allergies with high-severity highlight */}
+{allergies && allergies.length > 0 ? (
+  allergies.some(a => a.severity === 'High') ? (
+    <Alert 
+    icon ={false}
+      sx={{ 
+        mt: .5, py:0.1,
+        bgcolor: '#ffcb00', 
+        color: 'black', 
+        fontWeight: 'bold', 
+      }}
+    >
+      Allergies: {allergies.map(a => a.agent).join(", ")}
+    </Alert>
+  ) : (
+    <span>Allergies: {allergies.map(a => a.agent).join(", ")}</span>
+  )
+) : (
+  <span>Allergies: None on file</span>
+)}
+
+
     </div>
       <Divider color="inherit" />
       <Typography variant="h6">Encounter</Typography>
