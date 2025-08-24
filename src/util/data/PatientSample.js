@@ -191,6 +191,7 @@ export const _data = {
               comments: 'Marijuana once in college',
             },
           },
+          ECigaretteVaping:{},
           Socioeconomic: {
             occupation: 'Social Worker',
             employer: 'Local High School',
@@ -475,33 +476,39 @@ export const _data = {
           ],
           SubstanceSexualHealth: {
             tobacco: {
-              smokingStatus: 'None',
-              types: [''],
-              startDate: '',
+              status: 'Never',
+              smokeless: 'Never', 
               packsPerDay: 0,
               packYears: 0,
-              smokelessStatus: {
-                smokelessStatus: 'Never',
-                comments: '',
-              },
+              startDate: '',
+              passiveExposure: 'Never',
+              comments: ''
             },
             alcohol: {
-              alcoholStatus: 'Yes',
+              use: 'No',
               drinksPerWeek: {
-                wineGlasses: 0,
-                beerCans: 1,
-                liquorShots: 0,
-                drinksContainingAlcohol: 0,
-                standardDrinks: 0,
+                wine: 0,
+                beer: 0,
+                liquor: 0,
+                mixedDrinks: 0,
+                standardDrinks: 0
               },
+              comments: ''
             },
             drugs: {
-              drugStatus: 'Not Currently',
-              drugTypes: [],
-              usePerWeek: '',
-              comments: 'Marijuana once in college',
+              use: 'No',
+              types: [],
+              usePerWeek: 0,
+              comments: ''
             },
+            sexualActivity: {
+              active: 'Not Currently',
+              birthControl: [],
+              partners: [],
+              comments: ''
+            }
           },
+          ECigaretteVaping:{},
           Socioeconomic: {
             occupation: 'Social Worker',
             employer: 'Local High School',
@@ -592,6 +599,7 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
@@ -667,6 +675,7 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
@@ -741,6 +750,7 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
@@ -816,6 +826,7 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
@@ -899,6 +910,7 @@ export const _data = {
           ],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
@@ -982,7 +994,41 @@ export const _data = {
             }
           ],
           family: [],
-          SubstanceSexualHealth: {},
+          SubstanceSexualHealth: {
+            tobacco: {
+              status: 'Never', // 'Never', 'Former', 'Every Day', 'Some Days', 'Unknown'
+              smokeless: 'Never', // 'Never', 'Former', 'Current', 'Unknown'
+              passiveExposure: 'Never', // 'Never', 'Past', 'Current'
+              packsPerDay: 0,
+              packYears: 0,
+              startDate: '',
+              comments: ''
+            },
+            alcohol: {
+              use: 'No', // 'Yes', 'No', 'Not Currently', 'Never'
+              drinksPerWeek: {
+                wine: 0,
+                beer: 0,
+                liquor: 0,
+                mixedDrinks: 0,
+                standardDrinks: 0
+              },
+              comments: ''
+            },
+            drugs: {
+              use: 'No', // 'Yes', 'No', 'Not Currently', 'Never'
+              types: [], // Array of selected drug types
+              usePerWeek: 0,
+              comments: ''
+            },
+            sexualActivity: {
+              active: 'Not Currently', // 'Yes', 'Not Currently', 'Never'
+              birthControl: [], // Array of selected methods
+              partners: [], // Array: 'Female', 'Male'
+              comments: ''
+            }
+          },
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',

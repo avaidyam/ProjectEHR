@@ -1,3 +1,4 @@
+// SurgicalHistory.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -25,6 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
+import procedures from '../../../../../../util/data/procedure_list.json';
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
@@ -181,15 +183,22 @@ export default function SurgicalHistory() {
           </Label>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <TextField 
-                label="Procedure" 
-                name="procedure" 
-                value={newEntry.procedure} 
-                onChange={handleChange} 
-                fullWidth 
-                placeholder="e.g. Appendectomy" 
-                required
-              />
+              <FormControl fullWidth>
+                <InputLabel>Procedure *</InputLabel>
+                <Select
+                  name="procedure"
+                  value={newEntry.procedure}
+                  onChange={handleChange}
+                  label="Procedure *"
+                  required
+                >
+                  {procedures.map((procedure) => (
+                    <MenuItem key={procedure} value={procedure}>
+                      {procedure}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={3}>
               <FormControl fullWidth>
