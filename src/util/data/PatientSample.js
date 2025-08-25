@@ -191,6 +191,7 @@ export const _data = {
               comments: 'Marijuana once in college',
             },
           },
+          ECigaretteVaping:{},
           Socioeconomic: {
             occupation: 'Social Worker',
             employer: 'Local High School',
@@ -207,10 +208,10 @@ export const _data = {
             },
           },
           SocialDocumentation: {
-            textbox: `
-        Lives with spouse and daughter in Savoy, IL. Married for 5 years
-        `,
+            textbox: 'Lives with spouse and daughter in Savoy, IL. Married for 5 years',
           },
+          BirthHistory: {},
+          OBGynHistory: {},
         },
       },
       '2': {
@@ -475,33 +476,39 @@ export const _data = {
           ],
           SubstanceSexualHealth: {
             tobacco: {
-              smokingStatus: 'None',
-              types: [''],
-              startDate: '',
+              status: 'Never',
+              smokeless: 'Never', 
               packsPerDay: 0,
               packYears: 0,
-              smokelessStatus: {
-                smokelessStatus: 'Never',
-                comments: '',
-              },
+              startDate: '',
+              passiveExposure: 'Never',
+              comments: ''
             },
             alcohol: {
-              alcoholStatus: 'Yes',
+              use: 'No',
               drinksPerWeek: {
-                wineGlasses: 0,
-                beerCans: 1,
-                liquorShots: 0,
-                drinksContainingAlcohol: 0,
-                standardDrinks: 0,
+                wine: 0,
+                beer: 0,
+                liquor: 0,
+                mixedDrinks: 0,
+                standardDrinks: 0
               },
+              comments: ''
             },
             drugs: {
-              drugStatus: 'Not Currently',
-              drugTypes: [],
-              usePerWeek: '',
-              comments: 'Marijuana once in college',
+              use: 'No',
+              types: [],
+              usePerWeek: 0,
+              comments: ''
             },
+            sexualActivity: {
+              active: 'Not Currently',
+              birthControl: [],
+              partners: [],
+              comments: ''
+            }
           },
+          ECigaretteVaping:{},
           Socioeconomic: {
             occupation: 'Social Worker',
             employer: 'Local High School',
@@ -522,6 +529,8 @@ export const _data = {
         Lives with spouse and daughter in Savoy, IL. Married for 5 years
         `,
           },
+          BirthHistory: {},
+          OBGynHistory: {},
         },
       },
     },
@@ -592,10 +601,13 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '9': {
@@ -646,25 +658,34 @@ export const _data = {
               diagnosis: 'Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
             {
               diagnosis: 'Dietary counseling and surveillance (ICD-10-CM Z71.3)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
             {
               diagnosis: 'Lack of physical exercise (ICD-10-CM Z72.3)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
           ],
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -735,10 +756,13 @@ export const _data = {
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '13': {
@@ -789,25 +813,34 @@ export const _data = {
               diagnosis: 'Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
             {
               diagnosis: 'Dietary counseling and surveillance (ICD-10-CM Z71.3)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
             {
               diagnosis: 'Lack of physical exercise (ICD-10-CM Z72.3)',
               date: '2024-12-08',
               age: '65',
+              src:'',
+              problemList:'',
             },
           ],
           surgical: [],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -875,13 +908,25 @@ export const _data = {
         immunizations: [],
         history: {
           medical: [],
-          surgical: [],
+          surgical: [
+            {
+            procedure: 'Appendectomy',
+            date: '2005-06-15',
+            age: '25',
+            laterality: 'N/A',
+            src: 'Approved by Clinican',
+            notes: 'Laparoscopic appendectomy without complications.',
+            }
+          ],
           family: [],
           SubstanceSexualHealth: {},
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
       '15': {
@@ -932,25 +977,76 @@ export const _data = {
               diagnosis: 'Chronic kidney disease, stage 4 (severe, GFR 29) (ICD-10-CM N18.4)',
               date: '2024-12-08',
               age: '65',
+              src: 'Clinican',
+              problemList:'True',
             },
             {
               diagnosis: 'Dietary counseling and surveillance (ICD-10-CM Z71.3)',
               date: '2024-12-08',
               age: '65',
+              src: '',
+              problemList:'False',
             },
             {
               diagnosis: 'Lack of physical exercise (ICD-10-CM Z72.3)',
               date: '2024-12-08',
               age: '65',
+              src: '',
+              problemList:'False',
             },
           ],
-          surgical: [],
+          surgical: [
+            {
+            procedure: 'Appendectomy',
+            date: '2005-06-15',
+            age: '25',
+            laterality: 'N/A',
+            src: 'Approved by Clinican',
+            notes: 'Laparoscopic appendectomy without complications.',
+            }
+          ],
           family: [],
-          SubstanceSexualHealth: {},
+          SubstanceSexualHealth: {
+            tobacco: {
+              status: 'Never', // 'Never', 'Former', 'Every Day', 'Some Days', 'Unknown'
+              smokeless: 'Never', // 'Never', 'Former', 'Current', 'Unknown'
+              passiveExposure: 'Never', // 'Never', 'Past', 'Current'
+              packsPerDay: 0,
+              packYears: 0,
+              startDate: '',
+              comments: ''
+            },
+            alcohol: {
+              use: 'No', // 'Yes', 'No', 'Not Currently', 'Never'
+              drinksPerWeek: {
+                wine: 0,
+                beer: 0,
+                liquor: 0,
+                mixedDrinks: 0,
+                standardDrinks: 0
+              },
+              comments: ''
+            },
+            drugs: {
+              use: 'No', // 'Yes', 'No', 'Not Currently', 'Never'
+              types: [], // Array of selected drug types
+              usePerWeek: 0,
+              comments: ''
+            },
+            sexualActivity: {
+              active: 'Not Currently', // 'Yes', 'Not Currently', 'Never'
+              birthControl: [], // Array of selected methods
+              partners: [], // Array: 'Female', 'Male'
+              comments: ''
+            }
+          },
+          ECigaretteVaping:{},
           Socioeconomic: {},
           SocialDocumentation: {
             textbox: '',
           },
+           BirthHistory: {},
+           OBGynHistory: {},
         },
       },
     },
@@ -1248,6 +1344,7 @@ export const _data = {
         given his odd shift hours including night shifts.
         `,
           },
+        "BirthHistory": {},
         },
       },
       '4': {
@@ -2554,6 +2651,7 @@ export const _data = {
         given his odd shift hours including night shifts.
         `,
           },
+        "BirthHistory": {}
         },
       },
     },
