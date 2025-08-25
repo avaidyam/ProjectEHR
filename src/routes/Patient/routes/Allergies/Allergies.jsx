@@ -6,6 +6,7 @@ import { usePatient } from 'components/contexts/PatientContext.jsx';
 import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
+import { Snackbar, Alert } from '@mui/material';
 
 const initialAllergies = [
   {
@@ -31,7 +32,8 @@ const initialAllergies = [
 ];
 
 export const Allergies = () => {
-  const [allergies, setAllergies] = useState(initialAllergies);
+  const { useChart, useEncounter } = usePatient();
+  const [allergies, setAllergies] = useEncounter().allergies();
   const [editingAllergy, setEditingAllergy] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
@@ -43,6 +45,7 @@ export const Allergies = () => {
   };
 
   const handleSaveAllergy = (newAllergyData) => {
+    
     if (editingAllergy && editingAllergy.id) {
       setAllergies((prev) =>
         prev.map((allergy) =>
@@ -77,10 +80,25 @@ export const Allergies = () => {
     setSelectedAgent(agentObject);  // store selected agent, do NOT open editor yet
   };
 
+const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState('');
+
   // On Add button click, open editor with selectedAgent (or empty if none selected)
   const handleAddClick = () => {
+    const agentName = selectedAgent?.agent?.trim() || '';
+      // Check if the agent already exists
+  if (agentName) {
+    const alreadyExists = allergies.some(
+      (a) => a.agent.trim().toLowerCase() === agentName.toLowerCase()
+    );
+    if (alreadyExists) {
+      setSnackbarMessage('Allergen already on file');
+      setSnackbarOpen(true);
+      return; // Stop opening the editor
+    }
+  }
     if (selectedAgent) {
-      setEditingAllergy({ ...selectedAgent, id: null });
+      setEditingAllergy({ ...selectedAgent });
     } else {
       setEditingAllergy({
         agent: '',
@@ -161,7 +179,7 @@ export const Allergies = () => {
       borderColor: colors.grey[700],
       backgroundColor: colors.grey[300], // subtle hover effect
     },
-  }}> Mark as Reviewed </Button>
+  }}> <Icon>check</Icon>Mark as Reviewed </Button>
         <Button variant="outlined" sx={{
     color: colors.grey[700],
     borderColor: colors.grey[700],
@@ -175,6 +193,18 @@ export const Allergies = () => {
         </Typography>
 
             </Box>
+              <Snackbar
+  open={snackbarOpen}
+  autoHideDuration={3000}
+  onClose={() => setSnackbarOpen(false)}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+>
+  <Alert severity="error" onClose={() => setSnackbarOpen(false)} sx={{ width: '100%' }}>
+    {snackbarMessage}
+  </Alert>
+</Snackbar>
     </Box>
+    
   );
+  
 };

@@ -31,6 +31,8 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
         <Table sx={{ minWidth: 650 }} aria-label="allergies table">
           <TableHead>
             <TableRow>
+              {/* place holder to check id save */}
+              {/* <TableCell>Id</TableCell> */}
               <TableCell>Allergen</TableCell>
               <TableCell>Allergen Type</TableCell>
               <TableCell>Reaction</TableCell>
@@ -58,6 +60,8 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                   },
                 }}
               >
+                {/* placeholder to check id save */}
+                {/* <TableCell>{allergy.id}</TableCell> */}
                 <TableCell
                   component="th"
                   scope="row"
@@ -81,12 +85,13 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
     )}
   </Box>
                 </TableCell>
-
+              
                 <TableCell>{allergy.type}</TableCell>
                 <TableCell>{allergy.reaction}</TableCell>
                 <TableCell
                   sx={{
-                    fontWeight: allergy.severity === 'Not Specified' ? 'bold' : 'inherit',
+                    fontWeight: allergy.severity === 'Not Specified' ? 'bold!important' : 'inherit',
+                    backgroundColor: allergy.severity === 'Not Specified' ? '#ffcb00!important' : 'inherit',
                   }}
                 >
                   {allergy.severity || 'Not Specified'}
