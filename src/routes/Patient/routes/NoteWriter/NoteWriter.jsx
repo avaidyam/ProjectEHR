@@ -330,7 +330,9 @@ const physicalExamBodySystems = [
 const temporaryStorage = {};
 
 export const Notewriter = () => {
-  const { patient: patientMRN, encounter: enc, data } = usePatient()
+  const { useChart, useEncounter } = usePatient()
+  const [{ id: patientMRN }, setChart] = useChart()()
+  const [{ id: enc }, setEncounter] = useEncounter()()
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0); // Zero is Index of the first tab (HPI)
   const [selectedTabLabel, setSelectedTabLabel] = useState('HPI');
@@ -371,15 +373,15 @@ export const Notewriter = () => {
   const [peState, setPEState] = [(temporaryStorage[patientMRN]?.[enc]?.peState), (x) => { temporaryStorage[patientMRN][enc].peState = x }]
   const [rosState, setRosState] = [(temporaryStorage[patientMRN]?.[enc]?.rosState), (x) => { temporaryStorage[patientMRN][enc].rosState = x }]
 
-  //const [editorState, setEditorState] = useState(() => (temporaryStorage.patientMRN?.enc?.editorState) ?? EditorState.createEmpty());
-  //const [peState, setPEState] = useState(temporaryStorage.patientMRN?.enc?.peState ?? generateInitialPEState(physicalExamBodySystems));
-  //const [rosState, setRosState] = useState(temporaryStorage.patientMRN?.enc?.rosState ?? generateInitialRosState(bodySystems));
+  // const [editorState, setEditorState] = useState(() => (temporaryStorage.patientMRN?.enc?.editorState) ?? EditorState.createEmpty());
+  // const [peState, setPEState] = useState(temporaryStorage.patientMRN?.enc?.peState ?? generateInitialPEState(physicalExamBodySystems));
+  // const [rosState, setRosState] = useState(temporaryStorage.patientMRN?.enc?.rosState ?? generateInitialRosState(bodySystems));
   
   useEffect(() => {
     if(temporaryStorage[patientMRN]?.[enc] === undefined) {
       temporaryStorage[patientMRN] = {
         [enc]: {
-          editorState: exampleContent,//EditorState.createEmpty(),
+          editorState: exampleContent,// EditorState.createEmpty(),
           peState: generateInitialPEState(physicalExamBodySystems),
           rosState: generateInitialRosState(bodySystems)
         }

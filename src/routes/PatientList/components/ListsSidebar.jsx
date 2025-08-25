@@ -3,7 +3,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
-import {_data} from 'util/data/PatientSample.js';
+import { _data } from 'util/data/PatientSample.js';
 
 const ExpandMoreIcon = () => <Icon>expand_more</Icon>
 const ChevronRightIcon = () => <Icon>chevron_right</Icon>
@@ -11,10 +11,10 @@ const ChevronRightIcon = () => <Icon>chevron_right</Icon>
 // TODO: Remove this once we have a real list
 const transformPatientData = (patients) => {
   // Randomly assign patients to primary care or specialist
-  const primaryCarePatients = patients.filter(patient => patient.PCP?.role === 'Primary Care Physician');
-  const specialistPatients = patients.filter(patient => patient.PCP?.role !== 'Primary Care Physician');
-  const recentEncounterPatients = patients.filter(patient => {
-    const hasRecentEncounter = patient.encounters?.some(encounter => {
+  const primaryCarePatients = Object.values(patients).filter(patient => patient.PCP?.role === 'Primary Care Physician');
+  const specialistPatients = Object.values(patients).filter(patient => patient.PCP?.role !== 'Primary Care Physician');
+  const recentEncounterPatients = Object.values(patients).filter(patient => {
+    const hasRecentEncounter = Object.values(patient.encounters).some(encounter => {
       const encounterDate = new Date(encounter.date);
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -25,17 +25,17 @@ const transformPatientData = (patients) => {
 
   const transformPatient = (patient) => {
     // Get the most recent encounter
-    const latestEncounter = patient.encounters?.reduce((latest, current) => {
+    const latestEncounter = Object.values(patient.encounters).reduce((latest, current) => {
       return new Date(current.startDate) > new Date(latest.startDate) ? current : latest;
-    }, patient.encounters[0]);
+    }, Object.values(patient.encounters)[0]);
 
     return {
-      id: patient.mrn,
+      id: patient.id,
       name: `${patient.firstName} ${patient.lastName}`,
-      mrn: patient.mrn,
-      dob: patient.dateOfBirth,
+      mrn: patient.id,
+      dob: patient.birthdate,
       location: patient.address || 'Carle Foundation Hospital',
-      age: patient.age,
+      age: new Date(patient.birthdate).age(),
       sex: patient.gender,
       insuranceType: patient.insurance?.carrierName || 'Unknown',
       attendingMD: latestEncounter?.provider || 'Not Assigned',
@@ -47,7 +47,7 @@ const transformPatientData = (patients) => {
       roomNumber: Math.random() > 0.5 ? '123' : '456',
       visitReason: latestEncounter?.concerns?.[0] || 'N/A',
       encounterData: latestEncounter ? {
-        patientId: patient.mrn,
+        patientId: patient.id,
         encounterId: latestEncounter.id
       } : null
     };

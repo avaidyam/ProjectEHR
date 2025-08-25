@@ -25,10 +25,8 @@ import {
 } from './utils/immunizationUtils.js';
 
 export default function Immunizations() {
-  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
-  const currentEncounter = encounters?.find(x => x.id === enc);
-  const patientImmunizations = currentEncounter?.immunizations || [];
-  const [immunizations, setImmunizations] = useState(patientImmunizations);
+  const { useChart, useEncounter } = usePatient()
+  const [immunizations, setImmunizations] = useEncounter().immunizations()
   const [editingImmunization, setEditingImmunization] = useState(null);
 
   const grouped = groupImmunizationsByType(immunizations);
@@ -247,4 +245,3 @@ export default function Immunizations() {
     </Box>
   );
 }
-

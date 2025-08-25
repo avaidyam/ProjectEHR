@@ -115,15 +115,18 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 };
 
 export const ChartReview = ({ ...props }) => {
-  const { patient: patientMRN, encounter: enc, data: { encounters } } = usePatient();
+  const { useChart, useEncounter } = usePatient()
+  const [chart, setChart] = useChart()()
+  const [encounter, setEncounter] = useEncounter()()
+
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
   // or logic to advance from one encounter to the next
-  const currentEncDate = encounters?.find(x => x.id === enc).startDate
-  const documents = encounters?.filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
-  const encountersData = encounters.map(x => ({
+  const currentEncDate = encounter.startDate
+  const documents = Object.values(chart.encounters).filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
+  const encountersData = Object.values(chart.encounters).map(x => ({
     kind: 'Encounters',
     data: {
       date: x.startDate,
