@@ -28,6 +28,9 @@ import {
 } from 'react-draggable'
 import { EditorReadOnly } from './Editor.jsx'
 
+// Add an alpha value dynamically to any color string.
+export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
+
 // This component doubles as Box and Paper.
 export const Box = ({ paper, children, ...props }) => {
   if (paper === true)

@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Titlebar } from 'components/ui/Titlebar.jsx';
-import { OrderProvider } from 'components/contexts/OrdersContext.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';
 import { PatientLists } from './PatientList/PatientList.jsx';
 import { Login } from './Login/Login.jsx';
@@ -15,7 +16,7 @@ export const App = () => {
   const handleLogin = () => { setIsLoggedIn(true); navigate(0) }
   const handleLogout = () => { logout(); setIsLoggedIn(false); navigate('/') }
   return (
-    <OrderProvider> {/* FIXME: OrderProvider needs to be moved inside of Patient */}
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
         {isLoggedIn && <Titlebar onLogout={handleLogout} />}
         <Routes>
           <Route 
@@ -36,6 +37,6 @@ export const App = () => {
           />
           <Route path="*" render={() => <Navigate replace to="/" />} />
         </Routes>
-    </OrderProvider>
+    </LocalizationProvider>
   )
 }

@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
 
 // Date Picker Imports
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // Quicker way to quickly generate generic Probelem List Editor inputs
@@ -43,9 +41,7 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
         <Typography>{label}</Typography>
       </Grid>
       <Grid item xs={textFieldCols}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } })} />
-        </LocalizationProvider>
+        <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } })} />
       </Grid>
     </>
   );

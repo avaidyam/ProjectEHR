@@ -89,7 +89,7 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
       // Check if the agent already exists
   if (agentName) {
     const alreadyExists = allergies.some(
-      (a) => a.agent.trim().toLowerCase() === agentName.toLowerCase()
+      (a) => a?.agent?.trim().toLowerCase() === agentName.toLowerCase()
     );
     if (alreadyExists) {
       setSnackbarMessage('Allergen already on file');

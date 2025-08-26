@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, Typography, Divider, Card, Button, List, ListItem, Grid } from '@mui/material';
-import {useOrder, Drug} from 'components/contexts/OrdersContext.jsx';
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 // need to link to actions in orders later
 const mockMedicationData = () => ({
@@ -91,16 +91,20 @@ const TabPanel = (props) => {
 };
 
 export default function OrdersMgmt() {
+  const { useChart, useEncounter } = usePatient()
+  // eslint-disable-next-line dot-notation
+  const [orderList, setOrderList] = useEncounter().orderCart["_currentUser"]([])
+
   const [value, setValue] = useState(0);
   const { currentMedications } = mockMedicationData();
-  const {orderList, setOrderList} = useOrder();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  // This updates the context's orderList directly
   const addOrder = (med, medChangeType) => {
-    orderList.push(new Drug(medChangeType, med.name, med.dosage, med.frequency, med.route, 0)); // This updates the context's orderList directly
+    setOrderList(prev => [...prev, { type: medChangeType, name: med.name, dose: med.dosage, freq: med.frequency, route: med.route, refill: 0, startDate: undefined }])
   };
 
   return (

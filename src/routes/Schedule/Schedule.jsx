@@ -2,8 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
 import { useRouter } from 'util/urlHelpers.js';
@@ -13,13 +12,11 @@ import Notification from '../Login/components/Notification.jsx';
 // get today's date and display in text box
 function dateLocal() {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         defaultValue={dayjs(
           `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
         )}
       />
-    </LocalizationProvider>
   );
 }
 
