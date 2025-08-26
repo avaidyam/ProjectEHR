@@ -6,6 +6,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import { getRxTerms } from 'util/getRxTerms.js';
+import labs_all from 'util/data/labs_all.json'
 
 const getTextColor = (backC) => {
   switch (backC) {
@@ -74,7 +75,11 @@ const OrdersList = ({ searchTerm, onSelect, ...props }) => {
   const [data, setData] = useState([])
 
   useEffect(() => { 
-    getRxTerms(value).then(setData) 
+    (async () => {
+      const medications = await getRxTerms(value)
+      const procedures = Object.values(labs_all.procedures).filter(x => x.toLocaleLowerCase().startsWith(value)).map(x => ({ name: x }))
+      setData([...procedures, ...medications])
+    })()
   }, [value])
 
   return (
@@ -89,7 +94,7 @@ const OrdersList = ({ searchTerm, onSelect, ...props }) => {
       />
       {data.map((m) => (
         <ListItem disablePadding key={m.name}>
-          <ListItemButton onClick={() => onSelect(m)}>
+          <ListItemButton onClick={m.route !== undefined ? () => onSelect(m) : undefined}>
             <ListItemText primary={m.name}/>
           </ListItemButton>
         </ListItem>
