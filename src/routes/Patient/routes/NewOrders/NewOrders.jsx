@@ -5,8 +5,8 @@ import { alpha, TitledCard, Window } from 'components/ui/Core.jsx';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
-import { getRxTerms } from 'util/getRxTerms.js';
 import labs_all from 'util/data/labs_all.json'
+import rxnorm_all from 'util/data/rxnorm_all.json'
 
 const getTextColor = (backC) => {
   switch (backC) {
@@ -76,7 +76,7 @@ const OrdersList = ({ searchTerm, onSelect, ...props }) => {
 
   useEffect(() => { 
     (async () => {
-      const medications = await getRxTerms(value)
+      const medications = rxnorm_all.filter(x => x.name.toLocaleLowerCase().startsWith(value))
       const procedures = Object.values(labs_all.procedures).filter(x => x.toLocaleLowerCase().startsWith(value)).map(x => ({ name: x }))
       setData([...procedures, ...medications])
     })()
@@ -104,17 +104,17 @@ const OrdersList = ({ searchTerm, onSelect, ...props }) => {
   )
 }
 
-const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
-  const [tempMed, setTempMed] = useState(m)
-  const [name, setName] = useState(m?.name ?? '')
-  const [route, setRoute] = useState(m?.fields?.route?.[0] ?? '')
-  const [dose, setDose] = useState(m?.fields?.dose?.[0]?.[0] ?? '')
-  const [freq, setFreq] = useState(m?.fields?.dose ? 'Daily' : '')
-  const [refill, setRefill] = useState(m?.fields?.refills?.[0] ?? '')
-  const [type, setType] = useState(m?.fields?.type?.[0] ?? '')
-  const [status, setStatus] = useState(m?.fields?.status?.[2] ?? '')
-  const [priority, setPriority] = useState(m?.fields?.priority?.[0] ?? '')
-  const [classCollect, setClass] = useState(m?.fields?.class?.[0] ?? '')
+const OrdersEditor = ({ medication, onSelect, ...props }) => {
+  const [tempMed, setTempMed] = useState(medication)
+  const [name, setName] = useState(tempMed?.name ?? '')
+  const [route, setRoute] = useState(Object.keys(tempMed?.route ?? {})?.[0] ?? '')
+  const [dose, setDose] = useState(Object.values(tempMed?.route?.[route] ?? {})?.[0] ?? '')
+  const [freq, setFreq] = useState('')
+  const [refill, setRefill] = useState(0)
+  const [type, setType] = useState('')
+  const [status, setStatus] = useState('')
+  const [priority, setPriority] = useState('')
+  const [classCollect, setClass] = useState('')
   const [expectDate, setExpectDate] = useState(0)
   const [expireDate, setExpireDate] = useState(90)
   const [interval, setInterval] = useState(30)
@@ -123,14 +123,14 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
   return (
     <>
       <Box sx={{ backgroundColor: "info.dark", color: "primary.contrastText", height: "40px" }}>
-        {tempMed ? tempMed.name : ''}
+        {tempMed?.name ?? ''}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
           <Button sx={{ color: "primary.contrastText" }} onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon color="success.light">check</Icon>Accept</Button>
           <Button sx={{ color: "primary.contrastText" }} onClick={() => onSelect(null)}><Icon color="error">clear</Icon>Cancel</Button>
         </Box>
       </Box>
 
-      {tempMed && tempMed.fields.route && (
+      {!!tempMed?.route && (
         <>
           <p>Route: </p> 
           <ToggleButtonGroup
@@ -138,12 +138,12 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             exclusive
             onChange={(event, val) => setRoute(val)}
           >
-            {tempMed.fields.route.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            {Object.keys(tempMed?.route ?? {})?.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
           </ToggleButtonGroup>
         </>
       )}
 
-      {tempMed && tempMed.fields.dose && (
+      {!!tempMed?.route && (
         <>
           <p>Dose: </p> 
           <ToggleButtonGroup
@@ -152,10 +152,8 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             onChange={(event, val) => setDose(val)}
             sx={{ whiteSpace: 'nowrap' }}
           >
-            {tempMed.fields.dose.map((d) => (
-              d.map((sub) => (
-                <ToggleButton value={sub} key={sub}>{sub}</ToggleButton>
-              ))
+            {Object.values(tempMed?.route?.[route] ?? {})?.map((d) => (
+              <ToggleButton value={d} key={d}>{d}</ToggleButton>
             ))}
           </ToggleButtonGroup>
 
@@ -164,7 +162,7 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
         </>
       )}
 
-      {tempMed && tempMed.fields.refills && (
+      {!!tempMed?.route && (
         <>
           <p>Refills: </p> 
           <ToggleButtonGroup
@@ -172,12 +170,12 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             exclusive
             onChange={(event, val) => setRefill(val)}
           >
-            {tempMed.fields.refills.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            {[0, 1, 2, 3].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
           </ToggleButtonGroup>
         </>
       )}
 
-      {tempMed && tempMed.fields.type && (
+      {!!tempMed && (
         <>
           Order type: 
           <ToggleButtonGroup
@@ -191,7 +189,7 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
         </>
       )}
 
-      {tempMed && tempMed.fields.status && (
+      {!!tempMed && (
         <>
           <p>Status: </p> 
           <ToggleButtonGroup
@@ -199,7 +197,7 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             exclusive
             onChange={(event, val) => setStatus(val)}
           >
-            {tempMed.fields.status.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            {['Standing', 'Future'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
           </ToggleButtonGroup>
         </>
       )}
@@ -283,7 +281,7 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
         </>
       )}
 
-      {tempMed && tempMed.fields.priority && (
+      {!!tempMed && (
         <>
           <p>Priority: </p>
           <ToggleButtonGroup
@@ -291,12 +289,12 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             exclusive
             onChange={(event, val) => setPriority(val)}
           >
-            {tempMed.fields.priority.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            {['STAT', 'Timed', 'Routine'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
           </ToggleButtonGroup>
         </>
       )}
 
-      {tempMed && tempMed.fields.class && (
+      {!!tempMed?.route && (
         <>
           <p>Class: </p>
           <ToggleButtonGroup
@@ -304,7 +302,7 @@ const OrdersEditor = ({ medication: m, onSelect, ...props }) => {
             exclusive
             onChange={(event, val) => setClass(val)}
           >
-            {tempMed.fields.class.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            {['Lab', 'Unit'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
           </ToggleButtonGroup>
         </>
       )}
