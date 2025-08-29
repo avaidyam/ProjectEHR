@@ -1,4 +1,5 @@
 import React from 'react'
+import { debounce } from "lodash"
 import {
   alpha as MUIalpha,
   Box as MUIBox, 
@@ -208,7 +209,7 @@ function _MUIDraggablePaperComponent(props) {
   );
 }
 
-export const Window = ({ title, open, onClose, children, ...props }) => {
+export const Window = ({ title, open, onClose, header, footer, children, ...props }) => {
   return (
     <MUIDialog
       open={open}
@@ -216,7 +217,7 @@ export const Window = ({ title, open, onClose, children, ...props }) => {
       PaperComponent={_MUIDraggablePaperComponent}
       {...props}
     >
-      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...props.HeaderProps}>
         {title}
         <MUIIconButton
           onClick={onClose}
@@ -229,16 +230,16 @@ export const Window = ({ title, open, onClose, children, ...props }) => {
         >
           <MUIIcon>close</MUIIcon>
         </MUIIconButton>
+        {header}
       </MUIDialogTitle>
-      <MUIDialogContent dividers>
+      <MUIDialogContent dividers {...props.ContentProps}>
         {children}
       </MUIDialogContent>
-      {/*
-      <MUIDialogActions>
-        <MUIButton autoFocus onClick={onClose}>Cancel</MUIButton>
-        <MUIButton onClick={onClose}>Okay</MUIButton>
-      </MUIDialogActions> 
-      */}
+      {!!footer &&
+        <MUIDialogActions {...props.FooterProps}>
+          {footer}
+        </MUIDialogActions> 
+      }
     </MUIDialog>
   );
 }
@@ -246,3 +247,18 @@ export const Window = ({ title, open, onClose, children, ...props }) => {
 export const Scrollable = ({ children }) => React.Children.map(children, child =>
   React.cloneElement(child, { style: { ...child.props.style, overflow: 'visible' } })
 )
+
+export function useLazyEffect(effect, deps = [], wait = 250) {
+  const cleanUp = React.useRef()
+  const effectRef = React.useRef()
+  effectRef.current = React.useCallback(effect, deps)
+  const lazyEffect = React.useCallback(
+    debounce(() => (cleanUp.current = effectRef.current?.()), wait),
+    []
+  )
+  React.useEffect(lazyEffect, deps)
+  React.useEffect(() => {
+    return () =>
+      cleanUp.current instanceof Function ? cleanUp.current() : undefined
+  }, [])
+}

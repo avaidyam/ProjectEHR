@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Card, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
-  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material';
-import { alpha, TitledCard, Window } from 'components/ui/Core.jsx';
+  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select, DialogActions } from '@mui/material';
+import { alpha, TitledCard, Window, useLazyEffect } from 'components/ui/Core.jsx';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import labs_all from 'util/data/labs_all.json'
 import rxnorm_all from 'util/data/rxnorm_all.json'
+
+const all_orders = [...rxnorm_all, ...Object.values(labs_all.procedures).map(x => ({ name: x }))]
+const search_orders = (value = "", limit = null) => all_orders.filter(x => x.name.toLocaleLowerCase().startsWith(value)).slice(0, limit)
 
 const getTextColor = (backC) => {
   switch (backC) {
@@ -70,45 +73,51 @@ function dateLocal(addDay) {
   );
 }
 
-const OrdersList = ({ searchTerm, onSelect, ...props }) => {
+const OrdersPicker = ({ searchTerm, open, onSelect, ...props }) => {
   const [value, setValue] = useState(searchTerm)
   const [data, setData] = useState([])
 
-  useEffect(() => { 
-    (async () => {
-      const medications = rxnorm_all.filter(x => x.name.toLocaleLowerCase().startsWith(value))
-      const procedures = Object.values(labs_all.procedures).filter(x => x.toLocaleLowerCase().startsWith(value)).map(x => ({ name: x }))
-      setData([...procedures, ...medications])
-    })()
+  console.log(value)
+
+  useLazyEffect(() => { 
+    setData(search_orders(value, 100))
   }, [value])
 
   return (
-    <List {...props}>
-      <TextField
-        label="Add orders or order sets"
-        size="small"
-        sx={{ minWidth: 300 }}
-        variant="outlined"
-        value={value}
-        onChange={(x) => setValue(x.target.value)}
-      />
-      {data.map((m) => (
-        <ListItem disablePadding key={m.name}>
-          <ListItemButton onClick={m.route !== undefined ? () => onSelect(m) : undefined}>
-            <ListItemText primary={m.name}/>
-          </ListItemButton>
-        </ListItem>
-      ))}
-      {data?.length === 0 ? <p>No Results. Try again.</p> : <></>}
-    </List>
+    <Window 
+      fullWidth 
+      maxWidth="md" 
+      open={!!open}
+      onClose={() => onSelect(null)} 
+      header={
+        <TextField
+          label="Add orders or order sets"
+          size="small"
+          sx={{ minWidth: 300 }}
+          variant="outlined"
+          value={value}
+          onChange={(x) => setValue(x.target.value)}
+        />
+      }
+    >
+      <List {...props}>
+        {data.map((m) => (
+          <ListItem disablePadding key={m.name}>
+            <ListItemButton onClick={() => onSelect(m)}>
+              <ListItemText primary={m.name}/>
+            </ListItemButton>
+          </ListItem>
+        ))}
+        {data?.length === 0 ? <p>No Results. Try again.</p> : <></>}
+      </List>
+    </Window>
   )
 }
 
-const OrdersEditor = ({ medication, onSelect, ...props }) => {
-  const [tempMed, setTempMed] = useState(medication)
+const OrdersEditor = ({ medication: tempMed, open, onSelect, ...props }) => {
   const [name, setName] = useState(tempMed?.name ?? '')
   const [route, setRoute] = useState(Object.keys(tempMed?.route ?? {})?.[0] ?? '')
-  const [dose, setDose] = useState(Object.values(tempMed?.route?.[route] ?? {})?.[0] ?? '')
+  const [dose, setDose] = useState('')
   const [freq, setFreq] = useState('')
   const [refill, setRefill] = useState(0)
   const [type, setType] = useState('')
@@ -120,16 +129,23 @@ const OrdersEditor = ({ medication, onSelect, ...props }) => {
   const [interval, setInterval] = useState(30)
   const [count, setCount] = useState(1)
 
-  return (
-    <>
-      <Box sx={{ backgroundColor: "info.dark", color: "primary.contrastText", height: "40px" }}>
-        {tempMed?.name ?? ''}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-          <Button sx={{ color: "primary.contrastText" }} onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon color="success.light">check</Icon>Accept</Button>
-          <Button sx={{ color: "primary.contrastText" }} onClick={() => onSelect(null)}><Icon color="error">clear</Icon>Cancel</Button>
-        </Box>
-      </Box>
+  useEffect(() => {
+    // set the default dose for the route
+    setDose(Object.values(tempMed?.route?.[route] ?? {})?.[0] ?? '')
+  }, [route])
 
+  return (
+    <Window 
+      fullWidth 
+      maxWidth="md" 
+      title={tempMed?.name ?? ''}
+      open={!!open}
+      onClose={() => onSelect(null)} 
+      footer={<>
+        <Button color="success.light" onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon>check</Icon>Accept</Button>
+        <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
+      </>}
+    >
       {!!tempMed?.route && (
         <>
           <p>Route: </p> 
@@ -306,14 +322,7 @@ const OrdersEditor = ({ medication, onSelect, ...props }) => {
           </ToggleButtonGroup>
         </>
       )}
-
-      <Box sx={{backgroundColor: "info.dark", color: "primary.contrastText", height: "40px"}}>
-        <div style={{float: "right"}}>
-          <Button sx={{color: "primary.contrastText"}} onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon color="success.light">check</Icon>Accept</Button>
-          <Button sx={{color: "primary.contrastText"}} onClick={() => onSelect(null)}><Icon color="error">clear</Icon>Cancel</Button>
-        </div>
-      </Box>
-    </>
+    </Window>
   )
 }
 
@@ -432,20 +441,22 @@ export default function Orders() {
           </Button>
         </Box>
       </Box>
-      <Window fullWidth maxWidth="md" onClose={() => setOpenSearchList(null)} open={!!openSearchList}>
-        <OrdersList searchTerm={value} onSelect={(item) => {
+      {!!openSearchList &&
+        <OrdersPicker open={openSearchList} searchTerm={value} onSelect={(item) => {
           setOpenSearchList(null)
-          setOpenOrder(item)
+          setValue(null)
+          if (item !== null)
+            setOpenOrder(item)
         }} />
-      </Window>
-      <Window fullWidth maxWidth="md" onClose={() => setOpenOrder(null)} open={!!openOrder}>
-        <OrdersEditor medication={openOrder} onSelect={(item) => {
+      }
+      {!!openOrder &&
+        <OrdersEditor open={openOrder} medication={openOrder} onSelect={(item) => {
           setOpenSearchList(null)
           setOpenOrder(null)
           if (item !== null)
             setOrderList(prev => [...prev, item])
         }} />
-      </Window>
+      }
     </Box>
   );
 }
