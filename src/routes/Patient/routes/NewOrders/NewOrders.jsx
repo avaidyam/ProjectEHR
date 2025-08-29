@@ -378,10 +378,10 @@ export default function Orders() {
                 onChange={(x) => setValue(x.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter')
-                    setOpenSearchList(!openSearchList);
+                    setOpenSearchList(true);
                 }}
               />
-              <Button variant="outlined" onClick={() => { setOpenSearchList(!openSearchList) }}>
+              <Button variant="outlined" onClick={() => { setOpenSearchList(true) }}>
                 <Icon color="success">add</Icon> New
               </Button>
             </Box>
