@@ -4,7 +4,7 @@ import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, 
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import patient_sample from 'util/data/patient_sample.json';
 import { useRouter } from 'util/urlHelpers.js';
 import appt from 'util/data/schedule.json';
 import Notification from '../Login/components/Notification.jsx';
@@ -180,7 +180,7 @@ const columns = [
     headerName: 'Patient Name/MRN/Age/Gender',
     width: 300,
     renderCell: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn });
+      const data = patient_sample[params.row.patient.mrn]
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
@@ -196,7 +196,7 @@ const columns = [
       );
     },
     valueGetter: (value, row) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      const data = patient_sample[row.patient.mrn]
       return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
         new Date(data.birthdate).age()
       } years old / ${data.gender}`;
@@ -212,7 +212,7 @@ const columns = [
       </Tooltip>
     ),
     /* valueGetter: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      const data = patient_sample[params.row.patient.mrn]
       const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
       return data2
     },// */
@@ -227,7 +227,7 @@ const columns = [
       </Tooltip>
     ),
     /* valueGetter: (params) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: params.row.patient.mrn })
+      const data = patient_sample[params.row.patient.mrn]
       const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
       return data2 // FIXME we need an actual appointment object still but this will do for now
     },// */
@@ -237,7 +237,7 @@ const columns = [
     headerName: 'Provider Name',
     width: 200,
     valueGetter: (value, row) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      const data = patient_sample[row.patient.mrn]
       const data2 = data.encounters[row.patient.enc]?.provider;
       return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
     },
@@ -248,7 +248,7 @@ const columns = [
     headerName: 'Coverage',
     width: 200,
     valueGetter: (value, row) => {
-      const data = TEST_PATIENT_INFO({ patientMRN: row.patient.mrn });
+      const data = patient_sample[row.patient.mrn]
       return `${data.insurance.carrierName}`;
     },
   },
@@ -309,9 +309,9 @@ export function Schedule() {
             >
               {selPatient ? (
                 <>
-                  Name: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).firstName} {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).lastName} <br />
-                  Age: {new Date(TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).birthdate).age()} <br />
-                  Gender: {TEST_PATIENT_INFO({ patientMRN: selPatient.patient.mrn }).gender} <br />
+                  Name: {patient_sample[selPatient.patient.mrn].firstName} {patient_sample[selPatient.patient.mrn].lastName} <br />
+                  Age: {new Date(patient_sample[selPatient.patient.mrn].birthdate).age()} <br />
+                  Gender: {patient_sample[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
                 </>
@@ -344,7 +344,7 @@ export function Schedule() {
               //  return; // Prevent routing
               // } // FIXME later
               if (
-                !(Object.values(TEST_PATIENT_INFO({ patientMRN: selectedMRN })
+                !(Object.values(patient_sample[selectedMRN]
                   .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {

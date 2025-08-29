@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Card, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
+import { Card, FormControl, Icon, InputLabel, List, ListItem, ListItemText, ListItemButton, 
   MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select, DialogActions } from '@mui/material';
-import { alpha, TitledCard, Window, useLazyEffect } from 'components/ui/Core.jsx';
+import { alpha, Box, Button, Label, Grid, TitledCard, Window, useLazyEffect } from 'components/ui/Core.jsx';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
+
 import labs_all from 'util/data/labs_all.json'
 import rxnorm_all from 'util/data/rxnorm_all.json'
+import misc_all from 'util/data/misc_orders.json'
 
-const all_orders = [...rxnorm_all, ...Object.values(labs_all.procedures).map(x => ({ name: x }))]
-const search_orders = (value = "", limit = null) => all_orders.filter(x => x.name.toLocaleLowerCase().startsWith(value)).slice(0, limit)
+const all_orders = [...rxnorm_all, ...Object.values(labs_all.procedures).map(x => ({ name: x })), ...misc_all]
+const search_orders = (value = "", limit = null) => {
+  const out = all_orders.filter(x => x.name.toLocaleLowerCase().includes(value?.toLocaleLowerCase() ?? ""))
+  return out.slice(0, limit).toSorted()
+}
 
 const getTextColor = (backC) => {
   switch (backC) {
@@ -77,8 +82,6 @@ const OrdersPicker = ({ searchTerm, open, onSelect, ...props }) => {
   const [value, setValue] = useState(searchTerm)
   const [data, setData] = useState([])
 
-  console.log(value)
-
   useLazyEffect(() => { 
     setData(search_orders(value, 100))
   }, [value])
@@ -141,187 +144,214 @@ const OrdersEditor = ({ medication: tempMed, open, onSelect, ...props }) => {
       title={tempMed?.name ?? ''}
       open={!!open}
       onClose={() => onSelect(null)} 
+      ContentProps={{ sx: { p: 0 } }}
       footer={<>
         <Button color="success.light" onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon>check</Icon>Accept</Button>
         <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
       </>}
     >
+      <Grid container spacing={3} sx={{ m: 0, p: 1 }}>
       {!!tempMed?.route && (
         <>
-          <p>Route: </p> 
-          <ToggleButtonGroup
-            value={route}
-            exclusive
-            onChange={(event, val) => setRoute(val)}
-          >
-            {Object.keys(tempMed?.route ?? {})?.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Route:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={route}
+              exclusive
+              onChange={(event, val) => setRoute(val)}
+            >
+              {Object.keys(tempMed?.route ?? {})?.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {!!tempMed?.route && (
         <>
-          <p>Dose: </p> 
-          <ToggleButtonGroup
-            value={dose}
-            exclusive
-            onChange={(event, val) => setDose(val)}
-            sx={{ whiteSpace: 'nowrap' }}
-          >
-            {Object.values(tempMed?.route?.[route] ?? {})?.map((d) => (
-              <ToggleButton value={d} key={d}>{d}</ToggleButton>
-            ))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Dose:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={dose}
+              exclusive
+              onChange={(event, val) => setDose(val)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              {Object.values(tempMed?.route?.[route] ?? {})?.map((d) => (
+                <ToggleButton value={d} key={d}>{d}</ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Grid>
 
-          <p>Frequency: </p> 
-          <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}>Daily</TextField>
+          <Grid xs={3}><Label>Frequency:</Label></Grid>
+          <Grid xs={9}>
+            <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}>Daily</TextField>
+          </Grid>
         </>
       )}
 
       {!!tempMed?.route && (
         <>
-          <p>Refills: </p> 
-          <ToggleButtonGroup
-            value={refill}
-            exclusive
-            onChange={(event, val) => setRefill(val)}
-          >
-            {[0, 1, 2, 3].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Refills:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={refill}
+              exclusive
+              onChange={(event, val) => setRefill(val)}
+            >
+              {[0, 1, 2, 3].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {!!tempMed && (
         <>
-          Order type: 
-          <ToggleButtonGroup
-            value={type}
-            exclusive
-            onChange={(event, val) => setType(val)}
-          >
-            <ToggleButton value='Outpatient'><Icon>home</Icon></ToggleButton>
-            <ToggleButton value='Inpatient'><Icon>hotel</Icon></ToggleButton>
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Order type:</Label></Grid> 
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={type}
+              exclusive
+              onChange={(event, val) => setType(val)}
+            >
+              <ToggleButton value='Outpatient'><Icon>home</Icon></ToggleButton>
+              <ToggleButton value='Inpatient'><Icon>hotel</Icon></ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {!!tempMed && (
         <>
-          <p>Status: </p> 
-          <ToggleButtonGroup
-            value={status}
-            exclusive
-            onChange={(event, val) => setStatus(val)}
-          >
-            {['Standing', 'Future'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Status:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={status}
+              exclusive
+              onChange={(event, val) => setStatus(val)}
+            >
+              {['Standing', 'Future'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {status==='Standing' && (
         <>
-          <p>Interval: </p>
-          <ToggleButtonGroup
-            value={interval}
-            exclusive
-            onChange={(event, val) => setInterval(val)}
-          >
-            <ToggleButton value={30}>1 Month</ToggleButton>
-            <ToggleButton value={60}>2 Months</ToggleButton>
-            <ToggleButton value={90}>3 Months</ToggleButton>
-            <ToggleButton value={120}>4 Months</ToggleButton>
-            <ToggleButton value={180}>6 Months</ToggleButton>
-            <ToggleButton value={365}>1 Year</ToggleButton>
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Interval:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={interval}
+              exclusive
+              onChange={(event, val) => setInterval(val)}
+            >
+              <ToggleButton value={30}>1 Month</ToggleButton>
+              <ToggleButton value={60}>2 Months</ToggleButton>
+              <ToggleButton value={90}>3 Months</ToggleButton>
+              <ToggleButton value={120}>4 Months</ToggleButton>
+              <ToggleButton value={180}>6 Months</ToggleButton>
+              <ToggleButton value={365}>1 Year</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {status==='Standing' && (
         <>
-          <p>Count: </p>
-          <ToggleButtonGroup
-            value={count}
-            exclusive
-            onChange={(event, val) => setCount(val)}
-          >
-            <ToggleButton value={1}>1</ToggleButton>
-            <ToggleButton value={2}>2</ToggleButton>
-            <ToggleButton value={3}>3</ToggleButton>
-            <ToggleButton value={4}>4</ToggleButton>
-            <ToggleButton value={6}>6</ToggleButton>
-            <ToggleButton value={12}>12</ToggleButton>
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Count:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={count}
+              exclusive
+              onChange={(event, val) => setCount(val)}
+            >
+              <ToggleButton value={1}>1</ToggleButton>
+              <ToggleButton value={2}>2</ToggleButton>
+              <ToggleButton value={3}>3</ToggleButton>
+              <ToggleButton value={4}>4</ToggleButton>
+              <ToggleButton value={6}>6</ToggleButton>
+              <ToggleButton value={12}>12</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {status==='Future' && (
         <>
-          <p>Expected date: </p>
-          <ToggleButtonGroup
-            value={expectDate}
-            exclusive
-            onChange={(event, val) => setExpectDate(val)}
-            sx={{ whiteSpace: 'nowrap' }}
-          >
-            <div>{dateLocal(expectDate)}</div>
-            <ToggleButton value={0}>Today</ToggleButton>
-            <ToggleButton value={1}>Tomorrow</ToggleButton>
-            <ToggleButton value={7}>1 Week</ToggleButton>
-            <ToggleButton value={14}>2 Weeks</ToggleButton>
-            <ToggleButton value={30}>1 Month</ToggleButton>
-            <ToggleButton value={60}>2 Months</ToggleButton>
-            <ToggleButton value={90}>3 Months</ToggleButton>
-            <ToggleButton value={180}>6 Months</ToggleButton>
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Expected date:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={expectDate}
+              exclusive
+              onChange={(event, val) => setExpectDate(val)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              <div>{dateLocal(expectDate)}</div>
+              <ToggleButton value={0}>Today</ToggleButton>
+              <ToggleButton value={1}>Tomorrow</ToggleButton>
+              <ToggleButton value={7}>1 Week</ToggleButton>
+              <ToggleButton value={14}>2 Weeks</ToggleButton>
+              <ToggleButton value={30}>1 Month</ToggleButton>
+              <ToggleButton value={60}>2 Months</ToggleButton>
+              <ToggleButton value={90}>3 Months</ToggleButton>
+              <ToggleButton value={180}>6 Months</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {status==='Future' && (
         <>
-          <p>Expires: </p>
-          <ToggleButtonGroup
-            value={expireDate}
-            exclusive
-            onChange={(event, val) => setExpireDate(val)}
-            sx={{ whiteSpace: 'nowrap' }}
-          >
-            <div>{dateLocal(expireDate)}</div>
-            <ToggleButton value={30}>1 Month</ToggleButton>
-            <ToggleButton value={60}>2 Months</ToggleButton>
-            <ToggleButton value={90}>3 Months</ToggleButton>
-            <ToggleButton value={120}>4 Months</ToggleButton>
-            <ToggleButton value={180}>6 Months</ToggleButton>
-            <ToggleButton value={365}>1 Year</ToggleButton>
-            <ToggleButton value={547}>18 Months</ToggleButton>
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Expires:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={expireDate}
+              exclusive
+              onChange={(event, val) => setExpireDate(val)}
+              sx={{ whiteSpace: 'nowrap' }}
+            >
+              <div>{dateLocal(expireDate)}</div>
+              <ToggleButton value={30}>1 Month</ToggleButton>
+              <ToggleButton value={60}>2 Months</ToggleButton>
+              <ToggleButton value={90}>3 Months</ToggleButton>
+              <ToggleButton value={120}>4 Months</ToggleButton>
+              <ToggleButton value={180}>6 Months</ToggleButton>
+              <ToggleButton value={365}>1 Year</ToggleButton>
+              <ToggleButton value={547}>18 Months</ToggleButton>
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {!!tempMed && (
         <>
-          <p>Priority: </p>
-          <ToggleButtonGroup
-            value={priority}
-            exclusive
-            onChange={(event, val) => setPriority(val)}
-          >
-            {['STAT', 'Timed', 'Routine'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Priority:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={priority}
+              exclusive
+              onChange={(event, val) => setPriority(val)}
+            >
+              {['STAT', 'Timed', 'Routine'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
 
       {!!tempMed?.route && (
         <>
-          <p>Class: </p>
-          <ToggleButtonGroup
-            value={classCollect}
-            exclusive
-            onChange={(event, val) => setClass(val)}
-          >
-            {['Lab', 'Unit'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-          </ToggleButtonGroup>
+          <Grid xs={3}><Label>Class:</Label></Grid>
+          <Grid xs={9}>
+            <ToggleButtonGroup
+              value={classCollect}
+              exclusive
+              onChange={(event, val) => setClass(val)}
+            >
+              {['Lab', 'Unit'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
+            </ToggleButtonGroup>
+          </Grid>
         </>
       )}
+      </Grid>
     </Window>
   )
 }

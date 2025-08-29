@@ -4,6 +4,8 @@ import {
   alpha as MUIalpha,
   Box as MUIBox, 
   Stack as MUIStack, 
+  Grid as MUIGrid,
+  GridLegacy as MUIGridLegacy,
   Typography as MUITypography, 
   TextField as MUITextField, 
   Button as MUIButton, 
@@ -49,6 +51,12 @@ export const HStack = ({ spacing = 2, children, ...props }) => (
   <MUIStack direction="row" spacing={spacing} {...props}>
     {children}
   </MUIStack>
+)
+
+export const Grid = ({ children, ...props }) => (
+  <MUIGrid sx={{ m: 0, ...props.sx }} {...props}>
+    {children}
+  </MUIGrid>
 )
 
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (

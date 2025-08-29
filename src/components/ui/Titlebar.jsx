@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
 import { Button, HStack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import patient_sample from 'util/data/patient_sample.json';
 
 export const Titlebar = ({ onLogout }) => {
   const location = useLocation()
@@ -22,7 +22,7 @@ export const Titlebar = ({ onLogout }) => {
   }
   const pathnameToTab = (path) => {
     const mrn = path.split('/')?.[2] ?? null
-    const info = TEST_PATIENT_INFO({ patientMRN: mrn })
+    const info = patient_sample[mrn]
     return `${info.firstName} ${info.lastName}`
   }
 
