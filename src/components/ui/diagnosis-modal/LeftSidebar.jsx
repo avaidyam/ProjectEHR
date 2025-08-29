@@ -1,8 +1,7 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import { SimpleTreeView, TreeItem } from '@mui/x-tree-view';
-import { useSelectedDiagnoses } from '../../contexts/SelectedDiagnosesContext';
-import { usePreferenceLists } from '../../contexts/PreferenceListContext';
+import React from 'react'
+import { Box, Label, TreeView, TreeItem } from 'components/ui/Core.jsx'
+import { useSelectedDiagnoses } from '../../contexts/SelectedDiagnosesContext'
+import { usePreferenceLists } from '../../contexts/PreferenceListContext'
 
 const DiagnosisLeftSidebar = () => {
     const { addDiagnosis, removeDiagnosis, isDiagnosisSelected } = useSelectedDiagnoses();
@@ -58,9 +57,9 @@ const DiagnosisLeftSidebar = () => {
         >
             {/* Header */}
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', flexShrink: 0 }}>
-                <Typography variant="subtitle2">
+                <Label variant="subtitle2">
                     Preference Lists
-                </Typography>
+                </Label>
             </Box>
 
             {/* Content */}
@@ -89,9 +88,9 @@ const DiagnosisLeftSidebar = () => {
                 }}
                 onWheel={(e) => e.stopPropagation()}
             >
-                <SimpleTreeView defaultExpandedItems={['personal', 'organizational']}>
+                <TreeView defaultExpandedItems={['personal', 'organizational']}>
                     {renderTreeItems(preferenceListsData)}
-                </SimpleTreeView>
+                </TreeView>
             </Box>
         </Box>
     );

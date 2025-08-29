@@ -1,7 +1,6 @@
 import React from 'react';
-import { Masonry } from '@mui/lab';
 import groupBy from 'lodash/groupBy';
-import { Box, Button, Icon, TitledCard } from 'components/ui/Core.jsx';
+import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 // FIXME: TitledCard
@@ -33,7 +32,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
   return (
     <Box sx={{ p: 2 }}>
       {/* The wrapping Box is necessary to avoid the last element of the Masonry from wrapping incorrectly */}
-      <Masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
+      <Grid masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Patient</>} color='#5EA1F8'>
           <b>Name:</b> {`${firstName} ${lastName}`}<br/>
           <b>Age:</b> {new Date(birthdate).age()}<br/>
@@ -118,9 +117,9 @@ const SnapshotTabContent = ({ children, ...other }) => {
             ))
           )}
         </TitledCard>
-      </Masonry>
+      </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default SnapshotTabContent;
+export default SnapshotTabContent

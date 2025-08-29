@@ -7,7 +7,7 @@ import Notification from './components/Notification.jsx';
 import PromptDialog from './components/PromptDialog.jsx';
 
 import schedule from 'util/data/schedule.json'; // Import the schedule JSON file for mrns
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import patient_sample from 'util/data/patient_sample.json';
 
 const departments = [
   { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },
@@ -56,7 +56,7 @@ export const Login = ({ setIsLoggedIn }) => {
 
     // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
-      const patientInfo = TEST_PATIENT_INFO({ patientMRN: mrn }); // Call the function for each MRN
+      const patientInfo = patient_sample[mrn]
       acc[mrn] = patientInfo?.encounters?.length || 0; // Use MRN as key and number of encounters as value
       return acc;
     }, {});

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useNavigate, generatePath, useParams } from 'react-router-dom';
 import createStore from "teaful";
-import { TEST_PATIENT_INFO } from 'util/data/PatientSample.js';
+import patient_sample from 'util/data/patient_sample.json'
 
 export const PatientContext = React.createContext()
 
@@ -12,11 +12,11 @@ export const PatientContext = React.createContext()
 export const PatientProvider = ({ patient, encounter, children }) => {
 
   // 
-  const initialStore = TEST_PATIENT_INFO({ patientMRN: patient })
+  const initialStore = patient_sample[patient]
   const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
     // TODO: ...
   })
-  // const [data, setData] = useStore() // React.useState(TEST_PATIENT_INFO({ patientMRN: patient }))
+  // const [data, setData] = useStore() // React.useState(patient_sample[patient])
   
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
   // eslint-disable-next-line react-hooks/exhaustive-deps

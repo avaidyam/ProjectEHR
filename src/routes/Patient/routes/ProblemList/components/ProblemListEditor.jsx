@@ -1,9 +1,6 @@
-// This file represnets the Problem List Editor that is formed as a dropdown from the ProblemList 
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
-
-// Date Picker Imports
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DatePicker } from 'components/ui/Core.jsx';
 
 // Quicker way to quickly generate generic Probelem List Editor inputs
 const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }) => {

@@ -1,9 +1,8 @@
-import { Paper, Icon } from '@mui/material';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Box, Icon, TreeView } from 'components/ui/Core.jsx';
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
-import { _data } from 'util/data/PatientSample.js';
+import patient_sample from 'util/data/patient_sample.json';
 
 const ExpandMoreIcon = () => <Icon>expand_more</Icon>
 const ChevronRightIcon = () => <Icon>chevron_right</Icon>
@@ -97,7 +96,7 @@ const transformPatientData = (patients) => {
   ];
 };
 
-const initialLists = transformPatientData(_data);
+const initialLists = transformPatientData(patient_sample);
 
 const createTreeItems = (lists) => {
   const myLists = lists.filter((list) => list.type === 'my');
@@ -146,7 +145,7 @@ export const ListsSidebar = () => {
   };
 
   return (
-    <Paper
+    <Box paper
       variant='outlined'
       sx={{
         minWidth: 280,
@@ -155,7 +154,7 @@ export const ListsSidebar = () => {
         overflow: 'hidden',
       }}
     >
-      <RichTreeView
+      <TreeView rich itemsReordering={true}
         items={createTreeItems(lists)}
         slots={{
           expandIcon: ChevronRightIcon,
@@ -172,6 +171,6 @@ export const ListsSidebar = () => {
           overflowY: 'auto',
         }}
       />
-    </Paper>
+    </Box>
   );
 };
