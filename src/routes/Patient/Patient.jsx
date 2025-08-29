@@ -3,6 +3,7 @@ import { Box, Drawer, IconButton, useTheme, useMediaQuery } from '@mui/material'
 import { Icon } from 'components/ui/Core.jsx';
 import { SplitView } from 'components/ui/SplitView.jsx';
 import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext.jsx';
+import DiagnosesSearchModal from 'components/ui/diagnosis-modal/Modal.jsx';
 
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
@@ -22,6 +23,7 @@ import LabReport from './routes/LabReport/LabReport.jsx';
 import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
+import BottomBar from './components/BottomBar.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -44,14 +46,14 @@ const ALL_TABS = {
 }
 
 const DEFAULT_MAIN_TABS = [
-  {"SnapShot": {}}, {"Chart Review": {}}, {"Problem List": {}}, 
-  {"History": {}}, {"Medications": {}}, {"Orders Mgmt": {}}, 
-  {"NoteWriter": {}}, {"Results Review": {}}, {"Immunizations": {}}, 
-  {"Allergies": {}}, {"Clinical Impressions": {}}
+  { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
+  { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
+  { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
+  { "Allergies": {} }, { "Clinical Impressions": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
-  {"Orders": {}}, {"PDMP": {}}, {"Chat": {}}
+  { "Orders": {} }, { "PDMP": {} }, { "Chat": {} }
 ]
 
 export const Patient = ({ ...props }) => {
@@ -60,6 +62,7 @@ export const Patient = ({ ...props }) => {
 
   const drawerWidth = 250
   const [storyboardOpen, setStoryboardOpen] = useState(true)
+  const [isDxModalOpen, setIsDxModalOpen] = useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
@@ -76,36 +79,49 @@ export const Patient = ({ ...props }) => {
             flexShrink: 0,
             '& .MuiDrawer-paper': {
               width: drawerWidth,
-              marginTop: 6, 
+              marginTop: 6,
               boxSizing: 'border-box',
-              overflow: 'auto', 
-              flexShrink: 0, 
-              flexGrow: 0, 
-              backgroundColor: 'primary.main', 
-              color: 'primary.contrastText', 
+              overflow: 'auto',
+              flexShrink: 0,
+              flexGrow: 0,
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
               p: 1
             },
           }}
         >
-          <Storyboard /> 
+          <Storyboard />
         </Drawer>
-        <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
-          <SplitView 
-            defaultMainTabs={DEFAULT_MAIN_TABS}
-            defaultSideTabs={DEFAULT_SIDE_TABS}
-            tabsDirectory={ALL_TABS}
-            accessories={
-              <IconButton
-                color="inherit"
-                onClick={() => setStoryboardOpen(!storyboardOpen)}
-                edge="start"
-                sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
-              >
-                <Icon>menu</Icon>
-              </IconButton>
-            }/>
+        <Box sx={{ flexGrow: 1, overflowY: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
+            <SplitView
+              defaultMainTabs={DEFAULT_MAIN_TABS}
+              defaultSideTabs={DEFAULT_SIDE_TABS}
+              tabsDirectory={ALL_TABS}
+              accessories={
+                <IconButton
+                  color="inherit"
+                  onClick={() => setStoryboardOpen(!storyboardOpen)}
+                  edge="start"
+                  sx={[{ ml: 1 }, !isMobile && { display: 'none' }]}
+                >
+                  <Icon>menu</Icon>
+                </IconButton>
+              } />
+          </Box>
+          <BottomBar
+            onAddOrder={() => console.log('Add order clicked')}
+            onAddDx={() => setIsDxModalOpen(true)}
+            onSignEncounter={() => console.log('Sign encounter clicked')}
+          />
         </Box>
       </Box>
+
+      {/* Diagnosis Search Modal */}
+      <DiagnosesSearchModal
+        open={isDxModalOpen}
+        onClose={() => setIsDxModalOpen(false)}
+      />
     </PatientProvider>
   )
 }
