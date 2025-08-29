@@ -198,7 +198,7 @@ export const TableCell = ({ children, ...props }) => (
 export const TreeView = ({ rich = false, children, ...props }) => {
   const proRef = React.useRef(null)
   React.useEffect(() => {
-    for (const div of proRef?.current?.querySelectorAll('div').values()) {
+    for (const div of proRef?.current?.querySelectorAll('div').values() ?? []) {
       if (div.textContent?.trim().startsWith("MUI X") && div.children.length === 0)
         div.style.display = 'none'
     }
@@ -254,7 +254,7 @@ export const TabView = ({ children, ...props }) => (
 export const DataGrid = ({ children, ...props }) => {
   const proRef = React.useRef(null)
   React.useEffect(() => {
-    for (const div of proRef?.current?.querySelectorAll('div').values()) {
+    for (const div of proRef?.current?.querySelectorAll('div').values() ?? []) {
       if (div.textContent?.trim().startsWith("MUI X") && div.children.length === 0)
         div.style.display = 'none'
     }

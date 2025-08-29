@@ -4180,39 +4180,3847 @@
     "type": "Other Diagnostics/Pulmonary"
   },
   {
-    "name": "Breast Imaging",
-    "type": "Other Diagnostics/Radiology"
+    "name": "BONE DENSITY VERTEBRAL FRACTURE ASSESSMENT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "CT",
-    "type": "Other Diagnostics/Radiology"
+    "name": "DEXA BONE DENSITOMETRY",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "Fluoro/GI",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM DIAGNOSTIC BREAST BILAT W/CAD",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "Interventional Radiology",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM DIAGNOSTIC BREAST LT W/CAD",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "MRI",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM DIAGNOSTIC BREAST RT W/CAD",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "Nuclear Medicine",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM LOCAL BREAST BILAT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "Other Imaging",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM LOCAL BREAST LT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "Ultrasound",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM LOCAL BREAST RT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
   },
   {
-    "name": "X-ray",
-    "type": "Other Diagnostics/Radiology"
+    "name": "MAM RADIOACTIVE SEED LOCALIZATION BILATERAL",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
+  },
+  {
+    "name": "MAM RADIOACTIVE SEED LOCALIZATION LEFT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
+  },
+  {
+    "name": "MAM RADIOACTIVE SEED LOCALIZATION RIGHT",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
+  },
+  {
+    "name": "MAMMOGRAPHY SPECIMEN",
+    "type": "Other Diagnostics/Radiology/Breast Imaging"
+  },
+  {
+    "name": "Cervical Myelogram",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT AAA EMBOLIZATION",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH AND WITHOUT CONTRAST ATTN ADRENALS",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH AND WITHOUT CONTRAST ATTN KIDNEYS",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH CONTRAST ATTN LIVER",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITH CONTRAST ATTN PANCREAS",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST UROGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN/PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN/PELVIS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ABDOMEN/PELVIS WITHOUT CONTRAST ENTEROGRAPHY",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ANKLE WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT AORTIC VALVE CALCIUM SCORING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM HIP LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM HIP RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM KNEE LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM KNEE RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM OTHER",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM SHOULDER LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ARTHROGRAM SHOULDER RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ATTENUATION SCAN",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT BRAIN WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CARDIAC SCORING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CERVICAL SPINE WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CERVICAL SPINE WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CERVICAL SPINE WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST WITH CONTRAST ESOPHAGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST WITHOUT CONTRAST ESOPHAGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CHEST/ABDOMEN/PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT COCHLEA, BILATERAL",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT COLONOGRAPHY",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION BONE (SPECIFY LOCATION)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION KIDNEY LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION KIDNEY RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION LIVER",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION LUNG LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION LUNG RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CRYOABLATION SOFT TISSUE (PLEASE SPECIFY LOCATION)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT CYSTOGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ELBOW WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FACIAL BONES RECON ONLY 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FEMUR WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOOT WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT FOREARM WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HAND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HEAD WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HEAD WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HEAD WITH CONTRAST PERFUSION",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HEART WITH CONTRAST STRUCTURAL",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP RECONSTRUCTION ONLY LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP RECONSTRUCTION ONLY RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP RIGHT 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HIP WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT HUMERUS WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT INTERNAL AUDITORY CANAL WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT INTERNAL AUDITORY CANAL WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT INTERNAL AUDITORY CANAL WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT KNEE WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOW DOSE CHEST FOR SCREENING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXT LEFT RECONSTRUCTION ONLY (SPECIFY BODY PART)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXT RIGHT RECONSTRUCTION ONLY (SPECIFY BODY PART)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY VENOGRAM LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY VENOGRAM RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY VENOGRAM RUNOFF",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY WITH CONTRAST FOR CELLULITIS LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY WITH CONTRAST FOR CELLULITIS RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY WITHOUT CONTRAST GOUT DECT LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER EXTREMITY WITHOUT CONTRAST GOUT DECT RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG/TIB/FIB WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG/TIB/FIB WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG/TIB/FIB WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LOWER LEG/TIB/FIB WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR POST DISCOGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR RECONSTRUCTION ONLY",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR SPINE 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR SPINE WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR SPINE WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT LUMBAR SPINE WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MANDIBLE/MAXILLA WITH READING (OMFS)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MAXILLOFACIAL WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MAXILLOFACIAL WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MAXILLOFACIAL WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MAXILLOFACIAL WITHOUT CONTRAST SINGLE VIEW NO READ (OMFS)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT MICROWAVE TUMOR ABLATION OTHER (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ORBIT BILATERAL WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ORBIT WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT ORBIT WITH CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PELVIS 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PELVIS RECCONSTRUCTION ONLY",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PELVIS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PORTABLE IN OR WITH READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT PORTABLE IN OR WITHOUT READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT RADIOFREQUENCY ABLATION",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT RADIOFREQUENCY ABLATN LIVER",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT RFA LUNG LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT RFA LUNG RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SACRUM/COCCYX WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SACRUM/COCCYX WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SACRUM/COCCYX WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SHOULDER WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SIMULATION FOR ONCOLOGY PLANNING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUS ENTRAK",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUS LANDMARK WITH CONTRAST WITH READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUS LANDMARK WITHOUT CONTRAST WITH READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUS LANDMARK WITHOUT CONTRAST WITHOUT READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUSES WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUSES WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SINUSES WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SKULL 3D",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SOFT TISSUE NECK WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT SOFT TISSUE NECK WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT STEALTH WITH CONTRAST WITH READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT STEALTH WITHOUT CONTRAST WITH READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT STEALTH WITHOUT CONTRAST WITHOUT READING",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT THORACIC SPINE RECONSTRUCTION ONLY",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT THORACIC SPINE WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT THORACIC SPINE WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT THORACIC SPINE WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY RECONSTRUCTION ONLY LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY RECONSTRUCTION ONLY RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY WITH CONTRAST FOR CELLULITIS LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY WITH CONTRAST FOR CELLULITIS RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY WITHOUT CONTRAST GOUT DECT LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT UPPER EXTREMITY WITHOUT CONTRAST GOUT DECT RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT VENOGRAM ABDOMEN WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT VENOGRAM ABDOMEN/PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT VENOGRAM HEAD WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT VENOGRAM PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT VENOGRAM WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CT WRIST WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA ABDOMEN WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA ABDOMEN/PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA ABDOMINAL AORTA/ILIAC/FEMORAL RUNOFF WITH CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST AND CT ABDOMEN/PELVIS WITH CONTRAST (PE)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST WITH CONTRAST PULMONARY ARTERIES (PE)",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST WITH CONTRAST PULMONARY VENOGRAM",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST/ABDOMEN/PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA CHEST/ABDOMEN/PELVIS/LOWER EXTREMITIES WITH CONTRAST RUNOFF",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA HEAD AND NECK WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA HEAD WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA LOWER EXTREMITY WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA LOWER EXTREMITY WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA NECK WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA PELVIS WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA PELVIS/LOWER EXTREMITIES WITH CONTRAST RUNOFF",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA UPPER EXTREMITY WITH CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "CTA UPPER EXTREMITY WITH CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "Lumbar Myelogram",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "Thoracic Myelogram",
+    "type": "Other Diagnostics/Radiology/CT"
+  },
+  {
+    "name": "FL ARTHROGRAM ANKLE LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM ANKLE RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM ELBOW LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM ELBOW RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM HIP LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM HIP RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM KNEE LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM KNEE RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM OTHER (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM SHOULDER LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM SHOULDER RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM WRIST LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM WRIST RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ARTHROGRAM WRIST RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ASPIRATION HIP LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ASPIRATION HIP RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ASPIRATION JOINT OTHER (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL BODY PART (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL BX LAP BAND",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL COLON (LOWER GI)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL COLON (LOWER GI) PEDS (< 16YRS)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL COLON W/ NON-BARIUM CONTRAST",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL CYSTOGRAM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL DEFECOGRAM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL DIGESTIVE HEALTH OTHER (FOR DIGESTIVE HEALTH USE ONLY)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ELBOW ASPIRATION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ELBOW ASPIRATION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ELBOW INJECTION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ELBOW INJECTION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ERCP",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ESOPHAGUS",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ESOPHAGUS W/ NON-BARIUM CONTRAST",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL FLUORO OF DIAPHRAGM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL FNA LIVER",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL HYSTEROSALPINGOGRAM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL ILEOGRAM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL INJECTION JOINT (SPECIFY JOINT IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL INJECTION LT HIP",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL INJECTION RT HIP",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL KNEE ASPIRATION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL KNEE ASPIRATION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL KNEE INJECTION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL KNEE INJECTION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL LOOPOGRAM",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL LUMBAR PUNCTURE W/FLUORO",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL NERVE BLOCK",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL OTHER FLUORO",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL RETROGRADE URETHROGRAM (RUG)",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SHOULDER GLENOHUMERAL ASPIRATION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SHOULDER GLENOHUMERAL ASPIRATION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SHOULDER GLENOHUMERAL INJECTION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SHOULDER GLENOHUMERAL INJECTION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SINUS TRACT STUDY",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL SMALL BOWEL",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI THRU TUBE",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI W/ AIR CONTRAST",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI W/ NON-BARIUM CONTRAST",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI W/ESOPHAGUS",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL UPPER GI W/SMALL BOWEL",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL URODYNAMIC STUDY",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL VCUG - VOIDING CYSTO",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL VIDEO OF SPEECH",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL WRIST ASPIRATION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL WRIST ASPIRATION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL WRIST INJECTION LT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FL WRIST INJECTION RT",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "FLUORO VERTEBROPLASTY WORKUP",
+    "type": "Other Diagnostics/Radiology/Fluoro/GI"
+  },
+  {
+    "name": "IR OTHER IN HVI (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Interventional Radiology"
+  },
+  {
+    "name": "(F)MRI PRE-SCAN EDUCATION",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA ABDOMEN WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA ABDOMEN WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA CHEST WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA CHEST WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA HEAD WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA HEAD WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITH AND WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA LOWER EXTREMITY WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA NECK WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA NECK WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA PELVIS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA RUNOFF WITH BILATERAL LOWER EXTREMITIES",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRA SPINAL CANAL/CONTENTS",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN WITH AND WITHOUT CONTRAST KIDNEY PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN WITH AND WITHOUT CONTRAST LIVER PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN WITH AND WITHOUT CONTRAST MRCP PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST ENTEROGRAPHY PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ABDOMEN/PELVIS WITH AND WITHOUT CONTRAST UROGRAM",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ANKLE/HINDFOOT WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ANKLE/HINDFOOT WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ANKLE/HINDFOOT WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ANKLE/HINDFOOT WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM ANKLE LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM ANKLE RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM ELBOW LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM ELBOW RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM GLENOHUMERAL SHOULDER LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM GLENOHUMERAL SHOULDER RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM HIP LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM HIP RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM KNEE LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM KNEE RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM OTHER",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM SHOULDER LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM SHOULDER RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM WRIST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ARTHROGRAM WRIST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BIOPSY BREAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BIOPSY BREAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BIOPSY BREAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BRACHIAL PLEXUS WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BRACHIAL PLEXUS WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BRACHIAL PLEXUS WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BRACHIAL PLEXUS WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITH AND WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI BREAST WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI CERVICAL SPINE WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI CERVICAL SPINE WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI CERVICAL SPINE WITHOUT CONTRAST CSF FLOW",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI CHEST WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI CHEST WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ELBOW WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ELBOW WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ELBOW WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ELBOW WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREARM WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREARM WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREARM WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREARM WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREFOOT/MIDFOOT WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREFOOT/MIDFOOT WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREFOOT/MIDFOOT WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI FOREFOOT/MIDFOOT WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI GREAT TOE WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI GREAT TOE WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI GREAT TOE WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI GREAT TOE WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HAND WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HAND WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HAND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HAND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH AND WITHOUT CONTRAST FUNCTIONAL PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH AND WITHOUT CONTRAST PERFUSION",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH AND WITHOUT CONTRAST PITUITARY PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH AND WITHOUT CONTRAST SPECTROSCOPY AND PERFUSION",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITH CONTRAST STEALTH",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITHOUT CONTRAST CSF FLOW",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITHOUT CONTRAST FUNCTIONAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HEAD WITHOUT CONTRAST SPECTROSCOPY",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITH AND WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI HIP WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI IAC WITH AND WITHOUT CONTRAST BILATERAL PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI IAC WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI KNEE WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI KNEE WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI KNEE WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI KNEE WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER FINGER (DIGITS 2-5) LEFT WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER FINGER (DIGITS 2-5) LEFT WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER FINGER (DIGITS 2-5) RIGHT WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER FINGER (DIGITS 2-5) RIGHT WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER TOE (DIGITS 2-5) LEFT WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER TOE (DIGITS 2-5) LEFT WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LESSER TOE (DIGITS 2-5) RIGHT WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LUMBAR PLEXUS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LUMBAR PLEXUS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LUMBAR SPINE WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LUMBAR SPINE WITHOUT CONTRAST CSF FLOW",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI LUMBAR SPINE WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI MAXILOFACIAL WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI MAXILOFACIAL WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI NECK WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI NECK WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ORBIT BILATERAL WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI ORBIT BILATERAL WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PECTORALIS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PELVIS WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PELVIS WITH AND WITHOUT CONTRAST PROSTATE",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PELVIS WITH AND WITHOUT CONTRAST RECTAL CANCER",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PELVIS WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI PELVIS WITHOUT CONTRAST LIMITED FOR FRACTURE",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SACRUM WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SACRUM WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SHOULDER WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SHOULDER WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SHOULDER WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI SHOULDER WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THIGH/FEMUR WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THIGH/FEMUR WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THIGH/FEMUR WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THIGH/FEMUR WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THORACIC SPINE WITH AND WITHOUT CONTRAST PANEL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THORACIC SPINE WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THORACIC SPINE WITHOUT CONTRAST CSF FLOW",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THUMB WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THUMB WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THUMB WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI THUMB WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TIB/FIB WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TIB/FIB WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TIB/FIB WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TIB/FIB WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TMJ WITH AND WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI TMJ WITHOUT CONTRAST BILATERAL",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI UPPER ARM/HUMERUS WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI UPPER ARM/HUMERUS WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI UPPER ARM/HUMERUS WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI UPPER ARM/HUMERUS WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITH AND WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITH AND WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITHOUT CONTRAST LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITHOUT CONTRAST LIMITED LEFT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITHOUT CONTRAST LIMITED RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRI WRIST WITHOUT CONTRAST RIGHT",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRV HEAD WITH AND WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "MRV HEAD WITHOUT CONTRAST",
+    "type": "Other Diagnostics/Radiology/MRI"
+  },
+  {
+    "name": "NM 123 I THYROID SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM 1231 MIBG",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM 131 HYPERTHYROID DOSE",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM 131 I NECK/CHEST W/WHOLE BD",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM 131 I THYROID ABLATION",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM ASPIRATION",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BONE MARROW WHOLE BODY (SULFUR COLLOID)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BONE SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BONE SCAN SPECT WITH CT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BONE SCAN TRIPLE PHASE",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BONE SCAN TRIPLE PHASE SPECT WITH CT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BRAIN SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BRAIN W/SPECT (DATSCAN)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM BREAST SENTINEL NODE BILATERAL",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CARDIAC AMYLOID",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CEREBRAL BLOOD FLOW",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CISTERNOGRAM",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CONSULT ABLATION",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CONSULT HYPERTHYROID WO TRM",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM CYSTOGRAM",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM DOBUTAMINE (MYOCARDIAL SCAN)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM GALLIUM SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM GI BLOOD LOSS",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEMANGIOMA",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEPATOBILIARY / MILK",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEPATOBILIARY SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEPATORILLARY W/FLECTION FRACTION PANFI",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEPATOBILIARY SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM HEPATOBILIARY W/EJECTION FRACTION PANEL",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM H-PYLORI BREATH TEST",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM JOINT SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LEVEEN SHUNT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LIQUID GASTRIC EMPTYING",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LIVER SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LIVER SCAN MAA",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LUNG QUANTITATIVE",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LUNG SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM LYMPHOSCINTIGRAPHY",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM MAMMOSCINTIGRAPHY",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM MECKELS",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM MUGA SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM NECK/CHEST RESIDUAL",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM ONCOSCINT SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM OCTREOSCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM PARATHYROID SCAN WITH SPECT/CT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM PROSTASCINT SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM RENAL SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM RENAL SCAN W/LASIX",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM RENAL SCAN W/VASOTEC",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM RENAL STRUCTURAL",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM SENTINEL BREAST NODE LEFT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM SENTINEL BREAST NODE RIGHT",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM SENTINEL NODE MELANOMA INJECTION ONLY",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM SOLID GASTRIC EMPTYING",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM SPLEEN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM GASTRIC EMPTYING",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM TESTICULAR SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM THALLIUM REDISTRIBUTION",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM THALLIUM VASODILATOR",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM THYROID SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM THYROID UPTAKE",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM THYROID UPTAKE AND SCAN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM WHITE BLOOD CELL",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "NM ZEVALIN",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT BRAIN METABOLIC",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT BRAIN TUMOR",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT EXTENDED",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT MYOCARDIAL (LIMITED HEART SCAN)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT PROSTATE (SKULL BASE TO MID THIGH)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT SOMATOSTATIN RECEPTOR",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "PETCT STANDARD (SKULL BASE TO THIGH)",
+    "type": "Other Diagnostics/Radiology/Nuclear Medicine"
+  },
+  {
+    "name": "AAA CARM",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO CAROTID, COMMON BILAT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO CAROTID, COMMON LT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO CAROTID, COMMON RT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO EXTREMITY BILAT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO EXTREMITY LT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIO EXTREMITY RT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIOGRAM AV GRAFT LT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ARTERIOGRAM AV GRAFT RT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM BRONCHOSCOPY",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM CERVICAL RFA",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM FOR HDR ALIGNMENT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION BILATERAL HIP",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION BILATERAL KNEES",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION BILATERAL SI JOINT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION CAUDAL",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION CERVICAL MEDIAL BRANCH BLOCK",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION COCCYGEAL",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION GANGLION IMPAR",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION GANGLION STELLATE",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION KNEE LEFT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION KNEE RIGHT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION LEFT HIP",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION LEFT SI JOINT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION LUMBAR MEDIAL BRANCH BLOCK",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION RIGHT HIP",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION RIGHT SI JOINT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION SHOULDER LEFT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION SHOULDER RIGHT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION TROCHANTERIC BURSA LEFT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM INJECTION TROCHANTERIC BURSA RIGHT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM LUMBAR RFA",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM LUMBAR SYMPATHETIC NERVE BLOCK",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM OTHER SPECIFY EXAM",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM SPINAL CORD STIMULATOR",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CARM THORACIC EPIDURAL INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "CERVICAL INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "DILATATION OF URETER/NEPHRO",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "EPIDURAL INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "FACET INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "GALLBLADDER AND COMMON DUCT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "LINE PLACEMENTS",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEPHRO RENAL/PELVIS & DILATATION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEPHRO TO URETER & DILATATION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEPHROSTOMY TO RENAL PELVIS-MD",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEPHROSTOMY TO URETER-MD",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NERVE BLOCK INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEURO BALLOON COMPRESSION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEURO CERVICAL FUSION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEURO RADIO-FREQ ABLATION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "NEURO XRAY CASES, LUMBAR",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "OARM OTHER SPECIFY EXAM",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ORTHOPEDIC CARM CASE (NON-HIP)",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ORTHOPEDIC LT HIP SURGERY",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "ORTHOPEDIC RT HIP SURGERY",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "PACEMAKER AICD / LEAD CHANGES",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "PACEMAKER INSERTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "PRIIFORMIS INJECTION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE PYELOGRAPHY BILATERAL",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE PYELOGRAPHY LT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE PYELOGRAPHY RT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE W/STENT LT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE W/STENT RT",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "RETROGRADE WITH STENT PLACEMENT BILATERAL",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "STONE MANIPULATION",
+    "type": "Other Diagnostics/Radiology/Other Imaging"
+  },
+  {
+    "name": "GYN ABDOMINAL US, FULL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "GYN HYSTEROSONOGRAM",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "GYN TRANSVAGINAL US, FULL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB FETAL ANATOMY US",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB LIMITED TRANSABDOMINAL US",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB MFM PR INTERVAL US",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB NUCHAL TRANSLUCENCY (NT) US",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB TRANSABDOMINAL US, VIABILITY (9-14WKS)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB TRANSVAGINAL US",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB TRANSVAGINAL US - EARLY ANATOMY FOR OBESITY",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB US BPP",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB US FETAL DOPPLER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB US FOLLOWUP LIMITED ANATOMY",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB US GROWTH",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB US INTRAOPERATIVE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "OB UTERINE AND PLACENTAL VESSEL MAPPING",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US AAA SCREENING",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ABDOMEN APPENDIX",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ABDOMEN COMPLETE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ABDOMEN LIMITED",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ABDOMEN RT UPPER QUADRANT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ABDOMEN SPLEEN",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ANKLE LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ANKLE RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US AORTA",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ASPIRATION HIP LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US ASPIRATION HIP RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BACK SOFT TISSUE LOWER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BACK SOFT TISSUE UPPER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BLADDER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST ASPIRATION BILATERAL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST ASPIRATION LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST ASPIRATION RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST CORE BILATERAL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST CORE LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST CORE RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST LIMITED BILATERAL (CARLE)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST LIMITED LEFT (CARLE)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST LIMITED RIGHT (CARLE)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST WIRE LOCAL BILATERAL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST WIRE LOCAL LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BREAST WIRE LOCAL RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US BUTTOCK SOFT TISSUE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US CHEST",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US COLON/RECTAL (FOR DIGESTIVE HEALTH USE ONLY)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US CRYOABLATION KIDNEY LEFT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US CRYOABLATION KIDNEY RIGHT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US CRYOABLATION LIVER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US CRYOABLATION SOFT TISSUE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US GUIDANCE FOR HDR BRACHYTHERAPY",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US GUIDANCE FOR NEEDLE PLACEMENT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US GUIDANCE FOR NEURO (OR USE ONLY)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US GUIDANCE OTHER (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US GUIDED IUD ASSISTANCE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US HEAD (NEURO)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US HEAD/NECK SOFT TISSUE",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US HIP BILATERAL INFANT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US HIP INFANT LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US HIP INFANT RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US KIDNEYS AND BLADDER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US KNEE LT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US KNEE RT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US LIMITED SITE VASCULAR",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US LOWER EXTREMITY LT (NON VASCULAR)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US LOWER EXTREMITY RT (NON VASCULAR)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US MAM AXILLARY BILATERAL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US MAM AXILLARY LEFT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US MAM AXILLARY RIGHT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US MICROWAVE TUMOR ABLATION OTHER (SPECIFY IN COMMENTS)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US PARATHYROID",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US PELVIS",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US PYLORUS (BABY)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOACTIVE SEED LOCALIZATION BILATERAL",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOACTIVE SEED LOCALIZATION LEFT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOACTIVE SEED LOCALIZATION RIGHT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOFREQUENCY ABLATION KIDNEY LEFT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOFREQUENCY ABLATION KIDNEY RIGHT",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOFREQUENCY ABLATION LIVER",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US RADIOFREQUENCY ABLATION SPECIFIC BODY PART IN COMMENTS",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US SCROTUM",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US SOFT TISSUE PENIS",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US TETHERED CORD SYNDROME",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US THYROID",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US UPPER EXTREMITY LT (NON VASCULAR)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "US UPPER EXTREMITY RT (NON VASCULAR)",
+    "type": "Other Diagnostics/Radiology/Ultrasound"
+  },
+  {
+    "name": "XR ABDOMEN AP / LAT / OBLIQUES AAA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ABDOMEN COMPLETE WITH CHEST PA / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ABDOMEN DECUBITUS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ABDOMEN SERIES WITH PA CHEST",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ABDOMEN SUPINE AND UPRIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR AC JOINTS BILATERAL WITH AND WITHOUT WEIGHTS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR AC JOINTS BILATERAL WITHOUT WEIGHTS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE LEFT AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE LEFT STANDING WEIGHT BEARING AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE LEFT STANDING WEIGHT BEARING COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE LEFT STRESS VIEWS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE RIGHT AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE RIGHT STANDING WEIGHT BEARING AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE RIGHT STANDING WEIGHT BEARING COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE RIGHT STRESS VIEWS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE/FOOT LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ANKLE/FOOT RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ARM INFANT LEFT UPPER EXTREMITY: METABOLIC DISEASE ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ARM INFANT RIGHT UPPER EXTREMITY: METABOLIC DISEASE ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR BABY 2 VIEW ABDOMEN FLAT AND DECUB (INFANTS ONLY)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR BABYGRAM",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR BONE TRAUMA SERIES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR BLUNT TRAUMA SERIES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL ODONTOID VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE AP / LAT WITH FLEXION / EXTENSION",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE COMPLETE WITH FLEXION / EXTENSION",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE FLEXION / EXTENSION ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CERVICAL SPINE LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST AP OR PA ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST APICAL / LORDOCIC ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST BILATERAL DECUB VIEWS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST HIGH-LOW VIEWS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST HIGH-LOW VIEWS WITH NIPPLE MARKERS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST OBLIQUES ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA / LAT W/ BOTH OBLIQUES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA / LAT W/ DECUBITUS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA / LAT WITH LORDOTIC",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA INSPIRATION / EXPIRATION ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA WITH NIPPLE MARKERS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CHEST PA/LAT W/NIPPLE MARKERS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CLAVICLE BILATERAL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CLAVICLE LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR CLAVICLE RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR COCCYX",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR DELAYED PORTABLE ABDOMEN WITH CONTRAST",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW LEFT AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW LEFT AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW RIGHT AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW RIGHT AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ELBOW RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FACIAL BONES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FEMUR LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FEMUR RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 1 (THUMB) AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 1 (THUMB) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 1 (THUMB) ROBERTS VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 2 (INDEX) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 2 (INDEX) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 3 (MIDDLE) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 3 (MIDDLE) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 4 (RING) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 4 (RING) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 5 (PINKY) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER LEFT 5 (PINKY) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 1 (THUMB) AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 1 (THUMB) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 1 (THUMB) ROBERTS VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 2 (INDEX) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 2 (INDEX) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 3 (MIDDLE) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 3 (MIDDLE) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 4 (RING) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 4 (RING) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 5 (PINKY) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FINGER RIGHT 5 (PINKY) PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOOT LEFT AP / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOOT LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOOT RIGHT AP / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOOT RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOREARM LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOREARM LEFT WITH OBLIQUES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOREARM RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR FOREARM RIGHT WITH OBLIQUES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR GENETIC INFANT SKELETAL SURVEY (BIRTH TO 12M)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR GENETIC/METABOLIC PEDIATRIC SKELETAL SURVEY (13M+)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HAND LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HAND LEFT PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HAND RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HAND RIGHT PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HANDS/WRISTS PA ARTHRITIS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HEEL LEFT (AXIAL AND LATERAL)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HEEL LEFT WEIGHT BEARING AXIAL VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HEEL RIGHT (AXIAL AND LATERAL)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HEEL RIGHT WEIGHT BEARING AXIAL VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP BILATERAL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP BILATERAL (INCLUDE PELVIS)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP BILATERAL AP FROG VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP LEFT (INCLUDE PELVIS)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP LEFT AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP LEFT AP / FALSE PROFILE/BILAT DUNN/AP PELVIS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP RIGHT AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HIP RIGHT PRE-OP W/ ZIMMER MARKERS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HUMERUS LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR HUMERUS RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR INTERNAL AUDITORY CANALS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE BILATERAL UPRIGHT VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP / LAT / NOTCH",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP / LAT / NOTCH / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP / LAT AND BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP / LAT AND BILATERAL UPRIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP UPRIGHT (BILATERAL) / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP/LAT AND BILATERAL MERCHANT / BILATERAL UPRIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT AP/LAT/BOTH OBLIQUES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT LAT AND BILATERAL UPRIGHT / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT SUNRISE VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT TUNNEL VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT UP AP / UP LAT / NOTCH / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT UPRIGHT / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE LEFT UPRIGHT LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP / LAT / NOTCH",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP / LAT / NOTCH / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP / LAT AND BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP / LAT AND BILATERAL UPRIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP UPRIGHT (BILATERAL) / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP/LAT AND BILATERAL MERCHANT / BILATERAL UPRIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT AP/LAT/BOTH OBLIQUES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT LAT AND BILATERAL UPRIGHT / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT SUNRISE VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT TUNNEL VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT UP AP / UP LAT / NOTCH / BILATERAL MERCHANT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT UPRIGHT / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEE RIGHT UPRIGHT LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEES BILATERAL AP UPRIGHT / LATERALS SUPINE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEES BILATERAL MERCHANT VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KNEES BILATERAL UPRIGHT AP/LATERALS/MERCHANT VIEWS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KUB",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KUB FOR TRANSIT STUDY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KUB UPRIGHT ONLY (INCLUDE DIAPHRAGM)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR KUB WITH TOMOS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG BILATERAL STANDING - 6 FEET (HIP TO ANKLE)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG INFANT LEFT LOWER EXTREMITY: METABOLIC DISEASE ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG INFANT RIGHT LOWER EXTREMITY: METABOLIC DISEASE ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG LEFT - 6 FEET (HIP TO ANKLE)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG LEFT LOWER (INCLUDE OBLIQUES)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG LEFT LOWER TIBIA / FIBULA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG LENGTH STUDY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG RIGHT - 6 FEET (HIP TO ANKLE)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG RIGHT LOWER (INCLUDE OBLIQUES)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LEG RIGHT LOWER TIBIA / FIBULA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LONG BONE SURVEY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE COMP WITH FLEXION / EXTENSION",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE FLEXION / EXTENSION ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE LAT SIDE BENDING",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE LAT UPRIGHT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR LUMBAR SPINE LATERAL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR MANDIBLE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR MASTOIDS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR METASTASTC BONE SURVEY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR NASAL BONES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR NECK SOFT TISSUE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR NOSE TO RECTUM FOR FOREIGN BODY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ORBITS BILATERAL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR ORBITS FOR FOREIGN BODY FOR MRI CLEARANCE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PANOREX MANDIBLE (ED)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PEDIATRIC FOR WHOLE SMALL BOWEL (FOR PEDIATRIC USE ONLY)",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS AP/INLET/OUTLET/JUDET VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS INLET / OUTLET VIEWS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS JUDET VIEWS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS ORTHO",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS W/ JUDET VIEWS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PELVIS WITH INLET / OUTLET VIEWS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR PERIAPICAL FILMS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS LEFT WITH CHEST PA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS LEFT WITH CHEST PA / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS RIGHT WITH CHEST PA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR RIBS RIGHT WITH CHEST PA / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SACRO-ILIAC JOINT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SACRUM",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SACRUM AND COCCYX",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCAPHOID W/ PA / LAT WRIST LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCAPHOID W/ PA / LAT WRIST RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCAPULA LEFT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCAPULA RIGHT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCOLIOSIS 5 FEET AP OR PA / LAT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCOLIOSIS 6 FEET LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SCOLIOSIS 6 FEET PA ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SESAMOIDS LEFT FOOT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SESAMOIDS RIGHT FOOT",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT AP / GRASHEY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT AP / GRASHEY / SUPRASPINATUS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT AP / GRASHEY / SUPRASPINATUS / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT AP / GRASHEY / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT AP VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT GRASHEY / SUPRASPINATUS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT GRASHEY ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT SUPRASPINATUS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER LEFT Y-VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT AP / GRASHEY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT AP / GRASHEY / SUPRASPINATUS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT AP / GRASHEY / SUPRASPINATUS / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT AP / GRASHEY / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT AP VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT GRASHEY / SUPRASPINATUS",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT GRASHEY / SUPRASPINATUS / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT GRASHEY / Y-VIEW",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT GRASHEY ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT SUPRASPINATUS ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHOULDER RIGHT Y-VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SHUNT SERIES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SINUSES COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SINUSES WATERS VIEW ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SKELETAL SURVEY FOR NON-ACCIDENTAL TRAUMA",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SKULL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SKULL LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SKULL PA / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SKULL PA ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR SOFT TISSUE NECK AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR STERNOCLAVICULAR JOINTS BILATERAL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR STERNUM",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TEMPOROMANDIBULAR (TMJ) BILATERAL",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR THORACIC SPINE AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR THORACIC SPINE AP ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR THORACIC SPINE COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR THORACIC SPINE LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR THORACIC SPINE LAT UPRIGHT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 1 (BIG TOE) AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 1 (BIG TOE) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 2 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 2 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 3 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 3 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 4 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 4 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 5 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE LEFT 5 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 1 (BIG TOE) AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 1 (BIG TOE) COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 2 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 2 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 3 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 3 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 4 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 4 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 5 AP / LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR TOE RIGHT 5 COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST BILATERAL CLENCH FIST ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST LEFT CARPAL TUNNEL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST LEFT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST LEFT DOBBINS SERIES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST LEFT PA/LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST RIGHT CARPAL TUNNEL ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST RIGHT COMPLETE",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST RIGHT DOBBINS SERIES",
+    "type": "Other Diagnostics/Radiology/X-ray"
+  },
+  {
+    "name": "XR WRIST RIGHT PA/LAT ONLY",
+    "type": "Other Diagnostics/Radiology/X-ray"
   }
 ]
