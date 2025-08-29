@@ -1,7 +1,6 @@
-import { Paper, Icon } from '@mui/material';
-import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Box, Icon, TreeView } from 'components/ui/Core.jsx';
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
 import patient_sample from 'util/data/patient_sample.json';
 
@@ -146,7 +145,7 @@ export const ListsSidebar = () => {
   };
 
   return (
-    <Paper
+    <Box paper
       variant='outlined'
       sx={{
         minWidth: 280,
@@ -155,7 +154,7 @@ export const ListsSidebar = () => {
         overflow: 'hidden',
       }}
     >
-      <RichTreeView
+      <TreeView rich
         items={createTreeItems(lists)}
         slots={{
           expandIcon: ChevronRightIcon,
@@ -172,6 +171,6 @@ export const ListsSidebar = () => {
           overflowY: 'auto',
         }}
       />
-    </Paper>
+    </Box>
   );
 };

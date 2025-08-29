@@ -27,12 +27,8 @@
         "department": "Obstetrics & Gynecology",
         "specialty": "Obstetrics & Gynecology",
         "provider": "Elsa Whitmore, MD",
-        "concerns": [
-          "Annual Wellness Visit"
-        ],
-        "diagnoses": [
-          "Annual Wellness Visit"
-        ],
+        "concerns": ["Annual Wellness Visit"],
+        "diagnoses": ["Annual Wellness Visit"],
         "problems": [],
         "vitals": [
           {
@@ -171,12 +167,7 @@
               "name": "",
               "status": "Alive",
               "age": 57,
-              "problems": [
-                {
-                  "description": "Hypertension",
-                  "ageOfOnset": "45"
-                }
-              ]
+              "problems": [{"description": "Hypertension","ageOfOnset": "45"}]
             },
             {
               "relationship": "Mother",
@@ -196,9 +187,7 @@
           "SubstanceSexualHealth": {
             "tobacco": {
               "smokingStatus": "None",
-              "types": [
-                ""
-              ],
+              "types": [""],
               "startDate": "",
               "packsPerDay": 0,
               "packYears": 0,
@@ -256,12 +245,8 @@
         "department": "Family Medicine",
         "specialty": "Family Medicine",
         "provider": "Chris Nelson, MD",
-        "concerns": [
-          "Annual Wellness Visit"
-        ],
-        "diagnoses": [
-          "Annual Wellness Visit"
-        ],
+        "concerns": ["Annual Wellness Visit"],
+        "diagnoses": ["Annual Wellness Visit"],
         "problems": [],
         "vitals": [
           {
@@ -501,12 +486,7 @@
               "name": "",
               "status": "Alive",
               "age": 57,
-              "problems": [
-                {
-                  "description": "Hypertension",
-                  "ageOfOnset": "45"
-                }
-              ]
+              "problems": [{"description": "Hypertension","ageOfOnset": "45"}]
             },
             {
               "relationship": "Mother",
@@ -614,9 +594,7 @@
           "leg swelling",
           "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -672,9 +650,7 @@
           "leg swelling",
           "Incorporating knowledge from the presentation, counsel the patient."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -773,9 +749,7 @@
           "leg swelling",
           "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -831,9 +805,7 @@
           "leg swelling",
           "Incorporating knowledge from the presentation, counsel the patient."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -932,9 +904,7 @@
           "leg swelling",
           "With the assistance of Carle’s Interpreter Services, collect a patient-history.  The phone number is (217) 383-6955.  A member of the staff will assist with acquiring the interpreter.  You do not need to take notes.  You may end the call when you are finished."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -999,9 +969,7 @@
           "leg swelling",
           "Incorporating knowledge from the presentation, counsel the patient."
         ],
-        "diagnoses": [
-          "leg swelling"
-        ],
+        "diagnoses": ["leg swelling"],
         "problems": [],
         "vitals": [
           {
@@ -1138,12 +1106,8 @@
         "department": "Family Medicine",
         "specialty": "Family Medicine",
         "provider": "Chris Nelson, MD",
-        "concerns": [
-          "chest pain"
-        ],
-        "diagnoses": [
-          "chest pain"
-        ],
+        "concerns": ["chest pain"],
+        "diagnoses": ["chest pain"],
         "problems": [
           {
             "diagnosis": "Arthritis",
@@ -1304,24 +1268,14 @@
               "name": "",
               "status": "Deceased",
               "age": 65,
-              "problems": [
-                {
-                  "description": "Heart disease",
-                  "ageOfOnset": "65"
-                }
-              ]
+              "problems": [{"description": "Heart disease","ageOfOnset": "65"}]
             },
             {
               "relationship": "Mother",
               "name": "",
               "status": "Deceased",
               "age": 78,
-              "problems": [
-                {
-                  "description": "Breast cancer",
-                  "ageOfOnset": "78"
-                }
-              ]
+              "problems": [{"description": "Breast cancer","ageOfOnset": "78"}]
             },
             {
               "relationship": "Brother",
@@ -1343,9 +1297,7 @@
           "SubstanceSexualHealth": {
             "tobacco": {
               "smokingStatus": "Everyday",
-              "types": [
-                "Cigarette"
-              ],
+              "types": ["Cigarette"],
               "startDate": "1980-01-01",
               "packsPerDay": 1,
               "packYears": 50,
@@ -1414,12 +1366,8 @@
         "department": "Family Medicine",
         "specialty": "Family Medicine",
         "provider": "Chris Nelson, MD",
-        "concerns": [
-          "chest pain"
-        ],
-        "diagnoses": [
-          "chest pain"
-        ],
+        "concerns": ["chest pain"],
+        "diagnoses": ["chest pain"],
         "problems": [
           {
             "diagnosis": "Arthritis",
@@ -2595,24 +2543,14 @@
               "name": "",
               "status": "Deceased",
               "age": 65,
-              "problems": [
-                {
-                  "description": "Heart disease",
-                  "ageOfOnset": "65"
-                }
-              ]
+              "problems": [{"description": "Heart disease","ageOfOnset": "65"}]
             },
             {
               "relationship": "Mother",
               "name": "",
               "status": "Deceased",
               "age": 78,
-              "problems": [
-                {
-                  "description": "Breast cancer",
-                  "ageOfOnset": "78"
-                }
-              ]
+              "problems": [{"description": "Breast cancer","ageOfOnset": "78"}]
             },
             {
               "relationship": "Brother",
@@ -2634,9 +2572,7 @@
           "SubstanceSexualHealth": {
             "tobacco": {
               "smokingStatus": "Everyday",
-              "types": [
-                "Cigarette"
-              ],
+              "types": ["Cigarette"],
               "startDate": "1980-01-01",
               "packsPerDay": 1,
               "packYears": 50,
@@ -2694,7 +2630,69 @@
             "textbox": "\n        John Hanson was a floor manager at a printing facility in Mattoon, IL, where he\n        worked for 22 years before the factory shut down and he lost his job. He currently works as a part-\n        time delivery truck driver for a local furniture store. He also works odd jobs at a local construction\n        company and a concrete laying company.\n        He lives with his wife of 35 years who has multiple sclerosis. She is unable to walk and uses a\n        wheelchair for mobility. He is her primary caregiver. They have two sons who do not live in the\n        area.\n        He has smoked since he was a teenager and currently smokes a pack per day. He has 3-4 beers a\n        week. He denies recreational drug use.\n        Since his fall and right foot fracture 5 years ago, he has gained 70 lbs., which he attributes to lack\n        of exercise since his injury and resultant chronic right foot and knee pain. His diet is mostly take-out\n        fast food. He remembers to take his medications. However, it is hard for him to take them regularly,\n        given his odd shift hours including night shifts.\n        "
           },
           "BirthHistory": {}
-        }
+        },
+        "orders": [
+          {
+            "id": "1",
+            "name": "metFORMIN",
+            "brandName": "",
+            "dosage": "500 mg",
+            "frequency": "TWICE A DAY",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          },
+          {
+            "id": "2",
+            "name": "lisinopril",
+            "brandName": "",
+            "dosage": "5 mg",
+            "frequency": "ONCE DAILY",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          },
+          {
+            "id": "3",
+            "name": "lovastatin",
+            "brandName": "",
+            "dosage": "20 mg",
+            "frequency": "ONCE DAILY",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          },
+          {
+            "id": "4",
+            "name": "omeprazole",
+            "brandName": "",
+            "dosage": "20 mg",
+            "frequency": "ONCE DAILY",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          },
+          {
+            "id": "5",
+            "name": "acetaminophen",
+            "brandName": "",
+            "dosage": "500 mg",
+            "frequency": "AS NEEDED",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          },
+          {
+            "id": "6",
+            "name": "ibuprofen",
+            "brandName": "",
+            "dosage": "200 mg",
+            "frequency": "AS NEEDED",
+            "route": "oral",
+            "startDate": "Sat 9/1/24",
+            "endDate": ""
+          }
+        ]
       }
     }
   }

@@ -1,3 +1,4 @@
+// eslint-disable-file no-nested-ternary
 import React from 'react'
 import { debounce } from "lodash"
 import {
@@ -14,6 +15,7 @@ import {
   Avatar as MUIAvatar,
   Divider as MUIDivider,
   Paper as MUIPaper,
+  Chip as MUIChip,
   Table as MUITable,
   TableHead as MUITableHead,
   TableBody as MUITableBody,
@@ -24,7 +26,25 @@ import {
   DialogContent as MUIDialogContent,
   DialogContentText as MUIDialogContentText,
   DialogTitle as MUIDialogTitle,
+  Tab as MUITab
 } from '@mui/material'
+import { 
+  Masonry as MUIMasonry,
+  TabContext as MUITabContext, 
+  TabList as MUITabList, 
+  TabPanel as MUITabPanel
+} from '@mui/lab'
+import { 
+  DatePicker as MUIDatePicker
+} from '@mui/x-date-pickers'
+import { 
+  DataGrid as MUIDataGrid
+} from '@mui/x-data-grid'
+import { 
+  RichTreeView as MUIRichTreeView, 
+  SimpleTreeView as MUISimpleTreeView, 
+  TreeItem as MUITreeItem
+} from '@mui/x-tree-view'
 import { 
   // eslint-disable-next-line import/no-named-default
   default as MUIDraggable 
@@ -53,11 +73,11 @@ export const HStack = ({ spacing = 2, children, ...props }) => (
   </MUIStack>
 )
 
-export const Grid = ({ children, ...props }) => (
-  <MUIGrid sx={{ m: 0, ...props.sx }} {...props}>
-    {children}
-  </MUIGrid>
-)
+export const Grid = ({ masonry = false, children, ...props }) => {
+  if (masonry)
+    return <MUIMasonry {...props}>{children}</MUIMasonry>
+  return <MUIGrid {...props}>{children}</MUIGrid>
+}
 
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
     <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
@@ -81,9 +101,12 @@ export const TextField = ({ label, value, onChange, ...props }) => (
     />
 )
 
-export const Button = ({ contained = false, outlined = false, color = 'inherit', children, ...props }) => (
-    // eslint-disable-next-line no-nested-ternary
-    <MUIButton variant={contained ? "contained" : outlined ? "outlined" : "text"} color={color} {...props}>
+export const Button = ({ contained = false, outlined = false, color = 'primary', children, ...props }) => (
+    <MUIButton 
+      variant={contained ? "contained" : outlined ? "outlined" : "text"} 
+      color={color} 
+      {...props}
+    >
         {children}
     </MUIButton>
 )
@@ -92,6 +115,10 @@ export const IconButton = ({ size = "medium", color = "inherit", children, iconP
   <MUIIconButton size={size} color={color} { ...props }>
     <MUIIcon fontSize={size} {...iconProps}>{children}</MUIIcon>
   </MUIIconButton>
+)
+
+export const Chip = ({ children, ...props }) => (
+  <MUIChip {...props}>{children}</MUIChip>
 )
 
 // FIXME: Set default verticalAlign=text-top for Icon?
@@ -163,6 +190,61 @@ export const TableCell = ({ children, ...props }) => (
   <MUITableCell {...props}>
     {children}
   </MUITableCell>
+)
+
+export const TreeView = ({ rich = false, children, ...props }) => {
+  if (rich)
+    return <MUIRichTreeView {...props}>{children}</MUIRichTreeView>
+  return <MUISimpleTreeView {...props}>{children}</MUISimpleTreeView>
+}
+
+export const TreeItem = ({ children, ...props }) => (
+  <MUITreeItem {...props}>
+    {children}
+  </MUITreeItem>
+)
+
+export const DatePicker = ({ children, ...props }) => (
+  <MUIDatePicker {...props}>
+    {children}
+  </MUIDatePicker>
+)
+
+export const Tab = ({ children, ...props }) => (
+  <MUITab {...props}>
+    {children}
+  </MUITab>
+)
+
+// TODO: Automate the useState()/onChange() so the client does not need to worry
+export const TabList = ({ children, ...props }) => (
+  <MUITabList 
+    variant="scrollable" 
+    textColor="inherit"
+    scrollButtons="auto"
+    allowScrollButtonsMobile 
+    {...props}
+  >
+    {children}
+  </MUITabList>
+)
+
+export const TabPanel = ({ children, ...props }) => (
+  <MUITabPanel {...props}>
+    {children}
+  </MUITabPanel>
+)
+
+export const TabView = ({ children, ...props }) => (
+  <MUITabContext {...props}>
+    {children}
+  </MUITabContext>
+)
+
+export const DataGrid = ({ children, ...props }) => (
+  <MUIDataGrid {...props}>
+    {children}
+  </MUIDataGrid>
 )
 
 /**

@@ -31,7 +31,7 @@ export const Titlebar = ({ onLogout }) => {
       <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
           <HStack alignItems="center">
-            <Button text sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
+            <Button text color="inherit" sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
           </HStack>
           <Tabs 
             variant="scrollable" 
