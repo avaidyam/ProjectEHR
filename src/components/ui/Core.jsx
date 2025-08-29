@@ -1,6 +1,7 @@
 // eslint-disable-file no-nested-ternary
-import React from 'react'
+import React from "react"
 import { debounce } from "lodash"
+import dayjs2 from "dayjs"
 import {
   alpha as MUIalpha,
   Box as MUIBox, 
@@ -9,9 +10,13 @@ import {
   GridLegacy as MUIGridLegacy,
   Typography as MUITypography, 
   TextField as MUITextField, 
+  Autocomplete as MUIAutocomplete,
   Button as MUIButton, 
-  IconButton as MUIIconButton,
+  ButtonGroup as MUIButtonGroup, 
+  ToggleButton as MUIToggleButton,
+  ToggleButtonGroup as MUIToggleButtonGroup,
   Icon as MUIIcon,
+  IconButton as MUIIconButton,
   Avatar as MUIAvatar,
   Divider as MUIDivider,
   Paper as MUIPaper,
@@ -51,11 +56,13 @@ import {
   default as MUIDraggable 
 } from 'react-draggable'
 import { EditorReadOnly } from './Editor.jsx'
-
 LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.
 export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
+
+// Re-export dayjs from the library
+export const dayjs = dayjs2
 
 // This component doubles as Box and Paper.
 export const Box = ({ paper, children, ...props }) => {
@@ -94,17 +101,40 @@ export const RichText = ({ children, ...props }) => (
 )
 
 export const TextField = ({ label, value, onChange, ...props }) => (
-    <MUITextField
-        label={label}
-        value={value}
-        onChange={onChange}
-        variant="outlined"
-        fullWidth
-        {...props}
-    />
+  <MUITextField
+    label={label}
+    value={value}
+    onChange={onChange}
+    variant="outlined"
+    fullWidth
+    {...props}
+  />
 )
 
-export const Button = ({ contained = false, outlined = false, color = 'primary', children, ...props }) => (
+export const Autocomplete = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
+  <MUIAutocomplete
+    fullWidth
+    options={options}
+    value={value}
+    onChange={onChange}
+    renderInput={(params) => <TextField {...params} variant="outlined" label={label} {...TextFieldProps} />}
+    {...props}
+  />
+)
+
+export const Button = ({ contained = false, outlined = false, toggle = false, color = 'primary', children, ...props }) => {
+  if (!!toggle) {
+    return (
+      <MUIToggleButton 
+        variant={contained ? "contained" : outlined ? "outlined" : "text"} 
+        color={color} 
+        {...props}
+      >
+          {children}
+      </MUIToggleButton>
+    )
+  }
+  return (
     <MUIButton 
       variant={contained ? "contained" : outlined ? "outlined" : "text"} 
       color={color} 
@@ -112,6 +142,13 @@ export const Button = ({ contained = false, outlined = false, color = 'primary',
     >
         {children}
     </MUIButton>
+  )
+}
+
+// FIXME: Avoid using ToggleButtons! Just theme the normal Button and ButtonGroup instead...
+// Buttons inside this MUST have prop `toggle={true}`
+export const ButtonGroup = ({ children, ...props }) => (
+    <MUIToggleButtonGroup {...props}>{children}</MUIToggleButtonGroup>
 )
 
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (

@@ -1,27 +1,143 @@
 import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
-import { Icon, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { Button, Label, Grid, Window, DatePicker } from 'components/ui/Core.jsx';
+import { Button, ButtonGroup, Autocomplete, TextField, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core.jsx';
+
+const rxParams = [
+  {
+    name: "Route",
+    required: true,
+    type: "string", // number, string, select, date, richtext, readonly
+    options: [],
+  },
+  {
+    name: "Dose",
+    required: true,
+    type: "string",
+    options: [],
+  },
+  {
+    name: "Frequency",
+    required: true,
+    type: "string",
+    options: null,
+  },
+  {
+    name: "Refills",
+    required: true,
+    type: "select",
+    options: [0, 1, 2, 3],
+  },
+  {
+    name: "Order type",
+    required: true,
+    type: "select",
+    options: [
+      "Outpatient",
+      "Inpatient"
+    ],
+  },
+  {
+    name: "Status",
+    required: true,
+    type: "select",
+    options: [
+      "Standing",
+      "Future"
+    ],
+  },
+  {
+    name: "Interval",
+    required: true,
+    type: "select",
+    options: [
+      "1 Month",
+      "2 Months",
+      "3 Months",
+      "4 Months",
+      "6 Months",
+      "1 Year"
+    ],
+    condition: { "Status": "Standing" },
+  },
+  {
+    name: "Count",
+    required: true,
+    type: "select",
+    options: [1, 2, 3, 4, 6, 12],
+    condition: { "Status": "Standing" },
+  },
+  {
+    name: "Expected date",
+    required: true,
+    type: "date",
+    options: [
+      "Today",
+      "Tomorrow",
+      "1 Week",
+      "2 Weeks",
+      "1 Month",
+      "2 Months",
+      "3 Months",
+      "6 Months"
+    ],
+    condition: { "Status": "Future" },
+  },
+  {
+    name: "Expires",
+    required: true,
+    type: "date",
+    options: [
+      "1 Month",
+      "2 Months",
+      "3 Months",
+      "4 Months",
+      "6 Months",
+      "1 Year",
+      "18 Months"
+    ],
+    condition: { "Status": "Future" },
+  },
+  {
+    name: "Priority",
+    required: true,
+    type: "select",
+    options: [
+      "STAT",
+      "Routine",
+      "Timed",
+    ]
+  },
+  {
+    name: "Class",
+    required: true,
+    type: "select",
+    options: [
+      "Lab",
+      "Unit"
+    ]
+  },
+]
+
+const consultParams = [
+
+]
 
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }) => {
-  const [name, setName] = useState(tempMed?.name ?? '')
-  const [route, setRoute] = useState(Object.keys(tempMed?.route ?? {})?.[0] ?? '')
-  const [dose, setDose] = useState('')
-  const [freq, setFreq] = useState('')
-  const [refill, setRefill] = useState(0)
-  const [type, setType] = useState('')
-  const [status, setStatus] = useState('')
-  const [priority, setPriority] = useState('')
-  const [classCollect, setClass] = useState('')
-  const [expectDate, setExpectDate] = useState(0)
-  const [expireDate, setExpireDate] = useState(90)
-  const [interval, setInterval] = useState(30)
-  const [count, setCount] = useState(1)
+  const [params, setParams] = useState({})
 
+  // set the default route and dose when the route changes
   useEffect(() => {
-    // set the default dose for the route
-    setDose(Object.values(tempMed?.route?.[route] ?? {})?.[0] ?? '')
-  }, [route])
+    setParams(prev => ({ ...prev, ['Route']: Object.keys(tempMed?.route ?? {})?.[0] ?? '' }))
+  }, [tempMed])
+  useEffect(() => {
+    setParams(prev => ({ ...prev, ['Dose']: Object.values(tempMed?.route?.[params["Route"]] ?? {})?.[0] ?? '' }))
+  }, [params["Route"]])
+
+  // if this is an Rx then substitute the Route and Dose options
+  let displayParams = !!tempMed?.route ? rxParams : consultParams
+  if (!!tempMed?.route) {
+    displayParams[0].options = Object.keys(tempMed?.route ?? {}) 
+    displayParams[1].options = Object.values(tempMed?.route?.[params["Route"]] ?? {})
+  }
 
   return (
     <Window 
@@ -32,217 +148,57 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       onClose={() => onSelect(null)} 
       ContentProps={{ sx: { p: 0 } }}
       footer={<>
-        <Button color="success.light" onClick={() => onSelect({ type: 'New', name, dose, freq, route, refill, startDate: undefined })}><Icon>check</Icon>Accept</Button>
+        <Button color="success.light" onClick={() => onSelect({ type: 'New', name: tempMed?.name ?? '', dose: params["Dose"], freq: params["Frequency"], route: params["Route"], refill: params["Refills"], startDate: undefined })}><Icon>check</Icon>Accept</Button>
         <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
       </>}
     >
       <Grid container spacing={3} sx={{ m: 0, p: 1 }}>
-      {!!tempMed?.route && (
-        <>
-          <Grid xs={3}><Label>Route:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={route}
-              exclusive
-              onChange={(event, val) => setRoute(val)}
-            >
-              {Object.keys(tempMed?.route ?? {})?.map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed?.route && (
-        <>
-          <Grid xs={3}><Label>Dose:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={dose}
-              exclusive
-              onChange={(event, val) => setDose(val)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              {Object.values(tempMed?.route?.[route] ?? {})?.map((d) => (
-                <ToggleButton value={d} key={d}>{d}</ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Grid>
-
-          <Grid xs={3}><Label>Frequency:</Label></Grid>
-          <Grid xs={9}>
-            <TextField id="outlined-basic" variant="outlined" value={freq} onChange={(event) => setFreq(event.target.value)}>Daily</TextField>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed?.route && (
-        <>
-          <Grid xs={3}><Label>Refills:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={refill}
-              exclusive
-              onChange={(event, val) => setRefill(val)}
-            >
-              {[0, 1, 2, 3].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed && (
-        <>
-          <Grid xs={3}><Label>Order type:</Label></Grid> 
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={type}
-              exclusive
-              onChange={(event, val) => setType(val)}
-            >
-              <ToggleButton value='Outpatient'><Icon>home</Icon></ToggleButton>
-              <ToggleButton value='Inpatient'><Icon>hotel</Icon></ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed && (
-        <>
-          <Grid xs={3}><Label>Status:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={status}
-              exclusive
-              onChange={(event, val) => setStatus(val)}
-            >
-              {['Standing', 'Future'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {status==='Standing' && (
-        <>
-          <Grid xs={3}><Label>Interval:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={interval}
-              exclusive
-              onChange={(event, val) => setInterval(val)}
-            >
-              <ToggleButton value={30}>1 Month</ToggleButton>
-              <ToggleButton value={60}>2 Months</ToggleButton>
-              <ToggleButton value={90}>3 Months</ToggleButton>
-              <ToggleButton value={120}>4 Months</ToggleButton>
-              <ToggleButton value={180}>6 Months</ToggleButton>
-              <ToggleButton value={365}>1 Year</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {status==='Standing' && (
-        <>
-          <Grid xs={3}><Label>Count:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={count}
-              exclusive
-              onChange={(event, val) => setCount(val)}
-            >
-              <ToggleButton value={1}>1</ToggleButton>
-              <ToggleButton value={2}>2</ToggleButton>
-              <ToggleButton value={3}>3</ToggleButton>
-              <ToggleButton value={4}>4</ToggleButton>
-              <ToggleButton value={6}>6</ToggleButton>
-              <ToggleButton value={12}>12</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {status==='Future' && (
-        <>
-          <Grid xs={3}><Label>Expected date:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={expectDate}
-              exclusive
-              onChange={(event, val) => setExpectDate(val)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              <DatePicker
-                value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`)
-                  .add(expectDate, 'day')
-                } />
-              <ToggleButton value={0}>Today</ToggleButton>
-              <ToggleButton value={1}>Tomorrow</ToggleButton>
-              <ToggleButton value={7}>1 Week</ToggleButton>
-              <ToggleButton value={14}>2 Weeks</ToggleButton>
-              <ToggleButton value={30}>1 Month</ToggleButton>
-              <ToggleButton value={60}>2 Months</ToggleButton>
-              <ToggleButton value={90}>3 Months</ToggleButton>
-              <ToggleButton value={180}>6 Months</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {status==='Future' && (
-        <>
-          <Grid xs={3}><Label>Expires:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={expireDate}
-              exclusive
-              onChange={(event, val) => setExpireDate(val)}
-              sx={{ whiteSpace: 'nowrap' }}
-            >
-              <DatePicker
-                value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`)
-                  .add(expireDate, 'day')
-                } />
-              <ToggleButton value={30}>1 Month</ToggleButton>
-              <ToggleButton value={60}>2 Months</ToggleButton>
-              <ToggleButton value={90}>3 Months</ToggleButton>
-              <ToggleButton value={120}>4 Months</ToggleButton>
-              <ToggleButton value={180}>6 Months</ToggleButton>
-              <ToggleButton value={365}>1 Year</ToggleButton>
-              <ToggleButton value={547}>18 Months</ToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed && (
-        <>
-          <Grid xs={3}><Label>Priority:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={priority}
-              exclusive
-              onChange={(event, val) => setPriority(val)}
-            >
-              {['STAT', 'Timed', 'Routine'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
-
-      {!!tempMed?.route && (
-        <>
-          <Grid xs={3}><Label>Class:</Label></Grid>
-          <Grid xs={9}>
-            <ToggleButtonGroup
-              value={classCollect}
-              exclusive
-              onChange={(event, val) => setClass(val)}
-            >
-              {['Lab', 'Unit'].map((m) => (<ToggleButton value={m} key={m}>{m}</ToggleButton>))}
-            </ToggleButtonGroup>
-          </Grid>
-        </>
-      )}
+        {!!tempMed?.route && displayParams.filter(x => {
+          for (const [key, value] of Object.entries(x.condition ?? {})) {
+            if (params[key] != value)
+              return false
+          }
+          return true
+        }).map(x => (
+          <>
+            <Grid xs={3}><Label>{x.name}</Label></Grid>
+            <Grid xs={9}>
+              {x.type === "string" && x.options?.length > 0 && 
+                <Autocomplete 
+                  fullWidth={false}
+                  options={x.options ?? []}
+                  // if undefined on first render, the component will switch to uncontrolled mode, so set `null` instead
+                  value={params[x.name] ?? null}
+                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                  sx={{ width: 300 }}
+                />
+              }
+              {x.type === "string" && (x.options?.length ?? 0) === 0 && 
+                <TextField 
+                  fullWidth={false}
+                  value={params[x.name]}
+                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                  sx={{ width: 300 }}
+                />
+              }
+              {x.type === "date" && 
+                <DatePicker
+                  value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
+                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                />
+              }
+              {x.options?.length > 0 && 
+                <ButtonGroup
+                  exclusive
+                  value={params[x.name]}
+                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                >
+                  {x.options?.slice(0, 3).map((m) => (<Button toggle key={m} value={m}>{m}</Button>))}
+                </ButtonGroup>
+              }
+            </Grid>
+          </>
+        ))}
       </Grid>
     </Window>
   )
