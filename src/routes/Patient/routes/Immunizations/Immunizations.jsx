@@ -28,6 +28,7 @@ export default function Immunizations() {
   const { useChart, useEncounter } = usePatient()
   const [immunizations, setImmunizations] = useEncounter().immunizations()
   const [editingImmunization, setEditingImmunization] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
 
   const grouped = groupImmunizationsByType(immunizations);
 
@@ -43,21 +44,48 @@ export default function Immunizations() {
 
   const handleEdit = (immunization) => {
     setEditingImmunization(immunization);
+    setIsAddingNew(false);
+  };
+
+  const handleAddNew = () => {
+    setEditingImmunization({
+      vaccine: '',
+      received: '',
+      recorder: '',
+      recorded: '',
+      given_by: '',
+      facility: '',
+      dose: { value: 0, unit: { mass: '', volume: '', time: '' } },
+      site: '',
+      route: '',
+      lot: '',
+      manufacturer: ''
+    });
+    setIsAddingNew(true);
   };
 
   const handleSave = (updatedImmunization) => {
-    setImmunizations((prevImmunizations) =>
-      prevImmunizations.map((imm) => {
-        const immId = imm.id || imm.vaccine + imm.received;
-        const updatedId = updatedImmunization.id || updatedImmunization.vaccine + updatedImmunization.received;
-        return immId === updatedId ? updatedImmunization : imm;
-      })
-    );
+    if (isAddingNew) {
+      // Add new immunization
+      const newId = immunizations.length > 0 ? Math.max(...immunizations.map(imm => imm.id || 0)) + 1 : 1;
+      setImmunizations(prev => [...prev, { ...updatedImmunization, id: newId }]);
+      setIsAddingNew(false);
+    } else {
+      // Edit existing immunization
+      setImmunizations((prevImmunizations) =>
+        prevImmunizations.map((imm) => {
+          const immId = imm.id || imm.vaccine + imm.received;
+          const updatedId = updatedImmunization.id || updatedImmunization.vaccine + updatedImmunization.received;
+          return immId === updatedId ? updatedImmunization : imm;
+        })
+      );
+    }
     setEditingImmunization(null);
   };
 
   const handleCancel = () => {
     setEditingImmunization(null);
+    setIsAddingNew(false);
   };
 
   const handleDelete = (immunizationId) => {
@@ -74,6 +102,23 @@ export default function Immunizations() {
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: colors.blue[500]}}> 
           Immunizations - All Types
         </Typography>
+
+        <Box display="flex" alignItems="center" mb={1} gap={2}>
+          <Button
+            variant="outlined"
+            startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>} 
+            onClick={handleAddNew}
+            sx={{
+              color: colors.blue[500],
+              borderColor: colors.blue[500],
+              '&:hover': {
+                borderColor: colors.blue[700],
+                backgroundColor: colors.blue[50],
+              },
+            }}>
+            Add
+          </Button>
+        </Box>
       </Box>
 
       <Box sx={{flexGrow: 1, overflowY: 'auto',px: 3, py:1 , mb: 1}}>
@@ -242,6 +287,18 @@ export default function Immunizations() {
           </TableContainer>
         </Box>
       </Box>
+
+      {/* Editor for new immunizations */}
+      {editingImmunization && isAddingNew && (
+        <Box sx={{ mt: 2, px: 3 }}>
+          <ImmunizationItemEditor
+            immunization={editingImmunization}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            isAddingNew={true}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

@@ -23,25 +23,12 @@ import {
   validateImmunization
 } from '../utils/immunizationUtils.js';
 
-const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
-  const [editedImmunization, setEditedImmunization] = useState({
-    ...immunization,
-    dose: {
-      value: immunization.dose?.value || 0,
-      unit: {
-        mass: immunization.dose?.unit?.mass || null,
-        volume: immunization.dose?.unit?.volume || null,
-        time: immunization.dose?.unit?.time || null
-      }
-    }
-  });
+export default function ImmunizationItemEditor({ immunization, onSave, onCancel, isAddingNew = false }) {
+  const [editedImmunization, setEditedImmunization] = useState(immunization);
   const [errors, setErrors] = useState([]);
 
   const handleChange = (field, value) => {
-    setEditedImmunization(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setEditedImmunization(prev => ({ ...prev, [field]: value }));
   };
 
   const handleDoseChange = (field, value) => {
@@ -54,26 +41,25 @@ const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
     }));
   };
 
-  const handleUnitChange = (field, value) => {
+  const handleUnitChange = (type, value) => {
     setEditedImmunization(prev => ({
       ...prev,
       dose: {
         ...prev.dose,
         unit: {
-          ...prev.dose.unit,
-          [field]: value
+          ...prev.dose?.unit,
+          [type]: value
         }
       }
     }));
   };
 
-  const handleSave = () => {
-    const validationErrors = validateImmunization(editedImmunization);
+  const handleSubmit = () => {
+    const validationErrors = validateImmunization(editedImmunization, isAddingNew);
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       return;
     }
-    setErrors([]);
     onSave(editedImmunization);
   };
 
@@ -85,7 +71,7 @@ const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
     <Paper elevation={2} style={{ padding: '16px', margin: '8px 0' }}>
       <Box>
         <Typography variant="h6" gutterBottom>
-          Edit Immunization
+          {isAddingNew ? 'New Immunization' : 'Edit Immunization'}
         </Typography>
         
         {errors.length > 0 && (
@@ -104,7 +90,8 @@ const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
               fullWidth
               label="Immunization Name"
               value={editedImmunization.vaccine || ''}
-              disabled
+              disabled={!isAddingNew}
+              onChange={(e) => handleChange('vaccine', e.target.value)}
               margin="normal"
               sx={{ 
                 '& .MuiInputBase-input.Mui-disabled': {
@@ -280,7 +267,7 @@ const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
           <Button variant="outlined" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
             Save
           </Button>
         </Box>
@@ -288,5 +275,3 @@ const ImmunizationItemEditor = ({ immunization, onSave, onCancel }) => {
     </Paper>
   );
 };
-
-export default ImmunizationItemEditor;

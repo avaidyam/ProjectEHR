@@ -87,13 +87,13 @@ export const IMMUNIZATION_ROUTES = {
   };
   
   // Validate immunization data
-  export const validateImmunization = (immunization) => {
+  export const validateImmunization = (immunization, isAddingNew = false) => {
     const errors = [];
     
-    // Don't validate vaccine name since it's read-only and auto-filled
-    // if (!immunization.vaccine || immunization.vaccine.trim() === '') {
-    //   errors.push('Immunization name is required');
-    // }
+    // Only validate vaccine name when adding new immunizations
+    if (isAddingNew && (!immunization.vaccine || immunization.vaccine.trim() === '')) {
+      errors.push('Immunization name is required');
+    }
     
     if (!immunization.received) {
       errors.push('Date received is required');
