@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Titlebar } from 'components/ui/Titlebar.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';

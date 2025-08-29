@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
-import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
 import patient_sample from 'util/data/patient_sample.json';
 import { useRouter } from 'util/urlHelpers.js';

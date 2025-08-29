@@ -36,20 +36,23 @@ import {
 } from '@mui/lab'
 import { 
   DatePicker as MUIDatePicker
-} from '@mui/x-date-pickers'
+} from '@mui/x-date-pickers-pro'
 import { 
-  DataGrid as MUIDataGrid
-} from '@mui/x-data-grid'
+  DataGridPremium as MUIDataGrid
+} from '@mui/x-data-grid-premium'
 import { 
-  RichTreeView as MUIRichTreeView, 
+  RichTreeViewPro as MUIRichTreeView, 
   SimpleTreeView as MUISimpleTreeView, 
   TreeItem as MUITreeItem
-} from '@mui/x-tree-view'
+} from '@mui/x-tree-view-pro'
+import { LicenseInfo } from '@mui/x-license-pro'
 import { 
   // eslint-disable-next-line import/no-named-default
   default as MUIDraggable 
 } from 'react-draggable'
 import { EditorReadOnly } from './Editor.jsx'
+
+LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.
 export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
@@ -193,8 +196,15 @@ export const TableCell = ({ children, ...props }) => (
 )
 
 export const TreeView = ({ rich = false, children, ...props }) => {
+  const proRef = React.useRef(null)
+  React.useEffect(() => {
+    for (const div of proRef?.current?.querySelectorAll('div').values()) {
+      if (div.textContent?.trim().startsWith("MUI X") && div.children.length === 0)
+        div.style.display = 'none'
+    }
+  }, [proRef.current])
   if (rich)
-    return <MUIRichTreeView {...props}>{children}</MUIRichTreeView>
+    return <MUIRichTreeView ref={proRef} {...props}>{children}</MUIRichTreeView>
   return <MUISimpleTreeView {...props}>{children}</MUISimpleTreeView>
 }
 
@@ -241,11 +251,20 @@ export const TabView = ({ children, ...props }) => (
   </MUITabContext>
 )
 
-export const DataGrid = ({ children, ...props }) => (
-  <MUIDataGrid {...props}>
-    {children}
-  </MUIDataGrid>
-)
+export const DataGrid = ({ children, ...props }) => {
+  const proRef = React.useRef(null)
+  React.useEffect(() => {
+    for (const div of proRef?.current?.querySelectorAll('div').values()) {
+      if (div.textContent?.trim().startsWith("MUI X") && div.children.length === 0)
+        div.style.display = 'none'
+    }
+  }, [proRef.current])
+  return (
+    <MUIDataGrid ref={proRef} {...props}>
+      {children}
+    </MUIDataGrid>
+  )
+}
 
 /**
  To provide an icon for the title:

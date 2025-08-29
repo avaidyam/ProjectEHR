@@ -154,7 +154,7 @@ export const ListsSidebar = () => {
         overflow: 'hidden',
       }}
     >
-      <TreeView rich
+      <TreeView rich itemsReordering={true}
         items={createTreeItems(lists)}
         slots={{
           expandIcon: ChevronRightIcon,
