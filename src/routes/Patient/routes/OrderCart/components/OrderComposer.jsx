@@ -185,12 +185,11 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
               }
               {x.options?.length > 0 && 
                 <ButtonGroup
-                  toggle 
                   exclusive
                   value={params[x.name]}
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
                 >
-                  {x.options?.slice(0, 3).map((m) => (<Button toggle key={m} value={m}>{m}</Button>))}
+                  {x.options?.slice(0, 3).map((m) => (<Button key={m} value={m}>{m}</Button>))}
                 </ButtonGroup>
               }
             </Grid>

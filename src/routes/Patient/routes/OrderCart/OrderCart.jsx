@@ -31,12 +31,24 @@ const categories = {
     color: '#CF3935',
     status: 'discontinued'
   }, 
-  "Orders to be Signed": {
+  "Pend": { // previously "Orders To Be Signed"
     icon: "content_paste",
     title: "Signed This Visit",
     color: '#7471D4',
-    status: 'signed'
+    status: 'pended'
   }
+}
+
+const getCategoryForOrder = (order) => {
+  if (!!order.signedDate)
+    return "Modify"
+  if (!!order.holdDate)
+    return "Hold"
+  if (!!order.discontinueDate)
+    return "Discontinue"
+  if (!!order.pendDate)
+    return "Pend"
+  return "New"
 }
 
 export const OrderCart = () => {
@@ -48,8 +60,6 @@ export const OrderCart = () => {
   const [value, setValue] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)
   const [openOrder, setOpenOrder] = useState(null)
-
-  console.dir(orderList.filter(x => x.status !== 'discontinued'))
   
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -101,9 +111,9 @@ export const OrderCart = () => {
             </Box>
           </Box>
         </Card>
-        {Object.keys(categories).filter(category => orderCart.filter((x) => x.type === category).length > 0).map(category => (
+        {Object.keys(categories).filter(category => orderCart.filter((x) => getCategoryForOrder(x) === category).length > 0).map(category => (
           <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
-            {orderCart.filter((x) => x.type === category).map((order) => (
+            {orderCart.filter((x) => getCategoryForOrder(x) === category).map((order) => (
               <Box key={order.name} sx={{ marginLeft:3, marginBottom:2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
                 <Typography variant="body1">{order.name}</Typography>
                 <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
@@ -143,7 +153,15 @@ export const OrderCart = () => {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-            setOrderList(prev => prev.map(x => ({ ...x, status:  categories[x.type ?? "New"].status, type: undefined })).upsert(orderCart, "id"))
+
+
+            console.log("before after")
+            console.dir(orderList.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
+            let tester = orderList.upsert(orderCart, "id")
+            console.dir(tester.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
+
+
+            setOrderList(prev => prev.upsert(orderCart, "id"))
             setOrderCart([])
           }}>
             <Icon>check</Icon> Sign
@@ -163,7 +181,9 @@ export const OrderCart = () => {
           setOpenSearchList(null)
           setOpenOrder(null)
           if (item !== null) {
-            item.id = crypto.randomUUID() // every order needs a UUID! 
+            if (!item.id) {
+              item.id = crypto.randomUUID() // every order needs a UUID! 
+            }
             setOrderCart(prev => prev.upsert(item, "id"))
           }
         }} />

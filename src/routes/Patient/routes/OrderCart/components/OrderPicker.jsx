@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, TextField, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
+import { Button, TextField, Label, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
 
 import labs_all from 'util/data/labs_all.json'
 import rxnorm_all from 'util/data/rxnorm_all.json'

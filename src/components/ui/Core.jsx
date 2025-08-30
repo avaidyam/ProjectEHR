@@ -13,8 +13,6 @@ import {
   Autocomplete as MUIAutocomplete,
   Button as MUIButton, 
   ButtonGroup as MUIButtonGroup, 
-  ToggleButton as MUIToggleButton,
-  ToggleButtonGroup as MUIToggleButtonGroup,
   Icon as MUIIcon,
   IconButton as MUIIconButton,
   Avatar as MUIAvatar,
@@ -116,20 +114,11 @@ export const Autocomplete = ({ label, options, value, onChange, TextFieldProps, 
   />
 )
 
-export const Button = ({ contained = false, outlined = false, toggle = false, color = 'primary', children, ...props }) => {
-  if (!!toggle) {
-    return (
-      <MUIToggleButton 
-        variant={contained ? "contained" : outlined ? "outlined" : "text"} 
-        color={color} 
-        {...props}
-      >
-          {children}
-      </MUIToggleButton>
-    )
-  }
+// To use as a ToggleButton, MUST provide `value`!
+export const Button = ({ contained = false, outlined = false, color = 'primary', value, children, ...props }) => {
   return (
     <MUIButton 
+      value={value}
       variant={contained ? "contained" : outlined ? "outlined" : "text"} 
       color={color} 
       {...props}
@@ -139,12 +128,27 @@ export const Button = ({ contained = false, outlined = false, toggle = false, co
   )
 }
 
-// FIXME: Avoid using ToggleButtons! Just theme the normal Button and ButtonGroup instead...
+// FIXME: Need to make sure `exclusive=false` mode works correctly!
 // Buttons inside this MUST have prop `toggle={true}`
-export const ButtonGroup = ({ toggle = false, children, ...props }) => {
-  if (!!toggle)
-    return <MUIToggleButtonGroup {...props}>{children}</MUIToggleButtonGroup>
-  return <MUIButtonGroup {...props}>{children}</MUIButtonGroup>
+export const ButtonGroup = ({ exclusive=false, variant, value, onChange, children, ...props }) => {
+  const childrenWithProps = React.Children.map(children, child => {
+    if (!React.isValidElement(child)) 
+      return child
+    // Must have value for parent ButtonGroup and child Button to be considered a toggle
+    // If exclusive toggle, check array contains, else must equal
+    const isToggle = !!value && !!child.props.value
+    const isSelected = isToggle && ((Array.isArray(value) && value.includes(child.props.value)) || (value === child.props.value))
+    return React.cloneElement(child, { 
+      variant: isToggle ? (isSelected ? "contained" : "outlined") : variant,
+      onClick: (event) => {
+        // Call parent ButtonGroup onChange if requested, providing child Button 
+        // value (click source), then call child Button onClick if necessary
+        onChange?.(event, child.props.value)
+        child.props.onClick?.(event)
+      }
+    })
+  })
+  return <MUIButtonGroup {...props}>{childrenWithProps}</MUIButtonGroup>
 }
 
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
