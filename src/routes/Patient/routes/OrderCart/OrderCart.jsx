@@ -10,27 +10,32 @@ const categories = {
   "New": {
     icon: "assignment_add",
     title: "New Order",
-    color: '#19852F'
+    color: '#19852F',
+    status: 'signed'
   }, 
   "Modify": {
     icon: "edit_document",
     title: "Orders to Modify",
-    color: '#E0A830'
+    color: '#E0A830',
+    status: 'signed'
   }, 
   "Hold": {
     icon: "edit_document",
     title: "Orders to Hold",
-    color: '#7e57c2'
+    color: '#7e57c2',
+    status: 'held'
   }, 
   "Discontinue": {
     icon: "content_paste_off",
     title: "Orders to Discontinue",
-    color: '#CF3935'
+    color: '#CF3935',
+    status: 'discontinued'
   }, 
   "Orders to be Signed": {
     icon: "content_paste",
     title: "Signed This Visit",
-    color: '#7471D4'
+    color: '#7471D4',
+    status: 'signed'
   }
 }
 
@@ -136,7 +141,7 @@ export const OrderCart = () => {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-            setOrderList(prev => prev.upsert(orderCart, "id"))
+            setOrderList(prev => prev.map(x => ({ ...x, status:  categories[x.type].status})).upsert(orderCart, "id"))
             setOrderCart([])
           }}>
             <Icon>check</Icon> Sign

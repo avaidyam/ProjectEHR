@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tab } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { HStack, Box, Label } from 'components/ui/Core.jsx';
+import { Stack, Box, Label } from 'components/ui/Core.jsx';
 import { usePatient } from '../../../../components/contexts/PatientContext.jsx';
 
 import MedicalHistory from './routes/MedicalHistory/MedicalHistory.jsx';
@@ -33,7 +33,7 @@ export default function HistoryTabContent() {
         <Label variant="h4" sx={{ fontWeight: 'bold' }}>History</Label>
       </Box>
       <TabContext value={value}>
-      <HStack>
+      <Stack horizontal>
           <Box sx={{ borderRight: 1, borderColor: 'divider', minWidth: 200, display: 'flex', flexDirection: 'column' }}>
             <TabList
               orientation="vertical"
@@ -93,7 +93,7 @@ export default function HistoryTabContent() {
             <SpecialtyPap />
           </TabPanel>
           </Box>
-      </HStack>
+      </Stack>
       </TabContext>
     </Box>
   );

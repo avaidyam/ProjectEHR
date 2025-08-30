@@ -71,14 +71,8 @@ export const Box = ({ paper, children, ...props }) => {
   return (<MUIBox {...props}>{children}</MUIBox>)
 }
 
-export const VStack = ({ spacing = 2, children, ...props }) => (
-  <MUIStack direction="column" spacing={spacing} {...props}>
-    {children}
-  </MUIStack>
-)
-
-export const HStack = ({ spacing = 2, children, ...props }) => (
-  <MUIStack direction="row" spacing={spacing} {...props}>
+export const Stack = ({ vertical = true, horizontal = false, spacing = 2, children, ...props }) => (
+  <MUIStack direction={vertical ? "column" : horizontal ? "row" : undefined} spacing={spacing} {...props}>
     {children}
   </MUIStack>
 )

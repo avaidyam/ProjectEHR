@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
-import { Button, HStack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
+import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
 import patient_sample from 'util/data/patient_sample.json';
 
 export const Titlebar = ({ onLogout }) => {
@@ -30,9 +30,9 @@ export const Titlebar = ({ onLogout }) => {
     <>
       <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
-          <HStack alignItems="center">
+          <Stack horizontal alignItems="center">
             <Button text color="inherit" sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
-          </HStack>
+          </Stack>
           <Tabs 
             variant="scrollable" 
             textColor="inherit"
@@ -54,7 +54,7 @@ export const Titlebar = ({ onLogout }) => {
               } />
             ))}
           </Tabs>
-          <HStack>
+          <Stack horizontal>
             <Tooltip title="Account settings">
               <IconButton onClick={(event) => setOpen(event.currentTarget)}><Icon avatar size={24}>person</Icon></IconButton>
             </Tooltip>
@@ -80,7 +80,7 @@ export const Titlebar = ({ onLogout }) => {
                 <Icon>logout</Icon> Logout
               </MenuItem>
             </Menu>
-          </HStack>
+          </Stack>
         </Toolbar>
       </AppBar>
       {/* Spacer to prevent content from being hidden behind the AppBar */}
