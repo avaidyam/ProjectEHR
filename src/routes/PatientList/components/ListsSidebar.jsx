@@ -154,7 +154,7 @@ export const ListsSidebar = () => {
         overflow: 'hidden',
       }}
     >
-      <TreeView rich itemsReordering={true}
+      <TreeView rich 
         items={createTreeItems(lists)}
         slots={{
           expandIcon: ChevronRightIcon,
@@ -164,6 +164,8 @@ export const ListsSidebar = () => {
         onExpandedItemsChange={handleExpansionChange}
         selectedItems={selectedListId ? [selectedListId] : []}
         onItemClick={handleItemClick}
+        itemsReordering={true} 
+        experimentalFeatures={{ indentationAtItemLevel: true, itemsReordering: true }}
         disableSelection
         sx={{
           p: 1,

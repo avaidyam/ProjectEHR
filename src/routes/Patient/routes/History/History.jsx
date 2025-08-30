@@ -33,7 +33,7 @@ export default function HistoryTabContent() {
         <Label variant="h4" sx={{ fontWeight: 'bold' }}>History</Label>
       </Box>
       <TabContext value={value}>
-      <Stack horizontal>
+      <Stack direction="row" spacing={2}>
           <Box sx={{ borderRight: 1, borderColor: 'divider', minWidth: 200, display: 'flex', flexDirection: 'column' }}>
             <TabList
               orientation="vertical"

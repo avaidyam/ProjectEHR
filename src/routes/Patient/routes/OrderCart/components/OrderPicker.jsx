@@ -1,6 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemText, ListItemButton, TextField } from '@mui/material';
-import { Window, useLazyEffect } from 'components/ui/Core.jsx';
+import { Button, TextField, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
 
 import labs_all from 'util/data/labs_all.json'
 import rxnorm_all from 'util/data/rxnorm_all.json'
@@ -37,16 +36,12 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }) => {
         />
       }
     >
-      <List {...props}>
+      <Stack direction="column" {...props}>
         {data.map((m) => (
-          <ListItem disablePadding key={m.name}>
-            <ListItemButton onClick={() => onSelect(m)}>
-              <ListItemText primary={m.name}/>
-            </ListItemButton>
-          </ListItem>
+          <Button fullWidth key={m.name} onClick={() => onSelect(m)} sx={{ justifyContent: "space-between", alignItems: "center" }}>{m.name}</Button>
         ))}
-        {data?.length === 0 ? <p>No Results. Try again.</p> : <></>}
-      </List>
+        {data?.length === 0 ? <Label>No Results. Try again.</Label> : <></>}
+      </Stack>
     </Window>
   )
 }

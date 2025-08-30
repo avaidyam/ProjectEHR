@@ -1,5 +1,4 @@
 import React from 'react'
-import { List, ListItem } from '@mui/material'
 import { Box, Grid, Stack, Label, Divider, Button, ButtonGroup, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core.jsx'
 import { usePatient } from 'components/contexts/PatientContext.jsx'
 
@@ -17,7 +16,7 @@ export default function OrdersMgmt() {
 
   return (
     <TabView value={tab}>
-      <Box sx={{ width: '100%' }}>
+      <Box>
         <TabList onChange={(event, newValue) => setTab(newValue)}>
           <Tab value="Active" label="Active" />
           <Tab value="Signed & Hold" label="Signed & Hold" />
@@ -28,7 +27,7 @@ export default function OrdersMgmt() {
         </TabList>
         <TabPanel value="Active">
           <TitledCard emphasized title="Orders" color="#5EA1F8">
-            <Stack vertical spacing={0}>
+            <Stack direction="column">
               {orderList.filter(x => x.status !== 'discontinued').map((med, idx) => (
                 <Grid container>
                   <Grid item xs={12} sm={3} align="left">

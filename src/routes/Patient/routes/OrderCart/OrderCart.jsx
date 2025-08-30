@@ -48,6 +48,8 @@ export const OrderCart = () => {
   const [value, setValue] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)
   const [openOrder, setOpenOrder] = useState(null)
+
+  console.dir(orderList.filter(x => x.status !== 'discontinued'))
   
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -89,7 +91,7 @@ export const OrderCart = () => {
             </Box>
             <Box>
               <FormControl sx={{ minWidth: 300 }} size="small">
-                <Select>
+                <Select value="">
                   <MenuItem value='test'>Test</MenuItem>
                 </Select>
               </FormControl>
@@ -141,7 +143,7 @@ export const OrderCart = () => {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-            setOrderList(prev => prev.map(x => ({ ...x, status:  categories[x.type].status})).upsert(orderCart, "id"))
+            setOrderList(prev => prev.map(x => ({ ...x, status:  categories[x.type ?? "New"].status, type: undefined })).upsert(orderCart, "id"))
             setOrderCart([])
           }}>
             <Icon>check</Icon> Sign

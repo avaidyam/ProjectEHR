@@ -30,7 +30,7 @@ export const Titlebar = ({ onLogout }) => {
     <>
       <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
-          <Stack horizontal alignItems="center">
+          <Stack direction="row" spacing={2} alignItems="center">
             <Button text color="inherit" sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
           </Stack>
           <Tabs 
@@ -54,7 +54,7 @@ export const Titlebar = ({ onLogout }) => {
               } />
             ))}
           </Tabs>
-          <Stack horizontal>
+          <Stack direction="row" spacing={2}>
             <Tooltip title="Account settings">
               <IconButton onClick={(event) => setOpen(event.currentTarget)}><Icon avatar size={24}>person</Icon></IconButton>
             </Tooltip>

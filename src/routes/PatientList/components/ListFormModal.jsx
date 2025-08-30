@@ -1,6 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
-import { Box, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core.jsx';
+import { Box, Stack, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core.jsx';
 
 const availableColumns = [
     { id: 'name', label: 'Patient Name', selected: true, order: 0 },
@@ -146,24 +145,20 @@ export const ListFormModal = ({
                                 Available Columns
                             </Label>
                             <Box paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
-                                <List dense>
+                                <Stack direction="column" spacing={1} sx={{ p: 1 }}>
                                     {unselectedColumns.map((column) => (
-                                        <ListItem
-                                            key={column.id}
-                                            secondaryAction={
-                                                <IconButton
-                                                    edge='end'
-                                                    size='small'
-                                                    onClick={() => handleAddColumn(column)}
-                                                >
-                                                    <Icon>add</Icon>
-                                                </IconButton>
-                                            }
-                                        >
-                                            <ListItemText primary={column.label} />
-                                        </ListItem>
+                                        <Stack direction="row" key={column.id} sx={{ justifyContent: "space-between", alignItems: "center" }}>
+                                            <Label variant="body2">{column.label}</Label>
+                                            <IconButton
+                                                edge='end'
+                                                size='small'
+                                                onClick={() => handleAddColumn(column)}
+                                            >
+                                                <Icon>add</Icon>
+                                            </IconButton>
+                                        </Stack>
                                     ))}
-                                </List>
+                                </Stack>
                             </Box>
                         </Box>
                         <Box sx={{ flex: 1 }}>
@@ -175,42 +170,38 @@ export const ListFormModal = ({
                                 )}
                             </Label>
                             <Box paper variant='outlined' sx={{ height: 300, overflow: 'auto' }}>
-                                <List dense>
+                                <Stack direction="column" spacing={1} sx={{ p: 1 }}>
                                     {selectedColumns.map((column, index) => (
-                                        <ListItem
-                                            key={column.id}
-                                            secondaryAction={
-                                                <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                                    <IconButton
-                                                        edge='end'
-                                                        size='small'
-                                                        onClick={() => handleMoveColumn(index, 'up')}
-                                                        disabled={index === 0}
-                                                    >
-                                                        <Icon>keyboard_arrow_up</Icon>
-                                                    </IconButton>
-                                                    <IconButton
-                                                        edge='end'
-                                                        size='small'
-                                                        onClick={() => handleMoveColumn(index, 'down')}
-                                                        disabled={index === selectedColumns.length - 1}
-                                                    >
-                                                        <Icon>keyboard_arrow_down</Icon>
-                                                    </IconButton>
-                                                    <IconButton
-                                                        edge='end'
-                                                        size='small'
-                                                        onClick={() => handleRemoveColumn(column)}
-                                                    >
-                                                        <Icon>remove</Icon>
-                                                    </IconButton>
-                                                </Box>
-                                            }
-                                        >
-                                            <ListItemText primary={column.label} />
-                                        </ListItem>
+                                        <Stack direction="row" key={column.id} sx={{ justifyContent: "space-between", alignItems: "center" }}>
+                                            <Label variant="body2">{column.label}</Label>
+                                            <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                                <IconButton
+                                                    edge='end'
+                                                    size='small'
+                                                    onClick={() => handleMoveColumn(index, 'up')}
+                                                    disabled={index === 0}
+                                                >
+                                                    <Icon>keyboard_arrow_up</Icon>
+                                                </IconButton>
+                                                <IconButton
+                                                    edge='end'
+                                                    size='small'
+                                                    onClick={() => handleMoveColumn(index, 'down')}
+                                                    disabled={index === selectedColumns.length - 1}
+                                                >
+                                                    <Icon>keyboard_arrow_down</Icon>
+                                                </IconButton>
+                                                <IconButton
+                                                    edge='end'
+                                                    size='small'
+                                                    onClick={() => handleRemoveColumn(column)}
+                                                >
+                                                    <Icon>remove</Icon>
+                                                </IconButton>
+                                            </Box>
+                                        </Stack>
                                     ))}
-                                </List>
+                                </Stack>
                             </Box>
                         </Box>
                     </Box>
