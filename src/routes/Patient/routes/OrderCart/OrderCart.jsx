@@ -34,7 +34,7 @@ const categories = {
   }
 }
 
-export default function Orders() {
+export const OrderCart = () => {
   const { useChart, useEncounter } = usePatient()
   // eslint-disable-next-line dot-notation
   const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
@@ -136,7 +136,7 @@ export default function Orders() {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-            setOrderList(prev => [...prev, ...orderCart])
+            setOrderList(prev => prev.upsert(orderCart, "id"))
             setOrderCart([])
           }}>
             <Icon>check</Icon> Sign
@@ -155,8 +155,10 @@ export default function Orders() {
         <OrderComposer open={openOrder} medication={openOrder} onSelect={(item) => {
           setOpenSearchList(null)
           setOpenOrder(null)
-          if (item !== null)
-            setOrderCart(prev => [...prev, item])
+          if (item !== null) {
+            item.id = crypto.randomUUID() // every order needs a UUID! 
+            setOrderCart(prev => prev.upsert(item, "id"))
+          }
         }} />
       }
     </Box>

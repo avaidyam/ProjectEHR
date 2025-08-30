@@ -153,13 +153,9 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       </>}
     >
       <Grid container spacing={3} sx={{ m: 0, p: 1 }}>
-        {!!tempMed?.route && displayParams.filter(x => {
-          for (const [key, value] of Object.entries(x.condition ?? {})) {
-            if (params[key] != value)
-              return false
-          }
-          return true
-        }).map(x => (
+        {!!tempMed?.route && displayParams.filter(x => 
+          Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
+        ).map(x => (
           <>
             <Grid xs={3}><Label>{x.name}</Label></Grid>
             <Grid xs={9}>
@@ -189,6 +185,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
               }
               {x.options?.length > 0 && 
                 <ButtonGroup
+                  toggle 
                   exclusive
                   value={params[x.name]}
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}

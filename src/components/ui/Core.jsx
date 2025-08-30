@@ -147,9 +147,11 @@ export const Button = ({ contained = false, outlined = false, toggle = false, co
 
 // FIXME: Avoid using ToggleButtons! Just theme the normal Button and ButtonGroup instead...
 // Buttons inside this MUST have prop `toggle={true}`
-export const ButtonGroup = ({ children, ...props }) => (
-    <MUIToggleButtonGroup {...props}>{children}</MUIToggleButtonGroup>
-)
+export const ButtonGroup = ({ toggle = false, children, ...props }) => {
+  if (!!toggle)
+    return <MUIToggleButtonGroup {...props}>{children}</MUIToggleButtonGroup>
+  return <MUIButtonGroup {...props}>{children}</MUIButtonGroup>
+}
 
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
   <MUIIconButton size={size} color={color} { ...props }>

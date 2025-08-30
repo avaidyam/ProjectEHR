@@ -1,6 +1,6 @@
 import React from 'react'
 import { List, ListItem } from '@mui/material'
-import { Box, Grid, Label, Divider, Button, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core.jsx'
+import { Box, Grid, Label, Divider, Button, ButtonGroup, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core.jsx'
 import { usePatient } from 'components/contexts/PatientContext.jsx'
 
 export default function OrdersMgmt() {
@@ -11,7 +11,8 @@ export default function OrdersMgmt() {
   const [tab, setTab] = React.useState("Active")
 
   const addOrder = (med, medChangeType) => {
-    setOrderCart(prev => [...prev, { type: medChangeType, name: med.name, dose: med.dosage, freq: med.frequency, route: med.route, refill: 0, startDate: undefined }])
+    const item = { type: medChangeType, id: med.id, name: med.name, dose: med.dosage, freq: med.frequency, route: med.route, refill: 0, startDate: undefined }
+    setOrderCart(prev => prev.upsert(item, "id"))
   }
 
   return (
@@ -28,27 +29,27 @@ export default function OrdersMgmt() {
         <TabPanel value="Active">
           <TitledCard emphasized title="Orders" color="#5EA1F8">
             <List>
-              {orderList.map((med) => (
-                <Box>
-                  <Divider />
-                  <ListItem sx={{ mb: 1, p: 1 }}>
-                      <Grid container spacing={3}>
-                          <Grid item xs={12} sm={3}>
-                            <Label variant="body2">{med.name} {med.dosage}</Label>
-                          </Grid>
-                          <Grid item xs={12} sm={6}>
-                            <Label variant="body2">{med.dosage}, {med.route}, {med.frequency}, started on {med.startDate}</Label>
-                          </Grid>
-                          <Grid item xs={12} sm={3}>
-                          <Box sx={{ textAlign: 'right' }}>
-                            <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Modify')}>Modify</Button>
-                            <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Hold')}>Hold</Button>
-                            <Button variant="outlined" size="small" onClick={() => addOrder(med, 'Discontinue')}>Discontinue</Button>
-                          </Box>
-                          </Grid>
-                        </Grid>
+              {orderList.map((med, idx) => (
+                <>
+                  <ListItem>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12} sm={3}>
+                        <Label variant="body2">{med.name} {med.dosage}</Label>
+                      </Grid>
+                      <Grid item xs={12} sm={5}>
+                        <Label variant="body2">{med.dosage}, {med.route}, {med.frequency}, started on {med.startDate}</Label>
+                      </Grid>
+                      <Grid item xs={12} sm={4}>
+                        <ButtonGroup>
+                          <Button outlined size="small" onClick={() => addOrder(med, 'Modify')}>Modify</Button>
+                          <Button outlined size="small" onClick={() => addOrder(med, 'Hold')}>Hold</Button>
+                          <Button outlined size="small" onClick={() => addOrder(med, 'Discontinue')}>Discontinue</Button>
+                        </ButtonGroup>
+                      </Grid>
+                    </Grid>
                   </ListItem>
-                </Box>
+                  {idx < orderList.length - 1 && <Divider />}
+                </>
               ))}
             </List>
           </TitledCard>
