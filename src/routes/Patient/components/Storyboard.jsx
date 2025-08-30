@@ -189,10 +189,10 @@ export const Storyboard = ({ ...props }) => {
         fontWeight: 'bold', 
       }}
     >
-      Allergies: {allergies.map(a => a.agent).join(", ")}
+      Allergies: {allergies.map(a => a.allergen).join(", ")}
     </Alert>
   ) : (
-    <span>Allergies: {allergies.map(a => a.agent).join(", ")}</span>
+    <span>Allergies: {allergies.map(a => a.allergen).join(", ")}</span>
   )
 ) : (
   <span>Allergies: None on file</span>

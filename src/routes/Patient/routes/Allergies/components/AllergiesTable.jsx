@@ -32,7 +32,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
           <TableHead>
             <TableRow>
               {/* place holder to check id save */}
-              {/* <TableCell>Id</TableCell> */}
+              <TableCell>Id</TableCell>
               <TableCell>Allergen</TableCell>
               <TableCell>Allergen Type</TableCell>
               <TableCell>Reaction</TableCell>
@@ -61,7 +61,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                 }}
               >
                 {/* placeholder to check id save */}
-                {/* <TableCell>{allergy.id}</TableCell> */}
+                <TableCell>{allergy.id}</TableCell>
                 <TableCell
                   component="th"
                   scope="row"
@@ -72,7 +72,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                   }}
                 >
                    <Box>
-      {allergy.agent}
+      {allergy.allergen}
       {allergy.notes && (
       <Typography variant="body2" sx={{
           color: 'text.secondary',

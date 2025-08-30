@@ -46,7 +46,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
           ) : (
             allergiesHx.map((allergy) => (
               <div key={allergy.id}>
-                <span style={{ color: '#9F3494'}}>{allergy.agent}</span> {allergy.reaction}
+                <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
               </div>
             ))
           )}

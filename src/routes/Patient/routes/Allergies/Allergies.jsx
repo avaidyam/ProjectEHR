@@ -11,7 +11,7 @@ import { Snackbar, Alert } from '@mui/material';
 const initialAllergies = [
   {
     id: 1,
-    agent: 'Penicillin',
+    allergen: 'Penicillin',
     type: 'Drug',
     reaction: 'Rash',
     severity: 'Moderate',
@@ -21,7 +21,7 @@ const initialAllergies = [
   },
   {
     id: 2,
-    agent: 'Peanuts',
+    allergen: 'Peanuts',
     type: 'Food',
     reaction: 'Anaphylaxis',
     severity: 'High',
@@ -44,28 +44,34 @@ export const Allergies = () => {
     setIsEditingMode(true);
   };
 
-  const handleSaveAllergy = (newAllergyData) => {
-    
-    if (editingAllergy && editingAllergy.id) {
-      setAllergies((prev) =>
-        prev.map((allergy) =>
-          allergy.id === editingAllergy.id
-            ? { ...allergy, ...newAllergyData }
-            : allergy
-        )
-      );
-    } else {
-      const newId = allergies.length > 0 ? Math.max(...allergies.map(a => a.id)) + 1 : 1;
-      setAllergies((prev) => [
-        ...prev,
-        { id: newId, ...newAllergyData }
-      ]);
-    }
-    setIsEditingMode(false);
-    setEditingAllergy(null);
-    setLastReviewed(null); // reset last reviewed date when saving new allergy
+const handleSaveAllergy = (newAllergyData) => {
+  if (editingAllergy && editingAllergy.id) {
+    setAllergies((prev) =>
+      prev.map((allergy) =>
+        allergy.id === editingAllergy.id
+          ? { ...allergy, ...newAllergyData }
+          : allergy
+      )
+    );
+  } else {
+    // filter out any NaN or undefined ids
+    const validIds = allergies
+      .map(a => Number(a.id))
+      .filter(id => Number.isFinite(id));
 
-  };
+    const newId = validIds.length > 0 ? Math.max(...validIds) + 1 : 1;
+
+    setAllergies((prev) => [
+      ...prev,
+      { id: newId, ...newAllergyData }
+    ]);
+  }
+
+  setIsEditingMode(false);
+  setEditingAllergy(null);
+  setLastReviewed(null); // reset last reviewed date when saving new allergy
+};
+
 
   const handleDeleteAllergy = (id) => {
     setAllergies((prev) => prev.filter((allergy) => allergy.id !== id));
@@ -85,11 +91,11 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // On Add button click, open editor with selectedAgent (or empty if none selected)
   const handleAddClick = () => {
-    const agentName = selectedAgent?.agent?.trim() || '';
+    const agentName = selectedAgent?.allergen?.trim() || '';
       // Check if the agent already exists
   if (agentName) {
     const alreadyExists = allergies.some(
-      (a) => a?.agent?.trim().toLowerCase() === agentName.toLowerCase()
+      (a) => a?.allergen?.trim().toLowerCase() === agentName.toLowerCase()
     );
     if (alreadyExists) {
       setSnackbarMessage('Allergen already on file');
@@ -101,7 +107,7 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
       setEditingAllergy({ ...selectedAgent });
     } else {
       setEditingAllergy({
-        agent: '',
+        allergen: '',
         allergenType: '',
         reaction: '',
         severity: '',

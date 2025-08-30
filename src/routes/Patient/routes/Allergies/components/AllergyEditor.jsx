@@ -24,7 +24,7 @@ const reactions = [
 
 const AllergyEditor = ({ initialData, onSave, onCancel }) => {
   const [data, setData] = useState({
-    agent: '',
+    allergen: '',
     type: '',
     reaction: '',
     severity: '',
@@ -52,7 +52,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
       </Typography>
 
       <Typography variant="subtitle1" gutterBottom>
-        Agent: {data.agent}
+        Agent: {data.allergen}
       </Typography>
       <Typography variant="subtitle2" color="text.secondary" gutterBottom>
         Allergen Type: {data.type}
