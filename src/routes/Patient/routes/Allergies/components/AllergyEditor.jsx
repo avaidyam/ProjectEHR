@@ -29,8 +29,8 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
     reaction: '',
     severity: '',
     reactionType: '',
-    onsetDate: '',
-    notes: ''
+    recorded: '',
+    comment: ''
   });
 
   useEffect(() => {
@@ -109,8 +109,8 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
           <TextField
             label="Noted Date"
             type="date"
-            value={data.onsetDate}
-            onChange={handleChange('onsetDate')}
+            value={data.recorded}
+            onChange={handleChange('recorded')}
             fullWidth
             size="small"
             margin="normal"
@@ -122,8 +122,8 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
         <Grid item xs={12} md={6}>
           <TextField
             label="Comments"
-            value={data.notes}
-            onChange={handleChange('notes')}
+            value={data.comment}
+            onChange={handleChange('comment')}
             fullWidth
             multiline
             rows={5}

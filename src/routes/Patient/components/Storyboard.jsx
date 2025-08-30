@@ -179,7 +179,7 @@ export const Storyboard = ({ ...props }) => {
 
 {/* Allergies with high-severity highlight */}
 {allergies && allergies.length > 0 ? (
-  allergies.some(a => a.severity === 'High') ? (
+  allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
     <Alert 
     icon ={false}
       sx={{ 
