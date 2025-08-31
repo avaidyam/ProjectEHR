@@ -141,7 +141,8 @@ function sortJson(results, par, firstLetter){
    })
 }
 
-export async function getRxTerms(searchTerm) {
+// DO NOT USE THIS FUNCTION ANYMORE!
+export async function __getRxTerms(searchTerm) {
   /** disabled nonfunctional try-catch to make eslint happy */
   // try 
   const rxtermsApiUrl = `https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=${searchTerm}&ef=STRENGTHS_AND_FORMS,RXCUIS&maxList=500`;
@@ -153,7 +154,7 @@ export async function getRxTerms(searchTerm) {
   // appending CBC w/ DIFF lab to list of possible orders
   if ("cbc w/ diff".includes(searchTerm.toLowerCase())){
     results.push(cbcjson); 
-  }     
+  }
 
   return sortJson(results, 'name', searchTerm.charAt(0).toLowerCase());
   // } catch (error) {

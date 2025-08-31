@@ -12,8 +12,7 @@ import {
   Select,
   Paper
 } from '@mui/material';
-import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from 'components/ui/Core.jsx'
 
 const reactionOptions = [
   'Rash',
@@ -153,16 +152,14 @@ const AllergyEditor2 = ({ initialData, onSave, onCancel }) => {
           </FormControl>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
-              label="Noted"
-              value={formData.onsetDate}
-              onChange={handleDateChange}
-              renderInput={(params) => (
-                <TextField {...params} fullWidth margin="normal" size="small" />
-              )}
-            />
-          </LocalizationProvider>
+          <DatePicker
+            label="Noted"
+            value={formData.onsetDate}
+            onChange={handleDateChange}
+            renderInput={(params) => (
+              <TextField {...params} fullWidth margin="normal" size="small" />
+            )}
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <FormControl fullWidth margin="normal" size="small">
