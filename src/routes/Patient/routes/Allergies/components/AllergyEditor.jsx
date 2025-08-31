@@ -177,7 +177,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
             onChange={handleChange('comment')}
             fullWidth
             multiline
-            rows={8}
+            rows={7}
             size="small"
             margin="normal"
           />
