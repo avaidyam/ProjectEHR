@@ -1,140 +1,3 @@
-// import React, { useState } from 'react';
-// import { Box, Button, Icon, TextField, ListItem, ListItemText, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-// import { usePatient } from 'components/contexts/PatientContext.jsx';
-
-// const ClinicalImpressions = () => {
-//   const [impression, setImpression] = useState('');
-//   const { useChart, useEncounter } = usePatient()
-//   const [encounter, setEncounter] = useEncounter()()
-
-//   // If encounter exists, initialize clinical impressions
-//   const initialClinicalImpressions = encounter?.clinicalImpressions || [];
-//   const [clinicalImpressions, setClinicalImpressions] = useState(initialClinicalImpressions);
-
-//   const handleAddClick = () => {
-//     if (impression.trim()) {
-//       // Update the encounter's clinical impressions
-//       const updatedImpressions = [...clinicalImpressions, impression];
-//       setClinicalImpressions(updatedImpressions); // Update local state
-//       encounter.clinicalImpressions = updatedImpressions; // Update the encounter directly
-//       setImpression(''); // Clear the input after adding
-//     }
-//   };
-
-//   const moveUp = (index) => {
-//     if (index > 0) {
-//       const updatedImpressions = [...clinicalImpressions];
-//       [updatedImpressions[index - 1], updatedImpressions[index]] = [updatedImpressions[index], updatedImpressions[index - 1]];
-//       setClinicalImpressions(updatedImpressions);
-//       encounter.clinicalImpressions = updatedImpressions; // Update the encounter directly
-//     }
-//   };
-
-//   const moveDown = (index) => {
-//     if (index < clinicalImpressions.length - 1) {
-//       const updatedImpressions = [...clinicalImpressions];
-//       [updatedImpressions[index], updatedImpressions[index + 1]] = [updatedImpressions[index + 1], updatedImpressions[index]];
-//       setClinicalImpressions(updatedImpressions);
-//       encounter.clinicalImpressions = updatedImpressions; // Update the encounter directly
-//     }
-//   };
-
-//   const handleDelete = (index) => {
-//     const updatedImpressions = clinicalImpressions.filter((_, i) => i !== index);
-//     setClinicalImpressions(updatedImpressions);
-//     encounter.clinicalImpressions = updatedImpressions; // Update the encounter directly
-//   };
-
-//   return (
-//     <Box sx={{ padding: 2, textAlign: 'left' }}>
-//       <Box sx={{
-//         display: 'flex',
-//         alignItems: 'center',
-//         marginTop: 2,
-//       }}>
-//         <TextField
-//           variant="outlined"
-//           placeholder="Add a new impression"
-//           value={impression}
-//           onChange={(e) => setImpression(e.target.value)}
-//           sx={{
-//             width: '300px',
-//             marginRight: 0,
-//             borderRadius: 0,
-//             height: '56px',
-//           }}
-//         />
-//         <Button 
-//           variant="outlined" 
-//           onClick={handleAddClick}
-//           sx={{ borderRadius: 0, height: '56px' }}
-//         >
-//           <Icon color="success">add_task</Icon>Add
-//         </Button>
-//       </Box>
-//       <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell>Clinical Impressions</TableCell>
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {clinicalImpressions.map((imp, index) => (
-//               <TableRow key={index}>
-//                 <TableCell>
-//                   <Box sx={{
-//                     display: 'flex',
-//                     alignItems: 'center',
-//                   }}>
-//                     <Box sx={{
-//                         display: 'flex',
-//                         flexDirection: 'column',
-//                         alignItems: 'center',
-//                         marginRight: 1,
-//                     }}>
-//                       <Button onClick={() => moveUp(index)} disabled={index === 0} sx={{
-//                         minWidth: '30px',
-//                         padding: '0',
-//                         background: 'none',
-//                         border: 'none',
-//                       }}>
-//                         <Icon>arrow_upward</Icon>
-//                       </Button>
-//                       <Button onClick={() => moveDown(index)} disabled={index === clinicalImpressions.length - 1} sx={{
-//                         minWidth: '30px',
-//                         padding: '0',
-//                         background: 'none',
-//                         border: 'none',
-//                       }}>
-//                         <Icon>arrow_downward</Icon>
-//                       </Button>
-//                     </Box>
-//                     <ListItem>
-//                       <ListItemText primary={`${index + 1}. ${imp}`} />
-//                     </ListItem>
-//                     <Button onClick={() => handleDelete(index)} sx={{
-//                         marginLeft: 'auto',
-//                         minWidth: '30px',
-//                         padding: '0',
-//                         background: 'none',
-//                         border: 'none'
-//                     }}>
-//                       <Icon>close</Icon>
-//                     </Button>
-//                   </Box>
-//                 </TableCell>
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-//     </Box>
-//   );
-// };
-
-// export default ClinicalImpressions;
-
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Icon, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, ListItem, ListItemText } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
@@ -152,10 +15,12 @@ async function getSnomed(term) {
     return [];
   }
 }
-
 const ClinicalImpressions = () => {
-  const { useEncounter } = usePatient();
-  const [encounter] = useEncounter()();
+
+  const { useChart, useEncounter } = usePatient()
+  const [encounter, setEncounter] = useEncounter()()
+
+  // If encounter exists, initialize clinical impressions
   const initialClinicalImpressions = encounter?.clinicalImpressions || [];
   const [clinicalImpressions, setClinicalImpressions] = useState(initialClinicalImpressions);
 
@@ -175,7 +40,13 @@ const ClinicalImpressions = () => {
     };
     fetchDiagnoses();
   }, [searchTerm]);
+  
+  const updateClinicalImpressions = (updated) => {
+    setClinicalImpressions(updated);
+    setEncounter({ ...encounter, clinicalImpressions: updated });
+  };
 
+  // Modal handlers
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -184,49 +55,45 @@ const ClinicalImpressions = () => {
   };
 
   const handleAccept = () => {
-    if (selectedImpression?.name) {
-      const updated = [...clinicalImpressions, selectedImpression.name];
-      setClinicalImpressions(updated);
-      encounter.clinicalImpressions = updated; // update encounter directly
+    if (selectedImpression) {
+      const updated = [...clinicalImpressions, selectedImpression];
+      updateClinicalImpressions(updated);
       handleCloseModal();
     }
   };
 
   const handleAddClick = () => {
     if (searchTerm.trim()) {
-      const updated = [...clinicalImpressions, searchTerm];
-      setClinicalImpressions(updated);
-      encounter.clinicalImpressions = updated;
+      const updated = [...clinicalImpressions, searchTerm.trim()];
+      updateClinicalImpressions(updated);
       setSearchTerm('');
     }
   };
 
   const handleDelete = (index) => {
     const updated = clinicalImpressions.filter((_, i) => i !== index);
-    setClinicalImpressions(updated);
-    encounter.clinicalImpressions = updated;
+    updateClinicalImpressions(updated);
   };
 
   const moveUp = (index) => {
     if (index === 0) return;
     const updated = [...clinicalImpressions];
     [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-    setClinicalImpressions(updated);
-    encounter.clinicalImpressions = updated;
+    updateClinicalImpressions(updated);
   };
 
   const moveDown = (index) => {
     if (index === clinicalImpressions.length - 1) return;
     const updated = [...clinicalImpressions];
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-    setClinicalImpressions(updated);
-    encounter.clinicalImpressions = updated;
+    updateClinicalImpressions(updated);
   };
 
   return (
     <Box sx={{ padding: 2, textAlign: 'left' }}>
       {/* Inline Add Box + Button */}
       <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
+
         <TextField
           variant="outlined"
           placeholder="Add a new impression"
@@ -254,17 +121,17 @@ const ClinicalImpressions = () => {
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', marginRight: 1 }}>
-                      <Button onClick={() => moveUp(index)} disabled={index === 0} sx={{ minWidth: 30, padding: 0, background: 'none', border: 'none' }}>
+                      <Button onClick={() => moveUp(index)} disabled={index === 0}>
                         <Icon>arrow_upward</Icon>
                       </Button>
-                      <Button onClick={() => moveDown(index)} disabled={index === clinicalImpressions.length - 1} sx={{ minWidth: 30, padding: 0, background: 'none', border: 'none' }}>
+                      <Button onClick={() => moveDown(index)} disabled={index === clinicalImpressions.length - 1}>
                         <Icon>arrow_downward</Icon>
                       </Button>
                     </Box>
                     <ListItem sx={{ padding: 0 }}>
-                      <ListItemText primary={`${index + 1}. ${imp}`} />
+                      <ListItemText primary={`${index + 1}. ${imp.name ?? ''}`} />
                     </ListItem>
-                    <Button onClick={() => handleDelete(index)} sx={{ marginLeft: 'auto', minWidth: 30, padding: 0 }}>
+                    <Button onClick={() => handleDelete(index)}>
                       <Icon>close</Icon>
                     </Button>
                   </Box>
@@ -272,6 +139,7 @@ const ClinicalImpressions = () => {
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </TableContainer>
 
