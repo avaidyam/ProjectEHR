@@ -31,8 +31,6 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
         <Table sx={{ minWidth: 650 }} aria-label="allergies table">
           <TableHead>
             <TableRow>
-              {/* place holder to check id save */}
-              <TableCell>Id</TableCell>
               <TableCell>Allergen</TableCell>
               <TableCell>Allergen Type</TableCell>
               <TableCell>Reaction</TableCell>
@@ -60,8 +58,6 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
                   },
                 }}
               >
-                {/* placeholder to check id save */}
-                <TableCell>{allergy.id}</TableCell>
                 <TableCell
                   component="th"
                   scope="row"

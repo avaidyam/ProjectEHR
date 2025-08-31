@@ -135,21 +135,6 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
             <Grid item xs={6}>
               <TextField
                 select
-                label="Reaction Type"
-                value={data.reactionType}
-                onChange={handleChange('reactionType')}
-                fullWidth
-                size="small"
-                margin="normal"
-              >
-                {reactionTypes.map((type) => (
-                  <MenuItem key={type} value={type}>{type}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                select
                 label="Severity"
                 value={data.severity}
                 onChange={handleChange('severity')}
@@ -161,6 +146,22 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
                   <MenuItem key={s} value={s}>{s}</MenuItem>
                 ))}
               </TextField>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                select
+                label="Reaction Type"
+                value={data.reactionType}
+                onChange={handleChange('reactionType')}
+                fullWidth
+                size="small"
+                margin="normal"
+              >
+                {reactionTypes.map((type) => (
+                  <MenuItem key={type} value={type}>{type}</MenuItem>
+                ))}
+              </TextField>
+        
             </Grid>
             <Grid item xs={6}>
               <TextField
