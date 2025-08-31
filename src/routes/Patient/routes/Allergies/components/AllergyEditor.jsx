@@ -27,15 +27,21 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
     allergen: '',
     type: '',
     reaction: '',
-    severity: '',
+    severity: 'Not Specified',
     reactionType: '',
     recorded: '',
     comment: ''
   });
 
   useEffect(() => {
-    if (initialData) setData(initialData);
+    if (initialData) {
+      setData({
+        ...initialData,
+        severity: initialData.severity || 'Not Specified', // default if empty
+      });
+    }
   }, [initialData]);
+
 
   const handleChange = (field) => (e) => {
     setData({ ...data, [field]: e.target.value });

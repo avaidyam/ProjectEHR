@@ -1,5 +1,5 @@
 // export default Allergies;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Icon, colors } from '@mui/material';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
@@ -7,42 +7,6 @@ import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
 import { Snackbar, Alert } from '@mui/material';
-import { id } from 'date-fns/locale';
-
-// const initialAllergies = [
-//   {
-//     id: 1,
-//     allergen: 'Penicillin',
-//     type: 'Drug',
-//     reaction: 'Rash',
-//     severity: 'Moderate',
-//     reactionType: 'Immediate',
-//     onsetDate: '',
-//     notes: 'Avoid all penicillin-based antibiotics.',
-//   },
-//   {
-//     id: 2,
-//     allergen: 'Peanuts',
-//     type: 'Food',
-//     reaction: 'Anaphylaxis',
-//     severity: 'High',
-//     reactionType: 'Immediate',
-//     onsetDate: '',
-//     notes: 'Carry epinephrine injector.',
-//   },
-// ];
-
-// const encounter = useEncounter();
-// const backendAllergies = encounter.allergies();
-
-// // Normalize immediately and update backend-linked state
-// const [allergies, setAllergies] = useState(
-//   backendAllergies.map(normalizeAllergy)
-// );
-
-// // Optional: persist normalization back to backend immediately
-// setAllergies(backendAllergies.map(normalizeAllergy));
-
 
 export const Allergies = () => {
   const { useChart, useEncounter } = usePatient();
@@ -52,33 +16,41 @@ export const Allergies = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
   const [lastReviewed, setLastReviewed] = useState(null);
 
-// --- Add this utility function ---
-const normalizeAllergy = (data) => {
-  const capitalize = (str) =>
-    typeof str === "string" && str.length > 0
-      ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-      : "";
+  // Normalize backend allergy data and assign numeric IDs if needed
+ const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+const normalizeAllergies = (rawAllergies) => {
+  let nextId = 1;
+  return rawAllergies.map((raw) => {
+    let numericId = Number(raw.id);
+    if (!Number.isFinite(numericId)) {
+      numericId = nextId++;
+    } else {
+      nextId = Math.max(nextId, numericId + 1); // ensure nextId is always higher
+    }
 
-  return {
-    id: data.id || null,
-    allergen: capitalize(data.allergen || ""),
-    type: capitalize(data.type || ""),
-    reaction: capitalize(data.reaction || ""),
-    severity: capitalize(data.severity || ""),
-    reactionType: capitalize(data.reactionType || ""),
-    onsetDate: data.onsetDate || "",
-    notes: data.notes || data.comment || "",
+    return {
+      id: numericId,
+      allergen: capitalize(raw.allergen),
+      type: capitalize(raw.type),
+      reaction: capitalize(raw.reaction),
+      reactionType: capitalize(raw.reactionType),
+      severity: capitalize(raw.severity || 'Not Specified'),
+      recorded: raw.recorded || '',
+      comment: raw.comment || '',
+
+    };
+  });
+};
+
+// Use it when initializing state
+ useEffect(() => {
+    setAllergies(normalizeAllergies(allergies));
+  }, []);
+
+  const handleEdit = (allergy) => {
+    setEditingAllergy(allergy);
+    setIsEditingMode(true);
   };
-};
-React.useEffect(() => {
-    setAllergies((prev) => prev.map(normalizeAllergy));
-  }, []); // runs only once
-
-const handleEdit = (allergy) => {
-  setEditingAllergy(allergy);
-  setIsEditingMode(true);
-};
-
 
 const handleSaveAllergy = (newAllergyData) => {
   if (editingAllergy && editingAllergy.id) {
@@ -126,10 +98,9 @@ const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // On Add button click, open editor with selectedAgent (or empty if none selected)
-const handleAddClick = () => {
-  const agentName = selectedAgent?.allergen?.trim() || '';
-
-  // Check for duplicates
+  const handleAddClick = () => {
+    const agentName = selectedAgent?.allergen?.trim() || '';
+      // Check if the agent already exists
   if (agentName) {
     const alreadyExists = allergies.some(
       (a) => a?.allergen?.trim().toLowerCase() === agentName.toLowerCase()
@@ -137,15 +108,13 @@ const handleAddClick = () => {
     if (alreadyExists) {
       setSnackbarMessage('Allergen already on file');
       setSnackbarOpen(true);
-      return;
+      return; // Stop opening the editor
     }
   }
-
-  if (selectedAgent) {
-    setEditingAllergy(normalizeAllergy(selectedAgent));
-  } else {
-    setEditingAllergy(
-      normalizeAllergy({
+    if (selectedAgent) {
+      setEditingAllergy({ ...selectedAgent });
+    } else {
+      setEditingAllergy({
         allergen: '',
         type: '',
         reaction: '',
@@ -153,14 +122,11 @@ const handleAddClick = () => {
         reactionType: '',
         recorded: '',
         comment: '',
-      })
-    );
-  }
-
-  setIsEditingMode(true);
-  setLastReviewed(null);
-};
-
+      });
+    }
+    setIsEditingMode(true);
+    setLastReviewed(null); // reset last reviewed date when adding new allergy
+  };
 
   const handleCancelEdit = () => {
     setIsEditingMode(false);
