@@ -154,7 +154,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       </>}
     >
       <Grid container spacing={1} sx={{ m: 0, p: 1 }}>
-        {!!tempMed?.route && displayParams.filter(x => 
+        {displayParams.filter(x => 
           Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
         ).map(x => (
           <>

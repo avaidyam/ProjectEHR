@@ -56,7 +56,7 @@ export default function OrdersMgmt() {
                     </Label>
                   </Grid>
                   <Grid item xs={12} sm={5} align="left">
-                    <Label variant="body2">{order['Dose']}, {order['Route']}, {order['Frequency']}, started on {formatter.format(new Date(order['Start Date']))}</Label>
+                    <Label variant="body2">{order['Dose']}, {order['Route']}, {order['Frequency']}, started on {!!order['Start Date'] ? formatter.format(new Date(order['Start Date'])): ""}</Label>
                   </Grid>
                   <Grid item xs={12} sm={4} align="right">
                     <ButtonGroup size="small" variant="outlined" onChange={(_, mode) => addOrder(order, mode)}>
