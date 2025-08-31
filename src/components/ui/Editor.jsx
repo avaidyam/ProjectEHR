@@ -383,9 +383,9 @@ export function EditorReadOnly({ value }) {
   ) 
 }
 
-export function Editor({ disableStickyMenuBar, initialContent, onSave }) {
+export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter=false, initialContent, onSave }) {
   const extensions = useExtensions({
-    placeholder: "Add your own content here...",
+    placeholder: placeholder,
   });
   const rteRef = useRef(null);
   const [isEditable, setIsEditable] = useState(true);
@@ -495,7 +495,7 @@ export function Editor({ disableStickyMenuBar, initialContent, onSave }) {
         // Below is an example of adding a toggle within the outlined field
         // for showing/hiding the editor menu bar, and a "submit" button for
         // saving/viewing the HTML content
-        footer: (
+        footer: !!disableStickyFooter ? (<></>) : (
           <Stack
             direction="row"
             spacing={2}

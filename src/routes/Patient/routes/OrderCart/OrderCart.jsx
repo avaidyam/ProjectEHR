@@ -117,10 +117,10 @@ export const OrderCart = () => {
               <Box key={order.name} sx={{ marginLeft:3, marginBottom:2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
                 <Typography variant="body1">{order.name}</Typography>
                 <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
-                  {order.dose}
+                  {order['Dose']}
                 </Typography>
                 <Typography fontSize="8pt" color="grey">
-                  {order.route}, {order.freq}, {order.refill} Refills
+                  {order['Route']}, {order['Frequency']}, {order['Refills']} refills
                 </Typography>
                 <Button
                   sx={{ 

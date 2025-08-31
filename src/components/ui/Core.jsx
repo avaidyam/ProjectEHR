@@ -53,7 +53,10 @@ import {
   // eslint-disable-next-line import/no-named-default
   default as MUIDraggable 
 } from 'react-draggable'
-import { EditorReadOnly } from './Editor.jsx'
+import { 
+  Editor as MUIEditor,
+  EditorReadOnly as MUIEditorReadOnly
+} from './Editor.jsx'
 LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.
@@ -89,7 +92,11 @@ export const Label = ({ variant = 'body1', inline = false, bold = false, italic 
 
 // Render HTML rich text content in a read-only view.
 export const RichText = ({ children, ...props }) => (
-    <EditorReadOnly value={children} {...props} />
+  <MUIEditorReadOnly value={children} {...props} />
+)
+
+export const RichTextEditor = ({ ...props }) => (
+  <MUIEditor {...props} />
 )
 
 export const TextField = ({ label, value, onChange, ...props }) => (
@@ -158,7 +165,7 @@ export const IconButton = ({ size = "medium", color = "inherit", children, iconP
 )
 
 export const Chip = ({ children, ...props }) => (
-  <MUIChip {...props}>{children}</MUIChip>
+  <MUIChip label={children} {...props} />
 )
 
 // FIXME: Set default verticalAlign=text-top for Icon?

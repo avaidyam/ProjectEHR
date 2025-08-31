@@ -2635,62 +2635,56 @@
           {
             "id": "1",
             "name": "metFORMIN",
-            "brandName": "",
-            "dosage": "500 mg",
-            "frequency": "TWICE A DAY",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "500 mg",
+            "Route": "oral",
+            "Frequency": "TWICE A DAY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           },
           {
             "id": "2",
             "name": "lisinopril",
-            "brandName": "",
-            "dosage": "5 mg",
-            "frequency": "ONCE DAILY",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "5 mg",
+            "Route": "oral",
+            "Frequency": "ONCE DAILY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           },
           {
             "id": "3",
             "name": "lovastatin",
-            "brandName": "",
-            "dosage": "20 mg",
-            "frequency": "ONCE DAILY",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "20 mg",
+            "Route": "oral",
+            "Frequency": "ONCE DAILY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           },
           {
             "id": "4",
             "name": "omeprazole",
-            "brandName": "",
-            "dosage": "20 mg",
-            "frequency": "ONCE DAILY",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "20 mg",
+            "Route": "oral",
+            "Frequency": "ONCE DAILY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           },
           {
             "id": "5",
             "name": "acetaminophen",
-            "brandName": "",
-            "dosage": "500 mg",
-            "frequency": "AS NEEDED",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "500 mg",
+            "Route": "oral",
+            "Frequency": "AS NEEDED",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           },
           {
             "id": "6",
             "name": "ibuprofen",
-            "brandName": "",
-            "dosage": "200 mg",
-            "frequency": "AS NEEDED",
-            "route": "oral",
-            "startDate": "Sat 9/1/24",
-            "endDate": ""
+            "Dose": "200 mg",
+            "Route": "oral",
+            "Frequency": "AS NEEDED",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
           }
         ]
       }

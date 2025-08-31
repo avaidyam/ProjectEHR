@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, ButtonGroup, Autocomplete, TextField, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core.jsx';
+import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core.jsx';
 
 const rxParams = [
   {
@@ -117,9 +117,9 @@ const rxParams = [
   },
 ]
 
-const consultParams = [
+const consultParams = []
 
-]
+const alwaysParams = [{ name: "Comments", required: false, type: "html" }]
 
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }) => {
   const [params, setParams] = useState({})
@@ -133,7 +133,8 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
   }, [params["Route"]])
 
   // if this is an Rx then substitute the Route and Dose options
-  let displayParams = !!tempMed?.route ? rxParams : consultParams
+  // Push a default Comments field that exists for ALL orders.
+  let displayParams = [...(!!tempMed?.route ? rxParams : consultParams), ...alwaysParams]
   if (!!tempMed?.route) {
     displayParams[0].options = Object.keys(tempMed?.route ?? {}) 
     displayParams[1].options = Object.values(tempMed?.route?.[params["Route"]] ?? {})
@@ -148,49 +149,56 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       onClose={() => onSelect(null)} 
       ContentProps={{ sx: { p: 0 } }}
       footer={<>
-        <Button color="success.light" onClick={() => onSelect({ type: 'New', name: tempMed?.name ?? '', dose: params["Dose"], freq: params["Frequency"], route: params["Route"], refill: params["Refills"], startDate: undefined })}><Icon>check</Icon>Accept</Button>
+        <Button color="success.light" onClick={() => onSelect({ name: tempMed?.name ?? '', ...params })}><Icon>check</Icon>Accept</Button>
         <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
       </>}
     >
-      <Grid container spacing={3} sx={{ m: 0, p: 1 }}>
+      <Grid container spacing={1} sx={{ m: 0, p: 1 }}>
         {!!tempMed?.route && displayParams.filter(x => 
           Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
         ).map(x => (
           <>
-            <Grid xs={3}><Label>{x.name}</Label></Grid>
-            <Grid xs={9}>
+            <Grid item xs={3}><Label>{x.name}</Label></Grid>
+            <Grid item xs={9}>
               {x.type === "string" && x.options?.length > 0 && 
                 <Autocomplete 
                   fullWidth={false}
+                  size="small"
                   options={x.options ?? []}
                   // if undefined on first render, the component will switch to uncontrolled mode, so set `null` instead
                   value={params[x.name] ?? null}
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
-                  sx={{ width: 300 }}
+                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
                 />
               }
               {x.type === "string" && (x.options?.length ?? 0) === 0 && 
                 <TextField 
                   fullWidth={false}
+                  size="small"
                   value={params[x.name]}
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
-                  sx={{ width: 300 }}
+                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
                 />
               }
               {x.type === "date" && 
                 <DatePicker
                   value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                  slotProps={{ textField: { size: 'small' } }}
+                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
                 />
               }
               {x.options?.length > 0 && 
                 <ButtonGroup
                   exclusive
                   value={params[x.name]}
-                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: prev[x.name] !== value ? value : undefined }))}
                 >
                   {x.options?.slice(0, 3).map((m) => (<Button key={m} value={m}>{m}</Button>))}
                 </ButtonGroup>
+              }
+              {x.type === "html" && 
+                <Box sx={{ width: "98%" }}><RichTextEditor disableStickyFooter /></Box>
               }
             </Grid>
           </>

@@ -12,11 +12,11 @@ export const Titlebar = ({ onLogout }) => {
   const [tabHistory, setTabHistory] = useState([])
   useEffect(() => { 
     if (tabHistory.find(tab => tab === location.pathname) === undefined)
-      setTabHistory((prev) => [...prev, location.pathname])
+      setTabHistory((prev) => [...new Set([...prev, location.pathname])])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname])
   const removePathnameFromHistory = (pathname) => {
-    setTabHistory((prev) => prev.filter(t => t !== pathname))
+    setTabHistory((prev) => [...new Set(prev.filter(t => t !== pathname))])
     if (pathname === location.pathname) 
       navigate('/')
   }
@@ -46,7 +46,7 @@ export const Titlebar = ({ onLogout }) => {
             <Tab value="/schedule" label={<Icon>calendar_month</Icon>} onClick={() => navigate('/schedule')} sx={{ minWidth: 45 }} />
             <Tab value="/list" label={<Icon>people</Icon>} onClick={() => navigate('/list')} sx={{ minWidth: 45 }} />
             {tabHistory.filter(x => x.startsWith('/patient')).map((pathname, index) => (
-              <Tab onClick={() => navigate(pathname)} value={pathname} label={
+              <Tab onClick={() => navigate(pathname)} key={pathname} value={pathname} label={
                 <span>
                   {pathnameToTab(pathname)}
                   <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={() => removePathnameFromHistory(pathname)}>close</IconButton>
