@@ -11,6 +11,7 @@ import {
   Grid
 } from '@mui/material';
 
+const allergenTypes = ['Drug', 'Drug Ingredient', 'Environmental', 'Food', 'Other'];
 const severityLevels = ['Low', 'Moderate', 'High', 'Not Specified'];
 const reactionTypes = ['Immediate', 'Delayed', 'Unknown', 'Systemic', 'Topical', 'Intolerance', 'Not Verified'];
 const reactions = [
@@ -87,14 +88,22 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
                 size="small"
                 margin="normal"
               />
+
               <TextField
+                select
                 label="Allergen Type"
                 value={data.type}
                 onChange={handleChange('type')}
                 fullWidth
                 size="small"
                 margin="normal"
-              />
+              >
+                {allergenTypes.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {type}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Box>
           ) : (
             <>
@@ -106,7 +115,6 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
               </Typography>
             </>
           )}
-
           {/* 2x2 Grid: Reaction, Reaction Type, Severity, Noted Date */}
           <Grid container spacing={2}>
             <Grid item xs={6}>
