@@ -1,6 +1,5 @@
 import React from 'react';
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
-import { Button, Label, Window } from 'components/ui/Core.jsx';
+import { Stack, Button, Label, Window } from 'components/ui/Core.jsx';
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
   
   export const AddToListModal = ({
@@ -34,33 +33,31 @@ import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
           <Label variant='subtitle1' gutterBottom>
             Select a list to add {patient.name}
           </Label>
-          <List>
+          <Stack direction="column" spacing={1} sx={{ p: 1 }}>
             {userLists.map((list) => (
-              <ListItem key={list.id} disablePadding>
-                <ListItemButton
+              <Stack direction="row" key={list.id}>
+                <Button
+                  fullWidth
                   onClick={() => handleAddToList(list)}
                   disabled={list.patients.some((p) => p.id === patient.id)}
+                  sx={{ textTransform: 'none', justifyContent: "space-between" }}
                 >
-                  <ListItemText
-                    primary={list.name}
-                    secondary={
-                      list.patients.some((p) => p.id === patient.id)
+                  <Label>{list.name}</Label>
+                  <Label variant="subtitle">{
+                    list.patients.some((p) => p.id === patient.id)
                         ? 'Patient already in list'
                         : undefined
-                    }
-                  />
-                </ListItemButton>
-              </ListItem>
+                  }</Label>
+                </Button>
+              </Stack>
             ))}
             {userLists.length === 0 && (
-              <ListItem>
-                <ListItemText
-                  primary='No lists available'
-                  secondary='Create a new list first'
-                />
-              </ListItem>
+              <Stack direction="row">
+                <Label>No lists available</Label>
+                <Label variant="subtitle">Create a new list first</Label>
+              </Stack>
             )}
-          </List>
+          </Stack>
           <Button onClick={onClose}>Cancel</Button>
       </Window>
     );

@@ -28,6 +28,27 @@ Date.prototype.age = function() { // eslint-disable-line no-extend-native, func-
 }
 
 /**
+ * Update an element of the array if it exists, matching by `key`, or, if it 
+ * does not exist, add it to the array, then return the array itself.
+ */
+Array.prototype.upsert = function(element, key) {
+  const _upsert = (obj) => {
+    const index = this.findIndex(item => item[key] === obj[key])
+    if (index > -1) {
+      this[index] = obj
+    } else {
+      this.push(obj)
+    }
+  }
+  if (Array.isArray(element)) {
+    element.forEach(e => _upsert(e))
+  } else {
+    _upsert(element)
+  }
+  return this
+}
+
+/**
  * Decimal adjustment of a number.
  *
  * @param {String}  type  The type of adjustment.

@@ -11,7 +11,7 @@ import ProblemListTabContent from './routes/ProblemList/ProblemList.jsx'
 import SnapshotTabContent from './routes/Snapshot/Snapshot.jsx'
 import NotesTabContent from './routes/NoteWriter/NoteWriter.jsx'
 import HistoryTabContent from './routes/History/History.jsx'
-import Orders from './routes/NewOrders/NewOrders.jsx';
+import { OrderCart } from './routes/OrderCart/OrderCart.jsx';
 import OrdersMgmt from './routes/OrdersManagement/OrdersManagement.jsx';
 import Medications from './routes/Medications/Medications.jsx';
 import ResultsReview from "./routes/Results/Results.jsx";
@@ -31,7 +31,7 @@ const ALL_TABS = {
   "Problem List": (props) => <ProblemListTabContent {...props} />,
   "History": (props) => <HistoryTabContent {...props} />,
   "Medications": (props) => <Medications {...props} />,
-  "Orders": (props) => <Orders {...props} />,
+  "Orders": (props) => <OrderCart {...props} />,
   "Orders Mgmt": (props) => <OrdersMgmt {...props} />,
   "NoteWriter": (props) => <NotesTabContent {...props} />,
   "Results Review": (props) => <ResultsReview {...props} />,

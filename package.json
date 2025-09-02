@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "description": ".",
   "homepage": ".",
-  "keywords": [
-    "react",
-    "material"
-  ],
+  "keywords": ["react","material"],
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -25,9 +22,15 @@
     "@jsonforms/react": "^3.6.0",
     "@mui/lab": "^6.0.1-beta.36",
     "@mui/material": "^6.4.6",
-    "@mui/x-data-grid": "^7.27.2",
+    "@mui/x-charts-pro": "^7.26.0",
+    "@mui/x-data-grid": "^7.26.0",
+    "@mui/x-data-grid-premium": "^7.26.0",
+    "@mui/x-data-grid-pro": "^7.26.0",
     "@mui/x-date-pickers": "^7.29.4",
+    "@mui/x-date-pickers-pro": "^7.26.0",
+    "@mui/x-license-pro": "^6.10.2",
     "@mui/x-tree-view": "^7.26.0",
+    "@mui/x-tree-view-pro": "^7.26.0",
     "@tiptap/core": "^3.3.0",
     "@tiptap/extension-blockquote": "^3.3.0",
     "@tiptap/extension-bold": "^3.3.0",
@@ -119,15 +122,7 @@
     "typescript": "^5.9.2"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "production": [">0.2%","not dead","not op_mini all"],
+    "development": ["last 1 chrome version","last 1 firefox version","last 1 safari version"]
   }
 }

@@ -109,12 +109,12 @@ export const PatientSidebarVitalsOverview = ({ ...props }) => {
   );
 };
 
-export const Storyboard = ({ ...props }) => {
-  const { useChart, useEncounter } = usePatient()
-  const [chart, setChart] = useChart()()
-  const [encounter, setEncounter] = useEncounter()()
+export const Storyboard = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [chart] = useChart()();
+  const [encounter] = useEncounter()();
+
   const {
-    id: patientMRN,
     firstName,
     lastName,
     birthdate,
@@ -123,112 +123,130 @@ export const Storyboard = ({ ...props }) => {
     gender,
     PCP,
     insurance,
-  } = chart
-  const {
-    type, 
-    startDate,
-    concerns,
-    problems,
-    vitals,
-    documents,
-    allergies,
-    history
-  } = encounter
+  } = chart;
+
+  const { type, startDate, concerns, problems, allergies, history } = encounter;
 
   const careGaps = [
     { id: '1', name: 'COVID Booster #8' },
     { id: '2', name: 'COVID Booster #9' },
-  ] // FIXME this should later be computed based on the "not on file" items in snapshot 
+  ];
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
+      {/* Patient Header */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <Avatar
-          source={avatarUrl}
+          src={avatarUrl}
           sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
         >
           {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
         </Avatar>
-        <div style={{ display: 'flex', flexDirection: "column", textAlign: 'center', marginBottom: '1em' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', marginBottom: '1em' }}>
           <strong>{firstName} {lastName}</strong>
           <span>Sex: {gender}</span>
           <span>Age: {new Date(birthdate).age()} years old</span>
           <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
-          <span>MRN: {patientMRN}</span>
+          <span>MRN: {chart.id}</span>
           <strong>Preferred language: {preferredLanguage}</strong>
           {preferredLanguage !== 'English' && 
             <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
           }
         </div>
       </div>
+
       <Divider color="inherit" />
-      <div style={{ display: 'flex', flexDirection: "column" }} {...props}>
-      <div style={{ display: 'flex', marginBottom: '0.5em' }}>
-        <Avatar
-          source={PCP?.avatarUrl}
-          sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
-        >
-          {PCP?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
-        </Avatar>
-        <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
-          <span>{PCP?.name}, {PCP?.title}</span>
-          <strong>{PCP?.role}</strong>
+
+      {/* PCP + Insurance */}
+      <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
+        <div style={{ display: 'flex', marginBottom: '0.5em' }}>
+          <Avatar
+            src={PCP?.avatarUrl}
+            sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+          >
+            {PCP?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
+          </Avatar>
+          <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
+            <span>{PCP?.name}, {PCP?.title}</span>
+            <strong>{PCP?.role}</strong>
+          </div>
         </div>
+
       </div>
 <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
 
-{/* Allergies with high-severity highlight */}
-{allergies && allergies.length > 0 ? (
-  allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
-    <Alert 
-    icon ={false}
-      sx={{ 
-        mt: .5, py:0.1,
-        bgcolor: '#ffcb00', 
-        color: 'black', 
-        fontWeight: 'bold', 
-      }}
-    >
-      Allergies: {allergies.map(a => a.allergen).join(", ")}
-    </Alert>
-  ) : (
-    <span>Allergies: {allergies.map(a => a.allergen).join(", ")}</span>
-  )
-) : (
-  <span>Allergies: None on file</span>
-)}
+      {/* Allergies with high-severity highlight */}
+      {allergies && allergies.length > 0 ? (
+        allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
+          <Alert 
+          icon ={false}
+            sx={{ 
+              mt: .5, py:0.1,
+              bgcolor: '#ffcb00', 
+              color: 'black', 
+              fontWeight: 'bold', 
+            }}
+          >
+            Allergies: {allergies.map(a => a.allergen).join(", ")}
+          </Alert>
+        ) : (
+          <span>Allergies: {allergies.map(a => a.allergen).join(", ")}</span>
+        )
+      ) : (
+        <span>Allergies: None on file</span>
+      )}
 
+      </div>
 
-    </div>
       <Divider color="inherit" />
+
+      {/* Encounter Info */}
       <Typography variant="h6">Encounter</Typography>
       <Typography>Type: {type}</Typography>
       <Typography>Date: {startDate}</Typography>
       <Typography>Reason: {concerns?.join(", ")}</Typography>
+
       <Divider color="inherit" />
       <PatientSidebarVitalsOverview />
       <Divider color="inherit" />
-      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Care Gaps ({careGaps?.length})
-      </Typography>
+
+      {/* Care Gaps */}
+      <Typography variant="h6" style={{ fontSize: '1.25em' }}>Care Gaps ({careGaps.length})</Typography>
       <div style={{ display: 'flex', flexDirection: "column" }}>
-        {careGaps.map((c) => (
-          <span key={c.id}>{c.name}</span>
-        ))}
+        {careGaps.map(c => <span key={c.id}>{c.name}</span>)}
       </div>
-      <Divider color="inherit" />
-      <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Problem List ({problems?.length})
+
+    <Divider color="inherit" />
+      <Typography
+        variant="h6"
+        color="inherit"
+        component="div"
+        style={{ fontSize: '1.25em'}}
+      >
+        Clinical Impressions
       </Typography>
-      {history?.medical.map((condition) => (
-        <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
+      {encounter?.clinicalImpressions && encounter.clinicalImpressions.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {encounter.clinicalImpressions.map((ci, idx) => (
+            <div key={idx}>
+              {idx + 1}. {ci.name}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <i>No clinical impressions on file</i>
+      )}
+      <Divider color="inherit" />
+
+      {/* Problem List */}
+      <Typography variant="h6" style={{ fontSize: '1.25em' }}>Problem List ({problems?.length})</Typography>
+      {history?.medical.map(cond => (
+        <div key={cond.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{cond.diagnosis}</span>
         </div>
       ))}
       <div style={{ display: 'flex', flexDirection: "column" }}>
-        {problems?.map((p) => (
-          <div key={p.id}>{p.name}</div>
-        ))}
+        {problems?.map(p => <div key={p.id}>{p.name}</div>)}
       </div>
     </>
   );
