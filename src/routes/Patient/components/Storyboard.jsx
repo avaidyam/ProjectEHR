@@ -196,8 +196,6 @@ export const Storyboard = () => {
         <span>Allergies: None on file</span>
       )}
 
-      </div>
-
       <Divider color="inherit" />
 
       {/* Encounter Info */}
