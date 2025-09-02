@@ -9,18 +9,19 @@ import {
 } from '@mui/material';
 
 const dummyAgents = [
-  { agent: 'Penicillin', type: 'Drug' },
-  { agent: 'Peanuts', type: 'Food' },
-  { agent: 'Latex', type: 'Environmental' },
-  { agent: 'Crab', type: 'Food' },
-  { agent: 'Metoprolol', type: 'Drug Ingredient' },
-  { agent: 'Codeine', type: 'Drug Ingredient' },
-  { agent: 'Demerol [Meperidine]', type: 'Drug Ingredient' },
-  { agent: 'Xanax [Alprazolam]', type: 'Drug Ingredient' },
-  { agent: 'Aspirin', type: 'Drug' },
-  { agent: 'Dust Mites', type: 'Environmental' },
-  { agent: 'Bee Venom', type: 'Insect' },
-  { agent: 'Amoxicillin-potassium clavulanate', type: 'Drug' },
+  { allergen: 'Penicillin', type: 'Drug' },
+  { allergen: 'Peanuts', type: 'Food' },
+  { allergen: 'Latex', type: 'Environmental' },
+  { allergen: 'Crab', type: 'Food' },
+  { allergen: 'Metoprolol', type: 'Drug Ingredient' },
+  { allergen: 'Codeine', type: 'Drug Ingredient' },
+  { allergen: 'Demerol [Meperidine]', type: 'Drug Ingredient' },
+  { allergen: 'Xanax [Alprazolam]', type: 'Drug Ingredient' },
+  { allergen: 'Aspirin', type: 'Drug' },
+  { allergen: 'Dust Mites', type: 'Environmental' },
+  { agallergenent: 'Bee Venom', type: 'Insect' },
+  { allergen: 'Amoxicillin-potassium clavulanate', type: 'Drug' },
+  { allergen: 'Other', type: 'Other' },
 ];
 
 const AgentSearchMenu = ({ onAgentSelect }) => {
@@ -30,7 +31,7 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
     <Box sx={{ my: 2, width: 300 }}>
       <Autocomplete
         options={dummyAgents}
-        getOptionLabel={(option) => option.agent}
+        getOptionLabel={(option) => option.allergen}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
@@ -39,7 +40,7 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
           if (newValue) {
             onAgentSelect(newValue);  // just report selected agent, no editor open here
           }
-          setInputValue(''); // clear input regardless
+          // setInputValue(''); // clear input regardless
         }}
         renderInput={(params) => (
           <TextField
@@ -55,7 +56,7 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
             <Grid container alignItems="center">
               <Grid item xs={6}>
                 <Typography variant="body2" fontWeight="medium">
-                  {option.agent}
+                  {option.allergen}
                 </Typography>
               </Grid>
               <Grid item xs={6}>

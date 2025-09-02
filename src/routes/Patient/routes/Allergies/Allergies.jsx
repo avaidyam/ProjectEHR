@@ -1,5 +1,5 @@
 // export default Allergies;
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Icon, colors } from '@mui/material';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
@@ -7,29 +7,6 @@ import AllergiesTable from './components/AllergiesTable.jsx';
 import AllergyEditor from './components/AllergyEditor.jsx';
 import AgentSearchMenu from './components/AgentSearchMenu.jsx';
 import { Snackbar, Alert } from '@mui/material';
-
-const initialAllergies = [
-  {
-    id: 1,
-    agent: 'Penicillin',
-    type: 'Drug',
-    reaction: 'Rash',
-    severity: 'Moderate',
-    reactionType: 'Immediate',
-    onsetDate: '',
-    notes: 'Avoid all penicillin-based antibiotics.',
-  },
-  {
-    id: 2,
-    agent: 'Peanuts',
-    type: 'Food',
-    reaction: 'Anaphylaxis',
-    severity: 'High',
-    reactionType: 'Immediate',
-    onsetDate: '',
-    notes: 'Carry epinephrine injector.',
-  },
-];
 
 export const Allergies = () => {
   const { useChart, useEncounter } = usePatient();
@@ -39,33 +16,70 @@ export const Allergies = () => {
   const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
   const [lastReviewed, setLastReviewed] = useState(null);
 
+  // Normalize backend allergy data and assign numeric IDs if needed
+ const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+const normalizeAllergies = (rawAllergies) => {
+  let nextId = 1;
+  return rawAllergies.map((raw) => {
+    let numericId = Number(raw.id);
+    if (!Number.isFinite(numericId)) {
+      numericId = nextId++;
+    } else {
+      nextId = Math.max(nextId, numericId + 1); // ensure nextId is always higher
+    }
+
+    return {
+      id: numericId,
+      allergen: capitalize(raw.allergen),
+      type: capitalize(raw.type),
+      reaction: capitalize(raw.reaction),
+      reactionType: capitalize(raw.reactionType),
+      severity: capitalize(raw.severity || 'Not Specified'),
+      recorded: raw.recorded || '',
+      comment: raw.comment || '',
+
+    };
+  });
+};
+
+// Use it when initializing state
+ useEffect(() => {
+    setAllergies(normalizeAllergies(allergies));
+  }, []);
+
   const handleEdit = (allergy) => {
     setEditingAllergy(allergy);
     setIsEditingMode(true);
   };
 
-  const handleSaveAllergy = (newAllergyData) => {
-    
-    if (editingAllergy && editingAllergy.id) {
-      setAllergies((prev) =>
-        prev.map((allergy) =>
-          allergy.id === editingAllergy.id
-            ? { ...allergy, ...newAllergyData }
-            : allergy
-        )
-      );
-    } else {
-      const newId = allergies.length > 0 ? Math.max(...allergies.map(a => a.id)) + 1 : 1;
-      setAllergies((prev) => [
-        ...prev,
-        { id: newId, ...newAllergyData }
-      ]);
-    }
-    setIsEditingMode(false);
-    setEditingAllergy(null);
-    setLastReviewed(null); // reset last reviewed date when saving new allergy
+const handleSaveAllergy = (newAllergyData) => {
+  if (editingAllergy && editingAllergy.id) {
+    setAllergies((prev) =>
+      prev.map((allergy) =>
+        allergy.id === editingAllergy.id
+          ? { ...allergy, ...newAllergyData }
+          : allergy
+      )
+    );
+  } else {
+    // filter out any NaN or undefined ids
+    const validIds = allergies
+      .map(a => Number(a.id))
+      .filter(id => Number.isFinite(id));
 
-  };
+    const newId = validIds.length > 0 ? Math.max(...validIds) + 1 : 1;
+
+    setAllergies((prev) => [
+      ...prev,
+      { id: newId, ...newAllergyData }
+    ]);
+  }
+
+  setIsEditingMode(false);
+  setEditingAllergy(null);
+  setLastReviewed(null); // reset last reviewed date when saving new allergy
+};
+
 
   const handleDeleteAllergy = (id) => {
     setAllergies((prev) => prev.filter((allergy) => allergy.id !== id));
@@ -85,11 +99,11 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // On Add button click, open editor with selectedAgent (or empty if none selected)
   const handleAddClick = () => {
-    const agentName = selectedAgent?.agent?.trim() || '';
+    const agentName = selectedAgent?.allergen?.trim() || '';
       // Check if the agent already exists
   if (agentName) {
     const alreadyExists = allergies.some(
-      (a) => a?.agent?.trim().toLowerCase() === agentName.toLowerCase()
+      (a) => a?.allergen?.trim().toLowerCase() === agentName.toLowerCase()
     );
     if (alreadyExists) {
       setSnackbarMessage('Allergen already on file');
@@ -101,17 +115,16 @@ const [snackbarMessage, setSnackbarMessage] = useState('');
       setEditingAllergy({ ...selectedAgent });
     } else {
       setEditingAllergy({
-        agent: '',
-        allergenType: '',
+        allergen: '',
+        type: '',
         reaction: '',
         severity: '',
         reactionType: '',
-        onsetDate: '',
-        notes: '',
+        recorded: '',
+        comment: '',
       });
     }
     setIsEditingMode(true);
-    setSelectedAgent(null);  // clear selected agent after opening editor
     setLastReviewed(null); // reset last reviewed date when adding new allergy
   };
 
