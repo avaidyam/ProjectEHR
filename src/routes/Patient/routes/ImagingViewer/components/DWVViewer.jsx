@@ -42,7 +42,7 @@ const LayerGroup = styled('div')({
 
 const ContentWrapper = styled(Box)({
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     height: '100%',
     overflow: 'hidden', 
