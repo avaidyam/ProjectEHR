@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
     Menu,
     MenuItem,
@@ -19,11 +19,6 @@ decoderScripts.rle = `${process.env.PUBLIC_URL}/assets/dwv/decoders/dwv/decode-r
 
 /**
  * Convert a base64 url to an ArrayBuffer.
- * Something like: 'data:application/dicom;base64,SGVsbG8sIFdvcmxkIQ=='
- * The function is independent from the mime type.
- *
- * @param {string} str Base64 url string.
- * @returns {ArrayBuffer} The corresponding buffer.
  */
 export function b64ToFile(str) {
     const parts = str.split(';base64,');
@@ -34,7 +29,6 @@ export function b64ToFile(str) {
       bufView[i] = byteChars.charCodeAt(i);
     }
 
-    // Reuse the content-type of the data URL and the filename will become the same.
     const type = parts[0].replace("data:", "")
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
@@ -48,7 +42,7 @@ const LayerGroup = styled('div')({
 
 const ContentWrapper = styled(Box)({
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     height: '100%',
     overflow: 'hidden', 
@@ -79,69 +73,169 @@ const BlackMenu = styled(Menu)({
     },
 });
 
-const DWVViewer = ({ images }) => {
+const DWVViewer = ({ images, viewerId }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [metaData, setMetaData] = useState({});
     const [selectedTool, setSelectedTool] = useState('Scroll');
     const [contextMenu, setContextMenu] = useState(null);
+    
+    // Use refs to track the current app instance and prevent race conditions
+    const currentAppRef = useRef(null);
+    const isInitializingRef = useRef(false);
+    const mountedRef = useRef(true);
 
     useEffect(() => {
-        console.log("initializing new DWV viewer...")
-        const app = new App();
-        app.init({
-            dataViewConfigs: { '*': [{ divId: 'layerGroup0' }] },
-            tools: {
-                Scroll: {},
-                ZoomAndPan: {},
-                WindowLevel: {},
-                Draw: {
-                    options: ['Ruler']
-                }
-            },
-            workerScripts: decoderScripts
-        });
-
-        app.addEventListener('loadstart', () => {
-            setLoadProgress(0);
-            setDataLoaded(false);
-        });
-
-        app.addEventListener('loadprogress', (event) => {
-            setLoadProgress(event.loaded);
-        });
-
-        app.addEventListener('load', (event) => {
-            setMetaData(app.getMetaData(event.dataid));
-            setDataLoaded(true);
-        });
-
-        app.addEventListener('error', (event) => {
-            console.dir(event)
-        });
-
-        app.addEventListener('abort', (event) => {
-            console.dir(event)
-        });
-
-        app.addEventListener('renderend', () => {
-        });
-        if (images[0]?.startsWith?.("data:")) {
-            app.loadFiles([b64ToFile(images[0])])
-        } else {
-            app.loadURLs(images);
+        // Prevent multiple concurrent initializations
+        if (isInitializingRef.current) {
+            console.log(`⚠️ Already initializing for ${viewerId}, skipping...`);
+            return;
         }
-        setDwvApp(app);
 
-        app.setTool('Scroll');
-        setSelectedTool('Scroll');
+        isInitializingRef.current = true;
+        console.log(`🚀 Initializing DWV App for ${viewerId}`);
 
+        // Clean up any existing app first
+        if (currentAppRef.current) {
+            console.log(`🧹 Cleaning up existing app for ${viewerId}`);
+            try {
+                currentAppRef.current.reset();
+            } catch (error) {
+                console.warn(`⚠️ Error during cleanup:`, error);
+            }
+            currentAppRef.current = null;
+        }
+
+        // Clear the DOM element to ensure clean state
+        const element = document.getElementById(viewerId);
+        if (element) {
+            // Clear any existing content
+            while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+        }
+
+        const app = new App();
+        currentAppRef.current = app;
+        
+        try {
+            app.init({
+                dataViewConfigs: { '*': [{ divId: viewerId}] },
+                tools: {
+                    Scroll: {},
+                    ZoomAndPan: {},
+                    WindowLevel: {},
+                    Draw: {
+                        options: ['Ruler']
+                    }
+                },
+                workerScripts: decoderScripts
+            });
+
+            // Only set up event listeners if component is still mounted
+            if (!mountedRef.current) {
+                app.reset();
+                currentAppRef.current = null;
+                isInitializingRef.current = false;
+                return;
+            }
+
+            app.addEventListener('loadstart', () => {
+                if (mountedRef.current) {
+                    console.log(`📥 Load started for ${viewerId}`);
+                    setLoadProgress(0);
+                    setDataLoaded(false);
+                }
+            });
+
+            app.addEventListener('loadprogress', (event) => {
+                if (mountedRef.current) {
+                    setLoadProgress(event.loaded);
+                }
+            });
+
+            app.addEventListener('load', (event) => {
+                if (mountedRef.current) {
+                    console.log(`✅ Load completed for ${viewerId}`);
+                    setMetaData(app.getMetaData(event.dataid));
+                    setDataLoaded(true);
+                }
+            });
+
+            app.addEventListener('error', (event) => {
+                console.error(`❌ DWV Error for ${viewerId}:`, event);
+            });
+
+            app.addEventListener('abort', (event) => {
+                console.warn(`⚠️ DWV Abort for ${viewerId}:`, event);
+            });
+
+            app.addEventListener('renderend', () => {
+                if (mountedRef.current) {
+                    console.log(`🎨 Render completed for ${viewerId}`);
+                }
+            });
+
+            // Load images
+            if (images && images.length > 0) {
+                if (images[0]?.startsWith?.("data:")) {
+                    console.log(`📁 Loading base64 image for ${viewerId}`);
+                    app.loadFiles([b64ToFile(images[0])]);
+                } else {
+                    console.log(`📁 Loading URLs for ${viewerId}:`, images);
+                    app.loadURLs(images);
+                }
+            }
+
+            // Only update state if component is still mounted
+            if (mountedRef.current) {
+                setDwvApp(app);
+                app.setTool('Scroll');
+                setSelectedTool('Scroll');
+            }
+
+        } catch (error) {
+            console.error(`💥 Failed to initialize DWV App for ${viewerId}:`, error);
+            if (currentAppRef.current) {
+                currentAppRef.current.reset();
+                currentAppRef.current = null;
+            }
+        }
+
+        isInitializingRef.current = false;
+
+        // Cleanup function
         return () => {
-            app.reset();
+            console.log(`🧹 Cleanup triggered for ${viewerId}`);
+            if (currentAppRef.current) {
+                try {
+                    currentAppRef.current.reset();
+                } catch (error) {
+                    console.warn(`⚠️ Error during cleanup:`, error);
+                }
+                currentAppRef.current = null;
+            }
             setDwvApp(null);
         };
-    }, [images]);
+    }, [images, viewerId]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        mountedRef.current = true;
+        return () => {
+            mountedRef.current = false;
+            console.log(`🔥 Component unmounting for ${viewerId}`);
+            if (currentAppRef.current) {
+                try {
+                    currentAppRef.current.reset();
+                } catch (error) {
+                    console.warn(`⚠️ Error during unmount cleanup:`, error);
+                }
+                currentAppRef.current = null;
+            }
+        };
+    }, [viewerId]);
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();
@@ -153,7 +247,7 @@ const DWVViewer = ({ images }) => {
     }, [contextMenu]);
 
     const handleToolChange = (tool) => {
-        if (tool && dwvApp) {
+        if (tool && dwvApp && currentAppRef.current === dwvApp) {
             setSelectedTool(tool);
             dwvApp.setTool(tool);
             if (tool === 'Draw') {
@@ -166,7 +260,7 @@ const DWVViewer = ({ images }) => {
     return (
         <ContentWrapper>
             <LinearProgress variant="determinate" value={loadProgress} />
-            <LayerGroup id="layerGroup0" onContextMenu={handleContextMenu} />
+            <LayerGroup id={viewerId} onContextMenu={handleContextMenu} />
             <BlackMenu
                 open={contextMenu !== null}
                 onClose={() => setContextMenu(null)}
