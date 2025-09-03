@@ -34,18 +34,17 @@ export function b64ToFile(str) {
 }
 
 const LayerGroup = styled('div')({
+    display: 'inline-block',
     position: 'relative',
+    justifyContent: 'center',
     width: '100%',
     height: '100%',
+    padding: 0,
     backgroundColor: '#000',
 });
 
 const ContentWrapper = styled(Box)({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
-    overflow: 'hidden', 
+    display: 'block',
 });
 
 const CloseButton = styled(IconButton)({
@@ -83,17 +82,8 @@ const DWVViewer = ({ images, viewerId }) => {
     
     // Use refs to track the current app instance and prevent race conditions
     const currentAppRef = useRef(null);
-    const isInitializingRef = useRef(false);
-    const mountedRef = useRef(true);
 
     useEffect(() => {
-        // Prevent multiple concurrent initializations
-        if (isInitializingRef.current) {
-            return;
-        }
-
-        isInitializingRef.current = true;
-
         // Clean up any existing app first
         if (currentAppRef.current) {
             try {
@@ -130,32 +120,18 @@ const DWVViewer = ({ images, viewerId }) => {
                 workerScripts: decoderScripts
             });
 
-            // Only set up event listeners if component is still mounted
-            if (!mountedRef.current) {
-                app.reset();
-                currentAppRef.current = null;
-                isInitializingRef.current = false;
-                return;
-            }
-
             app.addEventListener('loadstart', () => {
-                if (mountedRef.current) {
-                    setLoadProgress(0);
-                    setDataLoaded(false);
-                }
+                setLoadProgress(0);
+                setDataLoaded(false);
             });
 
             app.addEventListener('loadprogress', (event) => {
-                if (mountedRef.current) {
-                    setLoadProgress(event.loaded);
-                }
+                setLoadProgress(event.loaded);
             });
 
             app.addEventListener('load', (event) => {
-                if (mountedRef.current) {
-                    setMetaData(app.getMetaData(event.dataid));
-                    setDataLoaded(true);
-                }
+                setMetaData(app.getMetaData(event.dataid));
+                setDataLoaded(true);
             });
 
             app.addEventListener('error', (event) => {
@@ -180,11 +156,9 @@ const DWVViewer = ({ images, viewerId }) => {
             }
 
             // Only update state if component is still mounted
-            if (mountedRef.current) {
-                setDwvApp(app);
-                app.setTool('Scroll');
-                setSelectedTool('Scroll');
-            }
+            setDwvApp(app);
+            app.setTool('Scroll');
+            setSelectedTool('Scroll');
 
         } catch (error) {
             if (currentAppRef.current) {
@@ -192,8 +166,6 @@ const DWVViewer = ({ images, viewerId }) => {
                 currentAppRef.current = null;
             }
         }
-
-        isInitializingRef.current = false;
 
         // Cleanup function
         return () => {
@@ -211,9 +183,7 @@ const DWVViewer = ({ images, viewerId }) => {
 
     // Cleanup on unmount
     useEffect(() => {
-        mountedRef.current = true;
         return () => {
-            mountedRef.current = false;
             if (currentAppRef.current) {
                 try {
                     currentAppRef.current.reset();

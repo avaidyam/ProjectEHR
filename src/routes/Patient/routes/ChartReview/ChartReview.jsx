@@ -43,11 +43,8 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     if (selectedTabLabel === 'Lab')
       setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
     if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
-      const accessionNumber = row.data?.accessionNumber; // Get the accession number here
-      if (accessionNumber) {
-        const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
-      }
+      const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
     }
     if (selectedTabLabel === 'Note')
       setCustomTabs(prev => [...prev, {"Note": { selectedRow: row }}])
