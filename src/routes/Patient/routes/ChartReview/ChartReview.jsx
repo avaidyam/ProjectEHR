@@ -45,7 +45,8 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
       const accessionNumber = row.data?.accessionNumber; // Get the accession number here
       if (accessionNumber) {
-        setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: accessionNumber } }]);
+        const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
       }
     }
     if (selectedTabLabel === 'Note')
