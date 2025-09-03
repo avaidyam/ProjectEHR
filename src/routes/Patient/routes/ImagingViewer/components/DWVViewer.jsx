@@ -89,20 +89,17 @@ const DWVViewer = ({ images, viewerId }) => {
     useEffect(() => {
         // Prevent multiple concurrent initializations
         if (isInitializingRef.current) {
-            console.log(`⚠️ Already initializing for ${viewerId}, skipping...`);
             return;
         }
 
         isInitializingRef.current = true;
-        console.log(`🚀 Initializing DWV App for ${viewerId}`);
 
         // Clean up any existing app first
         if (currentAppRef.current) {
-            console.log(`🧹 Cleaning up existing app for ${viewerId}`);
             try {
                 currentAppRef.current.reset();
             } catch (error) {
-                console.warn(`⚠️ Error during cleanup:`, error);
+                // Silent cleanup
             }
             currentAppRef.current = null;
         }
@@ -143,7 +140,6 @@ const DWVViewer = ({ images, viewerId }) => {
 
             app.addEventListener('loadstart', () => {
                 if (mountedRef.current) {
-                    console.log(`📥 Load started for ${viewerId}`);
                     setLoadProgress(0);
                     setDataLoaded(false);
                 }
@@ -157,33 +153,28 @@ const DWVViewer = ({ images, viewerId }) => {
 
             app.addEventListener('load', (event) => {
                 if (mountedRef.current) {
-                    console.log(`✅ Load completed for ${viewerId}`);
                     setMetaData(app.getMetaData(event.dataid));
                     setDataLoaded(true);
                 }
             });
 
             app.addEventListener('error', (event) => {
-                console.error(`❌ DWV Error for ${viewerId}:`, event);
+                // Handle error silently
             });
 
             app.addEventListener('abort', (event) => {
-                console.warn(`⚠️ DWV Abort for ${viewerId}:`, event);
+                // Handle abort silently
             });
 
             app.addEventListener('renderend', () => {
-                if (mountedRef.current) {
-                    console.log(`🎨 Render completed for ${viewerId}`);
-                }
+                // Render completed
             });
 
             // Load images
             if (images && images.length > 0) {
                 if (images[0]?.startsWith?.("data:")) {
-                    console.log(`📁 Loading base64 image for ${viewerId}`);
                     app.loadFiles([b64ToFile(images[0])]);
                 } else {
-                    console.log(`📁 Loading URLs for ${viewerId}:`, images);
                     app.loadURLs(images);
                 }
             }
@@ -196,7 +187,6 @@ const DWVViewer = ({ images, viewerId }) => {
             }
 
         } catch (error) {
-            console.error(`💥 Failed to initialize DWV App for ${viewerId}:`, error);
             if (currentAppRef.current) {
                 currentAppRef.current.reset();
                 currentAppRef.current = null;
@@ -207,12 +197,11 @@ const DWVViewer = ({ images, viewerId }) => {
 
         // Cleanup function
         return () => {
-            console.log(`🧹 Cleanup triggered for ${viewerId}`);
             if (currentAppRef.current) {
                 try {
                     currentAppRef.current.reset();
                 } catch (error) {
-                    console.warn(`⚠️ Error during cleanup:`, error);
+                    // Silent cleanup
                 }
                 currentAppRef.current = null;
             }
@@ -225,12 +214,11 @@ const DWVViewer = ({ images, viewerId }) => {
         mountedRef.current = true;
         return () => {
             mountedRef.current = false;
-            console.log(`🔥 Component unmounting for ${viewerId}`);
             if (currentAppRef.current) {
                 try {
                     currentAppRef.current.reset();
                 } catch (error) {
-                    console.warn(`⚠️ Error during unmount cleanup:`, error);
+                    // Silent cleanup
                 }
                 currentAppRef.current = null;
             }
