@@ -6,14 +6,8 @@ import {
     LinearProgress
 } from '@mui/material';
 import {
-    App,
-    decoderScripts
+    App
 } from 'dwv';
-
-decoderScripts.jpeg2000 = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpeg2000.js`;
-decoderScripts['jpeg-lossless'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/rii-mango/decode-jpegloss.js`;
-decoderScripts['jpeg-baseline'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpegbaseline.js`;
-decoderScripts.rle = `${process.env.PUBLIC_URL}/assets/dwv/decoders/dwv/decode-rle.js`;
 
 /**
  * Convert a base64 url to an ArrayBuffer.
@@ -44,7 +38,6 @@ const DWVViewer = ({ images, viewerId }) => {
         
         app.init({
             dataViewConfigs: { '*': [{ divId: viewerId }] },
-            workerScripts: decoderScripts,
             tools: {
                 Scroll: {},
                 ZoomAndPan: {},
@@ -68,6 +61,7 @@ const DWVViewer = ({ images, viewerId }) => {
                 setDataLoaded(true)
                 app.fitToContainer()
                 console.log(`loaded dwv viewer ${app} for viewer id ${viewerId}`)
+                console.dir(app.getImage(event.dataid))
             },
             'error': (event) => {
                 console.error(event)
