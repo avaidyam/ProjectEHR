@@ -39,11 +39,12 @@ const DWVViewer = ({ images, viewerId }) => {
     const [contextMenu, setContextMenu] = useState(null);
     
     useEffect(() => {
-        const app = new App();
+        const app = new App()
         setDwvApp(app)
         
         app.init({
             dataViewConfigs: { '*': [{ divId: viewerId }] },
+            workerScripts: decoderScripts,
             tools: {
                 Scroll: {},
                 ZoomAndPan: {},
@@ -51,9 +52,8 @@ const DWVViewer = ({ images, viewerId }) => {
                 Draw: {
                     options: ['Ruler']
                 }
-            },
-            workerScripts: decoderScripts
-        });
+            }
+        })
 
         const listeners = {
             'loadstart': () => {
@@ -73,10 +73,10 @@ const DWVViewer = ({ images, viewerId }) => {
                 console.error(event)
             },
             'abort': (event) => {
-                console.error(event)
+                // silent...
             },
             'renderend': () => {
-                // Render completed
+                // silent...
             }
         }
 
@@ -86,14 +86,14 @@ const DWVViewer = ({ images, viewerId }) => {
         // Load images
         if (images && images.length > 0) {
             if (images[0]?.startsWith?.("data:")) {
-                app.loadFiles([b64ToFile(images[0])]);
+                app.loadFiles([b64ToFile(images[0])])
             } else {
-                app.loadURLs(images);
+                app.loadURLs(images)
             }
         }
 
-        app.setTool('Scroll');
-        setSelectedTool('Scroll');
+        app.setTool('Scroll')
+        setSelectedTool('Scroll')
 
         return () => {
             app?.abortAllLoads()
@@ -102,7 +102,6 @@ const DWVViewer = ({ images, viewerId }) => {
             for (const [key, value] of Object.entries(listeners))
                 app?.removeEventListener(key, value)
             setDwvApp(null)
-            //document.getElementById(viewerId)?.replaceChildren([])
         }
     }, [])
 
@@ -138,6 +137,13 @@ const DWVViewer = ({ images, viewerId }) => {
                     height: '100%',
                     padding: 0,
                     backgroundColor: '#000',
+                    "& .viewLayer": {
+                        backgroundColor: '#000',
+                        position: 'absolute',
+                    },
+                    "& .drawLayer": {
+                        position: 'absolute',
+                    }
                 }} 
             />
             <Menu
