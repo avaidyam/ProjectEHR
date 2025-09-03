@@ -39,8 +39,6 @@ const DWVViewer = ({ images, viewerId }) => {
     const [contextMenu, setContextMenu] = useState(null);
     
     useEffect(() => {
-        console.log(`called useeffect with ${dwvApp}!`)
-
         const app = new App();
         setDwvApp(app)
         
@@ -57,31 +55,33 @@ const DWVViewer = ({ images, viewerId }) => {
             workerScripts: decoderScripts
         });
 
-        app.addEventListener('loadstart', () => {
-            setLoadProgress(0);
-            setDataLoaded(false);
-        });
+        const listeners = {
+            'loadstart': () => {
+                setLoadProgress(0)
+                setDataLoaded(false)
+            }, 
+            'loadprogress':  (event) => {
+                setLoadProgress(event.loaded)
+            }, 
+            'load': (event) => {
+                setMetaData(app.getMetaData(event.dataid))
+                setDataLoaded(true)
+                app.fitToContainer()
+                console.log(`loaded dwv viewer ${app} for viewer id ${viewerId}`)
+            },
+            'error': (event) => {
+                console.error(event)
+            },
+            'abort': (event) => {
+                console.error(event)
+            },
+            'renderend': () => {
+                // Render completed
+            }
+        }
 
-        app.addEventListener('loadprogress', (event) => {
-            setLoadProgress(event.loaded);
-        });
-
-        app.addEventListener('load', (event) => {
-            setMetaData(app.getMetaData(event.dataid));
-            setDataLoaded(true);
-        });
-
-        app.addEventListener('error', (event) => {
-            // Handle error silently
-        });
-
-        app.addEventListener('abort', (event) => {
-            // Handle abort silently
-        });
-
-        app.addEventListener('renderend', () => {
-            // Render completed
-        });
+        for (const [key, value] of Object.entries(listeners))
+            app.addEventListener(key, value)
 
         // Load images
         if (images && images.length > 0) {
@@ -96,12 +96,15 @@ const DWVViewer = ({ images, viewerId }) => {
         setSelectedTool('Scroll');
 
         return () => {
-            console.log(`called cleanup with ${app}!`)
+            app?.abortAllLoads()
+            app?.removeDataViewConfig("*", viewerId)
             app?.reset()
+            for (const [key, value] of Object.entries(listeners))
+                app?.removeEventListener(key, value)
             setDwvApp(null)
-            document.getElementById(viewerId)?.replaceChildren([])
-        };
-    }, []);
+            //document.getElementById(viewerId)?.replaceChildren([])
+        }
+    }, [])
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();
