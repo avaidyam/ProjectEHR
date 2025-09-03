@@ -9,9 +9,6 @@ import {
     App
 } from 'dwv';
 
-/**
- * Convert a base64 url to an ArrayBuffer.
- */
 export function b64ToFile(str) {
     const parts = str.split(';base64,');
     const byteChars = window.atob(parts[1]);
@@ -60,8 +57,6 @@ const DWVViewer = ({ images, viewerId }) => {
                 setMetaData(app.getMetaData(event.dataid))
                 setDataLoaded(true)
                 app.fitToContainer()
-                console.log(`loaded dwv viewer ${app} for viewer id ${viewerId}`)
-                console.dir(app.getImage(event.dataid))
             },
             'error': (event) => {
                 console.error(event)
