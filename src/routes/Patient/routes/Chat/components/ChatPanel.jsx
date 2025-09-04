@@ -1,42 +1,28 @@
 import React, { useState } from "react";
 import { Paper, Box, TextField, Button, Typography, Stack } from "@mui/material";
+import { useGeminiAPIContext } from "../utils/GeminiAPI";
 
 export default function ChatPanel() {
+  const { sendMessage, getHistory } =
+    useGeminiAPIContext();
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = async () => {
+  const sendMessage2 = async () => {
     if (!input.trim()) return;
-
-    const newUserMessage = { role: "user", content: input };
-    const updatedMessages = [...messages, newUserMessage];
-
-    setMessages(updatedMessages);
+    setMessages([...messages, { role: "user", parts: [{ text: input }] }]);
     setLoading(true);
-
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/llm/", {
-        method: "POST",
-        body: JSON.stringify({
-            prompt: input,
-            history: updatedMessages,
-        })
-      });
-
-      const aiMessage = {
-        role: "assistant",
-        content: response.data.reply,
-      };
-
-      setMessages([...updatedMessages, aiMessage]);
+      const response = await sendMessage(input)
+      setMessages(getHistory())
     } catch (error) {
       console.error("LLM error:", error);
-      const errorMessage = {
+      setMessages([...updatedMessages, {
         role: "assistant",
-        content: "(Error fetching response)",
-      };
-      setMessages([...updatedMessages, errorMessage]);
+        parts: [{ text: "(Error fetching response)" }],
+      }]);
     } finally {
       setLoading(false);
       setInput("");
@@ -77,7 +63,7 @@ export default function ChatPanel() {
                     wordBreak: "break-word",
                   }}
                 >
-                  {msg.content}
+                  {msg.parts.map(x => x.text).join("\n")}
                 </Typography>
               </Box>
             );
@@ -92,13 +78,13 @@ export default function ChatPanel() {
           placeholder="Ask the patient..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage2()}
           disabled={loading}
         />
         <Button
           variant="contained"
           color="primary"
-          onClick={sendMessage}
+          onClick={sendMessage2}
           disabled={loading}
         >
           {loading ? "..." : "Send"}

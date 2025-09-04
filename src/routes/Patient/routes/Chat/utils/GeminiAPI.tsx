@@ -13,6 +13,7 @@ import {
   LiveServerToolCallCancellation,
   Part,
   Session,
+  Chat,
 } from "@google/genai";
 import { audioContext, base64ToArrayBuffer } from "../utils/AudioContext"
 import { AudioStreamer } from "../utils/AudioStreamer";
@@ -69,6 +70,8 @@ export type UseGeminiAPIResults = {
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
   volume: number;
+  sendMessage: (message: string) => Promise<string>;
+  getHistory: () => any[];
 };
 
 export const GeminiAPIProvider: FC<GeminiAPIProviderProps> = ({
@@ -166,6 +169,14 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     setConnected(false);
   }, [setConnected, client]);
 
+  const sendMessage = useCallback(async (message: string): Promise<string> => {
+    return await client.sendMessage(message, model, config)
+  }, [client, config, model])
+
+  const getHistory = useCallback((): any[] => {
+    return client?.history ?? []
+  }, [client, config, model])
+
   return {
     client,
     config,
@@ -176,6 +187,8 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     connect,
     disconnect,
     volume,
+    sendMessage,
+    getHistory
   };
 }
 
@@ -234,9 +247,13 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
   }
 
   protected config: LiveConnectConfig | null = null;
-
   public getConfig() {
     return { ...this.config };
+  }
+
+  private _chat: Chat | null = null;
+  public get history() {
+    return this._chat?.getHistory();
   }
 
   constructor(options: LiveClientOptions) {
@@ -414,6 +431,27 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
         ? "video"
         : "unknown";
     this.log(`client.realtimeInput`, message);
+  }
+
+  public async sendMessage(message: string, model?: string, config?: LiveConnectConfig): Promise<string> {
+    if (!this._chat) {
+      this.config = config!;
+      this._model = model!;
+
+      this._chat = this.client.chats.create({
+        model: this.model!.replace("-preview-native-audio-dialog", ""),
+        config: {
+          ...(this.config ?? {}),
+          responseModalities: ["TEXT"],
+          speechConfig: undefined,
+          inputAudioTranscription: undefined,
+          outputAudioTranscription: undefined
+        } as any,
+        history: [],
+      });
+    }
+    const response = await this._chat.sendMessage({ message });
+    return response.text ?? ""
   }
 
   /**

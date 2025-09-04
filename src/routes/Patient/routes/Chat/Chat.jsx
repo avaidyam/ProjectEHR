@@ -3,7 +3,7 @@ import { Label, Box, Tab, TabView, TabList, TabPanel } from 'components/ui/Core.
 import ChatPanel from "./components/ChatPanel.jsx";
 import PatientInfoPanel from "./components/PatientInfoPanel.jsx";
 import { GeminiAPIProvider } from "./utils/GeminiAPI";
-import ControlTray from "./components/ControlTray";
+import VoicePanel from "./components/VoicePanel";
 import { XORcrypt } from "util/helpers"
 
 const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u0003)O!<P\t\u000e&:V\u001fSDTW2(\u000e\u00020`
@@ -32,6 +32,9 @@ export default function Chat() {
         speechConfig: { 
           languageCode: "en-US",
           voiceConfig: { prebuiltVoiceConfig: { voiceName: "Charon" } } 
+        },
+        thinkingConfig: {
+          thinkingBudget: 0, // disable thinking
         },
         responseModalities: ["AUDIO"],
         enableAffectiveDialog: true,
@@ -70,7 +73,7 @@ export default function Chat() {
             </Box>
           </TabPanel>
           <TabPanel sx={{ p: 0 }} value="voice">
-            <ControlTray />
+            <VoicePanel />
           </TabPanel>
         </Box>
       </TabView>

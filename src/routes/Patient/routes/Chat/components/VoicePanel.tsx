@@ -1,11 +1,27 @@
 import { memo, ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { useGeminiAPIContext, UseMediaStreamResult } from "../utils/GeminiAPI";
 import { AudioRecorder } from "../utils/AudioRecorder";
-import AudioPulse from "./AudioPulse";
 import { Icon } from '@mui/material'
 import { styled, keyframes } from '@mui/material/styles'
 
-// Keyframes
+const hoverAnimation = keyframes`
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3.5px);
+  }
+`;
+
+const pulseAnimation = keyframes`
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(1.2, 1.2);
+  }
+`;
+
 const opacityPulseAnimation = keyframes`
   0% {
     opacity: 0.9;
@@ -18,7 +34,6 @@ const opacityPulseAnimation = keyframes`
   }
 `;
 
-// Main Components
 const ActionButton = styled('button', {
   shouldForwardProp: prop => !['disabled', 'outlined', 'connected'].includes(prop.toString())
 })<{ disabled?: boolean, outlined?: boolean, connected?: boolean }>(({ theme, outlined, connected }) => ({
@@ -117,13 +132,9 @@ const ConnectToggle = styled(ActionButton, {
   }),
 }));
 
-const ControlTray2 = styled('section', {
+const ControlTray = styled('section', {
   shouldForwardProp: prop => ![''].includes(prop.toString())
 })<{}>(({ theme }) => ({
-  //position: 'absolute',
-  //bottom: 0,
-  //left: '50%',
-  //transform: 'translate(-50%, 0)',
   width: "100%", 
   height: "100%",
   display: 'inline-flex',
@@ -186,13 +197,77 @@ const ActionsNav = styled('nav', {
   },
 }));
 
-export type ControlTrayProps = {
-  children?: ReactNode;
-};
+const AudioPulseDiv = styled('div', {
+  shouldForwardProp: prop => !['active', 'hover'].includes(prop.toString())
+})<{ active?: boolean, hover?: boolean }>(({ theme, active, hover }) => ({
+  display: 'flex',
+  width: 24,
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+  transition: 'all 0.5s',
+  height: 4,
+  opacity: active ? 1 : undefined,
+  
+  '& > div': {
+    backgroundColor: active ? '#c3c6c7' : '#404547',
+    borderRadius: 1000,
+    width: 4,
+    minHeight: 4,
+    transition: 'height 0.1s',
+    ...(hover && {
+      animation: `${hoverAnimation} 1.4s infinite alternate ease-in-out`,
+    }),
+  },
+}));
 
-function ControlTray({
+export function AudioPulse({ 
+  active, volume, hover, lineCount = 3
+}: {
+  active: boolean;
+  volume: number;
+  hover?: boolean;
+  lineCount?: number;
+}) {
+  const lines = useRef<HTMLDivElement[]>([]);
+
+  useEffect(() => {
+    let timeout: number | null = null;
+    const update = () => {
+      lines.current.forEach(
+        (line, i) =>
+        (line.style.height = `${Math.min(
+          24,
+          4 + volume * (i === 1 ? 400 : 60),
+        )}px`),
+      );
+      timeout = window.setTimeout(update, 100);
+    };
+
+    update();
+
+    return () => clearTimeout((timeout as number)!);
+  }, [volume]);
+
+  return (
+    <AudioPulseDiv className={`${active ? 'active' : ''} ${hover ? 'hover' : ''}`.trim()}>
+      {Array(lineCount)
+        .fill(null)
+        .map((_, i) => (
+          <div
+            key={i}
+            ref={(el) => (lines.current[i] = el!) as any}
+            style={{ animationDelay: `${i * 133}ms` }}
+          />
+        ))}
+    </AudioPulseDiv>
+  );
+}
+
+function VoicePanel({
   children,
-}: ControlTrayProps) {
+}: {
+  children?: ReactNode;
+}) {
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
@@ -233,7 +308,7 @@ function ControlTray({
   }, [connected, client, muted, audioRecorder]);
 
   return (
-    <ControlTray2>
+    <ControlTray>
       <ActionsNav disabled={!connected}>
         <MicButton onClick={() => setMuted(!muted)}>
           {!muted ? (
@@ -263,8 +338,8 @@ function ControlTray({
         </div>
         <span className="text-indicator">Streaming</span>
       </ConnectionContainer>
-    </ControlTray2>
+    </ControlTray>
   );
 }
 
-export default memo(ControlTray);
+export default memo(VoicePanel);
