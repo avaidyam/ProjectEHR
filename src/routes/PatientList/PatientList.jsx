@@ -14,6 +14,8 @@ import { PatientListsContext } from 'components/contexts/PatientListContext.jsx'
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';
+import PrintPreview from "./components/PrintPreview";
+import PrintIcon from "@mui/icons-material/Print";
 
 function PatientLists() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +23,9 @@ function PatientLists() {
   const [lists, setLists] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = React.useState(false); // (add after other useState/useContext)
+  const refreshedAt = "2025-09-01T08:30:00Z"; // dummy value
+  const printedBy = "Dr. Jane Doe"; // dummy value
 
   const selectedList = lists.find(list => list.id === selectedListId);
 
@@ -107,7 +112,7 @@ function PatientLists() {
             <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Print">
-                <IconButton size="small">
+                <IconButton size="small" onClick={() => setPreviewOpen(true)}>
                   <Icon>print</Icon>
                 </IconButton>
               </Tooltip>
@@ -156,6 +161,12 @@ function PatientLists() {
             initialData={selectedList}
           />
         )}
+        <PrintPreview
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          refreshedAt={refreshedAt}
+          printedBy={printedBy}
+        />
       </Box>
     </PatientListsContext.Provider>
   );
