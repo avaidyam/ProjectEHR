@@ -66,6 +66,17 @@ module.exports = {
 
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
 
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+   ],
+
     // these are super annoying and a11y is required as a peer package so 🤷
     'jsx-a11y/anchor-is-valid': 0,
     'jsx-a11y/label-has-for': 0,

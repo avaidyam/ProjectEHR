@@ -2,6 +2,18 @@ import _ from 'lodash';
 import { DateTime } from 'luxon';
 
 /**
+ * HIGHLY INSECURE! DO NOT USE! 
+ *  
+ * Usage:
+ * const encrypted = XORcrypt(data, password);
+ * const decrypted = XORcrypt(encrypted, password);
+ */
+export const XORcrypt = (text, key) =>
+  [...text].map((char, i) =>
+    String.fromCharCode(char.charCodeAt(0) ^ key.charCodeAt(i % key.length))
+  ).join('');
+
+/**
  * Returns a number whose value is limited to the given range.
  *
  * Example: limit the output of this computation to between 0 and 255
