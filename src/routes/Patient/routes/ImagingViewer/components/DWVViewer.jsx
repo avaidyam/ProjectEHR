@@ -3,23 +3,12 @@ import {
     Menu,
     MenuItem,
     Box,
-    LinearProgress,
-    IconButton,
-    styled
+    LinearProgress
 } from '@mui/material';
 import {
-    App,
-    decoderScripts
+    App
 } from 'dwv';
 
-decoderScripts.jpeg2000 = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpeg2000.js`;
-decoderScripts['jpeg-lossless'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/rii-mango/decode-jpegloss.js`;
-decoderScripts['jpeg-baseline'] = `${process.env.PUBLIC_URL}/assets/dwv/decoders/pdfjs/decode-jpegbaseline.js`;
-decoderScripts.rle = `${process.env.PUBLIC_URL}/assets/dwv/decoders/dwv/decode-rle.js`;
-
-/**
- * Convert a base64 url to an ArrayBuffer.
- */
 export function b64ToFile(str) {
     const parts = str.split(';base64,');
     const byteChars = window.atob(parts[1]);
@@ -28,50 +17,9 @@ export function b64ToFile(str) {
     for (let i = 0, strLen = byteChars.length; i < strLen; i++) {
       bufView[i] = byteChars.charCodeAt(i);
     }
-
     const type = parts[0].replace("data:", "")
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
-
-const LayerGroup = styled('div')({
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000',
-});
-
-const ContentWrapper = styled(Box)({
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%',
-    overflow: 'hidden', 
-});
-
-const CloseButton = styled(IconButton)({
-    position: 'absolute',
-    right: 8,
-    top: 8,
-    color: 'white',
-    zIndex: 1,
-});
-
-const BlackMenu = styled(Menu)({
-    '& .MuiPaper-root': {
-        backgroundColor: 'rgba(0, 0, 0, 0.9)', 
-        color: 'white',
-        border: '1px solid rgba(255, 255, 255, 0.3)', 
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', 
-    },
-    '& .MuiMenuItem-root': {
-        '&:hover': {
-            backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-        },
-        '&.Mui-disabled': {
-            color: 'rgba(255, 255, 255, 0.5)', 
-        },
-    },
-});
 
 const DWVViewer = ({ images, viewerId }) => {
     const [dwvApp, setDwvApp] = useState(null);
@@ -81,149 +29,70 @@ const DWVViewer = ({ images, viewerId }) => {
     const [selectedTool, setSelectedTool] = useState('Scroll');
     const [contextMenu, setContextMenu] = useState(null);
     
-    // Use refs to track the current app instance and prevent race conditions
-    const currentAppRef = useRef(null);
-    const isInitializingRef = useRef(false);
-    const mountedRef = useRef(true);
-
     useEffect(() => {
-        // Prevent multiple concurrent initializations
-        if (isInitializingRef.current) {
-            return;
-        }
-
-        isInitializingRef.current = true;
-
-        // Clean up any existing app first
-        if (currentAppRef.current) {
-            try {
-                currentAppRef.current.reset();
-            } catch (error) {
-                // Silent cleanup
-            }
-            currentAppRef.current = null;
-        }
-
-        // Clear the DOM element to ensure clean state
-        const element = document.getElementById(viewerId);
-        if (element) {
-            // Clear any existing content
-            while (element.firstChild) {
-                element.removeChild(element.firstChild);
-            }
-        }
-
-        const app = new App();
-        currentAppRef.current = app;
+        const app = new App()
+        setDwvApp(app)
         
-        try {
-            app.init({
-                dataViewConfigs: { '*': [{ divId: viewerId}] },
-                tools: {
-                    Scroll: {},
-                    ZoomAndPan: {},
-                    WindowLevel: {},
-                    Draw: {
-                        options: ['Ruler']
-                    }
-                },
-                workerScripts: decoderScripts
-            });
-
-            // Only set up event listeners if component is still mounted
-            if (!mountedRef.current) {
-                app.reset();
-                currentAppRef.current = null;
-                isInitializingRef.current = false;
-                return;
-            }
-
-            app.addEventListener('loadstart', () => {
-                if (mountedRef.current) {
-                    setLoadProgress(0);
-                    setDataLoaded(false);
-                }
-            });
-
-            app.addEventListener('loadprogress', (event) => {
-                if (mountedRef.current) {
-                    setLoadProgress(event.loaded);
-                }
-            });
-
-            app.addEventListener('load', (event) => {
-                if (mountedRef.current) {
-                    setMetaData(app.getMetaData(event.dataid));
-                    setDataLoaded(true);
-                }
-            });
-
-            app.addEventListener('error', (event) => {
-                // Handle error silently
-            });
-
-            app.addEventListener('abort', (event) => {
-                // Handle abort silently
-            });
-
-            app.addEventListener('renderend', () => {
-                // Render completed
-            });
-
-            // Load images
-            if (images && images.length > 0) {
-                if (images[0]?.startsWith?.("data:")) {
-                    app.loadFiles([b64ToFile(images[0])]);
-                } else {
-                    app.loadURLs(images);
+        app.init({
+            dataViewConfigs: { '*': [{ divId: viewerId }] },
+            tools: {
+                Scroll: {},
+                ZoomAndPan: {},
+                WindowLevel: {},
+                Draw: {
+                    options: ['Ruler']
                 }
             }
+        })
 
-            // Only update state if component is still mounted
-            if (mountedRef.current) {
-                setDwvApp(app);
-                app.setTool('Scroll');
-                setSelectedTool('Scroll');
-            }
-
-        } catch (error) {
-            if (currentAppRef.current) {
-                currentAppRef.current.reset();
-                currentAppRef.current = null;
+        const listeners = {
+            'loadstart': () => {
+                setLoadProgress(0)
+                setDataLoaded(false)
+            }, 
+            'loadprogress':  (event) => {
+                setLoadProgress(event.loaded)
+            }, 
+            'load': (event) => {
+                setMetaData(app.getMetaData(event.dataid))
+                setDataLoaded(true)
+                app.fitToContainer()
+            },
+            'error': (event) => {
+                console.error(event)
+            },
+            'abort': (event) => {
+                // silent...
+            },
+            'renderend': () => {
+                // silent...
             }
         }
 
-        isInitializingRef.current = false;
+        for (const [key, value] of Object.entries(listeners))
+            app.addEventListener(key, value)
 
-        // Cleanup function
-        return () => {
-            if (currentAppRef.current) {
-                try {
-                    currentAppRef.current.reset();
-                } catch (error) {
-                    // Silent cleanup
-                }
-                currentAppRef.current = null;
+        // Load images
+        if (images && images.length > 0) {
+            if (images[0]?.startsWith?.("data:")) {
+                app.loadFiles([b64ToFile(images[0])])
+            } else {
+                app.loadURLs(images)
             }
-            setDwvApp(null);
-        };
-    }, [images, viewerId]);
+        }
 
-    // Cleanup on unmount
-    useEffect(() => {
-        mountedRef.current = true;
+        app.setTool('Scroll')
+        setSelectedTool('Scroll')
+
         return () => {
-            mountedRef.current = false;
-            if (currentAppRef.current) {
-                try {
-                    currentAppRef.current.reset();
-                } catch (error) {
-                    // Silent cleanup
-                }
-                currentAppRef.current = null;
-            }
-        };
-    }, [viewerId]);
+            app?.abortAllLoads()
+            app?.removeDataViewConfig("*", viewerId)
+            app?.reset()
+            for (const [key, value] of Object.entries(listeners))
+                app?.removeEventListener(key, value)
+            setDwvApp(null)
+        }
+    }, [])
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();
@@ -235,21 +104,38 @@ const DWVViewer = ({ images, viewerId }) => {
     }, [contextMenu]);
 
     const handleToolChange = (tool) => {
-        if (tool && dwvApp && currentAppRef.current === dwvApp) {
-            setSelectedTool(tool);
-            dwvApp.setTool(tool);
-            if (tool === 'Draw') {
-                dwvApp.setToolFeatures({shapeName: 'Ruler'});
-            }
+        setSelectedTool(tool);
+        dwvApp.setTool(tool);
+        if (tool === 'Draw') {
+            dwvApp.setToolFeatures({shapeName: 'Ruler'});
         }
         setContextMenu(null);
     };
 
     return (
-        <ContentWrapper>
+        <Box>
             <LinearProgress variant="determinate" value={loadProgress} />
-            <LayerGroup id={viewerId} onContextMenu={handleContextMenu} />
-            <BlackMenu
+            <Box 
+                id={viewerId} 
+                onContextMenu={handleContextMenu} 
+                sx={{
+                    display: 'inline-block',
+                    position: 'relative',
+                    justifyContent: 'center',
+                    width: '100%',
+                    height: '100%',
+                    padding: 0,
+                    backgroundColor: '#000',
+                    "& .viewLayer": {
+                        backgroundColor: '#000',
+                        position: 'absolute',
+                    },
+                    "& .drawLayer": {
+                        position: 'absolute',
+                    }
+                }} 
+            />
+            <Menu
                 open={contextMenu !== null}
                 onClose={() => setContextMenu(null)}
                 anchorReference="anchorPosition"
@@ -270,8 +156,8 @@ const DWVViewer = ({ images, viewerId }) => {
                 <MenuItem onClick={() => handleToolChange('Draw')} disabled={!dataLoaded}>
                     Draw
                 </MenuItem>
-            </BlackMenu>
-        </ContentWrapper>
+            </Menu>
+        </Box>
     );
 };
 
