@@ -21,7 +21,6 @@
     "@emotion/styled": "^11.11.0",
     "@google/genai": "^1.17.0",
     "@hello-pangea/dnd": "^18.0.1",
-    "@humeai/voice-react": "^0.2.2",
     "@jsonforms/material-renderers": "^3.6.0",
     "@jsonforms/react": "^3.6.0",
     "@mui/lab": "^6.0.1-beta.36",
