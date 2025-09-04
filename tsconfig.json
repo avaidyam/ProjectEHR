@@ -1,18 +1,15 @@
 {
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "build"],
+  "exclude": ["node_modules","build"],
   "compilerOptions": {
     "baseUrl": "src",
-    
     "target": "es2015",
     "module": "esnext",
-    "moduleResolution": "bundler",
-    "lib": ["dom", "dom.iterable", "esnext"],
-
+    "moduleResolution": "node",
+    "lib": ["dom","dom.iterable","esnext"],
     "strict": true,
     "allowJs": true,
     "jsx": "react-jsx",
-
     "noEmit": true,
     "incremental": true,
     "skipLibCheck": true,
