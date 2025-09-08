@@ -23,6 +23,7 @@ import LabReport from './routes/LabReport/LabReport.jsx';
 import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
+import Demographics from './routes/Demographics/Demographics.jsx';
 import BottomBar from './components/BottomBar.jsx';
 
 const ALL_TABS = {
@@ -39,6 +40,7 @@ const ALL_TABS = {
   "Immunizations": (props) => <Immunizations {...props} />,
   "Clinical Impressions": (props) => <ClinicalImpressions {...props} />,
   "Allergies": (props) => <Allergies {...props} />,
+  "Demographics": (props) => <Demographics {...props} />,
   "Chat": (props) => <Chat {...props} />,
   "Lab Report": (props) => <LabReport {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
@@ -49,7 +51,7 @@ const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Clinical Impressions": {} }
+  { "Allergies": {} }, { "Demographics": {} }, { "Clinical Impressions": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
