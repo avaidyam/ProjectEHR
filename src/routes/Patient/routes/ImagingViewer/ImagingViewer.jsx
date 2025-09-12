@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Paper, Grid } from '@mui/material';
+import { Grid, Box } from '../../../../components/ui/Core.jsx';
 import DWVViewer from './components/DWVViewer.jsx';
 import DWVControls from './components/DWVControls.jsx';
 
@@ -21,19 +21,18 @@ export const ImagingTabContent = ({ selectedRow, viewerId }) => {
     };
 
     const numViewers = parseInt(currentLayout.charAt(0)) * parseInt(currentLayout.charAt(2));
-    
-    // Function to handle a series selection
+
     const handleSeriesSelection = (seriesFiles) => {
         setCurrentImageSet(seriesFiles);
     };
 
     return (
-        <Paper elevation={3} sx={{ padding: 2, height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Box elevation={3} sx={{ padding: 2, height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <DWVControls
-                images={[images]} // Pass the single series within an array
+                images={[images]}
                 currentLayout={currentLayout}
                 onLayoutChange={setCurrentLayout}
-                onSelectSeries={handleSeriesSelection} // Pass the handler
+                onSelectSeries={handleSeriesSelection}
             />
 
             <Grid container spacing={1} sx={{ flexGrow: 1, marginTop: 2 }}>
@@ -57,7 +56,7 @@ export const ImagingTabContent = ({ selectedRow, viewerId }) => {
                     </Grid>
                 ))}
             </Grid>
-        </Paper>
+        </Box>
     );
 };
 

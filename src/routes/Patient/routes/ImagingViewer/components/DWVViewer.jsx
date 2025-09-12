@@ -2,10 +2,10 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
     Menu,
     MenuItem,
-    Box,
     LinearProgress
 } from '@mui/material';
 import { App } from 'dwv';
+import { Box } from '../../../../../components/ui/Core.jsx';
 
 export function b64ToFile(str) {
     const parts = str.split(';base64,');
@@ -96,7 +96,7 @@ const DWVViewer = ({ images, viewerId }) => {
                 app?.removeEventListener(key, value);
             }
         };
-    }, [viewerId, images]); // Re-run effect if viewerId or images change
+    }, [viewerId, images]);
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();

@@ -1,14 +1,11 @@
 import React from 'react';
 import { 
-    Box, 
     ToggleButtonGroup, 
-    ToggleButton, 
-    Typography,
-    Button
+    ToggleButton 
 } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import { Box, Label, Button } from '../../../../../components/ui/Core.jsx';
 
-// Add the onSelectSeries prop
 const DWVControls = ({ images, currentLayout, onLayoutChange, onSelectSeries }) => {
     const handleLayoutChange = (event, newLayout) => {
         if (newLayout !== null) {
@@ -20,7 +17,7 @@ const DWVControls = ({ images, currentLayout, onLayoutChange, onSelectSeries }) 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* Top Toolbar */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, padding: 1, backgroundColor: '#f0f0f0' }}>
-                <Typography variant="body1">Layout:</Typography>
+                <Label variant="body1">Layout:</Label>
                 <ToggleButtonGroup
                     value={currentLayout}
                     exclusive
@@ -54,11 +51,10 @@ const DWVControls = ({ images, currentLayout, onLayoutChange, onSelectSeries }) 
                                 backgroundColor: '#000',
                             }}
                         >
-                            <Typography variant="caption" color="white">{`Series ${index + 1}`}</Typography>
+                            <Label variant="caption" color="white">{`Series ${index + 1}`}</Label>
                         </Box>
                     ))}
                 </Box>
-                {/* The slider component has been removed from this component. */}
             </Box>
         </Box>
     );
