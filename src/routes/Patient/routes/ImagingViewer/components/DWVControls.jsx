@@ -1,10 +1,5 @@
 import React from 'react';
-import { 
-    ToggleButtonGroup, 
-    ToggleButton 
-} from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import { Box, Label, Button } from '../../../../../components/ui/Core.jsx';
+import { Box, Typography, Button, ButtonGroup, Label, Icon } from '../../../../../components/ui/Core.jsx';
 
 const DWVControls = ({ images, currentLayout, onLayoutChange, onSelectSeries }) => {
     const handleLayoutChange = (event, newLayout) => {
@@ -13,27 +8,34 @@ const DWVControls = ({ images, currentLayout, onLayoutChange, onSelectSeries }) 
         }
     };
 
+    const layoutOptions = ['1x1', '1x2', '2x2'];
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {/* Top Toolbar */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, padding: 1, backgroundColor: '#f0f0f0' }}>
                 <Label variant="body1">Layout:</Label>
-                <ToggleButtonGroup
-                    value={currentLayout}
+                <ButtonGroup
                     exclusive
-                    onChange={handleLayoutChange}
                     aria-label="layout options"
                     size="small"
                 >
-                    <ToggleButton value="1x1">1x1</ToggleButton>
-                    <ToggleButton value="1x2">1x2</ToggleButton>
-                    <ToggleButton value="2x2">2x2</ToggleButton>
-                </ToggleButtonGroup>
+                    {layoutOptions.map((layout) => (
+                        <Button
+                            key={layout}
+                            value={layout}
+                            onClick={() => handleLayoutChange(null, layout)}
+                            variant={currentLayout === layout ? 'contained' : 'outlined'}
+                        >
+                            {layout}
+                        </Button>
+                    ))}
+                </ButtonGroup>
                 <Box sx={{ flexGrow: 1 }} />
-                <Button variant="text" startIcon={<FullscreenIcon />}>Full Screen</Button>
+                <Button variant="text" startIcon={<Icon>fullscreen</Icon>}>Full Screen</Button>
             </Box>
 
-            {/* Thumbnail and Slider Bar */}
+            {/* Thumbnail Bar */}
             <Box sx={{ display: 'flex', flexDirection: 'column', padding: 1, border: '1px solid #ccc' }}>
                 <Box sx={{ display: 'flex', overflowX: 'auto', gap: 1, paddingBottom: 1, width: '100%' }}>
                     {images.map((series, index) => (
