@@ -21,7 +21,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
   const [medicalHx, setMedicalHx] = useEncounter().history.medical()
   const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical()
   const [familyHx, setFamilyHx] = useEncounter().history.family()
-  const [medicationHx, setMedicationHx] = useEncounter().history.medications()
+  const [medicationHx, setMedicationHx] = useEncounter().medications()
 
   // const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
@@ -84,11 +84,19 @@ const SnapshotTabContent = ({ children, ...other }) => {
           {isSectionEmpty(medicationHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            medicationHx.map((medication) => (
-              <div key={medication.id} style={{ color: '#9E49E2' }}>
-                {medication.name} {medication.dosage} {medication.frequency}
-              </div>
-            ))
+          <>
+            {medicationHx.map((medication) => (
+              <>
+                <span key={medication.id} style={{ color: '#9E49E2' }}>
+                  {medication.name}{" "}
+                </span>
+                <span key={medication.id} style={{ color: '#666' }}>
+                  {medication.dose} {medication.unit} {medication.frequency}
+                </span>
+                <br />
+              </>
+            ))}
+          </>
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Surgical History</>} color='#9F3494'>
