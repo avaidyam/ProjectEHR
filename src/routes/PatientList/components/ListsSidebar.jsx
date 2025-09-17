@@ -82,7 +82,7 @@ const transformPatientData = (patients) => {
     },
     {
       id: 'available-1',
-      name: 'Specialist Patients',
+      name: 'Carle Foundation Hospital',
       type: 'available',
       patients: specialistPatients.map(transformPatient),
       columns: [

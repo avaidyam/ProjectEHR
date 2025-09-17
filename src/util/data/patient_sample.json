@@ -1,4 +1,433 @@
 {
+  "9182420": {
+    "id": "9182420",
+    "firstName": "Yeoman",
+    "lastName": "Prince",
+    "birthdate": "1963-05-15",
+    "avatarUrl": null,
+    "address": null,
+    "preferredLanguage": "English",
+    "gender": "Male",
+    "PCP": {
+      "name": "Chris Nelson",
+      "title": "MD",
+      "role": "PCP",
+      "avatarUrl": null
+    },
+    "insurance": {
+      "carrierName": "Health Alliance"
+    },
+    "encounters": {
+      "2": {
+        "id": "2",
+        "startDate": "2025-09-17 12:30",
+        "endDate": "2025-09-17 12:50",
+        "type": "ED Visit",
+        "status": "Open",
+        "department": "Emergency Medicine",
+        "specialty": "Emergency Medicine",
+        "provider": "Chris Nelson, MD",
+        "concerns": ["Shortness of Breath"],
+        "diagnoses": ["Shortness of Breath"],
+        "problems": [],
+        "vitals": [
+          {
+            "id": "123456789",
+            "measurementDate": "2025-09-17",
+            "bloodPressureSystolic": 180,
+            "bloodPressureDiastolic": 95,
+            "height": 180,
+            "weight": 118,
+            "bmi": 36.4,
+            "respiratoryRate": 35,
+            "heartRate": 150,
+            "SpO2": 91,
+            "Temp": 37
+          },
+          {
+            "id": "123456780",
+            "measurementDate": "2025-09-10",
+            "height": 180,
+            "weight": 109,
+            "bmi": 33.6
+          }
+        ],
+        "documents": [
+          {
+            "kind": "Note",
+            "data": {
+              "id": "PCP20251002",
+              "summary": "History of Present Illness",
+              "filingDate": "09-17-2025",
+              "encDate": "09-17-2025",
+              "encDept": "Emergency Medicine",
+              "author": "Dr. Nelson",
+              "encType": "ED Visit",
+              "category": "ED Visit",
+              "status": "Pending Lab Results",
+              "tag": "Routine Lab Orders",
+              "encounterProvider": "Dr. Nelson",
+              "noteType": "ED Visit Note",
+              "content": "For the past week has been feeling increasing shortness of breath (SOB), worse with exertion. Has noticed that they wake up in middle of the night coughing and gasping for air, paroxysmal nocturnal dyspnea (PND). SOB is worse with exertion and laying flat, now uses 4 pillows instead of one pillow to sleep. Has noticed bilateral lower extremity swelling over the last week. Usually goes away with raising legs on the recliner, but now swelling won’t go down. Over the last 24 hours symptoms have gotten worse. Actually, slept in the living room in the recliner because SOB gets worse with lying flat (Orthopnea). No associated chest pain or nausea, vomiting or back pain. The patient has noticed he has gained about 20lbs in 1 week: weighed 240-lbs one week ago, now weighs 260-lbs. \n \nHas been compliant on daily medications but has not visited the doctor in over 2 years. Has been feeling well and did not see the need to get a regular medical check-up. \n \nThe patient’s brother called EMS. EMS arrives to the patient’s house and finds patient in tripod position, gasping for air, stating “I can’t breathe”. EMS services is only BLS (Basic Life Support) and gives the patient O2 2L NC , and loads patient in the truck and heads to the nearest ED. \n \nThe patient arrives in the ED, in respiratory distress. EMS states the patient was short of breath and vitals showed Pulse Ox at 91% on 2L NC. The patient can speak 2– 3-word sentences. Brother stayed home and did not accompany the patient to the hospital."
+            }
+          },
+          {
+            "kind": "Note",
+            "data": {
+              "id": "PCP20251003",
+              "summary": "Physical Exam",
+              "filingDate": "09-17-2025",
+              "encDate": "09-17-2025",
+              "encDept": "Emergency Medicine",
+              "author": "Dr. Nelson",
+              "encType": "ED Visit",
+              "category": "ED Visit",
+              "status": "Pending Lab Results",
+              "tag": "Routine Lab Orders",
+              "encounterProvider": "Dr. Nelson",
+              "noteType": "ED Visit Note",
+              "content": "Physical Exam: \nConstitutional: moderate respiratory distress, appears anxious, slightly diaphoretic, wants to sit up rather than lay down, looks restless and sluggish\nHEENT: Head is atraumatic, EOM intact \nCardiac: Tachycardic, JVD, Bilateral Pitting edema, prominent S3 sound\nPulmonary: moderate respiratory distress, has to sit up to get good breaths, shallow breathing, diffuse rales, base crackles \nNeuro: A&Ox3, moving all four extremities without deficit \nAbd: Soft, nontender, active bowel sounds \nGU: deferred \nMSK: Bilateral lower extremity pitting edema to mid-shins, bilateral weak DP and PT pulses\nSkin: cool, clammy \nPsych: appears anxious, cooperative"
+            }
+          },
+          {
+            "kind": "Note",
+            "data": {
+              "id": "PCP20251004",
+              "summary": "Assessment & Plan",
+              "filingDate": "09-17-2025",
+              "encDate": "09-17-2025",
+              "encDept": "Emergency Medicine",
+              "author": "Dr. Nelson",
+              "encType": "ED Visit",
+              "category": "ED Visit",
+              "status": "Pending Lab Results",
+              "tag": "Routine Lab Orders",
+              "encounterProvider": "Dr. Nelson",
+              "noteType": "ED Visit Note",
+              "content": "Assessment: \n62yo Patient with HTN and DM presenting with SOB, worsening over 1 week with associated unexpected 20-lbs weight gain, LE edema, orthopnea, PND. Signs and symptoms today consistent with acute decompensated heart failure. Given the elevated blood pressure, slightly elevated trop, AKI and transaminitis>seems more consistent with acute decompensated heart failure. \n \nPlan: \nIncrease O2 to maintain adequate Spo2 and consider Non-rebreather or NIPPV \nAdminister diuretics: Lasix\n \nDisposition: \nAdmit to hospital"
+            }
+          },
+          {
+            "kind": "Lab",
+            "data": {
+              "Date/Time": "09-23-2022 09:30 AM",
+              "Test": "Complete Blood Count",
+              "Status": "Completed",
+              "Abnormal?": "No",
+              "Expected Date": "01-10-2023",
+              "Expiration": "N/A",
+              "Encounter Provider": "Dr. PCP"
+            },
+            "labResults": [
+              {
+                "name": "WBC",
+                "low": 4,
+                "high": 11,
+                "units": "K/uL",
+                "value": "5.4",
+                "comment": "This is a sample lab value comment"
+              },
+              {
+                "name": "RBC",
+                "low": 4.4,
+                "high": 6,
+                "units": "M/uL",
+                "value": "5.20",
+                "comment": null
+              },
+              {
+                "name": "Hemoglobin",
+                "low": 13.5,
+                "high": 18,
+                "units": "g/dL",
+                "value": "16",
+                "comment": null
+              },
+              {
+                "name": "Hematocrit",
+                "low": 40,
+                "high": 52,
+                "units": "%",
+                "value": 47.2,
+                "comment": "This is a sample lab value comment"
+              },
+              {
+                "name": "MCV",
+                "low": 80,
+                "high": 100,
+                "units": "fL",
+                "value": 88,
+                "comment": null
+              },
+              {
+                "name": "MCH",
+                "low": 27,
+                "high": 33,
+                "units": "pg",
+                "value": 30.8,
+                "comment": null
+              },
+              {
+                "name": "MCHC",
+                "low": 31,
+                "high": 36,
+                "units": "g/dL",
+                "value": "33.9",
+                "comment": null
+              },
+              {
+                "name": "RDW",
+                "low": null,
+                "high": 16.4,
+                "units": "%",
+                "value": 12.7,
+                "comment": null
+              },
+              {
+                "name": "Platelet Count",
+                "low": 150,
+                "high": 400,
+                "units": "K/uL",
+                "value": "160",
+                "comment": null
+              },
+              {
+                "name": "Neutrophil %",
+                "low": 49,
+                "high": 74,
+                "units": "%",
+                "value": 56,
+                "comment": null
+              },
+              {
+                "name": "Lymphocyte %",
+                "low": 26,
+                "high": 46,
+                "units": "%",
+                "value": 27.8,
+                "comment": null
+              },
+              {
+                "name": "Monocyte %",
+                "low": 2,
+                "high": 12,
+                "units": "%",
+                "value": "10.0",
+                "comment": null
+              },
+              {
+                "name": "Eosinophil %",
+                "low": 0,
+                "high": 5,
+                "units": "%",
+                "value": "3.9",
+                "comment": null
+              },
+              {
+                "name": "Basophil %",
+                "low": 0,
+                "high": 2,
+                "units": "%",
+                "value": 1,
+                "comment": null
+              },
+              {
+                "name": "Abs Neutrophil",
+                "low": 2,
+                "high": 8,
+                "units": "K/uL",
+                "value": "3.1",
+                "comment": null
+              },
+              {
+                "name": "Abs. Lymphocyte",
+                "low": 1,
+                "high": 5.1,
+                "units": "K/uL",
+                "value": 1.2,
+                "comment": null
+              },
+              {
+                "name": "Abs. Monocyte",
+                "low": 0,
+                "high": 0.8,
+                "units": "K/uL",
+                "value": "0.7",
+                "comment": null
+              },
+              {
+                "name": "Abs. Eosinophil",
+                "low": 0,
+                "high": 0.5,
+                "units": "K/uL",
+                "value": "0.4",
+                "comment": null
+              },
+              {
+                "name": "Abs. Basophil",
+                "low": 0,
+                "high": 0.2,
+                "units": "K/uL",
+                "value": "0.0",
+                "comment": null
+              }
+            ],
+            "collected": "2024-01-01 05:00:00",
+            "resulted": null,
+            "labReportComment": "This is an example lab report comment.",
+            "resultingAgency": "Carle Foundational Hospital"
+          }
+        ],
+        "allergies": [],
+        "immunizations": [],
+        "history": {
+          "medical": [
+            {
+              "diagnosis": "Essential (primary) hypertension (ICD-10-CM I10.0)",
+              "date": "2025-09-17",
+              "age": "62",
+              "src": "",
+              "problemList": ""
+            },
+            {
+              "diagnosis": "Type 2 diabetes mellitus with hyperglycemia (ICD-10-CM E11.65)",
+              "date": "2025-09-17",
+              "age": "62",
+              "src": "",
+              "problemList": ""
+            }
+          ],
+          "surgical": [],
+          "family": [
+            {
+              "relationship": "Mother",
+              "name": "",
+              "status": "Deceased",
+              "age": 67,
+              "problems": [{"description": "Hypertension","ageOfOnset": "45"}]
+            },
+            {
+              "relationship": "Father",
+              "name": "",
+              "status": "Deceased",
+              "age": 65,
+              "problems": [{"description": "Hypertension","ageOfOnset": "42"}]
+            },
+            {
+              "relationship": "Brother",
+              "name": "",
+              "status": "Alive",
+              "age": 58,
+              "problems": [{"description": "Hypertension","ageOfOnset": "37"}]
+            }
+          ],
+          "SubstanceSexualHealth": {
+            "tobacco": {
+              "status": "Never",
+              "smokeless": "Never",
+              "packsPerDay": 0,
+              "packYears": 0,
+              "startDate": "",
+              "passiveExposure": "Never",
+              "comments": ""
+            },
+            "alcohol": {
+              "use": "No",
+              "drinksPerWeek": {
+                "wine": 0,
+                "beer": 0,
+                "liquor": 0,
+                "mixedDrinks": 0,
+                "standardDrinks": 0
+              },
+              "comments": ""
+            },
+            "drugs": {
+              "use": "No",
+              "types": [],
+              "usePerWeek": 0,
+              "comments": ""
+            },
+            "sexualActivity": {
+              "active": "Not Currently",
+              "birthControl": [],
+              "partners": [],
+              "comments": ""
+            }
+          },
+          "ECigaretteVaping": {},
+          "Socioeconomic": {
+            "occupation": "",
+            "employer": "",
+            "occupationalHistory": [],
+            "demographics": {
+              "maritalStatus": "",
+              "spouseName": "",
+              "numberOfChildren": 0,
+              "yearsOfEducation": 0,
+              "highestEducationLevel": "",
+              "preferredLanguage": "",
+              "ethnicGroup": "",
+              "race": ""
+            }
+          },
+          "SocialDocumentation": {
+            "textbox": "Lives with brother."
+          },
+          "BirthHistory": {},
+          "OBGynHistory": {}
+        },
+        "medications": [
+          {
+            "id": "1",
+            "name": "metoprolol",
+            "brandName": "Toprol XL",
+            "dose": 50,
+            "unit": "mg",
+            "frequency": "ONCE DAILY",
+            "startDate": "",
+            "endDate": "",
+            "route": "oral",
+            "possiblePrnReasons": [],
+            "activePrnReasons": []
+          },
+          {
+            "id": "2",
+            "name": "metformin",
+            "brandName": "",
+            "dose": 500,
+            "unit": "mg",
+            "frequency": "TWICE DAILY",
+            "startDate": "",
+            "endDate": "",
+            "route": "oral",
+            "possiblePrnReasons": [],
+            "activePrnReasons": []
+          }
+        ],
+        "orders": [
+          {
+            "id": "1",
+            "name": "metoprolol",
+            "Dose": "50 mg",
+            "Route": "oral",
+            "Frequency": "ONCE DAILY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
+          },
+          {
+            "id": "2",
+            "name": "metformin",
+            "Dose": "500 mg",
+            "Route": "oral",
+            "Frequency": "TWICE DAILY",
+            "Start Date": "2024-09-23T10:25:43.511Z",
+            "End Date": null
+          }
+        ]
+      }
+    }
+  },
   "1230001": {
     "id": "1230001",
     "firstName": "Alex",
@@ -2631,6 +3060,86 @@
           },
           "BirthHistory": {}
         },
+        "medications": [
+          {
+            "id": "1",
+            "name": "clopidogrel",
+            "brandName": "PLAVIX",
+            "dose": 75,
+            "unit": "mg",
+            "frequency": "once daily",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": ["Prevent blood clots","Reduce risk of stroke"],
+            "activePrnReasons": []
+          },
+          {
+            "id": "2",
+            "name": "aspirin",
+            "brandName": "ASPIRIN",
+            "dose": 81,
+            "unit": "mg",
+            "frequency": "once daily",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": ["Pain relief","Reduce fever","Anti-inflammatory"],
+            "activePrnReasons": []
+          },
+          {
+            "id": "3",
+            "name": "atorvastatin",
+            "brandName": "LIPITOR",
+            "dose": 80,
+            "unit": "mg",
+            "frequency": "once daily",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": [],
+            "activePrnReasons": []
+          },
+          {
+            "id": "4",
+            "name": "carvedilol",
+            "brandName": "COREG",
+            "dose": 3.125,
+            "unit": "mg",
+            "frequency": "twice a day",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": ["High blood pressure","Heart failure"],
+            "activePrnReasons": []
+          },
+          {
+            "id": "5",
+            "name": "lisinopril",
+            "brandName": "QBRELIS",
+            "dose": 10,
+            "unit": "mg",
+            "frequency": "once daily",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": ["High blood pressure","Heart failure"],
+            "activePrnReasons": []
+          },
+          {
+            "id": "6",
+            "name": "eplerenone",
+            "brandName": "INSPRA",
+            "dose": 25,
+            "unit": "mg",
+            "frequency": "once daily",
+            "startDate": "",
+            "endDate": "",
+            "route": "Oral",
+            "possiblePrnReasons": ["Heart failure","Reduce risk of death after heart attack"],
+            "activePrnReasons": []
+          }
+        ],
         "orders": [
           {
             "id": "1",

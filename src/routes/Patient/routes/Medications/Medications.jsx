@@ -1,92 +1,11 @@
 import React, { useState } from 'react';
 import { Checkbox, Table, TableHead, TableRow, TableCell, Icon, Box, TextField, Button, TableBody, Typography } from '@mui/material';
 import MedicationItemEditor from './components/MedicationItemEditor.jsx';
-
-const mockMedicationData = () => ({
-  currentMedications: [
-    {
-      id: '1',
-      name: 'clopidogrel',
-      brandName: 'PLAVIX',
-      dose: 75,
-      unit: 'mg',
-      frequency: 'once daily',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: ['Prevent blood clots', 'Reduce risk of stroke'],
-      activePrnReasons: [],
-    },
-    {
-      id: '2',
-      name: 'aspirin',
-      brandName: 'ASPIRIN',
-      dose: 81,
-      unit: 'mg',
-      frequency: 'once daily',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: ['Pain relief', 'Reduce fever', 'Anti-inflammatory'],
-      activePrnReasons: [],
-    },
-    {
-      id: '3',
-      name: 'atorvastatin',
-      brandName: 'LIPITOR',
-      dose: 80,
-      unit: 'mg',
-      frequency: 'once daily',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: [],
-      activePrnReasons: [],
-    },
-    {
-      id: '4',
-      name: 'carvedilol',
-      brandName: 'COREG',
-      dose: 3.125,
-      unit: 'mg',
-      frequency: 'twice a day',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: ['High blood pressure', 'Heart failure'],
-      activePrnReasons: [],
-    },
-    {
-      id: '5',
-      name: 'lisinopril',
-      brandName: 'QBRELIS',
-      dose: 10,
-      unit: 'mg',
-      frequency: 'once daily',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: ['High blood pressure', 'Heart failure'],
-      activePrnReasons: [],
-    },
-    {
-      id: '6',
-      name: 'eplerenone',
-      brandName: 'INSPRA',
-      dose: 25,
-      unit: 'mg',
-      frequency: 'once daily',
-      startDate: '',
-      endDate: '',
-      route: 'Oral',
-      possiblePrnReasons: ['Heart failure', 'Reduce risk of death after heart attack'],
-      activePrnReasons: [],
-    },
-  ]
-});
+import { usePatient } from 'components/contexts/PatientContext.jsx';
 
 export default function Medications() {
-  const [medications, setMedications] = useState(mockMedicationData().currentMedications);
+  const { useChart, useEncounter } = usePatient();
+  const [medications, setMedications] = useEncounter().medications();
   const [editingMedication, setEditingMedication] = useState(null);
 
   const handleEdit = (medication) => {
@@ -95,7 +14,7 @@ export default function Medications() {
 
   const handleSave = (updatedMedication) => {
     setMedications((prevMedications) =>
-      prevMedications.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
+      prevMedications?.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
     );
     setEditingMedication(null);
   };
@@ -146,7 +65,7 @@ export default function Medications() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {medications.map((medication) => (
+                {(medications ?? []).map((medication) => (
                   <React.Fragment key={medication.id}>
                     <TableRow>
                       <TableCell>
