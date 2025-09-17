@@ -1,5 +1,4 @@
 import React, { useState, useContext  } from 'react';
-import _ from 'lodash';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import DateHelpers from 'util/helpers.js';
@@ -7,7 +6,7 @@ import DateHelpers from 'util/helpers.js';
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
 
-export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
+export const VitalsDisplay = ({ vitals, ...props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const handleMenuOpen = (e) => {
@@ -27,18 +26,20 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
     bmi,
     respiratoryRate,
     heartRate,
-  } = mostRecentVitals;
+    SpO2,
+    Temp
+  } = vitals[0] ?? {};
   return (
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
+      <span>Temp: {Temp}</span>
       <span
-        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.33)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
         BP: {bloodPressureSystolic}/{bloodPressureDiastolic}
       </span>
       <span>HR: {heartRate}</span>
-      <span>Resp: {respiratoryRate}</span>
       <span
-        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.33)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
         BMI: {bmi} ({weight} lbs)
       </span>
@@ -53,28 +54,32 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
                 fontSize: '0.9em',
               }}
             >
-              <div style={{ display: 'flex', flexDirection: "column" }}>
+              <div style={{ display: 'flex', flexDirection: "column", padding: "10px 10px 10px 10px" }}>
                 <span style={{ visibility: 'hidden' }}>hidden</span>
-                <span>BP</span>
-                <span>HR</span>
-                <span>Resp</span>
-                <span>BMI</span>
+                <span>Temperature (˚C)</span>
+                <span>Blood Pressure (mmHg)</span>
+                <span>Pulse Rate (bpm)</span>
+                <span>Respiratory Rate (bpm)</span>
+                <span>SpO2 (%)</span>
+                <span>Height (cm)</span>
+                <span>Weight (kg)</span>
+                <span>BMI (kg/m2)</span>
               </div>
               <div style={{ display: "flex", flex: 1 }}>
-                {olderVitals.map((vitals) => (
+                {vitals.map((vitals) => (
                   <div
                     key={vitals.id}
-                    style={{ display: 'flex', flexDirection: "column", textAlign: "right" }}
+                    style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>
-                      {DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/yy')}
-                    </span>
-                    <span>
-                      {vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}
-                    </span>
-                    <span>{vitals.heartRate}</span>
-                    <span>{vitals.respiratoryRate}</span>
-                    <span>{vitals.bmi}</span>
+                    <span>{DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/dd/yy')}</span>
+                    <span>{vitals.Temp ?? <br />}</span>
+                    <span>{vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}</span>
+                    <span>{vitals.heartRate ?? <br />}</span>
+                    <span>{vitals.respiratoryRate ?? <br />}</span>
+                    <span>{vitals.SpO2 ?? <br />}</span>
+                    <span>{vitals.height ?? <br />}</span>
+                    <span>{vitals.weight ?? <br />}</span>
+                    <span>{vitals.bmi ?? <br />}</span>
                   </div>
                 ))}
               </div>
@@ -91,17 +96,15 @@ export const PatientSidebarVitalsOverview = ({ ...props }) => {
   const [{ vitals }, setEncounter] = useEncounter()()
 
   /** sort most recent to older */
-  const [mostRecentVitals, ...olderVitals] = _.sortBy(
-    vitals || [],
-    (v) => -DateHelpers.convertToDateTime(v.measurementDate).toMillis()
-  );
+  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const allVitals = (vitals ?? []).toSorted((a, b) => _t(b) - _t(a))
   return (
     <div style={{ display: 'flex', flexDirection: "column" }}>
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Vitals {DateHelpers.standardFormat(mostRecentVitals.measurementDate)}
+        Vitals {DateHelpers.standardFormat(allVitals[0]?.measurementDate)}
       </Typography>
-      {mostRecentVitals ? (
-        <VitalsDisplay mostRecentVitals={mostRecentVitals} olderVitals={olderVitals} />
+      {allVitals[0] ? (
+        <VitalsDisplay vitals={allVitals} />
       ) : (
         <i>No vitals to display</i>
       )}
@@ -126,11 +129,6 @@ export const Storyboard = () => {
   } = chart;
 
   const { type, startDate, concerns, problems, allergies, history } = encounter;
-
-  const careGaps = [
-    { id: '1', name: 'COVID Booster #8' },
-    { id: '2', name: 'COVID Booster #9' },
-  ];
 
   return (
     <>
@@ -208,12 +206,6 @@ export const Storyboard = () => {
       <PatientSidebarVitalsOverview />
       <Divider color="inherit" />
 
-      {/* Care Gaps */}
-      <Typography variant="h6" style={{ fontSize: '1.25em' }}>Care Gaps ({careGaps.length})</Typography>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
-        {careGaps.map(c => <span key={c.id}>{c.name}</span>)}
-      </div>
-
     <Divider color="inherit" />
       <Typography
         variant="h6"
@@ -238,7 +230,7 @@ export const Storyboard = () => {
 
       {/* Problem List */}
       <Typography variant="h6" style={{ fontSize: '1.25em' }}>Problem List ({problems?.length})</Typography>
-      {history?.medical.map(cond => (
+      {problems.map(cond => (
         <div key={cond.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{cond.diagnosis}</span>
         </div>
