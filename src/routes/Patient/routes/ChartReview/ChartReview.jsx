@@ -28,7 +28,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
-  const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data).filter(column => column !== 'id' && column !== 'content') : [];
+  const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data).filter(column => column !== 'id' && column !== 'content' && column !== 'image') : [];
 
   const visibleColumns = columns.filter(column =>
     filteredData.every(row => row.data[column] !== undefined && row.data[column] !== null && row.data[column] !== '')
@@ -42,7 +42,15 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     // Open new tabs in the main view
     if (selectedTabLabel === 'Lab')
       setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+    // Cardiac Labs special case
+    if (selectedTabLabel === 'Cardiac' && !!row.labResults)
+      setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
     if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
+      const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+    }
+    // EKG special case
+    if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
       setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
     }

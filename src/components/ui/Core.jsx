@@ -194,6 +194,27 @@ export const KeyValueTable = ({ children, ...props }) => (
   <MUITable {...props}>
     <MUITableHead>
       <MUITableRow>
+        {Object.keys(children[0]).map(x => (
+          <MUITableCell>{x}</MUITableCell>
+        ))}
+      </MUITableRow>
+    </MUITableHead>
+    <MUITableBody>
+      {Object.entries(children).map(([tag, value]) => (
+        <MUITableRow key={tag}>
+          {Object.values(value).map(x => (
+            <MUITableCell>{x}</MUITableCell>
+          ))}
+        </MUITableRow>
+      ))}
+    </MUITableBody>
+  </MUITable>
+)
+
+export const KeyValueTable2 = ({ children, ...props }) => (
+  <MUITable {...props}>
+    <MUITableHead>
+      <MUITableRow>
         <MUITableCell>Key</MUITableCell>
         <MUITableCell>Value</MUITableCell>
       </MUITableRow>
