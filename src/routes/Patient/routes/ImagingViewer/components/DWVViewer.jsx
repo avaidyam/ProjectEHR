@@ -74,7 +74,7 @@ const DWVViewer = ({ images, viewerId }) => {
 
         // Load images
         if (images && images.length > 0) {
-            if (images[0]?.startsWith?.("data:")) {
+            if (images[0]?.startsWith?.("data:image/")) {
                 app.loadFiles([b64ToFile(images[0])])
             } else {
                 app.loadURLs(images)
