@@ -9,6 +9,73 @@ import {
     App
 } from 'dwv';
 
+import { Buffer } from 'buffer';
+import { Jimp } from "jimp";
+import dcmjs from "dcmjs";
+const { DicomDict, DicomMetaDictionary, datasetToDict } = dcmjs.data
+
+// ONLY WORKS IN NODEJS ENVIRONMENT!
+// channels = 4 = RGBA, 3 = RGB, 1 = MONOCHROME
+function convertImageBuffer(source, width, height, inChannels = 3, outChannels = 1) {
+    if (outChannels === 2 || inChannels === 2)
+        return source // error! 
+    if (outChannels >= inChannels) 
+        return source // error! 
+    const buf = Buffer.alloc(width * height * outChannels)
+    for (let i = 0, j = 0; i < source.length; i += inChannels) {
+        const R = source[i + 0]
+        const G = source[i + 1]
+        const B = source[i + 2]
+        if (outChannels === 1) { // Rec.709 conversion
+            buf[j++] = Math.round((R * 0.2126) + (G * 0.7152) + (B * 0.0722))
+        } else {
+            buf[j++] = R
+            buf[j++] = G
+            buf[j++] = B
+        }
+    }
+    return buf
+}
+
+// FIXME: this should ideally be performed at upload-time not render-time!
+async function image2DICOM(input, monochrome = true, compression = false) {
+    let image = await Jimp.read(input)
+    let buffer = null
+    if (compression) {
+        if (monochrome)
+            image = image.greyscale()
+        buffer = await image.getBuffer("image/jpeg", { quality: 99 })
+    } else {
+        buffer = convertImageBuffer(image.bitmap.data, image.width, image.height, 4, 1)
+    }
+    const dataset = {
+        _meta: {
+            TransferSyntaxUID: {
+                Value: [compression ? "1.2.840.10008.1.2.4.50" : "1.2.840.10008.1.2.1"],
+            },
+        },
+        Rows: image.height,
+        Columns: image.width,
+        BitsAllocated: 8,
+        BitsStored: 8,
+        HighBit: 7,
+        SamplesPerPixel: monochrome ? 1 : 3,
+        PixelRepresentation: 0,
+        PlanarConfiguration: 0,
+        PhotometricInterpretation: monochrome ? "MONOCHROME2" : "RGB",
+        PixelData: buffer,
+    }
+    return new Blob([datasetToDict(dataset).write()], { type: 'application/dicom' })
+}
+
+function blob2b64(blob) {
+  return new Promise((resolve, _) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
 export function b64ToFile(str) {
     const parts = str.split(';base64,');
     const byteChars = window.atob(parts[1]);
@@ -74,8 +141,11 @@ const DWVViewer = ({ images, viewerId }) => {
 
         // Load images
         if (images && images.length > 0) {
-            if (images[0]?.startsWith?.("data:")) {
-                app.loadFiles([b64ToFile(images[0])])
+            if (images[0]?.startsWith?.("data:image/")) {
+                image2DICOM(images[0], true).then(image => {
+                    app.loadFiles([new File([image], "file.dcm", { type: "application/dicom" })])
+                })
+                //app.loadFiles([b64ToFile(images[0])])
             } else {
                 app.loadURLs(images)
             }
