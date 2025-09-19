@@ -634,27 +634,42 @@ export default function ResultsReviewEpic() {
                   <div style={{ display: "flex", gap: 12 }}>
                     <div style={{ flex: 1, minHeight: 320 }}>
                       <div style={{ height: 360, width: "100%", border: "1px solid #e0e0e0" }}>
-                        <LineChart
-                          height={360}
-                          dataset={graphDataAsc}
-                          xAxis={[{
+                      <LineChart
+                        height={360}
+                        dataset={graphDataAsc}
+                        xAxis={[
+                          {
                             dataKey: "time",
                             scaleType: "band",
-                            valueFormatter: (iso) => new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(new Date(iso))
-                          }]}
-                          series={visibleTests
-                            .filter((t) => selectedTests[t.name])
-                            .map((t) => ({
-                              dataKey: t.name,
-                              label: `${t.name} (${t.unit || ""})`,
-                              color: brightHSLFromName(t.name),
-                              curve: "linear",
-                              showMark: true,
-                              connectNulls: true,
-                              strokeWidth: 3,
-                            }))}
-                          margin={{ top: 16, right: 16, left: 0, bottom: 0 }}
-                        />
+                            valueFormatter: (iso) =>
+                              new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" })
+                                .format(new Date(iso)),
+                          },
+                        ]}
+                        // Just define a yAxis entry; omit min/max entirely
+                        yAxis={[{}]}
+                        // ✅ Turn on gridlines
+                        grid={{ vertical: true, horizontal: true }}
+
+                        // Optional: style tick labels via slotProps
+                        slotProps={{
+                          xAxis: { tickLabelStyle: { fontSize: 12 } },
+                          yAxis: { tickLabelStyle: { fontSize: 12 } },
+                        }}
+
+                        series={visibleTests
+                          .filter((t) => selectedTests[t.name])
+                          .map((t) => ({
+                            dataKey: t.name,
+                            color: brightHSLFromName(t.name),
+                            curve: "linear",
+                            showMark: true,
+                            connectNulls: true,
+                            strokeWidth: 3,
+                            // no label inside the chart
+                          }))}
+                        margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
+                      />
                       </div>
                       <div style={{ fontSize: 12, opacity: 0.8, marginTop: 6 }}>
                         Tip: Use the checkboxes to include/exclude rows (tests). Colors are stable per test.
