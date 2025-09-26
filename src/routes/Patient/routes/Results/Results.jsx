@@ -1,158 +1,58 @@
+
+////// THIS CODE IS HELPFUL JUST TO SEE WHAT THE LABS ARE LIKE IN JSON !!! ------------------------------------------------
+
+// import React from 'react';
+// import { Box, Typography } from '@mui/material';
+// import { usePatient } from 'components/contexts/PatientContext.jsx';
+
+// export const LabDocumentsDump = () => {
+//   const { useEncounter } = usePatient();
+//   const [documents] = useEncounter().documents();
+
+//   // Filter out only the lab documents
+//   const labDocs = (documents || []).filter(doc => doc.kind === 'Lab');
+
+//   return (
+//     <Box sx={{ p: 2, bgcolor: 'black', minHeight: '100vh' }}>
+//       <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: 'white' }}>
+//         Lab Documents (JSON)
+//       </Typography>
+
+//       {labDocs.length === 0 ? (
+//         <Typography variant="body1" sx={{ color: 'gray' }}>
+//           No lab documents found.
+//         </Typography>
+//       ) : (
+//         labDocs.map((doc, idx) => (
+//           <pre
+//             key={idx}
+//             style={{
+//               background: 'black',
+//               color: 'limegreen',
+//               padding: '1rem',
+//               borderRadius: '8px',
+//               overflowX: 'auto',
+//               fontSize: '0.9rem',
+//               marginBottom: '1.5rem'
+//             }}
+//           >
+//             {JSON.stringify(doc, null, 2)}
+//           </pre>
+//         ))
+//       )}
+//     </Box>
+//   );
+// };
+
+// export default LabDocumentsDump;
+// ------------------------------------------------------------------------------------------------------------------------
+
+
 import React, { useMemo, useState, useCallback } from "react";
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from "@mui/x-data-grid";
 import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label } from "components/ui/Core.jsx";
 import { LineChart } from "@mui/x-charts/LineChart";
-
-/** ---------------------------
- * Mock JSON: Epic-style data
- * --------------------------- */
-const MOCK_RESULTS = {
-  laboratory: {
-    panels: [
-      {
-        name: "Lipids",
-        tests: [
-          {
-            name: "Triglycerides",
-            unit: "mg/dL",
-            referenceRange: "< 150",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 172, flag: "H" },
-              { time: "2025-06-10T08:30:00Z", value: 170, flag: "H" },
-              { time: "2025-03-02T07:40:00Z", value: 130, flag: "" },
-            ],
-          },
-          {
-            name: "Total Cholesterol",
-            unit: "mg/dL",
-            referenceRange: "< 200",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 208, flag: "H" },
-              { time: "2025-06-10T08:30:00Z", value: 195, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 188, flag: "" },
-            ],
-          },
-          {
-            name: "LDL (calc)",
-            unit: "mg/dL",
-            referenceRange: "< 100",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 132, flag: "H" },
-              { time: "2025-06-10T08:30:00Z", value: 118, flag: "H" },
-              { time: "2025-03-02T07:40:00Z", value: 110, flag: "H" },
-            ],
-          },
-          {
-            name: "HDL",
-            unit: "mg/dL",
-            referenceRange: "> 40",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 46, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 44, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 50, flag: "" },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Chemistry",
-        tests: [
-          {
-            name: "Glucose (Fasting)",
-            unit: "mg/dL",
-            referenceRange: "70–99",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 102, flag: "H" },
-              { time: "2025-06-10T08:30:00Z", value: 96, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 92, flag: "" },
-            ],
-          },
-          {
-            name: "Creatinine",
-            unit: "mg/dL",
-            referenceRange: "0.6–1.3",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 1.0, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 1.1, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 1.0, flag: "" },
-            ],
-          },
-          {
-            name: "eGFR",
-            unit: "mL/min/1.73m²",
-            referenceRange: "≥ 60",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 78, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 76, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 80, flag: "" },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Hematology",
-        tests: [
-          {
-            name: "Hemoglobin",
-            unit: "g/dL",
-            referenceRange: "13.5–17.5",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 14.2, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 13.9, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 14.6, flag: "" },
-            ],
-          },
-          {
-            name: "WBC",
-            unit: "10^3/µL",
-            referenceRange: "4.5–11.0",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 6.8, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 5.9, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 7.2, flag: "" },
-            ],
-          },
-          {
-            name: "Platelets",
-            unit: "10^3/µL",
-            referenceRange: "150–450",
-            results: [
-              { time: "2025-08-08T09:15:00Z", value: 210, flag: "" },
-              { time: "2025-06-10T08:30:00Z", value: 198, flag: "" },
-              { time: "2025-03-02T07:40:00Z", value: 225, flag: "" },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  radiology: [
-    {
-      date: "2025-07-01T14:10:00Z",
-      modality: "CT",
-      name: "CT Chest w/ Contrast",
-      impression: "No acute cardiopulmonary process. Stable pulmonary nodule (4mm).",
-    },
-    {
-      date: "2025-04-11T10:25:00Z",
-      modality: "XR",
-      name: "Chest X-ray PA/LAT",
-      impression: "No focal consolidation. Mild bronchitic changes.",
-    },
-  ],
-  cardiology: [
-    {
-      date: "2025-05-20T09:00:00Z",
-      type: "ECG",
-      summary: "Normal sinus rhythm, rate 74 bpm, no acute ST-T wave changes.",
-    },
-    {
-      date: "2025-02-14T12:30:00Z",
-      type: "Echocardiogram",
-      summary: "LVEF ~ 60%, normal chamber sizes, no significant valvular disease.",
-    },
-  ],
-};
+import { usePatient } from "components/contexts/PatientContext.jsx";
 
 const df = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -194,7 +94,6 @@ function CategoryHeader({ label, active, open, onClick }) {
         alignItems: "center",
         gap: 6,
         padding: "8px 10px",
-        borderRadius: 0,
         border: active ? "1px solid #5EA1F8" : "1px solid #e0e0e0",
         background: active ? "#f4f9ff" : "white",
         fontWeight: 600,
@@ -222,40 +121,81 @@ function brightHSLFromName(name) {
   return `hsl(${h} ${s}% ${l}%)`;
 }
 
+/** 🔑 Hook to normalize Lab documents into Epic-style panels */
+function useNormalizedLabs() {
+  const { useEncounter } = usePatient();
+  const [documents] = useEncounter().documents();
+
+  return useMemo(() => {
+    const labs = (documents || []).filter((d) => d.kind === "Lab");
+    const panels = {};
+
+    for (const doc of labs) {
+      const panelName = doc.data?.Test || "Unknown Panel";
+      const time = doc.data?.["Date/Time"] || doc.collected;
+      if (!panels[panelName]) panels[panelName] = {};
+
+      for (const r of doc.labResults || []) {
+        if (!panels[panelName][r.name]) {
+          panels[panelName][r.name] = {
+            name: r.name,
+            unit: r.units || "",
+            referenceRange:
+              r.low != null || r.high != null
+                ? `${r.low ?? ""} – ${r.high ?? ""}`.trim()
+                : "",
+            results: [],
+          };
+        }
+        let flag = "";
+        const val = Number(r.value);
+        if (r.low != null && val < r.low) flag = "L";
+        if (r.high != null && val > r.high) flag = "H";
+
+        panels[panelName][r.name].results.push({
+          time: new Date(time).toISOString(),
+          value: val,
+          flag,
+        });
+      }
+    }
+
+    return Object.entries(panels).map(([panelName, testsObj]) => ({
+      name: panelName,
+      tests: Object.values(testsObj).map((t) => ({
+        ...t,
+        results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
+      })),
+    }));
+  }, [documents]);
+}
+
 export default function ResultsReviewEpic() {
+  const labPanelsData = useNormalizedLabs();
+
   const [category, setCategory] = useState("Laboratory");
-  const [panel, setPanel] = useState("Lipids");
+  const [panel, setPanel] = useState(labPanelsData[0]?.name || "");
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState({
     Laboratory: true,
-    Radiology: false,
-    Cardiology: false,
   });
-  const [radiologySub, setRadiologySub] = useState(null);
-  const [cardiologySub, setCardiologySub] = useState(null);
 
-  // NEW: toggle Table vs Graph
   const [viewMode, setViewMode] = useState("table"); // "table" | "graph"
-
   const toggle = (name) => setExpanded((s) => ({ ...s, [name]: !s[name] }));
 
-  const labPanels = MOCK_RESULTS.laboratory.panels.map((p) => p.name);
+  const labPanels = labPanelsData.map((p) => p.name);
 
   const activePanel = useMemo(
-    () =>
-      MOCK_RESULTS.laboratory.panels.find((p) => p.name === panel) ||
-      MOCK_RESULTS.laboratory.panels[0],
-    [panel]
+    () => labPanelsData.find((p) => p.name === panel) || labPanelsData[0],
+    [panel, labPanelsData]
   );
 
   const allTestsInPanel = activePanel?.tests || [];
 
-  // NEW: right-side selector of visible series for the graph
   const [selectedTests, setSelectedTests] = useState(() =>
     (activePanel?.tests || []).reduce((acc, t) => ({ ...acc, [t.name]: true }), {})
   );
 
-  // keep selections in sync when panel changes
   React.useEffect(() => {
     setSelectedTests((prev) => {
       const base = {};
@@ -308,7 +248,6 @@ export default function ResultsReviewEpic() {
     return [...staticCols, ...timeCols];
   }, [timeKeysDesc, category]);
 
-  // --- Graph prep ---
   const graphDataAsc = useMemo(() => {
     if (category !== "Laboratory") return [];
     const timesAsc = [...timeKeysDesc].sort((a, b) => new Date(a) - new Date(b));
@@ -322,25 +261,10 @@ export default function ResultsReviewEpic() {
     });
   }, [category, timeKeysDesc, visibleTests]);
 
-  const radiologyMatchesSub = (study) => {
-    if (!radiologySub) return true;
-    if (radiologySub === "CT") return study.modality === "CT";
-    if (radiologySub === "Diagnostic") return study.modality !== "CT";
-    return true;
-  };
-
-  const cardiologyMatchesSub = (item) => {
-    if (!cardiologySub) return true;
-    if (cardiologySub === "EKG Tracing") return item.type === "ECG" || item.type === "EKG";
-    if (cardiologySub === "Echocardiogram") return item.type === "Echocardiogram";
-    return true;
-  };
-
   const toggleTest = useCallback((name) => {
     setSelectedTests((s) => ({ ...s, [name]: !s[name] }));
   }, []);
 
-  // --- UI helpers ---
   const ToggleButton = ({ active, onClick, children }) => (
     <button
       onClick={onClick}
@@ -413,7 +337,7 @@ export default function ResultsReviewEpic() {
     <Box sx={{ ml: 2, mt: 2 }}>
       <TitledCard emphasized title="Results Review" color="#5EA1F8">
         <CoreGrid container spacing={2}>
-          {/* LEFT: Navigator with border + margin-right */}
+          {/* LEFT: Navigator */}
           <CoreGrid item xs={12} sm={4} md={3} lg={3}>
             <Box
               sx={{
@@ -430,9 +354,7 @@ export default function ResultsReviewEpic() {
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder={
-                      category === "Laboratory" ? "Search tests..." : "Search studies..."
-                    }
+                    placeholder="Search tests..."
                     style={{
                       width: "100%",
                       padding: "8px 10px",
@@ -488,96 +410,6 @@ export default function ResultsReviewEpic() {
                     </div>
                   )}
                 </div>
-
-                {/* Radiology section */}
-                <div>
-                  <CategoryHeader
-                    label="Radiology"
-                    active={category === "Radiology"}
-                    open={expanded.Radiology}
-                    onClick={() => {
-                      setCategory("Radiology");
-                      toggle("Radiology");
-                    }}
-                  />
-                  {expanded.Radiology && (
-                    <div style={{ marginTop: 8, paddingLeft: 18 }}>
-                      <Stack direction="column" spacing={0}>
-                        {["CT", "Diagnostic"].map((name) => (
-                          <button
-                            key={name}
-                            onClick={() => {
-                              setCategory("Radiology");
-                              setRadiologySub(name);
-                            }}
-                            style={{
-                              textAlign: "left",
-                              padding: "8px 10px",
-                              borderRadius: 0,
-                              border:
-                                radiologySub === name && category === "Radiology"
-                                  ? "1px solid #5EA1F8"
-                                  : "1px solid #e0e0e0",
-                              background:
-                                radiologySub === name && category === "Radiology"
-                                  ? "#f4f9ff"
-                                  : "white",
-                              fontWeight: radiologySub === name ? 600 : 400,
-                              cursor: "pointer",
-                            }}
-                          >
-                            {name}
-                          </button>
-                        ))}
-                      </Stack>
-                    </div>
-                  )}
-                </div>
-
-                {/* Cardiology section */}
-                <div>
-                  <CategoryHeader
-                    label="Cardiology"
-                    active={category === "Cardiology"}
-                    open={expanded.Cardiology}
-                    onClick={() => {
-                      setCategory("Cardiology");
-                      toggle("Cardiology");
-                    }}
-                  />
-                  {expanded.Cardiology && (
-                    <div style={{ marginTop: 8, paddingLeft: 18 }}>
-                      <Stack direction="column" spacing={0}>
-                        {["EKG Tracing", "Echocardiogram"].map((name) => (
-                          <button
-                            key={name}
-                            onClick={() => {
-                              setCategory("Cardiology");
-                              setCardiologySub(name);
-                            }}
-                            style={{
-                              textAlign: "left",
-                              padding: "8px 10px",
-                              borderRadius: 0,
-                              border:
-                                cardiologySub === name && category === "Cardiology"
-                                  ? "1px solid #5EA1F8"
-                                  : "1px solid #e0e0e0",
-                              background:
-                                cardiologySub === name && category === "Cardiology"
-                                  ? "#f4f9ff"
-                                  : "white",
-                              fontWeight: cardiologySub === name ? 600 : 400,
-                              cursor: "pointer",
-                            }}
-                          >
-                            {name}
-                          </button>
-                        ))}
-                      </Stack>
-                    </div>
-                  )}
-                </div>
               </Stack>
             </Box>
           </CoreGrid>
@@ -586,15 +418,16 @@ export default function ResultsReviewEpic() {
           <CoreGrid item xs={12} sm={8} md={9} lg={9}>
             {category === "Laboratory" && (
               <>
-                {/* Top summary & mode switch */}
-                <div style={{
-                  marginBottom: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 12,
-                  flexWrap: "wrap",
-                }}>
+                <div
+                  style={{
+                    marginBottom: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    flexWrap: "wrap",
+                  }}
+                >
                   <div style={{ fontSize: 12, opacity: 0.8 }}>
                     {panel} • {visibleTests.length} tests • {timeKeysDesc.length} time points
                   </div>
@@ -634,99 +467,48 @@ export default function ResultsReviewEpic() {
                   <div style={{ display: "flex", gap: 12 }}>
                     <div style={{ flex: 1, minHeight: 320 }}>
                       <div style={{ height: 360, width: "100%", border: "1px solid #e0e0e0" }}>
-                      <LineChart
-                        height={360}
-                        dataset={graphDataAsc}
-                        xAxis={[
-                          {
-                            dataKey: "time",
-                            scaleType: "band",
-                            valueFormatter: (iso) =>
-                              new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" })
-                                .format(new Date(iso)),
-                          },
-                        ]}
-                        // Just define a yAxis entry; omit min/max entirely
-                        yAxis={[{}]}
-                        // ✅ Turn on gridlines
-                        grid={{ vertical: true, horizontal: true }}
-
-                        // Optional: style tick labels via slotProps
-                        slotProps={{
-                          xAxis: { tickLabelStyle: { fontSize: 12 } },
-                          yAxis: { tickLabelStyle: { fontSize: 12 } },
-                        }}
-
-                        series={visibleTests
-                          .filter((t) => selectedTests[t.name])
-                          .map((t) => ({
-                            dataKey: t.name,
-                            color: brightHSLFromName(t.name),
-                            curve: "linear",
-                            showMark: true,
-                            connectNulls: true,
-                            strokeWidth: 3,
-                            // no label inside the chart
-                          }))}
-                        margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
-                      />
+                        <LineChart
+                          height={360}
+                          dataset={graphDataAsc}
+                          xAxis={[
+                            {
+                              dataKey: "time",
+                              scaleType: "band",
+                              valueFormatter: (iso) =>
+                                new Intl.DateTimeFormat("en-US", {
+                                  month: "short",
+                                  day: "2-digit",
+                                }).format(new Date(iso)),
+                            },
+                          ]}
+                          yAxis={[{}]}
+                          grid={{ vertical: true, horizontal: true }}
+                          slotProps={{
+                            xAxis: { tickLabelStyle: { fontSize: 12 } },
+                            yAxis: { tickLabelStyle: { fontSize: 12 } },
+                          }}
+                          series={visibleTests
+                            .filter((t) => selectedTests[t.name])
+                            .map((t) => ({
+                              dataKey: t.name,
+                              color: brightHSLFromName(t.name),
+                              curve: "linear",
+                              showMark: true,
+                              connectNulls: true,
+                              strokeWidth: 3,
+                            }))}
+                          margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
+                        />
                       </div>
                       <div style={{ fontSize: 12, opacity: 0.8, marginTop: 6 }}>
-                        Tip: Use the checkboxes to include/exclude rows (tests). Colors are stable per test.
+                        Tip: Use the checkboxes to include/exclude rows (tests). Colors are stable
+                        per test.
                       </div>
                     </div>
-                    {/* Right control & reference bar */}
                     <RightSelector />
                   </div>
                 )}
               </>
-            )}
-
-            {category === "Radiology" && (
-              <Stack direction="column" spacing={0}>
-                {MOCK_RESULTS.radiology
-                  .filter((x) => radiologyMatchesSub(x))
-                  .filter((x) =>
-                    query.trim()
-                      ? (x.name + " " + x.modality + " " + x.impression)
-                          .toLowerCase()
-                          .includes(query.trim().toLowerCase())
-                      : true
-                  )
-                  .map((study, i) => (
-                    <div key={i}>
-                      <div style={{ fontWeight: 600 }}>{study.name}</div>
-                      <div style={{ fontSize: 12, opacity: 0.8, marginBottom: 4 }}>
-                        {study.modality} • {df.format(new Date(study.date))}
-                      </div>
-                      <div style={{ fontSize: 13 }}>{study.impression}</div>
-                      {i < MOCK_RESULTS.radiology.length - 1 && <Divider sx={{ my: 1 }} />}
-                    </div>
-                  ))}
-              </Stack>
-            )}
-
-            {category === "Cardiology" && (
-              <Stack direction="column" spacing={0}>
-                {MOCK_RESULTS.cardiology
-                  .filter((x) => cardiologyMatchesSub(x))
-                  .filter((x) =>
-                    query.trim()
-                      ? (x.type + " " + x.summary)
-                          .toLowerCase()
-                          .includes(query.trim().toLowerCase())
-                      : true
-                  )
-                  .map((item, i) => (
-                    <div key={i}>
-                      <div style={{ fontWeight: 600 }}>
-                        {item.type} • {df.format(new Date(item.date))}
-                      </div>
-                      <div style={{ fontSize: 13, marginTop: 4 }}>{item.summary}</div>
-                      {i < MOCK_RESULTS.cardiology.length - 1 && <Divider sx={{ my: 1 }} />}
-                    </div>
-                  ))}
-              </Stack>
             )}
           </CoreGrid>
         </CoreGrid>
