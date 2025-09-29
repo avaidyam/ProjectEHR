@@ -1,5 +1,4 @@
 import React, { useState, useContext  } from 'react';
-import _ from 'lodash';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import DateHelpers from 'util/helpers.js';
@@ -7,7 +6,7 @@ import DateHelpers from 'util/helpers.js';
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
 
-export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
+export const VitalsPopup = ({ vitals, ...props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const handleMenuOpen = (e) => {
@@ -27,18 +26,20 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
     bmi,
     respiratoryRate,
     heartRate,
-  } = mostRecentVitals;
+    SpO2,
+    Temp
+  } = vitals[0] ?? {};
   return (
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
+      <span>Temp: {Temp}</span>
       <span
-        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.33)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
         BP: {bloodPressureSystolic}/{bloodPressureDiastolic}
       </span>
       <span>HR: {heartRate}</span>
-      <span>Resp: {respiratoryRate}</span>
       <span
-        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.33)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
         BMI: {bmi} ({weight} lbs)
       </span>
@@ -53,28 +54,32 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
                 fontSize: '0.9em',
               }}
             >
-              <div style={{ display: 'flex', flexDirection: "column" }}>
+              <div style={{ display: 'flex', flexDirection: "column", padding: "10px 10px 10px 10px" }}>
                 <span style={{ visibility: 'hidden' }}>hidden</span>
-                <span>BP</span>
-                <span>HR</span>
-                <span>Resp</span>
-                <span>BMI</span>
+                <span>Temperature (˚C)</span>
+                <span>Blood Pressure (mmHg)</span>
+                <span>Pulse Rate (bpm)</span>
+                <span>Respiratory Rate (bpm)</span>
+                <span>SpO2 (%)</span>
+                <span>Height (cm)</span>
+                <span>Weight (kg)</span>
+                <span>BMI (kg/m2)</span>
               </div>
               <div style={{ display: "flex", flex: 1 }}>
-                {olderVitals.map((vitals) => (
+                {vitals.map((vitals) => (
                   <div
                     key={vitals.id}
-                    style={{ display: 'flex', flexDirection: "column", textAlign: "right" }}
+                    style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>
-                      {DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/yy')}
-                    </span>
-                    <span>
-                      {vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}
-                    </span>
-                    <span>{vitals.heartRate}</span>
-                    <span>{vitals.respiratoryRate}</span>
-                    <span>{vitals.bmi}</span>
+                    <span>{DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/dd/yy')}</span>
+                    <span>{vitals.Temp ?? <br />}</span>
+                    <span>{vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}</span>
+                    <span>{vitals.heartRate ?? <br />}</span>
+                    <span>{vitals.respiratoryRate ?? <br />}</span>
+                    <span>{vitals.SpO2 ?? <br />}</span>
+                    <span>{vitals.height ?? <br />}</span>
+                    <span>{vitals.weight ?? <br />}</span>
+                    <span>{vitals.bmi ?? <br />}</span>
                   </div>
                 ))}
               </div>
@@ -86,22 +91,20 @@ export const VitalsDisplay = ({ mostRecentVitals, olderVitals, ...props }) => {
   );
 };
 
-export const PatientSidebarVitalsOverview = ({ ...props }) => {
+export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
-  const [{ vitals }, setEncounter] = useEncounter()()
+  const [vitals, setVitals] = useEncounter().vitals()
 
   /** sort most recent to older */
-  const [mostRecentVitals, ...olderVitals] = _.sortBy(
-    vitals || [],
-    (v) => -DateHelpers.convertToDateTime(v.measurementDate).toMillis()
-  );
+  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const allVitals = (vitals ?? []).toSorted((a, b) => _t(b) - _t(a))
   return (
     <div style={{ display: 'flex', flexDirection: "column" }}>
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Vitals {DateHelpers.standardFormat(mostRecentVitals.measurementDate)}
+        Vitals {DateHelpers.standardFormat(allVitals[0]?.measurementDate)}
       </Typography>
-      {mostRecentVitals ? (
-        <VitalsDisplay mostRecentVitals={mostRecentVitals} olderVitals={olderVitals} />
+      {allVitals[0] ? (
+        <VitalsPopup vitals={allVitals} />
       ) : (
         <i>No vitals to display</i>
       )}
@@ -109,55 +112,44 @@ export const PatientSidebarVitalsOverview = ({ ...props }) => {
   );
 };
 
-export const Storyboard = () => {
+export const SidebarPatientInfo = () => {
   const { useChart, useEncounter } = usePatient();
-  const [chart] = useChart()();
-  const [encounter] = useEncounter()();
+  const [mrn] = useChart().id();
+  const [firstName] = useChart().firstName();
+  const [lastName] = useChart().lastName();
+  const [birthdate] = useChart().birthdate();
+  const [preferredLanguage] = useChart().preferredLanguage();
+  const [avatarUrl] = useChart().avatarUrl();
+  const [gender] = useChart().gender();
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <Avatar
+        src={avatarUrl}
+        sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
+      >
+        {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
+      </Avatar>
+      <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', marginBottom: '1em' }}>
+        <strong>{firstName} {lastName}</strong>
+        <span>Sex: {gender}</span>
+        <span>Age: {new Date(birthdate).age()} years old</span>
+        <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
+        <span>MRN: {mrn}</span>
+        <strong>Preferred language: {preferredLanguage}</strong>
+        {preferredLanguage !== 'English' && 
+          <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
+        }
+      </div>
+    </div>
+  )
+}
 
-  const {
-    firstName,
-    lastName,
-    birthdate,
-    preferredLanguage,
-    avatarUrl,
-    gender,
-    PCP,
-    insurance,
-  } = chart;
-
-  const { type, startDate, concerns, problems, allergies, history } = encounter;
-
-  const careGaps = [
-    { id: '1', name: 'COVID Booster #8' },
-    { id: '2', name: 'COVID Booster #9' },
-  ];
-
+export const SidebarCareTeam = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [PCP, setPCP] = useChart().PCP();
+  const [insurance, setInsurance] = useChart().insurance();
   return (
     <>
-      {/* Patient Header */}
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <Avatar
-          src={avatarUrl}
-          sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
-        >
-          {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
-        </Avatar>
-        <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', marginBottom: '1em' }}>
-          <strong>{firstName} {lastName}</strong>
-          <span>Sex: {gender}</span>
-          <span>Age: {new Date(birthdate).age()} years old</span>
-          <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
-          <span>MRN: {chart.id}</span>
-          <strong>Preferred language: {preferredLanguage}</strong>
-          {preferredLanguage !== 'English' && 
-            <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
-          }
-        </div>
-      </div>
-
-      <Divider color="inherit" />
-
-      {/* PCP + Insurance */}
       <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
         <div style={{ display: 'flex', marginBottom: '0.5em' }}>
           <Avatar
@@ -171,11 +163,17 @@ export const Storyboard = () => {
             <strong>{PCP?.role}</strong>
           </div>
         </div>
-
       </div>
-<span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
+      <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
+    </>
+  )
+}
 
-      {/* Allergies with high-severity highlight */}
+export const SidebarAllergies = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [allergies, setAllergies] = useEncounter().allergies();
+  return (
+    <>
       {allergies && allergies.length > 0 ? (
         allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
           <Alert 
@@ -195,57 +193,72 @@ export const Storyboard = () => {
       ) : (
         <span>Allergies: None on file</span>
       )}
+    </>
+  )
+}
 
-      <Divider color="inherit" />
-
-      {/* Encounter Info */}
-      <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {type}</Typography>
-      <Typography>Date: {startDate}</Typography>
-      <Typography>Reason: {concerns?.join(", ")}</Typography>
-
-      <Divider color="inherit" />
-      <PatientSidebarVitalsOverview />
-      <Divider color="inherit" />
-
-      {/* Care Gaps */}
-      <Typography variant="h6" style={{ fontSize: '1.25em' }}>Care Gaps ({careGaps.length})</Typography>
-      <div style={{ display: 'flex', flexDirection: "column" }}>
-        {careGaps.map(c => <span key={c.id}>{c.name}</span>)}
-      </div>
-
-    <Divider color="inherit" />
-      <Typography
-        variant="h6"
-        color="inherit"
-        component="div"
-        style={{ fontSize: '1.25em'}}
-      >
+export const SidebarClinicalImpressions = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [clinicalImpressions, setClinicalImpressions] = useEncounter().clinicalImpressions();
+  return (
+    <>
+      <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em'}}>
         Clinical Impressions
       </Typography>
-      {encounter?.clinicalImpressions && encounter.clinicalImpressions.length > 0 ? (
+      {clinicalImpressions?.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {encounter.clinicalImpressions.map((ci, idx) => (
-            <div key={idx}>
-              {idx + 1}. {ci.name}
-            </div>
+          {clinicalImpressions.map((ci, idx) => (
+            <div key={idx}>{idx + 1}. {ci.name}</div>
           ))}
         </div>
       ) : (
         <i>No clinical impressions on file</i>
       )}
-      <Divider color="inherit" />
+    </>
+  )
+}
 
-      {/* Problem List */}
-      <Typography variant="h6" style={{ fontSize: '1.25em' }}>Problem List ({problems?.length})</Typography>
-      {history?.medical.map(cond => (
-        <div key={cond.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{cond.diagnosis}</span>
+export const SidebarProblemList = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [problems, setProblems] = useEncounter().problems();
+  return (
+    <>
+      <Typography variant="h6" style={{ fontSize: '1.25em' }}>
+        Problem List ({problems?.length})
+      </Typography>
+      {problems?.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {problems.map((p, idx) => (<div key={p.id}>{p.name}</div>))}
         </div>
-      ))}
-      <div style={{ display: 'flex', flexDirection: "column" }}>
-        {problems?.map(p => <div key={p.id}>{p.name}</div>)}
-      </div>
+      ) : (
+        <i>No problems on file</i>
+      )}
+    </>
+  )
+}
+
+export const Storyboard = () => {
+  const { useChart, useEncounter } = usePatient();
+  const [encounter] = useEncounter()();
+  return (
+    <>
+      <SidebarPatientInfo />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarCareTeam />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarAllergies />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <Typography variant="h6">Encounter</Typography>
+      <Typography>Type: {encounter.type}</Typography>
+      <Typography>Date: {encounter.startDate}</Typography>
+      <Typography>Reason: {encounter.concerns?.join(", ")}</Typography>
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarVitals />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarClinicalImpressions />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarProblemList />
     </>
   );
 };

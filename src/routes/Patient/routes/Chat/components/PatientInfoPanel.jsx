@@ -3,8 +3,8 @@ import { Paper, Typography, Box } from "@mui/material";
 
 export default function PatientInfoPanel() {
   const patient = {
-    name: "John Miller",
-    dob: "August 15, 1969",
+    name: "John Hanson",
+    dob: "May 15, 1958",
     complaint: "Chest pain",
   };
 
