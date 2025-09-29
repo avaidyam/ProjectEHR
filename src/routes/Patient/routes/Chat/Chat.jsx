@@ -27,7 +27,7 @@ export default function Chat() {
     <GeminiAPIProvider options={{ 
       httpOptions: { apiVersion: "v1alpha" },
       apiKey: apiKey, 
-      model: "models/gemini-2.5-flash-preview-native-audio-dialog",
+      model: "models/gemini-2.5-flash-native-audio-preview-09-2025",
       config: {
         speechConfig: { 
           languageCode: "en-US",
