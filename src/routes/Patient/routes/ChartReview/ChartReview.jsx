@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
-import { Box, Divider, Button, DataGrid } from 'components/ui/Core'
+import { Box, Divider, Button, Label, DataGrid } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
@@ -141,6 +141,7 @@ export const ChartReview = ({ ...props }) => {
   
   return (
     <div>
+      <Label variant="h6" sx={{ p: 1, pb: 0 }}>Chart Review</Label>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs 
           variant="scrollable" 

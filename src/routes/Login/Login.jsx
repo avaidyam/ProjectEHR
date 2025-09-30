@@ -10,9 +10,10 @@ import schedule from 'util/data/schedule.json'; // Import the schedule JSON file
 import patient_sample from 'util/data/patient_sample.json';
 
 const departments = [
-  { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE HOSPITAL" },
-  { id: 26, name: "ADULT MEDICINE PWAM PBB", identityId: 200612664, specialty: "Windsor Primary Care", location: "URBANA ON WINDSOR", serviceArea: "CARLE HOSPITAL" },
-  { id: 30, name: "CARDIOLOGY", identityId: 200703456, specialty: "Heart Care", location: "Main Building", serviceArea: "CARLE HOSPITAL" },
+  { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE FOUNDATION HOSPITAL" },
+  { id: 26, name: "ADULT MEDICINE PWAM PBB", identityId: 200612664, specialty: "Windsor Primary Care", location: "URBANA ON WINDSOR", serviceArea: "CARLE FOUNDATION HOSPITAL" },
+  { id: 30, name: "EMERGENCY DEPARTMENT", identityId: 200703416, specialty: "Emergency Medicine", location: "Main Building", serviceArea: "CARLE FOUNDATION HOSPITAL" },
+  { id: 30, name: "CARDIOLOGY", identityId: 200703456, specialty: "Heart Care", location: "Main Building", serviceArea: "CARLE FOUNDATION HOSPITAL" },
   // Add more rows as needed...
 ];
 
