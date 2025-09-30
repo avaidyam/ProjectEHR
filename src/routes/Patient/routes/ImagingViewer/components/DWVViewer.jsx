@@ -2,12 +2,10 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
     Menu,
     MenuItem,
-    Box,
     LinearProgress
 } from '@mui/material';
-import {
-    App
-} from 'dwv';
+import { App } from 'dwv';
+import { Box } from '../../../../../components/ui/Core.jsx';
 
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
@@ -82,7 +80,7 @@ export function b64ToFile(str) {
     const buf = new ArrayBuffer(byteChars.length);
     const bufView = new Uint8Array(buf);
     for (let i = 0, strLen = byteChars.length; i < strLen; i++) {
-      bufView[i] = byteChars.charCodeAt(i);
+        bufView[i] = byteChars.charCodeAt(i);
     }
     const type = parts[0].replace("data:", "")
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
@@ -92,14 +90,14 @@ const DWVViewer = ({ images, viewerId }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const [metaData, setMetaData] = useState({});
-    const [selectedTool, setSelectedTool] = useState('Scroll');
     const [contextMenu, setContextMenu] = useState(null);
-    
+
     useEffect(() => {
-        const app = new App()
-        setDwvApp(app)
+        console.log(`DWVViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
         
+        const app = new App();
+        setDwvApp(app);
+
         app.init({
             dataViewConfigs: { '*': [{ divId: viewerId }] },
             tools: {
@@ -110,59 +108,65 @@ const DWVViewer = ({ images, viewerId }) => {
                     options: ['Ruler']
                 }
             }
-        })
+        });
 
         const listeners = {
             'loadstart': () => {
-                setLoadProgress(0)
-                setDataLoaded(false)
+                console.log(`DWVViewer(${viewerId}): Load start event triggered.`);
+                setLoadProgress(0);
+                setDataLoaded(false);
             }, 
-            'loadprogress':  (event) => {
-                setLoadProgress(event.loaded)
+            'loadprogress': (event) => {
+                console.log(`DWVViewer(${viewerId}): Load progress: ${event.loaded}%`);
+                setLoadProgress(event.loaded);
             }, 
             'load': (event) => {
-                setMetaData(app.getMetaData(event.dataid))
-                setDataLoaded(true)
-                app.fitToContainer()
+                console.log(`DWVViewer(${viewerId}): Load finished successfully.`);
+                // get a handle on the data, not strictly needed but good practice
+                // const data = app.getData(event.dataId);
+                setDataLoaded(true);
+                app.fitToContainer();
             },
             'error': (event) => {
-                console.error(event)
+                console.error(`DWVViewer(${viewerId}): An error occurred during loading.`, event);
             },
-            'abort': (event) => {
-                // silent...
+            'abort': () => {
+                console.log(`DWVViewer(${viewerId}): Load aborted.`);
             },
             'renderend': () => {
-                // silent...
+                console.log(`DWVViewer(${viewerId}): Render finished.`);
             }
-        }
+        };
 
-        for (const [key, value] of Object.entries(listeners))
-            app.addEventListener(key, value)
+        for (const [key, value] of Object.entries(listeners)) {
+            app.addEventListener(key, value);
+        }
 
         // Load images
         if (images && images.length > 0) {
+            console.log(`DWVViewer(${viewerId}): Attempting to load ${images.length} images.`);
             if (images[0]?.startsWith?.("data:image/")) {
                 image2DICOM(images[0], true).then(image => {
                     app.loadFiles([new File([image], "file.dcm", { type: "application/dicom" })])
                 })
                 //app.loadFiles([b64ToFile(images[0])])
             } else {
-                app.loadURLs(images)
+                app.loadURLs(images);
             }
         }
 
-        app.setTool('Scroll')
-        setSelectedTool('Scroll')
+        app.setTool('Scroll');
 
         return () => {
-            app?.abortAllLoads()
-            app?.removeDataViewConfig("*", viewerId)
-            app?.reset()
-            for (const [key, value] of Object.entries(listeners))
-                app?.removeEventListener(key, value)
-            setDwvApp(null)
-        }
-    }, [])
+            console.log(`DWVViewer(${viewerId}): Component unmounting. Cleaning up...`);
+            app?.abortAllLoads();
+            app?.removeDataViewConfig("*", viewerId);
+            app?.reset();
+            for (const [key, value] of Object.entries(listeners)) {
+                app?.removeEventListener(key, value);
+            }
+        };
+    }, [viewerId, images]);
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();
@@ -174,28 +178,34 @@ const DWVViewer = ({ images, viewerId }) => {
     }, [contextMenu]);
 
     const handleToolChange = (tool) => {
-        setSelectedTool(tool);
-        dwvApp.setTool(tool);
-        if (tool === 'Draw') {
-            dwvApp.setToolFeatures({shapeName: 'Ruler'});
+        if (dwvApp) {
+            dwvApp.setTool(tool);
+            if (tool === 'Draw') {
+                dwvApp.setToolFeatures({shapeName: 'Ruler'});
+            }
         }
         setContextMenu(null);
     };
 
     return (
-        <Box>
-            <LinearProgress variant="determinate" value={loadProgress} />
+        <Box 
+            sx={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                backgroundColor: '#000',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <LinearProgress variant="determinate" value={loadProgress} sx={{ position: 'absolute', top: 0, left: 0, width: '100%' }} />
             <Box 
                 id={viewerId} 
                 onContextMenu={handleContextMenu} 
                 sx={{
-                    display: 'inline-block',
-                    position: 'relative',
-                    justifyContent: 'center',
                     width: '100%',
                     height: '100%',
-                    padding: 0,
-                    backgroundColor: '#000',
                     "& .viewLayer": {
                         backgroundColor: '#000',
                         position: 'absolute',
