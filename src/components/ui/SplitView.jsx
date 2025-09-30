@@ -51,6 +51,9 @@ const TabWithMenu = ({ onMove, onClose, ...props }) => {
 
 export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, accessories, ...props }) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
+  const [isCollapsed, setCollapsed] = useState(false)
+
+  // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
 
   const [mainTabs, setMainTabs] = useState(defaultMainTabs)
   const [sideTabs, setSideTabs] = useState(defaultSideTabs)
@@ -99,8 +102,8 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 setSelectedMainTab(destination.index);
             }           
         }}>
-        <PanelGroup direction="horizontal">
-            <Panel defaultSize={50} minSize={35}>
+        <PanelGroup direction="horizontal" onLayout={(layout) => setCollapsed(layout[1] === 0)}>
+            <Panel defaultSize={65} minSize={35}>
                 <TabContext value={selectedMainTab}>
                     <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                         {accessories}
@@ -151,7 +154,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 </PanelResizeHandle>
             }
             {(!isMobile && sideTabs.length > 0) &&
-                <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
+                <Panel collapsible defaultSize={35} minSize={35} collapsedSize={0}>
                     <TabContext value={selectedSideTab}>
                         <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                             <Droppable droppableId="side" direction="horizontal"> 
