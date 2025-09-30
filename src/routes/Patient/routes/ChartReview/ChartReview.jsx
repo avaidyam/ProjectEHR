@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Tabs, Tab, Box, Divider, Table, TableHead, TableRow, TableCell, Button
-} from '@mui/material';
+import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
+import { Box, Divider, Button, Label, DataGrid } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
@@ -24,7 +23,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
-  const [customTabs, setCustomTabs] = useSplitView()
+  const { mainTabs, setMainTabs, setSelectedMainTab } = useSplitView()
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
@@ -39,23 +38,29 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     //setIsWindowOpen(true);
     //setTableWidth('50%');
 
-    // Open new tabs in the main view
-    if (selectedTabLabel === 'Lab')
-      setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
-    // Cardiac Labs special case
-    if (selectedTabLabel === 'Cardiac' && !!row.labResults)
-      setCustomTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
-    if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
+    if (selectedTabLabel === 'Lab') {
+      // Open new tabs in the main view
+      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setSelectedMainTab(mainTabs.length)
+    } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
+      // Cardiac Labs special case
+      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setSelectedMainTab(mainTabs.length)
+    } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
-    }
-    // EKG special case
-    if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
+      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+      setSelectedMainTab(mainTabs.length)
+    } else if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
+      // EKG special case
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setCustomTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+      setSelectedMainTab(mainTabs.length)
+    } else if (selectedTabLabel === 'Note') {
+      setMainTabs(prev => [...prev, {"Note": { selectedRow: row }}])
+      setSelectedMainTab(mainTabs.length)
+    } else {
+      // TODO: handle other tabs somehow?
     }
-    if (selectedTabLabel === 'Note')
-      setCustomTabs(prev => [...prev, {"Note": { selectedRow: row }}])
   };
 
   const handleCloseWindow = () => {
@@ -67,24 +72,16 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     <Box position="relative">
       <div style={{ display: 'flex', overflowX: 'auto' }}>
         <div style={{ flex: '1', maxWidth: tableWidth, transition: 'max-width 0.5s', overflow: 'auto' }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {visibleColumns.map((column, index) => (
-                  <TableCell key={index}>{column}</TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <tbody>
-              {filteredData.map((row, index) => (
-                <TableRow key={index} onClick={() => handleRowClick(row)}>
-                  {visibleColumns.map((column, columnIndex) => (
-                    <TableCell key={columnIndex}>{row.data[column]}</TableCell> 
-                  ))}
-                </TableRow>
-              ))}
-            </tbody>
-          </Table>
+          <DataGrid
+            showToolbar
+            columns={visibleColumns.map(x => ({ field: x, headerName: x, flex: 1, minWidth: 100 }))}
+            rows={filteredData.map(x => ({ ...x.data, id: JSON.stringify(x.data), _obj: x }))}
+            onCellDoubleClick={(params) => handleRowClick(params.row._obj)}
+            pageSizeOptions={[25, 50, 100]}
+            localeText={{
+              footerTotalRows: "Total items: "
+            }}
+          />
         </div>
         {isWindowOpen && (
           <div style={{
@@ -144,6 +141,7 @@ export const ChartReview = ({ ...props }) => {
   
   return (
     <div>
+      <Label variant="h6" sx={{ p: 1, pb: 0 }}>Chart Review</Label>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs 
           variant="scrollable" 

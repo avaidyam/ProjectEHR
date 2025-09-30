@@ -51,14 +51,23 @@ const TabWithMenu = ({ onMove, onClose, ...props }) => {
 
 export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, accessories, ...props }) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
+  const [isCollapsed, setCollapsed] = useState(false)
+
+  // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
 
   const [mainTabs, setMainTabs] = useState(defaultMainTabs)
   const [sideTabs, setSideTabs] = useState(defaultSideTabs)
-  const [mainTab, setMainTab] = useState(0)
-  const [sideTab, setSideTab] = useState(0)
+  const [selectedMainTab, setSelectedMainTab] = useState(0)
+  const [selectedSideTab, setSelectedSideTab] = useState(0)
+  const providerState = { 
+      mainTabs, setMainTabs,
+      sideTabs, setSideTabs,
+      selectedMainTab, setSelectedMainTab,
+      selectedSideTab, setSelectedSideTab,
+  }
 
   return (
-    <SplitViewContext.Provider value={[mainTabs, setMainTabs]}>
+    <SplitViewContext.Provider value={providerState}>
         <DragDropContext onDragEnd={({ source, destination }) => {
             if (destination == null) return;
             if (source.droppableId === "main" && destination.droppableId === "main") {
@@ -66,13 +75,13 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 const draggedTab = newTabs.splice(source.index, 1)[0];
                 newTabs.splice(destination.index, 0, draggedTab);
                 setMainTabs(newTabs);
-                setMainTab(destination.index)
+                setSelectedMainTab(destination.index)
             } else if (source.droppableId === "side" && destination.droppableId === "side") {
                 const newTabs = [...sideTabs];
                 const draggedTab = newTabs.splice(source.index, 1)[0];
                 newTabs.splice(destination.index, 0, draggedTab);
                 setSideTabs(newTabs);
-                setSideTab(destination.index)
+                setSelectedSideTab(destination.index)
             } else if (source.droppableId === "main" && destination.droppableId === "side") {
                 const newMainTabs = [...mainTabs];
                 const newSideTabs = [...sideTabs];
@@ -80,8 +89,8 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 newSideTabs.splice(destination.index, 0, draggedTab);
                 setMainTabs(newMainTabs);
                 setSideTabs(newSideTabs);
-                setMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-                setSideTab(destination.index);
+                setSelectedMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+                setSelectedSideTab(destination.index);
             } else if (source.droppableId === "side" && destination.droppableId === "main") { 
                 const newMainTabs = [...mainTabs];
                 const newSideTabs = [...sideTabs];
@@ -89,13 +98,13 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 newMainTabs.splice(destination.index, 0, draggedTab);
                 setMainTabs(newMainTabs);
                 setSideTabs(newSideTabs);
-                setSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-                setMainTab(destination.index);
+                setSelectedSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+                setSelectedMainTab(destination.index);
             }           
         }}>
-        <PanelGroup direction="horizontal">
-            <Panel defaultSize={50} minSize={35}>
-                <TabContext value={mainTab}>
+        <PanelGroup direction="horizontal" onLayout={(layout) => setCollapsed(layout[1] === 0)}>
+            <Panel defaultSize={65} minSize={35}>
+                <TabContext value={selectedMainTab}>
                     <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                         {accessories}
                         <Droppable droppableId="main" direction="horizontal"> 
@@ -108,7 +117,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                 scrollButtons="auto"
                                 allowScrollButtonsMobile 
                                 TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                                onChange={(event, newValue) => setMainTab(newValue)}
+                                onChange={(event, newValue) => setSelectedMainTab(newValue)}
                             >
                                 {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
                                 <DraggableTab
@@ -145,8 +154,8 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                 </PanelResizeHandle>
             }
             {(!isMobile && sideTabs.length > 0) &&
-                <Panel collapsible defaultSize={50} minSize={35} collapsedSize={0}>
-                    <TabContext value={sideTab}>
+                <Panel collapsible defaultSize={35} minSize={35} collapsedSize={0}>
+                    <TabContext value={selectedSideTab}>
                         <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                             <Droppable droppableId="side" direction="horizontal"> 
                             {(droppable) => (
@@ -158,7 +167,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                     scrollButtons="auto"
                                     allowScrollButtonsMobile 
                                     TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                                    onChange={(event, newValue) => setSideTab(newValue)}
+                                    onChange={(event, newValue) => setSelectedSideTab(newValue)}
                                 >
                                     {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
                                         <DraggableTab

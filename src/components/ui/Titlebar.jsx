@@ -28,7 +28,7 @@ export const Titlebar = ({ onLogout }) => {
 
   return (
     <>
-      <AppBar elevation={0} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar elevation={0} enableColorOnDark position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <Button text color="inherit" sx={{ textTransform: 'none' }}><Label bold italic variant="h6">ProjectEHR</Label></Button>
