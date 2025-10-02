@@ -35,7 +35,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 export default function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
-  const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory();
+  const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory({});
   const [reviewed, setReviewed] = useState(false);
 
   const deliveryMethodOptions = [

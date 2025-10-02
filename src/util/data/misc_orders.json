@@ -564,6 +564,10 @@
     "type": "Labs/Point of Care"
   },
   {
+    "name": "ELECTROCARDIOGRAM (EKG/ECG)",
+    "type": "Labs/Other Labs"
+  },
+  {
     "name": "2 DRUG PANEL, URINE",
     "type": "Labs/Other Labs"
   },

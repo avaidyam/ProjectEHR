@@ -68,7 +68,7 @@ export const VitalsPopup = ({ vitals, ...props }) => {
               <div style={{ display: "flex", flex: 1 }}>
                 {vitals.map((vitals) => (
                   <div
-                    key={vitals.id}
+                    key={vitals.measurementDate}
                     style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
                     <span>{DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/dd/yy')}</span>
@@ -228,7 +228,7 @@ export const SidebarProblemList = () => {
       </Typography>
       {problems?.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {problems.map((p, idx) => (<div key={p.id}>{p.name}</div>))}
+          {problems.map((p, idx) => (<div key={JSON.stringify(p)}>{p.display ? p.display : p.diagnosis}</div>))}
         </div>
       ) : (
         <i>No problems on file</i>
@@ -248,10 +248,17 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarAllergies />
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {encounter.type}</Typography>
-      <Typography>Date: {encounter.startDate}</Typography>
-      <Typography>Reason: {encounter.concerns?.join(", ")}</Typography>
+      {!!encounter ? 
+        <>
+          <Typography variant="h6">Encounter</Typography>
+          <Typography>Type: {encounter?.type}</Typography>
+          <Typography>Date: {encounter?.startDate}</Typography>
+          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography> 
+        </> :
+        <>
+          <Typography variant="h6">Chart Review</Typography>
+        </>
+      }
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarVitals />
       <Divider sx={{ bgcolor: "primary.light" }} />

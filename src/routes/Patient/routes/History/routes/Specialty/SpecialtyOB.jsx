@@ -30,7 +30,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 
 export default function SpecialtyOB() {
   const { useEncounter } = usePatient();
-  const [obgynData, setObgynData] = useEncounter().history.OBGynHistory();
+  const [obgynData, setObgynData] = useEncounter().history.OBGynHistory({});
   const [reviewed, setReviewed] = useState(false);
 
   // Obstetric History handlers

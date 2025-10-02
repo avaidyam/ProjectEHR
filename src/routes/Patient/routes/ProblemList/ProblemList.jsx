@@ -37,14 +37,14 @@ async function getSnomed(term) {
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const { useChart, useEncounter } = usePatient()
-  const [problems, setProblems] = useEncounter().problems()
+  const [problems, setProblems] = useEncounter().problems([])
 
   const [searchTerm, setSearchTerm] = useState('');
   const [diagnosesArray, setDiagnosesArray] = useState([]);
   const [selectedDiagnosis, setSelectedDiagnosis] = useState({}); // Track selected diagnosis
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [expandedRows, setExpandedRows] = useState(Array(problems.length).fill(false));
+  const [expandedRows, setExpandedRows] = useState(Array(problems?.length ?? 0).fill(false));
 
   const [indexToUpdate, setIndexToUpdate] = useState(null);
 
@@ -163,7 +163,7 @@ const ProblemListTabContent = ({ children, ...other }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {problems.map((problem, index) => (
+              {(problems ?? []).map((problem, index) => (
                 <React.Fragment key={index}>
                   <TableRow>
                     <TableCell>{problem.display ? problem.display : problem.diagnosis}</TableCell>

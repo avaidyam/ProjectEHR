@@ -41,7 +41,7 @@ const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {allergies.map((allergy) => (
+            {allergies?.map((allergy) => (
               <TableRow
                 key={allergy.id}
                 onClick={() => onEdit(allergy)}

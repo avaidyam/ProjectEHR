@@ -10,7 +10,7 @@ import { Snackbar, Alert } from '@mui/material';
 
 export const Allergies = () => {
   const { useChart, useEncounter } = usePatient();
-  const [allergies, setAllergies] = useEncounter().allergies();
+  const [allergies, setAllergies] = useEncounter().allergies([]);
   const [editingAllergy, setEditingAllergy] = useState(null);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
@@ -44,7 +44,7 @@ const normalizeAllergies = (rawAllergies) => {
 
 // Use it when initializing state
  useEffect(() => {
-    setAllergies(normalizeAllergies(allergies));
+    setAllergies(normalizeAllergies(allergies ?? []));
   }, []);
 
   const handleEdit = (allergy) => {

@@ -34,7 +34,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 
 export default function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
-  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth();
+  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth({});
 
   const tobaccoOptions = ['Never', 'Former', 'Every Day', 'Some Days', 'Unknown'];
   const smokelessOptions = ['Never', 'Former', 'Current', 'Unknown'];
@@ -131,15 +131,15 @@ export default function SubstanceAndSexualHistory() {
               {tobaccoOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.tobacco?.status === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.tobacco?.status === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('tobacco', 'status', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.tobacco?.status === option ? '#1976d2' : 'transparent',
-                    color: substanceData.tobacco?.status === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.tobacco?.status === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.tobacco?.status === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.tobacco?.status === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.tobacco?.status === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
