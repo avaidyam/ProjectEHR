@@ -61,6 +61,7 @@ export const Titlebar = ({ onLogout }) => {
                   style: {
                     height: '48ch',
                     width: '48ch',
+                    marginLeft: -10
                   },
                 }
               }}
