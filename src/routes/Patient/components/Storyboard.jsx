@@ -248,10 +248,17 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarAllergies />
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <Typography variant="h6">Encounter</Typography>
-      <Typography>Type: {encounter.type}</Typography>
-      <Typography>Date: {encounter.startDate}</Typography>
-      <Typography>Reason: {encounter.concerns?.join(", ")}</Typography>
+      {!!encounter ? 
+        <>
+          <Typography variant="h6">Encounter</Typography>
+          <Typography>Type: {encounter?.type}</Typography>
+          <Typography>Date: {encounter?.startDate}</Typography>
+          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography> 
+        </> :
+        <>
+          <Typography variant="h6">Chart Review</Typography>
+        </>
+      }
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarVitals />
       <Divider sx={{ bgcolor: "primary.light" }} />

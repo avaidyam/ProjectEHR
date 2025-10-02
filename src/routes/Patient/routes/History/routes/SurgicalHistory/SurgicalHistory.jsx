@@ -150,7 +150,7 @@ export default function SurgicalHistory() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {surgicalHx.map((entry, index) => (
+            {(surgicalHx ?? []).map((entry, index) => (
               <StyledTableRow key={index}>
                 <TableCell component="th" scope="row" sx={{ color: '#e91e63', fontWeight: 'bold' }}>
                   {entry.procedure}

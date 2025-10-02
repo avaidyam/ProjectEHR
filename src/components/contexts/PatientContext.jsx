@@ -3,16 +3,37 @@ import { useNavigate, generatePath, useParams } from 'react-router-dom';
 import createStore from "teaful";
 import patient_sample from 'util/data/patient_sample.json'
 
+export const DatabaseContext = React.createContext()
 export const PatientContext = React.createContext()
+
+// 
+const initialStore = {
+  patients: patient_sample
+  // FIXME: add more databases here!
+}
+const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
+  // TODO: ...
+})
+
+// Usage: `<DatabaseProvider>{...}</DatabaseProvider>`
+export const DatabaseProvider = ({ children }) => {
+  return (
+    <DatabaseContext.Provider value={useStore}>
+      {children}
+    </DatabaseContext.Provider>
+  )
+}
 
 // FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
 // We need to actually useEffect() to set the "database" value to the new patient data.
 
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider = ({ patient, encounter, children }) => {
+  const [initialStore, setStore] = useDatabase().patients[patient]()
+  console.dir(initialStore)
 
   // 
-  const initialStore = patient_sample[patient]
+  //const initialStore = patient_sample[patient]
   const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
     // TODO: ...
   })
@@ -27,6 +48,20 @@ export const PatientProvider = ({ patient, encounter, children }) => {
       {children}
     </PatientContext.Provider>
   )
+}
+
+/** 
+  Usage:
+  ```
+  const { orders, patients, ... } = useDatabase()()
+  ```
+ */
+export const useDatabase = () => {
+  const ctx = React.useContext(DatabaseContext)
+  if (ctx === undefined) {
+    throw new Error('useDatabase must be used within a DatabaseProvider')
+  }
+  return ctx
 }
 
 /** 

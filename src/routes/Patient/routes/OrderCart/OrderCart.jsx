@@ -153,14 +153,6 @@ export const OrderCart = () => {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-
-
-            console.log("before after")
-            console.dir(orderList.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
-            let tester = orderList.upsert(orderCart, "id")
-            console.dir(tester.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
-
-
             setOrderList(prev => prev.upsert(orderCart, "id"))
             setOrderCart([])
           }}>

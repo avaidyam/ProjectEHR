@@ -135,7 +135,7 @@ export default function MedicalHistory() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {medicalHx.map((entry, index) => (
+            {(medicalHx ?? []).map((entry, index) => (
               <StyledTableRow key={index}>
                 <TableCell component="th" scope="row">
                   {entry.date}

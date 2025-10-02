@@ -245,7 +245,7 @@ export default function FamilyHistory() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {familyData.map((member) => (
+            {(familyData ?? []).map((member) => (
               <TableRow key={member.relationship}>
                 <StyledTableCell sx={{ fontWeight: 'bold' }}>{member.relationship}</StyledTableCell>
                 <StyledTableCell>

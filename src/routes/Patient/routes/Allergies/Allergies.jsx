@@ -44,7 +44,7 @@ const normalizeAllergies = (rawAllergies) => {
 
 // Use it when initializing state
  useEffect(() => {
-    setAllergies(normalizeAllergies(allergies));
+    setAllergies(normalizeAllergies(allergies ?? []));
   }, []);
 
   const handleEdit = (allergy) => {
