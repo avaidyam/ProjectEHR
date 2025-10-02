@@ -26,7 +26,7 @@ import {
 
 export default function Immunizations() {
   const { useChart, useEncounter } = usePatient()
-  const [immunizations, setImmunizations] = useEncounter().immunizations()
+  const [immunizations, setImmunizations] = useEncounter().immunizations([])
   const [editingImmunization, setEditingImmunization] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 

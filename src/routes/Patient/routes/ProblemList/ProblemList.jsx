@@ -37,7 +37,7 @@ async function getSnomed(term) {
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const { useChart, useEncounter } = usePatient()
-  const [problems, setProblems] = useEncounter().problems()
+  const [problems, setProblems] = useEncounter().problems([])
 
   const [searchTerm, setSearchTerm] = useState('');
   const [diagnosesArray, setDiagnosesArray] = useState([]);

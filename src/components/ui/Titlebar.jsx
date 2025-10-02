@@ -73,11 +73,7 @@ export const Titlebar = ({ onLogout }) => {
                   firstName: "Doe",
                   lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
                   birthdate: "1890-01-01",
-                  encounters: {
-                    [encID]: {
-                      id: encID
-                    }
-                  }
+                  encounters: { [encID]: { id: encID } }
                 }
                 setPatientsDB(prev => ({ ...prev, [pt.id]: pt }))
                 setAnchorEl(null)

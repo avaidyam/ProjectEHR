@@ -228,7 +228,7 @@ export const SidebarProblemList = () => {
       </Typography>
       {problems?.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {problems.map((p, idx) => (<div key={p.id}>{p.name}</div>))}
+          {problems.map((p, idx) => (<div key={p.id}>{p.display ? p.display : p.diagnosis}</div>))}
         </div>
       ) : (
         <i>No problems on file</i>

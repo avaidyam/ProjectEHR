@@ -34,7 +34,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 
 export default function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
-  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth();
+  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth({});
 
   const tobaccoOptions = ['Never', 'Former', 'Every Day', 'Some Days', 'Unknown'];
   const smokelessOptions = ['Never', 'Former', 'Current', 'Unknown'];

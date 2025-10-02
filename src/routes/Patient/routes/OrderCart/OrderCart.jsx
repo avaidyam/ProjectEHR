@@ -54,8 +54,8 @@ const getCategoryForOrder = (order) => {
 export const OrderCart = () => {
   const { useChart, useEncounter } = usePatient()
   // eslint-disable-next-line dot-notation
-  const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
   const [orderList, setOrderList] = useEncounter().orders([])
+  const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
   
   const [value, setValue] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)

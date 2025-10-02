@@ -38,7 +38,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function MedicalHistory() {
   const { useEncounter } = usePatient();
-  const [medicalHx, setMedicalHx] = useEncounter().history.medical();
+  const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
 
   const [editingEntry, setEditingEntry] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
