@@ -49,7 +49,7 @@ export const Titlebar = ({ onLogout }) => {
       <AppBar elevation={0} enableColorOnDark position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
           <Stack direction="row" spacing={2} alignItems="center">
-            <Button text color="inherit" sx={{ textTransform: 'none' }} onClick={(event) => setAnchorEl(event.currentTarget)}>
+            <Button color="inherit" sx={{ textTransform: 'none' }} onClick={(event) => setAnchorEl(event.currentTarget)}>
               <Label bold italic variant="h6"><Icon sx={{ mb: -0.5 }}>menu</Icon>ProjectEHR</Label>
             </Button>
             <Menu
@@ -104,9 +104,7 @@ export const Titlebar = ({ onLogout }) => {
             ))}
           </Tabs>
           <Stack direction="row" spacing={2}>
-            <Tooltip title="Account settings">
-              <IconButton onClick={(event) => setOpen(event.currentTarget)}><Icon avatar size={24}>person</Icon></IconButton>
-            </Tooltip>
+            <IconButton onClick={(event) => setOpen(event.currentTarget)}><Icon avatar size={24}>person</Icon></IconButton>
             <Menu
               anchorEl={open}
               open={!!open}

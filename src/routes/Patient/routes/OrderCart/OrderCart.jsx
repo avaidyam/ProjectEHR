@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Card, FormControl, Icon, InputLabel,
-  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material'
-import { alpha, Box, Button, TitledCard } from 'components/ui/Core.jsx'
+import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
+import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core.jsx'
 import { usePatient } from 'components/contexts/PatientContext.jsx'
 import { OrderComposer } from './components/OrderComposer.jsx'
 import { OrderPicker } from './components/OrderPicker.jsx'
@@ -66,10 +65,10 @@ export const OrderCart = () => {
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
         <Card sx={{ m: 1, p: 1 }}>
           <Box>
-            <ToggleButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
-              <ToggleButton>Manage Orders</ToggleButton>
-              <ToggleButton>Order Sets</ToggleButton>
-            </ToggleButtonGroup>
+            <ButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
+              <Button>Manage Orders</Button>
+              <Button>Order Sets</Button>
+            </ButtonGroup>
             <FormControl sx={{ minWidth: 100 }} size="small">
               <InputLabel>Options</InputLabel>
               <Select>

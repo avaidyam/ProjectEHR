@@ -44,7 +44,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             allergiesHx.map((allergy) => (
-              <div key={allergy.id}>
+              <div key={`${allergy.allergen}-${allergy.reaction}`}>
                 <span style={{ color: '#9F3494'}}>{allergy.allergen}</span> {allergy.reaction}
               </div>
             ))
@@ -71,7 +71,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             medicalHx.map((condition) => (
-              <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={`${condition.date}-${condition.diagnosis}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {condition.date}
                 </span>
@@ -83,28 +83,24 @@ const SnapshotTabContent = ({ children, ...other }) => {
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>} color='#9E49E2'>
           {isSectionEmpty(medicationHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
-          ) : (
-          <>
-            {medicationHx.map((medication) => (
-              <>
-                <span key={medication.id} style={{ color: '#9E49E2' }}>
-                  {medication.name}{" "}
-                </span>
-                <span key={medication.id} style={{ color: '#666' }}>
-                  {medication.dose} {medication.unit} {medication.frequency}
-                </span>
-                <br />
-              </>
-            ))}
-          </>
-          )}
+          ) : medicationHx.map((medication) => (
+            <React.Fragment key={`${medication.name}-${medication.dose}`}>
+              <span style={{ color: '#9E49E2' }}>
+                {medication.name}{" "}
+              </span>
+              <span style={{ color: '#666' }}>
+                {medication.dose} {medication.unit} {medication.frequency}
+              </span>
+              <br />
+            </React.Fragment>
+          ))}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Surgical History</>} color='#9F3494'>
           {isSectionEmpty(surgicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             surgicalHx.map((condition) => (
-              <div key={condition.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={`${condition.date}-${condition.procedure}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {condition.date}
                 </span>
@@ -118,7 +114,7 @@ const SnapshotTabContent = ({ children, ...other }) => {
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             familyHx.map((relative) => (
-              <div key={relative.id}>
+              <div key={`${relative.relationship}-${relative.problems.length}`}>
                 <span style={{color:'#bbbbbb'}}>{relative.relationship}</span>
                 <span style={{marginLeft:'35px'}}>{relative.problems.map(x => x.description).join(', ')}</span>
               </div>
