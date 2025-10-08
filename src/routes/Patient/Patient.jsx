@@ -25,6 +25,8 @@ import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
 import BottomBar from './components/BottomBar.jsx';
+import Handoff from './routes/Handoff/Handoff.jsx';
+
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -45,13 +47,15 @@ const ALL_TABS = {
   "Lab Report": (props) => <LabReport {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
+  "Handoff": (props) => <Handoff {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Demographics": {} }, { "Clinical Impressions": {} }
+  { "Allergies": {} }, { "Demographics": {} }, { "Clinical Impressions": {} },
+  { "Handoff": {} } 
 ]
 
 const DEFAULT_SIDE_TABS = [
