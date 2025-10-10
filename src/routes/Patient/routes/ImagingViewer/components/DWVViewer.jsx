@@ -91,6 +91,7 @@ const DWVViewer = ({ images, viewerId }) => {
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
     const [contextMenu, setContextMenu] = useState(null);
+    const viewerRef = React.useRef(null);
 
     useEffect(() => {
         console.log(`DWVViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
@@ -142,6 +143,12 @@ const DWVViewer = ({ images, viewerId }) => {
             app.addEventListener(key, value);
         }
 
+        // For auto-resizing the view when parent bounds change
+        const observer = new ResizeObserver((entries) => app.onResize())
+        if (viewerRef.current) {
+            observer.observe(viewerRef.current)
+        }
+
         // Load images
         if (images && images.length > 0) {
             console.log(`DWVViewer(${viewerId}): Attempting to load ${images.length} images.`);
@@ -165,8 +172,9 @@ const DWVViewer = ({ images, viewerId }) => {
             for (const [key, value] of Object.entries(listeners)) {
                 app?.removeEventListener(key, value);
             }
+            observer.disconnect()
         };
-    }, [viewerId, images]);
+    }, [viewerRef, viewerId, images]);
 
     const handleContextMenu = useCallback((event) => {
         event.preventDefault();
@@ -199,15 +207,17 @@ const DWVViewer = ({ images, viewerId }) => {
                 alignItems: 'center',
             }}
         >
-            <LinearProgress variant="determinate" value={loadProgress} sx={{ position: 'absolute', top: 0, left: 0, width: '100%' }} />
+            {loadProgress < 100 && 
+                <LinearProgress variant="determinate" value={loadProgress} sx={{ position: 'absolute', top: "50%", width: '100%' }} />
+            }
             <Box 
                 id={viewerId} 
+                ref={viewerRef}
                 onContextMenu={handleContextMenu} 
                 sx={{
                     width: '100%',
                     height: '100%',
                     "& .viewLayer": {
-                        backgroundColor: '#000',
                         position: 'absolute',
                     },
                     "& .drawLayer": {

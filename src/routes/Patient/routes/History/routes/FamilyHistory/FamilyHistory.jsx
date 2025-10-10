@@ -107,7 +107,7 @@ const getUniqueProblems = (familyHistory) => {
 
 export default function FamilyHistory() {
   const { useEncounter } = usePatient();
-  const [familyHx, setFamilyHx] = useEncounter().history.family();
+  const [familyHx, setFamilyHx] = useEncounter().history.family([]);
   const [familyData, setFamilyData] = useState(
     familyHx && familyHx.length > 0 ? familyHx : defaultFamilyMembers
   );
@@ -245,7 +245,7 @@ export default function FamilyHistory() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {familyData.map((member) => (
+            {(familyData ?? []).map((member) => (
               <TableRow key={member.relationship}>
                 <StyledTableCell sx={{ fontWeight: 'bold' }}>{member.relationship}</StyledTableCell>
                 <StyledTableCell>

@@ -35,7 +35,7 @@ export const ImagingTabContent = ({ selectedRow, viewerId }) => {
                 onSelectSeries={handleSeriesSelection}
             />
 
-            <Grid container spacing={1} sx={{ flexGrow: 1, marginTop: 2 }}>
+            <Grid container spacing={1} sx={{ flexGrow: 1, marginTop: 2, p: 0 }}>
                 {Array.from({ length: numViewers }).map((_, index) => (
                     <Grid 
                         item 
@@ -45,9 +45,9 @@ export const ImagingTabContent = ({ selectedRow, viewerId }) => {
                             height: (numViewers > 2) ? '50%' : '100%',
                             display: 'flex', 
                             justifyContent: 'center', 
-                            alignItems: 'center', 
-                            backgroundColor: '#000'
+                            alignItems: 'center',
                         }}
+                        style={{ paddingLeft: 0, paddingTop: 0 }}
                     >
                         <DWVViewer 
                             images={currentImageSet} 

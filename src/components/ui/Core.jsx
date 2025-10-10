@@ -66,11 +66,11 @@ export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
 export const dayjs = dayjs2
 
 // This component doubles as Box and Paper.
-export const Box = ({ paper, children, ...props }) => {
+export const Box = React.forwardRef(({ paper, children, ...props }, ref) => {
   if (paper === true)
-    return (<MUIPaper {...props}>{children}</MUIPaper>)
-  return (<MUIBox {...props}>{children}</MUIBox>)
-}
+    return (<MUIPaper ref={ref} {...props}>{children}</MUIPaper>)
+  return (<MUIBox ref={ref} {...props}>{children}</MUIBox>)
+})
 
 export const Stack = ({ direction="column", spacing=0, children, ...props }) => (
   <MUIStack direction={direction} spacing={spacing} {...props}>

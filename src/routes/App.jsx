@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { DatabaseProvider } from 'components/contexts/PatientContext';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Titlebar } from 'components/ui/Titlebar.jsx';
 import { Schedule } from './Schedule/Schedule.jsx';
@@ -17,6 +18,7 @@ export const App = () => {
   const handleLogout = () => { logout(); setIsLoggedIn(false); navigate('/') }
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatabaseProvider>
         {isLoggedIn && <Titlebar onLogout={handleLogout} />}
         <Routes>
           <Route 
@@ -32,11 +34,16 @@ export const App = () => {
             element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />} 
           />
           <Route 
+            path="/patient/:mrn" 
+            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />} 
+          />
+          <Route 
             path="/patient/:mrn/encounter/:enc" 
             element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />} 
           />
           <Route path="*" render={() => <Navigate replace to="/" />} />
         </Routes>
+      </DatabaseProvider>
     </LocalizationProvider>
   )
 }

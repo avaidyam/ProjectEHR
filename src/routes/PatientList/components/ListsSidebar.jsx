@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Box, Icon, TreeView } from 'components/ui/Core.jsx';
+import { useDatabase } from 'components/contexts/PatientContext'
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
 import patient_sample from 'util/data/patient_sample.json';
 
@@ -13,7 +14,7 @@ const transformPatientData = (patients) => {
   const primaryCarePatients = Object.values(patients).filter(patient => patient.PCP?.role === 'Primary Care Physician');
   const specialistPatients = Object.values(patients).filter(patient => patient.PCP?.role !== 'Primary Care Physician');
   const recentEncounterPatients = Object.values(patients).filter(patient => {
-    const hasRecentEncounter = Object.values(patient.encounters).some(encounter => {
+    const hasRecentEncounter = Object.values(patient.encounters ?? {}).some(encounter => {
       const encounterDate = new Date(encounter.date);
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -24,9 +25,9 @@ const transformPatientData = (patients) => {
 
   const transformPatient = (patient) => {
     // Get the most recent encounter
-    const latestEncounter = Object.values(patient.encounters).reduce((latest, current) => {
+    const latestEncounter = Object.values(patient.encounters ?? {}).reduce((latest, current) => {
       return new Date(current.startDate) > new Date(latest.startDate) ? current : latest;
-    }, Object.values(patient.encounters)[0]);
+    }, Object.values(patient.encounters ?? {})[0]);
 
     return {
       id: patient.id,
@@ -127,12 +128,17 @@ export const ListsSidebar = () => {
   const { lists, setLists } = usePatientLists();
   const selectedListId = searchParams.get('listId');
   const [expandedItems, setExpandedItems] = useState(['my-lists', 'available-lists']);
+  const [patientsDB, setPatientsDB] = useDatabase().patients()
 
   useEffect(() => {
     if (lists.length === 0) {
-      setLists(initialLists);
+      setLists(transformPatientData(patientsDB));
     }
-  }, [lists.length, setLists]);
+  }, [lists.length, setLists, patientsDB]);
+
+  useEffect(() => {
+    setLists(transformPatientData(patientsDB));
+  }, [patientsDB]);
 
   const handleItemClick = (event, itemId) => {
     if (itemId !== 'my-lists' && itemId !== 'available-lists') {

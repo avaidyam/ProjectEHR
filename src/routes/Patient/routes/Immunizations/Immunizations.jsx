@@ -26,11 +26,11 @@ import {
 
 export default function Immunizations() {
   const { useChart, useEncounter } = usePatient()
-  const [immunizations, setImmunizations] = useEncounter().immunizations()
+  const [immunizations, setImmunizations] = useEncounter().immunizations([])
   const [editingImmunization, setEditingImmunization] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 
-  const grouped = groupImmunizationsByType(immunizations);
+  const grouped = groupImmunizationsByType(immunizations ?? []);
 
   const initialState = Object.keys(grouped).reduce((acc, key) => {
     acc[key] = false;
@@ -67,7 +67,7 @@ export default function Immunizations() {
   const handleSave = (updatedImmunization) => {
     if (isAddingNew) {
       // Add new immunization
-      const newId = immunizations.length > 0 ? Math.max(...immunizations.map(imm => imm.id || 0)) + 1 : 1;
+      const newId = immunizations?.length > 0 ? Math.max(...(immunizations ?? []).map(imm => imm.id || 0)) + 1 : 1;
       setImmunizations(prev => [...prev, { ...updatedImmunization, id: newId }]);
       setIsAddingNew(false);
     } else {
@@ -273,7 +273,7 @@ export default function Immunizations() {
                     </React.Fragment>
                   );
                 })}
-                {immunizations.length === 0 && (
+                {immunizations?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={5}>
                       <Typography variant="body2" style={{ fontStyle: 'italic', color: '#666', textAlign: 'center' }}>

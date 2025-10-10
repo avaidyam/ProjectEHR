@@ -74,7 +74,6 @@ export const Patient = ({ ...props }) => {
           variant={isMobile ? "temporary" : "persistent"}
           anchor="left"
           open={!isMobile || storyboardOpen}
-          onOpen={() => setStoryboardOpen(true)}
           onClose={() => setStoryboardOpen(false)}
           sx={{
             width: drawerWidth,
