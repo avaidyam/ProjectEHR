@@ -634,7 +634,14 @@
           }
         ]
       }
+    },
+    "smartData": {
+      "handoff": {
+         "summary": "",
+          "todo": ""
+      }
     }
+
   },
   "1230001": {
     "id": "1230001",
@@ -1197,7 +1204,14 @@
           "OBGynHistory": {}
         }
       }
+    },
+    "smartData": {
+        "handoff": {
+         "summary": "",
+          "todo": ""
+      }
     }
+
   },
   "1230006": {
     "id": "1230006",
@@ -1352,7 +1366,14 @@
           "OBGynHistory": {}
         }
       }
+    },
+    "smartData": {
+       "handoff": {
+         "summary": "",
+         "todo": ""
+      }
     }
+
   },
   "1230007": {
     "id": "1230007",
@@ -1507,7 +1528,14 @@
           "OBGynHistory": {}
         }
       }
+    },
+    "smartData": {
+        "handoff": {
+         "summary": "",
+         "todo": ""
+      }
     }
+
   },
   "1230008": {
     "id": "1230008",
@@ -1713,7 +1741,14 @@
           "OBGynHistory": {}
         }
       }
+    },
+    "smartData": {
+        "handoff": {
+          "summary": "",
+          "todo": ""
+      }
     }
+
   },
   "4641821": {
     "id": "4641821",
@@ -3405,6 +3440,13 @@
           }
         ]
       }
+    },
+    "smartData": {
+      "handoff": {
+        "summary": "",
+        "todo": ""
+      }
     }
+
   }
 }
