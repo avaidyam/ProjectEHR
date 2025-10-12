@@ -2,6 +2,17 @@ import React from 'react';
 import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, TextField, Autocomplete } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
+/*
+ * FIELDS NOT IN CURRENT DATA STRUCTURE (commented out for future use):
+ * - genderIdentity, sexAssignedAtBirth, sexualOrientation, pronouns
+ * - phone, email, interpreterNeeded, preferredFormOfAddress, permanentComments
+ * - employerAddress, employerPhone, employerFax
+ * - contacts (emergency and other contacts)
+ * 
+ * These fields are included in the form but not saved to the data structure yet.
+ * Uncomment the relevant lines in handleSave() when the data structure is updated.
+ */
+
 const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
   const [{
@@ -12,10 +23,46 @@ const Demographics = () => {
     address,
     preferredLanguage,
     gender
-  }] = useChart()();
+  }, setChart] = useChart()();
   const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic()
   const [demographics, setDemographics] = useEncounter().history.Socioeconomic.demographics()
   const [editingCard, setEditingCard] = React.useState(null)
+  
+  // State for editable form data
+  const [formData, setFormData] = React.useState({
+    // Basics section
+    firstName: firstName || '',
+    lastName: lastName || '',
+    birthdate: birthdate || '',
+    gender: gender || '',
+    genderIdentity: gender || '',
+    sexAssignedAtBirth: gender || '',
+    sexualOrientation: '',
+    pronouns: '',
+    address: address || '',
+    phone: '',
+    email: '',
+    language: preferredLanguage || '',
+    interpreterNeeded: 'No',
+    maritalStatus: demographics?.maritalStatus || '',
+    religion: demographics?.religion || '',
+    ethnicGroup: demographics?.ethnicGroup || '',
+    race: demographics?.race || '',
+    preferredFormOfAddress: '',
+    permanentComments: '',
+    
+    // Employer & Identification section
+    employmentStatus: socioeconomicData?.occupation ? 'Employed' : 'Unknown',
+    employerAddress: '',
+    employer: socioeconomicData?.employer || '',
+    employerPhone: '',
+    employerFax: '',
+    patientStatus: 'Alive',
+    mrn: id || '',
+    patientType: 'TPL',
+    
+    // Contacts section (managed separately in contacts state)
+  })
   
   // State for contacts management
   const [contacts, setContacts] = React.useState({
@@ -102,6 +149,85 @@ const Demographics = () => {
     'Prefer not to answer'
   ]
 
+  // New comprehensive option lists
+  const legalSexOptions = [
+    'Male',
+    'Female',
+    'Other',
+    'Unknown',
+    'Prefer not to answer'
+  ]
+
+  const genderIdentityOptions = [
+    'Male',
+    'Female',
+    'Non-binary',
+    'Genderqueer',
+    'Transgender',
+    'Agender',
+    'Genderfluid',
+    'Other',
+    'Prefer not to answer'
+  ]
+
+  const sexAssignedAtBirthOptions = [
+    'Male',
+    'Female',
+    'Intersex',
+    'Unknown',
+    'Prefer not to answer'
+  ]
+
+  const sexualOrientationOptions = [
+    'Heterosexual',
+    'Homosexual',
+    'Bisexual',
+    'Pansexual',
+    'Asexual',
+    'Demisexual',
+    'Queer',
+    'Questioning',
+    'Other',
+    'Prefer not to answer'
+  ]
+
+  const pronounsOptions = [
+    'He/Him',
+    'She/Her',
+    'They/Them',
+    'He/They',
+    'She/They',
+    'Other',
+    'Prefer not to answer'
+  ]
+
+  const ethnicGroupOptions = [
+    'Hispanic or Latino',
+    'Not Hispanic or Latino',
+    'Unknown',
+    'Prefer not to answer'
+  ]
+
+  const languageOptions = [
+    'English',
+    'Spanish',
+    'French',
+    'German',
+    'Italian',
+    'Portuguese',
+    'Chinese (Mandarin)',
+    'Chinese (Cantonese)',
+    'Japanese',
+    'Korean',
+    'Arabic',
+    'Hindi',
+    'Russian',
+    'Polish',
+    'Vietnamese',
+    'Tagalog',
+    'Other'
+  ]
+
   const sections = [
     { id: 'basics', label: 'Basics' },
     { id: 'employer-identification', label: 'Employer & Identification' },
@@ -124,45 +250,160 @@ const Demographics = () => {
 
   const handleCancel = () => {
     setEditingCard(null)
+    // Reset form data to original values
+    setFormData({
+      firstName: firstName || '',
+      lastName: lastName || '',
+      birthdate: birthdate || '',
+      gender: gender || '',
+      genderIdentity: gender || '',
+      sexAssignedAtBirth: gender || '',
+      sexualOrientation: '',
+      pronouns: '',
+      address: address || '',
+      phone: '',
+      email: '',
+      language: preferredLanguage || '',
+      interpreterNeeded: 'No',
+      maritalStatus: demographics?.maritalStatus || '',
+      religion: demographics?.religion || '',
+      ethnicGroup: demographics?.ethnicGroup || '',
+      race: demographics?.race || '',
+      preferredFormOfAddress: '',
+      permanentComments: '',
+      employmentStatus: socioeconomicData?.occupation ? 'Employed' : 'Unknown',
+      employerAddress: '',
+      employer: socioeconomicData?.employer || '',
+      employerPhone: '',
+      employerFax: '',
+      patientStatus: 'Alive',
+      mrn: id || '',
+      patientType: 'TPL',
+    })
+  }
+
+  const handleFormDataChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
   }
 
   const handleSave = () => {
-    // For now, just close the edit mode without saving
-    // In the future, this would save the data to the backend
-    setEditingCard(null)
+    try {
+      // Basic validation for required fields
+      if (!formData.firstName.trim()) {
+        alert('First name is required')
+        return
+      }
+      if (!formData.lastName.trim()) {
+        alert('Last name is required')
+        return
+      }
+      if (!formData.birthdate.trim()) {
+        alert('Date of birth is required')
+        return
+      }
+
+      // Update useChart data (firstName, lastName, birthdate, address, preferredLanguage, gender)
+      setChart(prev => ({
+        ...prev,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        birthdate: formData.birthdate,
+        address: formData.address,
+        preferredLanguage: formData.language,
+        gender: formData.gender
+      }))
+
+      // Update socioeconomic data
+      setSocioeconomicData(prev => ({
+        ...prev,
+        occupation: formData.employmentStatus === 'Employed' ? formData.employer : '',
+        employer: formData.employer,
+        // Add other employer fields that aren't in the data structure yet
+        // employerAddress: formData.employerAddress,
+        // employerPhone: formData.employerPhone,
+        // employerFax: formData.employerFax,
+      }))
+
+      // Update demographics data
+      setDemographics(prev => ({
+        ...prev,
+        maritalStatus: formData.maritalStatus,
+        religion: formData.religion,
+        ethnicGroup: formData.ethnicGroup,
+        race: formData.race,
+        // Add other fields that aren't in the data structure yet
+        // genderIdentity: formData.genderIdentity,
+        // sexAssignedAtBirth: formData.sexAssignedAtBirth,
+        // sexualOrientation: formData.sexualOrientation,
+        // pronouns: formData.pronouns,
+        // phone: formData.phone,
+        // email: formData.email,
+        // interpreterNeeded: formData.interpreterNeeded,
+        // preferredFormOfAddress: formData.preferredFormOfAddress,
+        // permanentComments: formData.permanentComments,
+      }))
+
+      // For contacts, we could save to a contacts field in the data structure
+      // For now, contacts are managed in local state
+      // In the future, you could add:
+      // setSocioeconomicData(prev => ({
+      //   ...prev,
+      //   contacts: contacts
+      // }))
+
+      setEditingCard(null)
+    } catch (error) {
+      console.error('Error saving demographics data:', error)
+      alert('Error saving data. Please try again.')
+    }
   }
 
   // Contact management functions
   const handleAddContact = () => {
-    if (newContact.name && newContact.relationship && newContact.primaryPhone) {
-      const contact = {
-        id: Date.now(), // Simple ID generation
-        ...newContact
-      }
-      
-      if (newContact.isEmergency) {
-        setContacts(prev => ({
-          ...prev,
-          emergency: [...prev.emergency, contact]
-        }))
-      } else {
-        setContacts(prev => ({
-          ...prev,
-          other: [...prev.other, contact]
-        }))
-      }
-      
-      // Reset form
-      setNewContact({
-        name: '',
-        relationship: '',
-        primaryPhone: '',
-        workPhone: '',
-        isEmergency: false,
-        isLegalGuardian: false
-      })
-      setShowAddContactPopup(false)
+    // Validate required fields
+    if (!newContact.name.trim()) {
+      alert('Contact name is required')
+      return
     }
+    if (!newContact.relationship.trim()) {
+      alert('Contact relationship is required')
+      return
+    }
+    if (!newContact.primaryPhone.trim()) {
+      alert('Primary phone number is required')
+      return
+    }
+
+    const contact = {
+      id: Date.now(), // Simple ID generation
+      ...newContact
+    }
+    
+    if (newContact.isEmergency) {
+      setContacts(prev => ({
+        ...prev,
+        emergency: [...prev.emergency, contact]
+      }))
+    } else {
+      setContacts(prev => ({
+        ...prev,
+        other: [...prev.other, contact]
+      }))
+    }
+    
+    // Reset form
+    setNewContact({
+      name: '',
+      relationship: '',
+      primaryPhone: '',
+      workPhone: '',
+      isEmergency: false,
+      isLegalGuardian: false
+    })
+    setShowAddContactPopup(false)
   }
 
   const handleDeleteContact = (contactId, isEmergency) => {
@@ -323,59 +564,69 @@ const Demographics = () => {
                   <TextField 
                     fullWidth 
                     label="First Name" 
-                    defaultValue={firstName}
+                    value={formData.firstName}
+                    onChange={(e) => handleFormDataChange('firstName', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField 
                     fullWidth 
                     label="Last Name" 
-                    defaultValue={lastName}
+                    value={formData.lastName}
+                    onChange={(e) => handleFormDataChange('lastName', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField 
                     fullWidth 
                     label="Date of Birth" 
-                    defaultValue={birthdate}
+                    type="date"
+                    value={formData.birthdate}
+                    onChange={(e) => handleFormDataChange('birthdate', e.target.value)}
+                    InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Legal Sex" 
-                    defaultValue={gender}
+                  <Autocomplete
+                    options={legalSexOptions}
+                    value={formData.gender}
+                    onChange={(event, newValue) => handleFormDataChange('gender', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Legal Sex" />}
                   />
                 </Grid>
               </Grid>
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Gender Identity" 
-                    defaultValue={gender}
+                  <Autocomplete
+                    options={genderIdentityOptions}
+                    value={formData.genderIdentity}
+                    onChange={(event, newValue) => handleFormDataChange('genderIdentity', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Gender Identity" />}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Sex Assigned at Birth" 
-                    defaultValue={gender}
+                  <Autocomplete
+                    options={sexAssignedAtBirthOptions}
+                    value={formData.sexAssignedAtBirth}
+                    onChange={(event, newValue) => handleFormDataChange('sexAssignedAtBirth', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Sex Assigned at Birth" />}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Sexual Orientation" 
-                    defaultValue=""
+                  <Autocomplete
+                    options={sexualOrientationOptions}
+                    value={formData.sexualOrientation}
+                    onChange={(event, newValue) => handleFormDataChange('sexualOrientation', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Sexual Orientation" />}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Pronouns" 
-                    defaultValue=""
+                  <Autocomplete
+                    options={pronounsOptions}
+                    value={formData.pronouns}
+                    onChange={(event, newValue) => handleFormDataChange('pronouns', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Pronouns" />}
                   />
                 </Grid>
               </Grid>
@@ -389,21 +640,24 @@ const Demographics = () => {
                   <TextField 
                     fullWidth 
                     label="Address" 
-                    defaultValue={address}
+                    value={formData.address}
+                    onChange={(e) => handleFormDataChange('address', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={4}>
                   <TextField 
                     fullWidth 
                     label="Phone" 
-                    defaultValue=""
+                    value={formData.phone}
+                    onChange={(e) => handleFormDataChange('phone', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={4}>
                   <TextField 
                     fullWidth 
                     label="Email" 
-                    defaultValue=""
+                    value={formData.email}
+                    onChange={(e) => handleFormDataChange('email', e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -414,44 +668,50 @@ const Demographics = () => {
               </Label>
               <Grid container spacing={2}>
                 <Grid item xs={3}>
-                  <TextField 
-                    fullWidth 
-                    label="Language" 
-                    defaultValue={preferredLanguage}
+                  <Autocomplete
+                    options={languageOptions}
+                    value={formData.language}
+                    onChange={(event, newValue) => handleFormDataChange('language', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Language" />}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
                     options={['Yes', 'No']}
-                    defaultValue="No"
+                    value={formData.interpreterNeeded}
+                    onChange={(event, newValue) => handleFormDataChange('interpreterNeeded', newValue)}
                     renderInput={(params) => <TextField {...params} label="Interpreter Needed" />}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
                     options={maritalStatusOptions}
-                    defaultValue={demographics?.maritalStatus || ''}
+                    value={formData.maritalStatus}
+                    onChange={(event, newValue) => handleFormDataChange('maritalStatus', newValue)}
                     renderInput={(params) => <TextField {...params} label="Marital Status" />}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
                     options={religionOptions}
-                    defaultValue={demographics?.religion || ''}
+                    value={formData.religion}
+                    onChange={(event, newValue) => handleFormDataChange('religion', newValue)}
                     renderInput={(params) => <TextField {...params} label="Religion" />}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
-                    fullWidth 
-                    label="Ethnic Group" 
-                    defaultValue={demographics?.ethnicGroup || ''}
+                  <Autocomplete
+                    options={ethnicGroupOptions}
+                    value={formData.ethnicGroup}
+                    onChange={(event, newValue) => handleFormDataChange('ethnicGroup', newValue)}
+                    renderInput={(params) => <TextField {...params} label="Ethnic Group" />}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <Autocomplete
                     options={raceOptions}
-                    defaultValue={demographics?.race || ''}
+                    value={formData.race}
+                    onChange={(event, newValue) => handleFormDataChange('race', newValue)}
                     renderInput={(params) => <TextField {...params} label="Race" />}
                   />
                 </Grid>
@@ -459,14 +719,16 @@ const Demographics = () => {
                   <TextField 
                     fullWidth 
                     label="Preferred Form of Address" 
-                    defaultValue=""
+                    value={formData.preferredFormOfAddress}
+                    onChange={(e) => handleFormDataChange('preferredFormOfAddress', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField 
                     fullWidth 
                     label="Permanent Comments" 
-                    defaultValue=""
+                    value={formData.permanentComments}
+                    onChange={(e) => handleFormDataChange('permanentComments', e.target.value)}
                     multiline 
                     rows={3} 
                   />
@@ -538,7 +800,8 @@ const Demographics = () => {
                     <Grid item xs={6}>
                       <Autocomplete
                         options={employmentStatusOptions}
-                        defaultValue={socioeconomicData?.occupation ? 'Employed' : 'Unknown'}
+                        value={formData.employmentStatus}
+                        onChange={(event, newValue) => handleFormDataChange('employmentStatus', newValue)}
                         renderInput={(params) => <TextField {...params} label="Employment Status" />}
                       />
                     </Grid>
@@ -546,28 +809,32 @@ const Demographics = () => {
                       <TextField 
                         fullWidth 
                         label="Address" 
-                        defaultValue=""
+                        value={formData.employerAddress}
+                        onChange={(e) => handleFormDataChange('employerAddress', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField 
                         fullWidth 
                         label="Employer" 
-                        defaultValue=""
+                        value={formData.employer}
+                        onChange={(e) => handleFormDataChange('employer', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField 
                         fullWidth 
                         label="Phone" 
-                        defaultValue=""
+                        value={formData.employerPhone}
+                        onChange={(e) => handleFormDataChange('employerPhone', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField 
                         fullWidth 
                         label="Fax" 
-                        defaultValue=""
+                        value={formData.employerFax}
+                        onChange={(e) => handleFormDataChange('employerFax', e.target.value)}
                       />
                     </Grid>
                   </Grid>
@@ -579,7 +846,7 @@ const Demographics = () => {
                       <TextField 
                         fullWidth 
                         label="Patient Status" 
-                        defaultValue="Alive"
+                        value={formData.patientStatus}
                         disabled
                       />
                     </Grid>
@@ -587,7 +854,7 @@ const Demographics = () => {
                       <TextField 
                         fullWidth 
                         label="MRN" 
-                        value={id}
+                        value={formData.mrn}
                         disabled
                       />
                     </Grid>
@@ -595,7 +862,7 @@ const Demographics = () => {
                       <TextField 
                         fullWidth 
                         label="Patient Type" 
-                        defaultValue="TPL"
+                        value={formData.patientType}
                         disabled
                       />
                     </Grid>
@@ -766,11 +1033,8 @@ const Demographics = () => {
               )}
 
               <Stack direction="row" justifyContent="flex-start" spacing={2} sx={{ mt: 2 }}>
-                <Button variant="outlined" color="error" onClick={handleCancel}>
-                  <Icon sx={{ mr: 1 }}>close</Icon>Cancel
-                </Button>
-                <Button variant="contained" color="success" onClick={handleSave}>
-                  <Icon sx={{ mr: 1 }}>check</Icon>Save
+                <Button variant="outlined" onClick={handleCancel}>
+                  <Icon sx={{ mr: 1 }}>close</Icon>Close
                 </Button>
               </Stack>
             </>
