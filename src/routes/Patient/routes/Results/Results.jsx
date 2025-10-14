@@ -53,6 +53,8 @@ import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from "@mui/x-
 import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label } from "components/ui/Core.jsx";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext.jsx";
+import { Tooltip } from "@mui/material";
+import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 
 const df = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -156,6 +158,9 @@ function useNormalizedLabs() {
           time: new Date(time).toISOString(),
           value: val,
           flag,
+          low: r.low ?? null,
+          high: r.high ?? null,
+          agency: doc.resultingAgency || "",
         });
       }
     }
@@ -176,14 +181,10 @@ export default function ResultsReviewEpic() {
   const [category, setCategory] = useState("Laboratory");
   const [panel, setPanel] = useState(labPanelsData[0]?.name || "");
   const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState({
-    Laboratory: true,
-  });
+  const [expanded, setExpanded] = useState({ Laboratory: true });
 
   const [viewMode, setViewMode] = useState("table"); // "table" | "graph"
   const toggle = (name) => setExpanded((s) => ({ ...s, [name]: !s[name] }));
-
-  const labPanels = labPanelsData.map((p) => p.name);
 
   const activePanel = useMemo(
     () => labPanelsData.find((p) => p.name === panel) || labPanelsData[0],
@@ -192,74 +193,288 @@ export default function ResultsReviewEpic() {
 
   const allTestsInPanel = activePanel?.tests || [];
 
+  // Map of testName -> boolean (selected) for the ACTIVE panel (used by graph & right selector)
   const [selectedTests, setSelectedTests] = useState(() =>
     (activePanel?.tests || []).reduce((acc, t) => ({ ...acc, [t.name]: true }), {})
   );
 
+  // When panel changes, keep previous choices if possible; default newly seen tests to true
   React.useEffect(() => {
     setSelectedTests((prev) => {
       const base = {};
       for (const t of allTestsInPanel) base[t.name] = prev[t.name] ?? true;
       return base;
     });
+  }, [panel]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ------------------------------------
+  // 🌳 TreeView: panels-only (CBC, CMP, ...)
+  // ------------------------------------
+  const panelId = (p) => `panel:${p}`;
+
+  const treeItems = useMemo(() => {
+    // Panels only (no test children)
+    const panels = labPanelsData.map((p) => ({
+      id: panelId(p.name),
+      label: p.name,
+    }));
+
+    return [
+      {
+        id: "cat:Laboratory",
+        label: "Laboratory",
+        children: panels,
+      },
+    ];
+  }, [labPanelsData]);
+
+  // Tree state (store only panel ids)
+  const [treeSelection, setTreeSelection] = useState([]);
+  const [treeExpanded, setTreeExpanded] = useState([
+    "cat:Laboratory",
+    panel ? panelId(panel) : "cat:Laboratory",
+  ]);
+
+  // No propagation needed now (no children)
+  const selectionPropagation = { descendants: false, parents: false };
+
+  // Click a panel to focus it (label click does not toggle checkbox selection by default)
+  const handleTreeItemClick = useCallback((event, itemId) => {
+    if (typeof itemId === "string" && itemId.startsWith("panel:")) {
+      const name = itemId.slice("panel:".length);
+      setCategory("Laboratory");
+      setPanel(name);
+      setTreeExpanded((prev) => (prev.includes(itemId) ? prev : [...prev, itemId]));
+    }
+  }, []);
+
+  // Selection = panel ids only
+  const handleTreeSelect = useCallback((event, ids) => {
+    const next = Array.isArray(ids) ? ids : [ids];
+    setTreeSelection(next.filter((id) => typeof id === "string" && id.startsWith("panel:")));
+  }, []);
+
+  // Auto-check the active panel so it shows in the table immediately
+  React.useEffect(() => {
+    if (!panel) return;
+    const pid = panelId(panel);
+    setTreeSelection((prev) => (prev.includes(pid) ? prev : [...prev, pid]));
   }, [panel]);
 
-  const visibleTests = useMemo(() => {
+  // ------------------------------------
+  // TABLE COMBINATION LOGIC (across selected PANELS)
+  // ------------------------------------
+
+  // Which panels are checked
+  const selectedPanels = useMemo(() => {
+    return new Set(
+      treeSelection
+        .filter((id) => typeof id === "string" && id.startsWith("panel:"))
+        .map((id) => id.slice("panel:".length))
+    );
+  }, [treeSelection]);
+
+  // TABLE tests = union of tests from all selected panels (filtered by search)
+  const tableTests = useMemo(() => {
     if (category !== "Laboratory") return [];
     const q = query.trim().toLowerCase();
-    const tests = allTestsInPanel;
-    return q ? tests.filter((t) => t.name.toLowerCase().includes(q)) : tests;
-  }, [category, allTestsInPanel, query]);
+    const out = [];
 
-  const timeKeysDesc = useMemo(() => {
+    for (const p of labPanelsData) {
+      if (!selectedPanels.has(p.name)) continue;
+      for (const t of p.tests || []) {
+        if (q && !t.name.toLowerCase().includes(q)) continue;
+        out.push({ ...t, panelName: p.name });
+      }
+    }
+    return out;
+  }, [category, labPanelsData, selectedPanels, query]);
+
+  // Time keys for TABLE (from combined tests)
+  const timeKeysDescTable = useMemo(() => {
     if (category !== "Laboratory") return [];
     const allTimes = new Set();
-    visibleTests.forEach((t) => t.results.forEach((r) => allTimes.add(r.time)));
+    tableTests.forEach((t) => t.results.forEach((r) => allTimes.add(r.time)));
     return Array.from(allTimes)
       .sort((a, b) => new Date(b) - new Date(a))
       .slice(0, 6);
-  }, [category, visibleTests]);
+  }, [category, tableTests]);
 
-  const rows = useMemo(() => {
+  // Build TABLE rows
+  const rowsTable = useMemo(() => {
     if (category !== "Laboratory") return [];
-    return visibleTests.map((t, idx) => {
-      const row = { id: idx + 1, test: t.name, unit: t.unit, ref: t.referenceRange };
-      timeKeysDesc.forEach((iso, i) => {
+    const fmtDateTime = (iso) => {
+      const d = new Date(iso);
+      const datePart = d.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "2-digit",
+      });
+      const timePart = d.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      return `${datePart} ${timePart}`;
+    };
+
+    return tableTests.map((t, idx) => {
+      const row = { id: idx + 1, test: t.name };
+      timeKeysDescTable.forEach((iso, i) => {
         const hit = t.results.find((r) => r.time === iso);
-        row[`t${i}`] = hit ? `${hit.value}${hit.flag ? " " + hit.flag : ""}` : "—";
+        row[`t${i}`] = hit
+          ? {
+              value: hit.value,
+              flag: hit.flag,
+              iso,
+              test: t.name,
+              ref: t.referenceRange || "",
+              unit: t.unit || "",
+              agency: hit.agency || "",
+              label: fmtDateTime(iso),
+            }
+          : null;
       });
       return row;
     });
-  }, [category, visibleTests, timeKeysDesc]);
+  }, [category, tableTests, timeKeysDescTable]);
 
-  const columns = useMemo(() => {
+  // TABLE columns
+  const columnsTable = useMemo(() => {
     if (category !== "Laboratory") return [];
-    const staticCols = [
-      { field: "test", headerName: "Test", flex: 1.2, sortable: false },
-      { field: "unit", headerName: "Unit", width: 120, sortable: false },
-      { field: "ref", headerName: "Reference", width: 140, sortable: false },
-    ];
-    const timeCols = timeKeysDesc.map((iso, i) => ({
-      field: `t${i}`,
-      headerName: df.format(new Date(iso)),
-      width: 160,
-      sortable: false,
-    }));
+
+    const staticCols = [{ field: "test", headerName: "Test", width: 160, sortable: false }];
+
+    const timeCols = timeKeysDescTable.map((iso, i) => {
+      const d = new Date(iso);
+      const datePart = d.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "2-digit",
+      });
+      const timePart = d.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+
+      return {
+        field: `t${i}`,
+        headerName: `${datePart}\n${timePart}`,
+        renderHeader: () => (
+          <div style={{ whiteSpace: "pre-line", textAlign: "left", lineHeight: 1.2 }}>
+            {`${datePart}\n${timePart}`}
+          </div>
+        ),
+        width: 100,
+        sortable: false,
+        renderCell: (params) => {
+          const cell = params.value;
+          if (!cell) return <span style={{ opacity: 0.6 }}>—</span>;
+
+          const isOut = cell.flag === "H" || cell.flag === "L";
+          const display = `${cell.value}${isOut ? " !" : ""}`;
+
+          const tooltipContent = (
+            <div style={{ maxWidth: 260, lineHeight: 1.25 }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#5EA1F8", marginBottom: 4 }}>
+                {cell.test}
+              </div>
+              <div style={{ fontSize: 12, opacity: 0.9, marginBottom: 6 }}>{cell.label}</div>
+              <div
+                style={{
+                  fontWeight: 900,
+                  fontSize: 24,
+                  color: isOut ? "#d32f2f" : "inherit",
+                  marginBottom: 6,
+                }}
+              >
+                {display}
+              </div>
+              {cell.ref && (
+                <div style={{ fontSize: 12, opacity: 0.9, marginBottom: 4 }}>
+                  Ref range: {cell.ref}
+                </div>
+              )}
+              {cell.agency && (
+                <div style={{ fontSize: 12, opacity: 0.9 }}>Resulting agency: {cell.agency}</div>
+              )}
+            </div>
+          );
+
+          return (
+            <Tooltip
+              title={tooltipContent}
+              arrow
+              followCursor
+              placement="top"
+              PopperProps={{
+                modifiers: [{ name: "offset", options: { offset: [0, 8] } }],
+                sx: {
+                  "& .MuiTooltip-tooltip": {
+                    backgroundColor: "white",
+                    color: "#111",
+                    boxShadow: "0px 2px 10px rgba(0,0,0,0.15)",
+                    border: "1px solid #ddd",
+                    opacity: 1,
+                    padding: "8px 10px",
+                    borderRadius: "8px",
+                  },
+                  "& .MuiTooltip-arrow": { color: "white" },
+                },
+              }}
+              enterDelay={150}
+            >
+              <span
+                style={{
+                  color: isOut ? "#d32f2f" : "inherit",
+                  fontWeight: isOut ? 700 : 500,
+                  display: "inline-block",
+                  width: "100%",
+                }}
+              >
+                {display}
+              </span>
+            </Tooltip>
+          );
+        },
+      };
+    });
+
     return [...staticCols, ...timeCols];
-  }, [timeKeysDesc, category]);
+  }, [timeKeysDescTable, category]);
+
+  // -----------------------------
+  // GRAPH remains per ACTIVE panel
+  // -----------------------------
+  const visibleTestsForGraph = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const selectedNames = new Set(
+      Object.entries(selectedTests)
+        .filter(([, v]) => v)
+        .map(([name]) => name)
+    );
+    const tests = allTestsInPanel.filter((t) => selectedNames.has(t.name));
+    return q ? tests.filter((t) => t.name.toLowerCase().includes(q)) : tests;
+  }, [allTestsInPanel, selectedTests, query]);
+
+  const timeKeysDescGraph = useMemo(() => {
+    const allTimes = new Set();
+    visibleTestsForGraph.forEach((t) => t.results.forEach((r) => allTimes.add(r.time)));
+    return Array.from(allTimes).sort((a, b) => new Date(b) - new Date(a)).slice(0, 6);
+  }, [visibleTestsForGraph]);
 
   const graphDataAsc = useMemo(() => {
-    if (category !== "Laboratory") return [];
-    const timesAsc = [...timeKeysDesc].sort((a, b) => new Date(a) - new Date(b));
+    const timesAsc = [...timeKeysDescGraph].sort((a, b) => new Date(a) - new Date(b));
     return timesAsc.map((iso) => {
       const row = { time: iso };
-      for (const t of visibleTests) {
+      for (const t of visibleTestsForGraph) {
         const hit = t.results.find((r) => r.time === iso);
         row[t.name] = hit ? hit.value : null;
       }
       return row;
     });
-  }, [category, timeKeysDesc, visibleTests]);
+  }, [timeKeysDescGraph, visibleTestsForGraph]);
 
   const toggleTest = useCallback((name) => {
     setSelectedTests((s) => ({ ...s, [name]: !s[name] }));
@@ -286,7 +501,7 @@ export default function ResultsReviewEpic() {
     <div style={{ width: 260, borderLeft: "1px solid #e0e0e0", paddingLeft: 12 }}>
       <div style={{ fontWeight: 700, marginBottom: 8 }}>Series</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {visibleTests.map((t) => (
+        {visibleTestsForGraph.map((t) => (
           <label key={t.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <input
               type="checkbox"
@@ -310,7 +525,7 @@ export default function ResultsReviewEpic() {
       <Divider sx={{ my: 1 }} />
       <div style={{ fontWeight: 700, marginBottom: 8 }}>Reference bar</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {visibleTests.map((t) => (
+        {visibleTestsForGraph.map((t) => (
           <div key={t.name} style={{ fontSize: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span
@@ -337,7 +552,7 @@ export default function ResultsReviewEpic() {
     <Box sx={{ ml: 2, mt: 2 }}>
       <TitledCard emphasized title="Results Review" color="#5EA1F8">
         <CoreGrid container spacing={2}>
-          {/* LEFT: Navigator */}
+          {/* LEFT: Navigator (TreeView) */}
           <CoreGrid item xs={12} sm={4} md={3} lg={3}>
             <Box
               sx={{
@@ -365,50 +580,25 @@ export default function ResultsReviewEpic() {
                   />
                 </div>
 
-                {/* Laboratory section */}
-                <div>
-                  <CategoryHeader
-                    label="Laboratory"
-                    active={category === "Laboratory"}
-                    open={expanded.Laboratory}
-                    onClick={() => {
-                      setCategory("Laboratory");
-                      toggle("Laboratory");
+                {/* Panels-only TreeView */}
+                <div style={{ marginTop: 8 }}>
+                  <RichTreeView
+                    items={treeItems}
+                    checkboxSelection
+                    multiSelect
+                    selectionPropagation={selectionPropagation}
+                    selectedItems={treeSelection}
+                    onSelectedItemsChange={handleTreeSelect}
+                    expandedItems={treeExpanded}
+                    onExpandedItemsChange={(e, ids) => setTreeExpanded(ids)}
+                    defaultExpandedItems={["cat:Laboratory"]}
+                    onItemClick={handleTreeItemClick}
+                    sx={{
+                      height: 420,
+                      overflowY: "auto",
+                      "& .MuiTreeItem-content": { py: 0.25 },
                     }}
                   />
-                  {expanded.Laboratory && (
-                    <div style={{ marginTop: 8, paddingLeft: 18 }}>
-                      <Label variant="body2">
-                        <b>Panels</b>
-                      </Label>
-                      <Stack direction="column" spacing={0}>
-                        {labPanels.map((p) => (
-                          <button
-                            key={p}
-                            onClick={() => {
-                              setCategory("Laboratory");
-                              setPanel(p);
-                            }}
-                            style={{
-                              textAlign: "left",
-                              padding: "8px 10px",
-                              borderRadius: 0,
-                              border:
-                                panel === p && category === "Laboratory"
-                                  ? "1px solid #5EA1F8"
-                                  : "1px solid #e0e0e0",
-                              background:
-                                panel === p && category === "Laboratory" ? "#f4f9ff" : "white",
-                              fontWeight: panel === p ? 600 : 400,
-                              cursor: "pointer",
-                            }}
-                          >
-                            {p}
-                          </button>
-                        ))}
-                      </Stack>
-                    </div>
-                  )}
                 </div>
               </Stack>
             </Box>
@@ -429,7 +619,7 @@ export default function ResultsReviewEpic() {
                   }}
                 >
                   <div style={{ fontSize: 12, opacity: 0.8 }}>
-                    {panel} • {visibleTests.length} tests • {timeKeysDesc.length} time points
+                    {panel} • {tableTests.length} tests • {timeKeysDescTable.length} time points
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
                     <ToggleButton active={viewMode === "table"} onClick={() => setViewMode("table")}>
@@ -445,15 +635,37 @@ export default function ResultsReviewEpic() {
                   <>
                     <div style={{ width: "100%" }}>
                       <DataGrid
-                        rows={rows}
-                        columns={columns}
+                        rows={rowsTable}
+                        columns={columnsTable}
                         slots={{ toolbar: SimpleToolbar }}
                         autoHeight
                         disableRowSelectionOnClick
-                        pageSizeOptions={[5, 10, 25]}
-                        initialState={{
-                          pagination: { paginationModel: { pageSize: 10, page: 0 } },
+
+                        /* Compact look */
+                        density="compact"
+                        rowHeight={28}
+                        headerHeight={34}
+                        sx={{
+                          fontSize: 12,
+                          "& .MuiDataGrid-cell": { py: 0.25, px: 0.5, lineHeight: 1.1 },
+                          "& .MuiDataGrid-columnHeaders": { minHeight: 34 },
+                          "& .MuiDataGrid-columnHeader": { py: 0, px: 0.5 },
+                          "& .MuiDataGrid-columnHeaderTitle": {
+                            whiteSpace: "pre-line",
+                            textAlign: "left",
+                            lineHeight: 1.15,
+                          },
+                          "& .MuiDataGrid-virtualScrollerContent .MuiDataGrid-row": {
+                            borderTop: "1px solid #f1f1f1",
+                          },
+                          "& .MuiDataGrid-footerContainer": { minHeight: 32 },
                         }}
+
+                        // Keep or remove pagination as you prefer:
+                        initialState={{
+                          pagination: { paginationModel: { pageSize: 100, page: 0 } },
+                        }}
+                        pageSizeOptions={[100, 200, 300]}
                       />
                     </div>
                     <Divider sx={{ my: 1 }} />
@@ -487,8 +699,8 @@ export default function ResultsReviewEpic() {
                             xAxis: { tickLabelStyle: { fontSize: 12 } },
                             yAxis: { tickLabelStyle: { fontSize: 12 } },
                           }}
-                          series={visibleTests
-                            .filter((t) => selectedTests[t.name])
+                          series={visibleTestsForGraph
+                            .filter(Boolean)
                             .map((t) => ({
                               dataKey: t.name,
                               color: brightHSLFromName(t.name),
@@ -516,3 +728,4 @@ export default function ResultsReviewEpic() {
     </Box>
   );
 }
+
