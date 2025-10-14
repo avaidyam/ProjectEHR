@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Card, FormControl, Icon, InputLabel,
-  MenuItem, TextField, ToggleButton, ToggleButtonGroup, Typography, Select } from '@mui/material'
-import { alpha, Box, Button, TitledCard } from 'components/ui/Core.jsx'
+import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
+import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core.jsx'
 import { usePatient } from 'components/contexts/PatientContext.jsx'
 import { OrderComposer } from './components/OrderComposer.jsx'
 import { OrderPicker } from './components/OrderPicker.jsx'
@@ -54,8 +53,8 @@ const getCategoryForOrder = (order) => {
 export const OrderCart = () => {
   const { useChart, useEncounter } = usePatient()
   // eslint-disable-next-line dot-notation
-  const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
   const [orderList, setOrderList] = useEncounter().orders([])
+  const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
   
   const [value, setValue] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)
@@ -66,10 +65,10 @@ export const OrderCart = () => {
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
         <Card sx={{ m: 1, p: 1 }}>
           <Box>
-            <ToggleButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
-              <ToggleButton>Manage Orders</ToggleButton>
-              <ToggleButton>Order Sets</ToggleButton>
-            </ToggleButtonGroup>
+            <ButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
+              <Button>Manage Orders</Button>
+              <Button>Order Sets</Button>
+            </ButtonGroup>
             <FormControl sx={{ minWidth: 100 }} size="small">
               <InputLabel>Options</InputLabel>
               <Select>
@@ -153,14 +152,6 @@ export const OrderCart = () => {
             <Icon>clear</Icon> Remove All
           </Button>
           <Button variant="outlined" color="success" onClick={() => {
-
-
-            console.log("before after")
-            console.dir(orderList.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
-            let tester = orderList.upsert(orderCart, "id")
-            console.dir(tester.map(x => [x.name, x.signedDate, x.holdDate, x.discontinueDate, x.pendDate]))
-
-
             setOrderList(prev => prev.upsert(orderCart, "id"))
             setOrderCart([])
           }}>

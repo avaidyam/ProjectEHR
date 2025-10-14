@@ -42,7 +42,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function SurgicalHistory() {
   const { useEncounter } = usePatient();
-  const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical();
+  const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical([]);
 
   const [editingEntry, setEditingEntry] = useState(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -150,7 +150,7 @@ export default function SurgicalHistory() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {surgicalHx.map((entry, index) => (
+            {(surgicalHx ?? []).map((entry, index) => (
               <StyledTableRow key={index}>
                 <TableCell component="th" scope="row" sx={{ color: '#e91e63', fontWeight: 'bold' }}>
                   {entry.procedure}

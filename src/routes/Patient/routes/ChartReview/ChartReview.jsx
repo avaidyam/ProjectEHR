@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
 import { Box, Divider, Button, Label, DataGrid } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 

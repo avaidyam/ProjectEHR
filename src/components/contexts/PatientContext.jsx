@@ -3,38 +3,71 @@ import { useNavigate, generatePath, useParams } from 'react-router-dom';
 import createStore from 'teaful';
 import patient_sample from 'util/data/patient_sample.json';
 
-export const PatientContext = React.createContext();
-// // FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
-// // We need to actually useEffect() to set the "database" value to the new patient data.
+export const DatabaseContext = React.createContext()
+export const PatientContext = React.createContext()
+
+// 
+const initialStore = {
+  patients: patient_sample,
+  test: [],
+  another: {}
+  // FIXME: add more databases here!
+}
+const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
+  // TODO: ...
+})
+
+// Usage: `<DatabaseProvider>{...}</DatabaseProvider>`
+export const DatabaseProvider = ({ children }) => {
+  return (
+    <DatabaseContext.Provider value={useStore}>
+      {children}
+    </DatabaseContext.Provider>
+  )
+}
+
+// FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
+// We need to actually useEffect() to set the "database" value to the new patient data.
 
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider = ({ patient, encounter, children }) => {
-  // Load saved data from localStorage if it exists
-  const savedData = localStorage.getItem(`patient_${patient}`);
-  const parsedData = savedData ? JSON.parse(savedData) : patient_sample[patient];
+  const useStore = useDatabase()
+  /*const [initialStore, setStore] = useDatabase().patients[patient]()
 
-  // Initialize teaful store with saved or sample data
-  const { useStore } = createStore(parsedData, ({ store }) => {
-    // Whenever store changes, update localStorage
-    localStorage.setItem(`patient_${patient}`, JSON.stringify(store));
-  });
-
-  //   // Memorize the hook value by patient and encounter IDs so it doesn't change on every single render!
-//   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const value = React.useMemo(
-    () => ({
-      useChart: () => useStore,
-      useEncounter: () => useStore.encounters[encounter],
-    }),
-    [patient, encounter]
-  );
-
+  // 
+  //const initialStore = patient_sample[patient]
+  const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
+    // TODO: ...
+  })*/
+  // const [data, setData] = useStore() // React.useState(patient_sample[patient])
+  
+  // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const value = React.useMemo(() => ({ 
+    useChart: () => useStore.patients[patient], 
+    useEncounter: () => useStore.patients[patient].encounters[encounter] 
+  }), [patient, encounter])
+  
   return (
     <PatientContext.Provider value={value}>
       {children}
     </PatientContext.Provider>
   );
 };
+
+/** 
+  Usage:
+  ```
+  const { orders, patients, ... } = useDatabase()()
+  ```
+ */
+export const useDatabase = () => {
+  const ctx = React.useContext(DatabaseContext)
+  if (ctx === undefined) {
+    throw new Error('useDatabase must be used within a DatabaseProvider')
+  }
+  return ctx
+}
 
 /** 
   Usage:
