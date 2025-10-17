@@ -169,6 +169,295 @@
         "mrn": "1230008",
         "enc": "15"
       }
+    },
+    {
+      "id": 11,
+      "apptTime": "12:00 AM",
+      "cc": "Renal transplant Evaluation",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "1016257",
+        "enc": "19"
+      }
+    },
+    {
+      "id": 12,
+      "apptTime": "12:15 AM",
+      "cc": "Follow up with nephrology",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "1610253",
+        "enc": "20"
+      }
+    },
+    {
+      "id": 13,
+      "apptTime": "12:30 AM",
+      "cc": "Post Transplant",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "1610253",
+        "enc": "21"
+      }
+    },
+    {
+      "id": 14,
+      "apptTime": "12:45 AM",
+      "cc": "10 Days Post Transplant",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "1610253",
+        "enc": "22"
+      }
+    },
+    {
+      "id": 15,
+      "apptTime": "1:00 AM",
+      "cc": "leg swelling and shortness of breath",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4545657",
+        "enc": "23"
+      }
+    },
+    {
+      "id": 16,
+      "apptTime": "1:15 AM",
+      "cc": "Ongoing Hospitalization",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4545657",
+        "enc": "24"
+      }
+    },
+    {
+      "id": 17,
+      "apptTime": "1:30 AM",
+      "cc": "Ongoing Hospitalization",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4545657",
+        "enc": "25"
+      }
+    },
+    {
+      "id": 18,
+      "apptTime": "2:00 AM",
+      "cc": "left leg swelling and pain",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4279703",
+        "enc": "26"
+      }
+    },
+    {
+      "id": 19,
+      "apptTime": "2:15 AM",
+      "cc": "Ongoing Hospitalization",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4279703",
+        "enc": "27"
+      }
+    },
+    {
+      "id": 20,
+      "apptTime": "2:30 AM",
+      "cc": "Ongoing Hospitalization",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "4279703",
+        "enc": "28"
+      }
+    },
+    {
+      "id": 21,
+      "apptTime": "3:00 AM",
+      "cc": "Nephrology Annual Visit",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "5027327",
+        "enc": "29"
+      }
+    },
+    {
+      "id": 22,
+      "apptTime": "3:15 AM",
+      "cc": "Nephrology Annual Visit/Increased Ankle Swelling",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "5027327",
+        "enc": "30"
+      }
+    },
+    {
+      "id": 23,
+      "apptTime": "3:30 AM",
+      "cc": "Nephrology Annual Visit/Increased Ankle Swelling",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "5027327",
+        "enc": "31"
+      }
+    },
+    {
+      "id": 24,
+      "apptTime": "3:45 AM",
+      "cc": "AMS",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "6715497",
+        "enc": "32"
+      }
+    },
+    {
+      "id": 25,
+      "apptTime": "4:00 AM",
+      "cc": "Recurrent Flank Pain",
+      "notes": "",
+      "type": "OFFICE VISIT",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "9052102",
+        "enc": "33"
+      }
+    },
+    {
+      "id": 26,
+      "apptTime": "4:15 AM",
+      "cc": "Follow Up Visit",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "9052102",
+        "enc": "34"
+      }
+    },
+    {
+      "id": 27,
+      "apptTime": "4:30 AM",
+      "cc": "Fever/Flank Pain/Dysuria",
+      "notes": "",
+      "type": "FOLLOWUP",
+      "checkinTime": null,
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Scheduled",
+      "eventStatus": "",
+      "room": null,
+      "patient": {
+        "mrn": "9052102",
+        "enc": "35"
+      }
     }
   ]
 }
