@@ -23,6 +23,7 @@ import LabReport from './routes/LabReport/LabReport.jsx';
 import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
+import Handoff from './routes/Handoff/Handoff.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
 import BottomBar from './components/BottomBar.jsx';
 
@@ -39,6 +40,7 @@ const ALL_TABS = {
   "PDMP": (props) => <Pdmp {...props} />,
   "Immunizations": (props) => <Immunizations {...props} />,
   "Clinical Impressions": (props) => <ClinicalImpressions {...props} />,
+  "Handoff": (props) => <Handoff {...props} />,
   "Allergies": (props) => <Allergies {...props} />,
   "Demographics": (props) => <Demographics {...props} />,
   "Chat": (props) => <Chat {...props} />,
@@ -51,7 +53,7 @@ const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Demographics": {} }, { "Clinical Impressions": {} }
+  { "Handoff": {} }, { "Allergies": {} }, { "Demographics": {} }, { "Clinical Impressions": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
