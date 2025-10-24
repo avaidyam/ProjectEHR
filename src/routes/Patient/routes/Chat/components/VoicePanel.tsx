@@ -1,8 +1,8 @@
-import { memo, ReactNode, RefObject, useEffect, useRef, useState } from "react";
-import { useGeminiAPIContext, UseMediaStreamResult } from "../utils/GeminiAPI";
-import { AudioRecorder } from "../utils/AudioRecorder";
-import { Icon } from '@mui/material'
-import { styled, keyframes } from '@mui/material/styles'
+import { AudioRecorder } from '../utils/AudioRecorder';
+import { UseMediaStreamResult, useGeminiAPIContext } from '../utils/GeminiAPI';
+import { Icon } from '@mui/material';
+import { keyframes, styled } from '@mui/material/styles';
+import { ReactNode, RefObject, memo, useEffect, useRef, useState } from 'react';
 
 const hoverAnimation = keyframes`
   from {
@@ -35,57 +35,59 @@ const opacityPulseAnimation = keyframes`
 `;
 
 const ActionButton = styled('button', {
-  shouldForwardProp: prop => !['disabled', 'outlined', 'connected'].includes(prop.toString())
-})<{ disabled?: boolean, outlined?: boolean, connected?: boolean }>(({ theme, outlined, connected }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: '#2a2f31',
-  color: '#888d8f',
-  fontSize: '1.25rem',
-  lineHeight: '1.75rem',
-  textTransform: 'lowercase',
-  cursor: 'pointer',
-  animation: `${opacityPulseAnimation} 3s ease-in infinite`,
-  transition: 'all 0.2s ease-in-out',
-  width: 48,
-  height: 48,
-  borderRadius: 18,
-  border: '1px solid rgba(0, 0, 0, 0)',
-  userSelect: 'none',
+  shouldForwardProp: (prop) => !['disabled', 'outlined', 'connected'].includes(prop.toString()),
+})<{ disabled?: boolean; outlined?: boolean; connected?: boolean }>(
+  ({ theme, outlined, connected }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#2a2f31',
+    color: '#888d8f',
+    fontSize: '1.25rem',
+    lineHeight: '1.75rem',
+    textTransform: 'lowercase',
+    cursor: 'pointer',
+    animation: `${opacityPulseAnimation} 3s ease-in infinite`,
+    transition: 'all 0.2s ease-in-out',
+    width: 48,
+    height: 48,
+    borderRadius: 18,
+    border: '1px solid rgba(0, 0, 0, 0)',
+    userSelect: 'none',
 
-  '&:focus': {
-    border: '2px solid #2a2f31',
-    outline: '2px solid #c3c6c7',
-  },
-
-  ...(outlined && {
-    background: '#181a1b',
-    border: '1px solid #2a2f31',
-  }),
-
-  '&:hover': {
-    background: 'rgba(0, 0, 0, 0)',
-    border: '1px solid #2a2f31',
-  },
-
-  ...(connected && {
-    background: '#0f3557',
-    color: '#1f94ff',
-    '&:hover': {
-      border: '1px solid #1f94ff',
+    '&:focus': {
+      border: '2px solid #2a2f31',
+      outline: '2px solid #c3c6c7',
     },
-  }),
 
-  // Handling the .no-action nested class. This might be better as a separate component.
-  // For now, we assume it's a child element with that class.
-  '& .no-action': {
-    pointerEvents: 'none',
-  },
-}));
+    ...(outlined && {
+      background: '#181a1b',
+      border: '1px solid #2a2f31',
+    }),
+
+    '&:hover': {
+      background: 'rgba(0, 0, 0, 0)',
+      border: '1px solid #2a2f31',
+    },
+
+    ...(connected && {
+      background: '#0f3557',
+      color: '#1f94ff',
+      '&:hover': {
+        border: '1px solid #1f94ff',
+      },
+    }),
+
+    // Handling the .no-action nested class. This might be better as a separate component.
+    // For now, we assume it's a child element with that class.
+    '& .no-action': {
+      pointerEvents: 'none',
+    },
+  })
+);
 
 const MicButton = styled(ActionButton, {
-  shouldForwardProp: prop => ![''].includes(prop.toString())
+  shouldForwardProp: (prop) => ![''].includes(prop.toString()),
 })<{}>(({ theme }) => ({
   position: 'relative',
   backgroundColor: '#ff4600',
@@ -119,7 +121,7 @@ const MicButton = styled(ActionButton, {
 }));
 
 const ConnectToggle = styled(ActionButton, {
-  shouldForwardProp: prop => !['connected'].includes(prop.toString())
+  shouldForwardProp: (prop) => !['connected'].includes(prop.toString()),
 })<{ connected?: boolean }>(({ theme, connected }) => ({
   '&:focus': {
     border: '2px solid #2a2f31',
@@ -133,15 +135,16 @@ const ConnectToggle = styled(ActionButton, {
 }));
 
 const ControlTray = styled('section', {
-  shouldForwardProp: prop => ![''].includes(prop.toString())
+  shouldForwardProp: (prop) => ![''].includes(prop.toString()),
 })<{}>(({ theme }) => ({
-  width: "100%", 
-  height: "100%",
+  width: '100%',
+  height: '100%',
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'flex-start',
   gap: 8,
   paddingBottom: 18,
+  paddingTop: 30,
 
   // Handling nested selectors for disabled states.
   [`& .disabled ${ActionButton}, ${ActionButton}.disabled`]: {
@@ -152,7 +155,7 @@ const ControlTray = styled('section', {
 }));
 
 const ConnectionContainer = styled('div', {
-  shouldForwardProp: prop => !['connected'].includes(prop.toString())
+  shouldForwardProp: (prop) => !['connected'].includes(prop.toString()),
 })<{ connected?: boolean }>(({ theme, connected }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -177,8 +180,8 @@ const ConnectionContainer = styled('div', {
 }));
 
 const ActionsNav = styled('nav', {
-  shouldForwardProp: prop => !['disabled'].includes(prop.toString())
-})<{disabled?: boolean}>(({ theme }) => ({
+  shouldForwardProp: (prop) => !['disabled'].includes(prop.toString()),
+})<{ disabled?: boolean }>(({ theme }) => ({
   background: '#181a1b',
   border: '1px solid #404547',
   borderRadius: 27,
@@ -198,8 +201,8 @@ const ActionsNav = styled('nav', {
 }));
 
 const AudioPulseDiv = styled('div', {
-  shouldForwardProp: prop => !['active', 'hover'].includes(prop.toString())
-})<{ active?: boolean, hover?: boolean }>(({ theme, active, hover }) => ({
+  shouldForwardProp: (prop) => !['active', 'hover'].includes(prop.toString()),
+})<{ active?: boolean; hover?: boolean }>(({ theme, active, hover }) => ({
   display: 'flex',
   width: 24,
   justifyContent: 'space-evenly',
@@ -207,7 +210,7 @@ const AudioPulseDiv = styled('div', {
   transition: 'all 0.5s',
   height: 4,
   opacity: active ? 1 : undefined,
-  
+
   '& > div': {
     backgroundColor: active ? '#c3c6c7' : '#404547',
     borderRadius: 1000,
@@ -220,8 +223,11 @@ const AudioPulseDiv = styled('div', {
   },
 }));
 
-export function AudioPulse({ 
-  active, volume, hover, lineCount = 3
+export function AudioPulse({
+  active,
+  volume,
+  hover,
+  lineCount = 3,
 }: {
   active: boolean;
   volume: number;
@@ -234,11 +240,7 @@ export function AudioPulse({
     let timeout: number | null = null;
     const update = () => {
       lines.current.forEach(
-        (line, i) =>
-        (line.style.height = `${Math.min(
-          24,
-          4 + volume * (i === 1 ? 400 : 60),
-        )}px`),
+        (line, i) => (line.style.height = `${Math.min(24, 4 + volume * (i === 1 ? 400 : 60))}px`)
       );
       timeout = window.setTimeout(update, 100);
     };
@@ -263,11 +265,7 @@ export function AudioPulse({
   );
 }
 
-function VoicePanel({
-  children,
-}: {
-  children?: ReactNode;
-}) {
+function VoicePanel({ children }: { children?: ReactNode }) {
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
@@ -283,7 +281,7 @@ function VoicePanel({
   }, [connected]);
   useEffect(() => {
     document.documentElement.style.setProperty(
-      "--volume",
+      '--volume',
       `${Math.max(5, Math.min(inVolume * 200, 8))}px`
     );
   }, [inVolume]);
@@ -292,18 +290,18 @@ function VoicePanel({
     const onData = (base64: string) => {
       client.sendRealtimeInput([
         {
-          mimeType: "audio/pcm;rate=16000",
+          mimeType: 'audio/pcm;rate=16000',
           data: base64,
         },
       ]);
     };
     if (connected && !muted && audioRecorder) {
-      audioRecorder.on("data", onData).on("volume", setInVolume).start();
+      audioRecorder.on('data', onData).on('volume', setInVolume).start();
     } else {
       audioRecorder.stop();
     }
     return () => {
-      audioRecorder.off("data", onData).off("volume", setInVolume);
+      audioRecorder.off('data', onData).off('volume', setInVolume);
     };
   }, [connected, client, muted, audioRecorder]);
 
@@ -311,11 +309,7 @@ function VoicePanel({
     <ControlTray>
       <ActionsNav disabled={!connected}>
         <MicButton onClick={() => setMuted(!muted)}>
-          {!muted ? (
-            <Icon>mic</Icon>
-          ) : (
-            <Icon>mic_off</Icon>
-          )}
+          {!muted ? <Icon>mic</Icon> : <Icon>mic_off</Icon>}
         </MicButton>
 
         <ActionButton className="outlined no-action">
@@ -331,9 +325,7 @@ function VoicePanel({
             connected={connected}
             onClick={connected ? disconnect : connect}
           >
-            <Icon>
-              {connected ? 'pause' : 'play_arrow'}
-            </Icon>
+            <Icon>{connected ? 'pause' : 'play_arrow'}</Icon>
           </ConnectToggle>
         </div>
         <span className="text-indicator">Streaming</span>
