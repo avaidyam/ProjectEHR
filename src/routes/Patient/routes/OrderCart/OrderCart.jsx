@@ -157,6 +157,13 @@ export const OrderCart = () => {
           }}>
             <Icon>check</Icon> Sign
           </Button>
+          <Button variant="contained" color="success" onClick={() => {
+            setOrderList(prev => prev.upsert([
+              { id: crypto.randomUUID(), name: "__ADVANCE_PATIENT_BICEP_SLIDE__" }
+            ], "id"))
+          }}>
+            <Icon>queue_play_next</Icon> Advance Patient BiCEP Slide
+          </Button>
         </Box>
       </Box>
       {!!openSearchList &&
