@@ -47,13 +47,14 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
+      const isPathologySlide = row.data.accessionNumber.startsWith("PATH")
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: !isPathologySlide } }]);
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
       // EKG special case
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId } }]);
+      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: false } }]);
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Note') {
       setMainTabs(prev => [...prev, {"Note": { selectedRow: row }}])

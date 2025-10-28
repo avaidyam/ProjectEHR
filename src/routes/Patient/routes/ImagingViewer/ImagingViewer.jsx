@@ -3,7 +3,7 @@ import { Grid, Box } from '../../../../components/ui/Core.jsx';
 import DWVViewer from './components/DWVViewer.jsx';
 import DWVControls from './components/DWVControls.jsx';
 
-export const ImagingTabContent = ({ selectedRow, viewerId }) => {
+export const ImagingTabContent = ({ selectedRow, viewerId, convertMonochrome }) => {
     console.log("ImagingTabContent: Component rendering.");
     const basePath = './img/Anonymized_20240903/series-00001/';
     const dicomFiles = Array.from({ length: 21 }, (_, i) => `${basePath}image-${String(i).padStart(5, '0')}.dcm`);
@@ -52,6 +52,7 @@ export const ImagingTabContent = ({ selectedRow, viewerId }) => {
                         <DWVViewer 
                             images={currentImageSet} 
                             viewerId={`${viewerId}-${index}`} 
+                            convertMonochrome={convertMonochrome}
                         />
                     </Grid>
                 ))}
