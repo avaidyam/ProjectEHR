@@ -169,26 +169,12 @@ export default function Chat() {
   const birthdate = chart?.birthdate ?? '';
   const gender = chart?.gender ?? chart?.sex ?? ''; // try both if your model uses 'sex'
 
-  console.log("current chart is:")
-  console.dir(chart)
-
   // ✅ Encounter object for concerns (like in your SnapshotTabContent)
   const [currentEncounter] = useEncounter()();
 
-  console.log("current encounter is:")
-  console.dir(currentEncounter)
-
-  const allSortedEncounters = Object.values(chart.encounters).toSorted((a, b) => (new Date(a.startDate)).getTime() > (new Date(b.startDate)).getTime())
-
-  console.log("all sorted encounters are:")
-  console.dir(allSortedEncounters)
-
-  // FIXME PLEASE THIS IS TERRIBLE
-  //const nextEncounter = allSortedEncounters.find(x => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
-  const nextEncounter = allSortedEncounters.find(x => x.id === '4')// ?? currentEncounter
-
-  console.log("next encounter was:")
-  console.dir(nextEncounter)
+  // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
+  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
+  const nextEncounter = allSortedEncounters.find(x => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
 
   const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
 
@@ -196,94 +182,9 @@ export default function Chat() {
   const {
     documents,
     history,
-    medications2,
+    medications,
     allergies
   } = nextEncounter
-  //const [documents] = useEncounter().documents();
-  //const [history] = useEncounter().history();
-  //const [medications] = useEncounter().medications();
-  //const [allergies] = useEncounter().allergies();
-
-  const medications = [
-          {
-            "id": "1",
-            "name": "lisinopril",
-            "brandName": "LISINOPRIL",
-            "dose": 5,
-            "unit": "mg",
-            "frequency": "once daily",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["blood pressure"],
-            "activePrnReasons": []
-          },
-          {
-            "id": "2",
-            "name": "metformin",
-            "brandName": "METFORMIN",
-            "dose": 500,
-            "unit": "mg",
-            "frequency": "twice daily",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["blood sugar"],
-            "activePrnReasons": []
-          },
-          {
-            "id": "3",
-            "name": "lovastatin",
-            "brandName": "LIPITOR",
-            "dose": 20,
-            "unit": "mg",
-            "frequency": "once daily",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["cholesterol"],
-            "activePrnReasons": []
-          },
-          {
-            "id": "4",
-            "name": "omeprazole",
-            "brandName": "PRILOSEC",
-            "dose": 20,
-            "unit": "mg",
-            "frequency": "once daily",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["acid reflux"],
-            "activePrnReasons": []
-          },
-          {
-            "id": "5",
-            "name": "acetaminophen",
-            "brandName": "TYLENOL",
-            "dose": 350,
-            "unit": "mg",
-            "frequency": "once daily as needed",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["pain relief"],
-            "activePrnReasons": []
-          },
-          {
-            "id": "6",
-            "name": "ibuprofen",
-            "brandName": "ADVIL",
-            "dose": 200,
-            "unit": "mg",
-            "frequency": "once daily as needed",
-            "startDate": "",
-            "endDate": "",
-            "route": "Oral",
-            "possiblePrnReasons": ["pain relief"],
-            "activePrnReasons": []
-          },
-        ]
 
   // Notes
   const hpiNote = (documents || []).find(
