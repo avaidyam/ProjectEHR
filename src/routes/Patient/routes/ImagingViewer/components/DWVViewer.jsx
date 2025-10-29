@@ -86,7 +86,7 @@ export function b64ToFile(str) {
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
 
-const DWVViewer = ({ images, viewerId }) => {
+const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -153,7 +153,8 @@ const DWVViewer = ({ images, viewerId }) => {
         if (images && images.length > 0) {
             console.log(`DWVViewer(${viewerId}): Attempting to load ${images.length} images.`);
             if (images[0]?.startsWith?.("data:image/")) {
-                image2DICOM(images[0], true).then(image => {
+                // FIXME: RGB mode doesn't work if compression=false for some reason?
+                image2DICOM(images[0], convertMonochrome ?? true, !(convertMonochrome ?? true)).then(image => {
                     app.loadFiles([new File([image], "file.dcm", { type: "application/dicom" })])
                 })
                 //app.loadFiles([b64ToFile(images[0])])

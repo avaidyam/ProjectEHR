@@ -26,6 +26,7 @@ import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpression
 import Handoff from './routes/Handoff/Handoff.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
 import BottomBar from './components/BottomBar.jsx';
+import { EncounterAlert } from './components/EncounterAlert.jsx'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
 
 const ALL_TABS = {
@@ -120,6 +121,7 @@ export const Patient = ({ ...props }) => {
             onAddDx={() => setIsDxModalOpen(true)}
             onSignEncounter={() => console.log('Sign encounter clicked')}
           />
+          <EncounterAlert />
         </Box>
       </Box>
 

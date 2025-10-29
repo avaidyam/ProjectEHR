@@ -18,6 +18,23 @@
       }
     },
     {
+      "id": 20,
+      "apptTime": "7:00 PM",
+      "cc": "chest pain",
+      "notes": "Gather a focused HPI and physical exam",
+      "type": "ED FOLLOWUP VISIT",
+      "checkinTime": "4:59 PM",
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Arrived",
+      "eventStatus": "",
+      "room": 1,
+      "patient": {
+        "mrn": "4641821",
+        "enc": "463"
+      }
+    },
+    {
       "id": 2,
       "apptTime": "5:00 PM",
       "cc": "chest pain",

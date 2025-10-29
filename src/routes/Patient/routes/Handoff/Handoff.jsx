@@ -12,7 +12,8 @@ import {
   IconButton, 
   Stack, 
   Button, 
-  Icon
+  Icon,
+  RichTextEditor
 } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
@@ -47,19 +48,15 @@ const Handoff = () => {
       ...prev,
       [dept]: data
     }));
-    console.log('💾 Saved data for department:', dept);
   };
 
   // Load department-specific data when department changes
   useEffect(() => {
-    console.log('Department changed to:', currentDepartment);
     if (currentDepartment) {
       const data = getDepartmentData(currentDepartment);
-      console.log('Loading data for department:', currentDepartment, data);
       setLocalSummary(data.summary);
       setLocalTodo(data.todo);
     } else {
-      console.log('No department selected, clearing fields');
       setLocalSummary('');
       setLocalTodo('');
     }
@@ -68,37 +65,29 @@ const Handoff = () => {
   // Auto-save when local data changes (only if department is selected)
   useEffect(() => {
     if (!currentDepartment) {
-      console.log('No department selected, skipping autosave');
       return;
     }
-    
-    console.log('Setting up autosave for department:', currentDepartment);
-    console.log('Current local data - Summary:', localSummary, 'Todo:', localTodo);
-    
+        
     const handler = setTimeout(() => {
       const data = {
         summary: localSummary,
         todo: localTodo
       };
-      console.log('Autosaving data:', data);
       saveDepartmentData(currentDepartment, data);
     }, 1000);
     return () => clearTimeout(handler);
   }, [localSummary, localTodo, currentDepartment]);
 
   const handleDepartmentChange = (newDepartment) => {
-    console.log('Changing department to:', newDepartment);
     setCurrentDepartment(newDepartment);
   };
 
   const handleClose = () => {
     // Close functionality - for now just a placeholder
-    console.log('Close button clicked');
   };
 
   const handleCancel = () => {
     // Cancel functionality - for now just a placeholder
-    console.log('Cancel button clicked');
   };
 
   return (
@@ -166,6 +155,11 @@ const Handoff = () => {
 
         <Collapse in={showSummary} timeout="auto" unmountOnExit>
           <Box sx={{ p: 2 }}>
+            {/*<RichTextEditor
+              placeholder={currentDepartment ? "Enter summary details..." : "Please select a department first"}
+              initialContent={localSummary}
+              onSave={(e) => setLocalSummary(e)}
+            />*/}
             <TextField
               fullWidth
               multiline
