@@ -23,7 +23,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
-  const { mainTabs, setMainTabs, setSelectedMainTab } = useSplitView()
+  const { mainTabs, setMainTabs, setSelectedMainTab, sideTabs, setSideTabs, setSelectedSideTab } = useSplitView()
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
@@ -57,8 +57,8 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: false } }]);
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Note') {
-      setMainTabs(prev => [...prev, {"Note": { selectedRow: row }}])
-      setSelectedMainTab(mainTabs.length)
+      setSideTabs(prev => [...prev, {"Note": { selectedRow: row }}])
+      setSelectedSideTab(sideTabs.length)
     } else {
       // TODO: handle other tabs somehow?
     }
@@ -128,7 +128,10 @@ export const ChartReview = ({ ...props }) => {
   // TODO: this is where modifications should be made for order-conditional documents being shown
   // or logic to advance from one encounter to the next
   const currentEncDate = encounter.startDate
-  const documents = Object.values(chart.encounters).filter(x => new Date(x.startDate) <= new Date(currentEncDate)).flatMap(x => x.documents)
+  const documents = Object.values(chart.encounters)
+    .toSorted((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
+    .filter(x => (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
+    .flatMap(x => x.documents)
   const encountersData = Object.values(chart.encounters).map(x => ({
     kind: 'Encounters',
     data: {
