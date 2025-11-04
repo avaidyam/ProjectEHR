@@ -31,14 +31,14 @@ const filterDocuments = (documents, conditionals, orders) => {
     
     // 1. Pre-process available orders into a frequency map (Count of available items)
     // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
-    const availableCounts = orders.reduce((acc, order) => {
+    const availableCounts = (orders ?? []).reduce((acc, order) => {
         acc[order.name] = (acc[order.name] || 0) + 1;
         return acc;
     }, {});
 
     // 2. Use the Array.filter method to check each document's validity
-    return documents.filter(doc => {
-        const requiredOrders = conditionals[doc.data.id];
+    return (documents ?? []).filter(doc => {
+        const requiredOrders = conditionals?.[doc.data.id];
      
         // If the document ID has no entry in the conditionals, it passes the filter by default.
         if (!requiredOrders) {
@@ -92,7 +92,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
-      const isPathologySlide = row.data.accessionNumber.startsWith("PATH")
+      const isPathologySlide = row.data.accessionNumber?.startsWith("PATH") || row.data.id?.startsWith("PATH")
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
       setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: !isPathologySlide } }]);
       setSelectedMainTab(mainTabs.length)
