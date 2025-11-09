@@ -31,7 +31,8 @@ export default function OrdersMgmt() {
   }
 
   // only display active (i.e. non-discontinued) orders
-  const visibleList = orderList.filter(x => !x.discontinueDate)
+  // ALSO filter out any secret hidden BICEP orders...
+  const visibleList = orderList.filter(x => !x.discontinueDate).filter(x => x.name !== "__ADVANCE_PATIENT_BICEP_SLIDE__")
 
   return (
     <TabView value={tab}>
@@ -86,6 +87,7 @@ export default function OrdersMgmt() {
         </TabPanel>
         <TabPanel value="Order History">
           Order History
+          <p>ADVANCED TO: {orderList.filter(x => x.name === "__ADVANCE_PATIENT_BICEP_SLIDE__").length}</p>
         </TabPanel>
       </Box>
     </TabView>

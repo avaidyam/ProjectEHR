@@ -18,12 +18,29 @@
       }
     },
     {
-      "id": 2,
-      "apptTime": "5:00 PM",
+      "id": 20,
+      "apptTime": "1:00 PM",
       "cc": "chest pain",
       "notes": "Gather a focused HPI and physical exam",
-      "type": "ED FOLLOWUP VISIT",
-      "checkinTime": "4:59 PM",
+      "type": "OFFICE VISIT",
+      "checkinTime": "12:59 PM",
+      "checkoutTime": null,
+      "ptStatus": "",
+      "officeStatus": "Arrived",
+      "eventStatus": "",
+      "room": 1,
+      "patient": {
+        "mrn": "4641821",
+        "enc": "463"
+      }
+    },
+    {
+      "id": 2,
+      "apptTime": "3:00 PM",
+      "cc": "chest pain",
+      "notes": "Discuss the case and the next steps in management",
+      "type": "ED VISIT",
+      "checkinTime": "2:59 PM",
       "checkoutTime": null,
       "ptStatus": "",
       "officeStatus": "Arrived",
@@ -36,11 +53,11 @@
     },
     {
       "id": 3,
-      "apptTime": "4:00 PM",
-      "cc": "headache",
-      "notes": "",
-      "type": "FOLLOWUP",
-      "checkinTime": "4:05 PM",
+      "apptTime": "5:00 PM",
+      "cc": "chest pain",
+      "notes": "Discuss the case and clinical course",
+      "type": "HOSPITAL DISCHARGE FOLLOWUP",
+      "checkinTime": "5:05 PM",
       "checkoutTime": null,
       "ptStatus": "",
       "officeStatus": "Rooming in Progress",
@@ -49,23 +66,6 @@
       "patient": {
         "mrn": "4641821",
         "enc": "4"
-      }
-    },
-    {
-      "id": 4,
-      "apptTime": "3:00 PM",
-      "cc": "cough",
-      "notes": "",
-      "type": "FOLLOWUP",
-      "checkinTime": "2:41 PM",
-      "checkoutTime": "3:51 PM",
-      "ptStatus": "",
-      "officeStatus": "Checked Out",
-      "eventStatus": "",
-      "room": 3,
-      "patient": {
-        "mrn": "4641821",
-        "enc": "1"
       }
     },
     {
