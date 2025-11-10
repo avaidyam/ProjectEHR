@@ -175,16 +175,27 @@ export default function Chat() {
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
   const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
   const nextEncounter = allSortedEncounters.find(x => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
-
   const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
+  console.log("🩺 allSortedEncounters:", allSortedEncounters);
+  console.log("currentEncounter", currentEncounter)
+  console.log("nextEncounter", nextEncounter)
 
   // Other encounter-sourced data
   const {
     documents,
     history,
     medications,
-    allergies
+    allergies,
+    smartData
   } = nextEncounter
+
+  // get voice
+  const smartVoice = smartData?.chat?.voice;
+  React.useEffect(() => {
+    if (smartVoice && smartVoice !== voiceName) {
+      setVoiceName(smartVoice);
+    }
+  }, [smartVoice]);
 
   // Notes
   const hpiNote = (documents || []).find(
@@ -216,6 +227,20 @@ export default function Chat() {
     text += "### History of Present Illness\n";
     text += hpiNote?.data?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
     text += "\n\n";
+
+    // Add patient perspective + custom prompt (from smartData)
+    const patientPerspective = smartData?.chat?.patient_perspective;
+    const customPrompt = smartData?.chat?.custom_prompt;
+    if (patientPerspective || customPrompt) {
+      text += "### Patient Context\n";
+      if (patientPerspective) {
+        text += `Patient Perspective: ${patientPerspective}\n`;
+      }
+      if (customPrompt) {
+        text += `\nCustom Prompt: ${customPrompt}\n`;
+      }
+      text += "\n";
+    }
 
     // ROS (</p> & <br> → newline, strip rest)
     text += "### Review of Systems\n";
@@ -317,7 +342,7 @@ export default function Chat() {
     }
   };
 
-  console.dir(fullPrompt)
+  // console.dir(fullPrompt)
 
   return (
     <GeminiAPIProvider
