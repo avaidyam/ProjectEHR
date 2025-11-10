@@ -97,7 +97,7 @@ import Draggable from 'react-draggable';
 
 // Module-level z-index counter so clicked windows come to front
 // high z so notes appear above any route/tab content; portal will render to body
-let globalTopZ = 1000;
+let globalTopZ = 1200;
 
 const StickyNote = () => {
   const { useChart, useEncounter } = usePatient();
