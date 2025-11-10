@@ -1,7 +1,8 @@
-import React, { useState, useContext  } from 'react';
-import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors } from '@mui/material';
+import React, { useState, useContext, useEffect, useRef } from 'react';
+import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextField } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import DateHelpers from 'util/helpers.js';
+import { Icon, Label, Window } from 'components/ui/Core.jsx';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
@@ -91,6 +92,327 @@ export const VitalsPopup = ({ vitals, ...props }) => {
   );
 };
 
+const StickyNote = () => {
+  const { useChart, useEncounter } = usePatient();
+  const chart = useChart();
+
+  // Wait until chart is loaded
+  if (!chart) return null;
+
+  // separate state for private note and department note so both can be open
+  const [privateOpen, setPrivateOpen] = useState(false);
+  const [privateContent, setPrivateContent] = useState('');
+
+  const [deptOpen, setDeptOpen] = useState(false);
+  const [deptContent, setDeptContent] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [currentDept, setCurrentDept] = useState('');
+  const saveTimeoutRef = useRef(null);
+  const lastOpenedRef = useRef({ popupOpen: false, popupType: null, currentDept: '' });
+  const privateContentRef = useRef(privateContent);
+  const deptContentRef = useRef(deptContent);
+  const currentDeptRef = useRef(currentDept);
+
+  // Use useEncounter for persistent data like handoff
+  const [stickyNoteData, setStickyNoteData] = useEncounter().stickyNotes({});
+
+  // Ensure stickyNoteData is always an object
+  const safeStickyNoteData = stickyNoteData && typeof stickyNoteData === 'object' ? stickyNoteData : {};
+
+  // Load note content when private or dept windows open or department changes
+  useEffect(() => {
+    const data = safeStickyNoteData;
+    if (privateOpen) {
+      const content = data.private;
+      setPrivateContent(content ? String(content) : '');
+      privateContentRef.current = content ? String(content) : '';
+    } else {
+      // clear local when closed
+      // (keep persisted content in store)
+    }
+
+    if (deptOpen) {
+      const depts = data.departments || {};
+      const content = (currentDept && depts[currentDept]) || '';
+      setDeptContent(content ? String(content) : '');
+      deptContentRef.current = content ? String(content) : '';
+    }
+  }, [privateOpen, deptOpen, currentDept, safeStickyNoteData]);
+
+  // Persist helper - ensures immediate save when closing or switching
+  const persistNow = (type, dept, content) => {
+    if (!setStickyNoteData) return;
+    if (type === 'private') {
+      setStickyNoteData(prev => ({ ...(prev || {}), private: content }));
+    } else if (type === 'department' && dept) {
+      setStickyNoteData(prev => ({
+        ...(prev || {}),
+        departments: {
+          ...((prev && prev.departments) || {}),
+          [dept]: content
+        }
+      }));
+    }
+  };
+
+  // Auto-save when privateContent or deptContent changes (debounced)
+  useEffect(() => {
+    if (!setStickyNoteData) return;
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      if (privateOpen) {
+        persistNow('private', '', privateContentRef.current);
+      }
+      if (deptOpen) {
+        persistNow('department', currentDeptRef.current, deptContentRef.current);
+      }
+    }, 1000);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+    };
+  }, [privateContent, deptContent, privateOpen, deptOpen, currentDept, setStickyNoteData]);
+
+  const handleOpenPrivate = () => {
+    setPrivateOpen(true);
+  };
+
+  const handleOpenDept = (dept = '') => {
+    setSelectedDepartment(dept);
+    setCurrentDept(dept);
+    currentDeptRef.current = dept;
+    setDeptOpen(true);
+  };
+
+  const handleClosePrivate = () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    persistNow('private', '', privateContentRef.current);
+    setPrivateOpen(false);
+    setPrivateContent('');
+  };
+
+  const handleCloseDept = () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    persistNow('department', currentDeptRef.current, deptContentRef.current);
+    setDeptOpen(false);
+    setDeptContent('');
+    setSelectedDepartment('');
+    setCurrentDept('');
+  };
+
+  const handleDepartmentChange = (newDepartment) => {
+    // save current dept content before switching
+    if (deptOpen && currentDept) {
+      persistNow('department', currentDeptRef.current, deptContentRef.current);
+    }
+    setCurrentDept(newDepartment);
+    setSelectedDepartment(newDepartment);
+    currentDeptRef.current = newDepartment;
+    // load the content for the newly selected department from persisted data
+    const depts = safeStickyNoteData.departments || {};
+    const content = depts[newDepartment] || '';
+    setDeptContent(content);
+    deptContentRef.current = content;
+  };
+
+  const handlePrivateContentChange = (e) => {
+    setPrivateContent(e.target.value);
+    privateContentRef.current = e.target.value;
+  };
+
+  const handleDeptContentChange = (e) => {
+    setDeptContent(e.target.value);
+    deptContentRef.current = e.target.value;
+  };
+
+  // Persist any pending content on unmount (or when component is removed)
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+      // persist latest values from refs
+      if (privateContentRef.current) {
+        persistNow('private', '', privateContentRef.current);
+      }
+      if (deptContentRef.current && currentDeptRef.current) {
+        persistNow('department', currentDeptRef.current, deptContentRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'center' }}>
+        <Tooltip title="My Sticky Note" arrow>
+          <IconButton
+            onClick={handleOpenPrivate}
+            size="small"
+            sx={{
+              color: '#fbc02d',
+              backgroundColor: '#fff9c4',
+              '&:hover': { backgroundColor: '#fff59d' },
+            }}
+          >
+            <Icon>sticky_note_2</Icon>
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Department Comments" arrow>
+          <IconButton
+            onClick={() => handleOpenDept()}
+            size="small"
+            sx={{
+              color: '#2196f3',
+              backgroundColor: '#e3f2fd',
+              '&:hover': { backgroundColor: '#bbdefb' },
+            }}
+          >
+            <Icon>sticky_note_2</Icon>
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* Private sticky note window */}
+      <Window
+        title={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Icon sx={{ color: '#fbc02d' }}>sticky_note_2</Icon>
+            <Label variant="h6" sx={{ fontWeight: 'bold', color: '#fbc02d' }}>
+              My Sticky Note
+            </Label>
+          </Box>
+        }
+        open={privateOpen}
+        onClose={handleClosePrivate}
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        maxWidth={false}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#fff9c4',
+            border: `2px solid #fbc02d`,
+            borderRadius: 2,
+            minHeight: 160,
+            minWidth: 300,
+            width: 360,
+            height: 240,
+            resize: 'both',
+            overflow: 'auto'
+          }
+        }}
+        sx={{ '& .MuiPaper-root': { left: 'calc(50% - 360px)', top: '20vh', position: 'absolute' } }}
+      >
+        <TextField
+          fullWidth
+          multiline
+          minRows={6}
+          maxRows={12}
+          value={privateContent}
+          onChange={handlePrivateContentChange}
+          placeholder={"Enter your private notes..."}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'background.paper',
+              '& fieldset': { borderColor: '#fbc02d' },
+              '&:hover fieldset': { borderColor: '#fbc02d' },
+              '&.Mui-focused fieldset': { borderColor: '#fbc02d' },
+              '& .MuiInputBase-input': { color: 'text.primary' },
+            },
+            width: '100%'
+          }}
+        />
+      </Window>
+
+      {/* Department sticky note window */}
+      <Window
+        title={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Icon sx={{ color: '#2196f3' }}>sticky_note_2</Icon>
+            <Label variant="h6" sx={{ fontWeight: 'bold', color: '#2196f3' }}>
+              {currentDept || 'Department'} Comments
+            </Label>
+          </Box>
+        }
+        open={deptOpen}
+        onClose={handleCloseDept}
+        hideBackdrop
+        disableEnforceFocus
+        disableAutoFocus
+        maxWidth={false}
+        PaperProps={{
+          sx: {
+            backgroundColor: '#e3f2fd',
+            border: `2px solid #2196f3`,
+            borderRadius: 2,
+            minHeight: 160,
+            minWidth: 300,
+            width: 360,
+            height: 240,
+            resize: 'both',
+            overflow: 'auto'
+          }
+        }}
+        sx={{ '& .MuiPaper-root': { left: 'calc(50% + 40px)', top: '25vh', position: 'absolute' } }}
+      >
+        <Box sx={{ mb: 1 }}>
+          <FormControl fullWidth size="small">
+            <Select
+              value={currentDept}
+              onChange={(e) => handleDepartmentChange(e.target.value)}
+              displayEmpty
+              sx={{
+                backgroundColor: 'background.paper',
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' },
+              }}
+            >
+              <MenuItem value="">Select Department</MenuItem>
+              <MenuItem value="Adult Medicine">Adult Medicine</MenuItem>
+              <MenuItem value="Emergency Department">Emergency Department</MenuItem>
+              <MenuItem value="Cardiology">Cardiology</MenuItem>
+              <MenuItem value="Internal Medicine">Internal Medicine</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <TextField
+          fullWidth
+          multiline
+          minRows={6}
+          maxRows={12}
+          value={deptContent}
+          onChange={handleDeptContentChange}
+          placeholder={
+            currentDept ? `Enter notes for ${currentDept}...` : "Please select a department first"
+          }
+          disabled={!currentDept}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'background.paper',
+              '& fieldset': { borderColor: '#2196f3' },
+              '&:hover fieldset': { borderColor: '#2196f3' },
+              '&.Mui-focused fieldset': { borderColor: '#2196f3' },
+              '& .MuiInputBase-input': { color: 'text.primary' },
+            },
+            width: '100%'
+          }}
+        />
+      </Window>
+    </>
+  );
+};
+
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [vitals, setVitals] = useEncounter().vitals()
@@ -123,12 +445,19 @@ export const SidebarPatientInfo = () => {
   const [gender] = useChart().gender();
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <Avatar
-        src={avatarUrl}
-        sx={{ bgcolor: colors.deepOrange[500], height: 80, width: 80, margin: '0 auto 0.5em auto' }}
-      >
-        {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
-      </Avatar>
+      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 0.5 }}>
+        <Avatar
+          src={avatarUrl}
+          sx={{ zIndex: 2, bgcolor: colors.deepOrange[500], height: 80, width: 80 }}
+        >
+          {[firstName, lastName].map(x => x?.charAt(0) ?? '').join("")}
+        </Avatar>
+
+        {/* Stacked sticky buttons positioned to the left of the centered avatar */}
+        <Box sx={{ position: 'absolute', left: 'calc(50% - 84px)', top: '50%', transform: 'translateY(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <StickyNote />
+        </Box>
+      </Box>
       <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', marginBottom: '1em' }}>
         <strong>{firstName} {lastName}</strong>
         <span>Sex: {gender}</span>

@@ -42,11 +42,55 @@ export const PatientProvider = ({ patient, encounter, children }) => {
   // const [data, setData] = useStore() // React.useState(patient_sample[patient])
   
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
+  // Provide a safe fallback encounter accessor when the encounter object is missing so components
+  // can call accessors like `useEncounter().stickyNotes()` without throwing.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const value = React.useMemo(() => ({ 
-    useChart: () => useStore.patients[patient], 
-    useEncounter: () => useStore.patients[patient].encounters[encounter] 
-  }), [patient, encounter])
+  const value = React.useMemo(() => {
+    const chartAccessor = () => useStore.patients[patient]
+
+    const rawEncounter = useStore.patients[patient] && useStore.patients[patient].encounters
+      ? useStore.patients[patient].encounters[encounter]
+      : undefined
+
+    if (rawEncounter) {
+      return {
+        useChart: chartAccessor,
+        useEncounter: () => rawEncounter,
+      }
+    }
+
+    // default hook-returning function for missing keys
+    const makeDefaultHook = (defaultValue) => () => [defaultValue, () => {}]
+
+    // default values for commonly used encounter hooks
+    const defaultValues = {
+      vitals: [],
+      documents: [],
+      allergies: [],
+      immunizations: [],
+      history: {},
+      medications: [],
+      orders: [],
+      problems: [],
+      clinicalImpressions: [],
+      stickyNotes: { private: '', departments: {} },
+    }
+
+    // A Proxy that returns a hook function for any property access. This keeps call order
+    // stable while returning safe default state and a no-op setter.
+    const safeEncounterProxy = new Proxy({}, {
+      get: (_target, prop) => {
+        const key = String(prop)
+        const def = defaultValues.hasOwnProperty(key) ? defaultValues[key] : null
+        return makeDefaultHook(def)
+      }
+    })
+
+    return {
+      useChart: chartAccessor,
+      useEncounter: () => safeEncounterProxy,
+    }
+  }, [patient, encounter])
   
   return (
     <PatientContext.Provider value={value}>
