@@ -119,6 +119,9 @@ const StickyNote = () => {
   const privateContentRef = useRef(privateContent);
   const deptContentRef = useRef(deptContent);
   const currentDeptRef = useRef(currentDept);
+  // Refs for Draggable to avoid findDOMNode in StrictMode
+  const privateNodeRef = useRef(null);
+  const deptNodeRef = useRef(null);
 
   // z-index state so clicked note sits on top
   const [privateZ, setPrivateZ] = useState(globalTopZ);
@@ -387,8 +390,9 @@ const StickyNote = () => {
       {/* Private sticky note window */}
       {privateOpen && (
         createPortal(
-          <Draggable handle=".drag-handle-private" onStart={() => bringToFront('private')}>
+          <Draggable nodeRef={privateNodeRef} handle=".drag-handle-private" onStart={() => bringToFront('private')}>
             <Paper
+              ref={privateNodeRef}
               elevation={8}
               onMouseDown={() => bringToFront('private')}
               sx={{
@@ -472,8 +476,9 @@ const StickyNote = () => {
       {/* Department sticky note window */}
       {deptOpen && (
         createPortal(
-          <Draggable handle=".drag-handle-dept" onStart={() => bringToFront('department')}>
+          <Draggable nodeRef={deptNodeRef} handle=".drag-handle-dept" onStart={() => bringToFront('department')}>
             <Paper
+              ref={deptNodeRef}
               elevation={8}
               onMouseDown={() => bringToFront('department')}
               sx={{
