@@ -162,28 +162,36 @@ export default function Chat() {
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
 
-  // Chart-level demographics (as in SnapshotTabContent)
-  const [chart] = useChart()(); // -> { firstName, lastName, birthdate, address, gender? }
-  const firstName = chart?.firstName ?? "";
-  const lastName = chart?.lastName ?? "";
-  const birthdate = chart?.birthdate ?? "";
-  const gender = chart?.gender ?? chart?.sex ?? "";
+  // ✅ Chart-level demographics (like in your SnapshotTabContent)
+  const [chart] = useChart()(); // chart has firstName, lastName, birthdate, address, maybe gender
+  const firstName = chart?.firstName ?? '';
+  const lastName = chart?.lastName ?? '';
+  const birthdate = chart?.birthdate ?? '';
+  const gender = chart?.gender ?? chart?.sex ?? ''; // try both if your model uses 'sex'
 
-  // Encounter object + hooks
-  const [encounter] = useEncounter()();
-  const concernsArr = Array.isArray(encounter?.concerns) ? encounter.concerns : [];
+  // ✅ Encounter object for concerns (like in your SnapshotTabContent)
+  const [currentEncounter] = useEncounter()();
 
-  const [documents] = useEncounter().documents();
-  const [history] = useEncounter().history();
-  const [medications] = useEncounter().medications();
-  const [allergies] = useEncounter().allergies();
+  // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
+  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
+  const nextEncounter = allSortedEncounters.find(x => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
 
-  // Find HPI + ROS notes
+  const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
+
+  // Other encounter-sourced data
+  const {
+    documents,
+    history,
+    medications,
+    allergies
+  } = nextEncounter
+
+  // Notes
   const hpiNote = (documents || []).find(
-    (doc) => doc?.kind === "Note" && doc?.data?.summary === "History of Present Illness"
+    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'History of Present Illness'
   );
   const rosNote = (documents || []).find(
-    (doc) => doc?.kind === "Note" && doc?.data?.summary === "Review of Systems"
+    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Review of Systems'
   );
 
   // Histories
@@ -192,56 +200,53 @@ export default function Chat() {
   const familyHistory = history?.family || [];
   const socialDocumentation = history?.SocialDocumentation || null;
 
-  // Build the same full prompt string here
+  // 🧠 Compose the full prompt
   const fullPrompt = useMemo(() => {
     let text = "'''\n";
 
     // Patient header
-    const fullName = [firstName, lastName].filter(Boolean).join(" ") || "Unknown";
     text += "### Patient Information\n";
+    const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Unknown';
     text += `Full Name: ${fullName}\n`;
-    text += `Date of Birth: ${birthdate || "Unknown"}\n`;
-    text += `Gender: ${gender || "Unknown"}\n`;
-    text += `Concerns: ${concernsArr.length ? concernsArr.join(", ") : "None reported"}\n\n`;
+    text += `Date of Birth: ${birthdate || 'Unknown'}\n`;
+    text += `Gender: ${gender || 'Unknown'}\n`;
+    text += `Concerns: ${concernsArr.length ? concernsArr.join(', ') : 'None reported'}\n\n`;
 
     // HPI
     text += "### History of Present Illness\n";
-    text += hpiNote?.data?.content?.replace(/<[^>]+>/g, "")?.trim() || "No HPI note found.";
+    text += hpiNote?.data?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
     text += "\n\n";
 
-    // ROS (</p> & <br> → newline, strip rest, collapse)
+    // ROS (</p> & <br> → newline, strip rest)
     text += "### Review of Systems\n";
-    text +=
-      rosNote?.data?.content
-        ?.replace(/(<\/p\s*>|<br\s*\/?>)/gi, "\n")
-        ?.replace(/<[^>]+>/g, "")
-        ?.replace(/\n{2,}/g, "\n")
-        ?.trim() || "No ROS note found.";
+    text += rosNote?.data?.content
+      ?.replace(/(<\/p\s*>|<br\s*\/?>)/gi, '\n')
+      ?.replace(/<[^>]+>/g, '')
+      ?.replace(/\n{2,}/g, '\n')
+      ?.trim() || "No ROS note found.";
     text += "\n\n";
 
     // Medical History
     text += "### Medical History (Diagnosis & Age)\n";
     text += medicalHistory.length
-      ? medicalHistory.map((m) => `- ${m.diagnosis} (Age: ${m.age})`).join("\n")
+      ? medicalHistory.map(m => `- ${m.diagnosis} (Age: ${m.age})`).join('\n')
       : "No medical history found.";
     text += "\n\n";
 
     // Surgical History
     text += "### Surgical History (Procedure & Age)\n";
     text += surgicalHistory.length
-      ? surgicalHistory.map((s) => `- ${s.procedure} (Age: ${s.age})`).join("\n")
+      ? surgicalHistory.map(s => `- ${s.procedure} (Age: ${s.age})`).join('\n')
       : "No surgical history found.";
     text += "\n\n";
 
     // Family History
     text += "### Family History\n";
     if (familyHistory.length) {
-      familyHistory.forEach((member) => {
-        text += `- ${member.relationship} (${member.status || "Unknown"}, Age: ${member.age || "N/A"})`;
+      familyHistory.forEach(member => {
+        text += `- ${member.relationship} (${member.status || 'Unknown'}, Age: ${member.age || 'N/A'})`;
         if (member.problems?.length) {
-          text += `: ${member.problems
-            .map((p) => `${p.description} (Onset: ${p.ageOfOnset})`)
-            .join(", ")}`;
+          text += `: ${member.problems.map(p => `${p.description} (Onset: ${p.ageOfOnset})`).join(', ')}`;
         }
         text += "\n";
       });
@@ -252,15 +257,14 @@ export default function Chat() {
 
     // Social Documentation
     text += "### Social Documentation\n";
-    text +=
-      socialDocumentation?.textbox ||
-      (socialDocumentation ? JSON.stringify(socialDocumentation, null, 2) : "No social documentation found.");
+    text += socialDocumentation?.textbox
+      || (socialDocumentation ? JSON.stringify(socialDocumentation, null, 2) : "No social documentation found.");
     text += "\n\n";
 
-    // Medications (compact with reasons inline)
+    // Medications
     text += "### Medications\n";
     if (Array.isArray(medications) && medications.length) {
-      medications.forEach((m) => {
+      medications.forEach(m => {
         text += `- ${m.name} ${m.dose}${m.unit ? " " + m.unit : ""}, ${m.frequency}`;
         if (m.route) text += ` via ${m.route}`;
         if (m.possiblePrnReasons?.length) text += ` — reasons: ${m.possiblePrnReasons.join(", ")}`;
@@ -271,10 +275,10 @@ export default function Chat() {
     }
     text += "\n";
 
-    // Allergies (allergen + reaction)
+    // Allergies
     text += "### Allergies\n";
     if (Array.isArray(allergies) && allergies.length) {
-      allergies.forEach((a) => {
+      allergies.forEach(a => {
         text += `- ${a.allergen}: reaction ${a.reaction}\n`;
       });
     } else {
@@ -284,19 +288,9 @@ export default function Chat() {
     text += "\n'''";
     return text.trimEnd();
   }, [
-    firstName,
-    lastName,
-    birthdate,
-    gender,
-    concernsArr,
-    hpiNote,
-    rosNote,
-    medicalHistory,
-    surgicalHistory,
-    familyHistory,
-    socialDocumentation,
-    medications,
-    allergies,
+    firstName, lastName, birthdate, gender, concernsArr,
+    hpiNote, rosNote, medicalHistory, surgicalHistory, familyHistory,
+    socialDocumentation, medications, allergies
   ]);
 
   React.useEffect(() => {
@@ -322,6 +316,8 @@ export default function Chat() {
       setTab(newValue);
     }
   };
+
+  console.dir(fullPrompt)
 
   return (
     <GeminiAPIProvider
@@ -407,7 +403,7 @@ export default function Chat() {
 
           <TabPanel sx={{ p: 0 }} value="modelConfig">
             {configUnlocked ? (
-              <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} />
+              <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
             ) : (
               <Box
                 sx={{
