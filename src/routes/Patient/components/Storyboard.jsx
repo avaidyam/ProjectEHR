@@ -140,9 +140,9 @@ const StickyNote = () => {
   const [privateZ, setPrivateZ] = useState(globalTopZ);
   const [deptZ, setDeptZ] = useState(globalTopZ - 1);
 
-  // size state for resizable windows
-  const [privateSize, setPrivateSize] = useState({ width: 360, height: 240 });
-  const [deptSize, setDeptSize] = useState({ width: 360, height: 240 });
+  // size state for resizable windows (smaller defaults so content and title are closer)
+  const [privateSize, setPrivateSize] = useState({ width: 360, height: 200 });
+  const [deptSize, setDeptSize] = useState({ width: 360, height: 200 });
 
   // position state for windows (so we can center on open and remember after drag)
   const [privatePos, setPrivatePos] = useState({ left: null, top: null });
@@ -420,7 +420,7 @@ const StickyNote = () => {
                 backgroundColor: '#fff9c4',
                 border: `2px solid #fbc02d`,
                 borderRadius: 2,
-                minHeight: 160,
+                minHeight: 120,
                 minWidth: 300,
                 width: privateSize.width,
                 height: privateSize.height,
@@ -435,26 +435,26 @@ const StickyNote = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
-                p: 2,
-                pb: 1,
+                gap: 0.5,
+                p: 0,
+                pb: 0,
                 cursor: 'move',
                 userSelect: 'none',
               }}
             >
-              <Icon sx={{ color: '#fbc02d' }}>sticky_note_2</Icon>
-              <Box component="span" sx={{ fontWeight: 'bold', color: '#fbc02d', flexGrow: 1, fontSize: '1.25rem' }}>
+              <Icon sx={{ color: '#fbc02d', fontSize: '1rem' }}>sticky_note_2</Icon>
+              <Box component="span" sx={{ fontWeight: 'bold', color: '#fbc02d', flexGrow: 1, fontSize: '1rem' }}>
                 My Sticky Note
               </Box>
               <IconButton
                 onClick={handleClosePrivate}
                 size="small"
-                sx={{ color: '#fbc02d' }}
+                sx={{ color: '#fbc02d', padding: 0, minWidth: 'auto' }}
               >
-                <Icon>close</Icon>
+                <Icon sx={{ fontSize: '1rem' }}>close</Icon>
               </IconButton>
             </Box>
-              <Box sx={{ p: 2, pt: 1, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <TextareaAutosize
                   minRows={2}
                   value={privateContent}
@@ -466,7 +466,7 @@ const StickyNote = () => {
                     boxSizing: 'border-box',
                     border: '1px solid #fbc02d',
                     borderRadius: 6,
-                    padding: 8,
+                    padding: 4,
                     backgroundColor: 'transparent',
                     color: 'rgba(0,0,0,0.87)',
                     resize: 'none',
@@ -506,7 +506,7 @@ const StickyNote = () => {
                 backgroundColor: '#e3f2fd',
                 border: `2px solid #2196f3`,
                 borderRadius: 2,
-                minHeight: 160,
+                minHeight: 120,
                 minWidth: 300,
                 width: deptSize.width,
                 height: deptSize.height,
@@ -521,26 +521,26 @@ const StickyNote = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1,
-                p: 2,
-                pb: 1,
+                gap: 0.75,
+                p: 0,
+                pb: 0,
                 cursor: 'move',
                 userSelect: 'none',
               }}
             >
-              <Icon sx={{ color: '#2196f3' }}>sticky_note_2</Icon>
-              <Box component="span" sx={{ fontWeight: 'bold', color: '#2196f3', flexGrow: 1, fontSize: '1.25rem' }}>
+              <Icon sx={{ color: '#2196f3', fontSize: '1rem' }}>sticky_note_2</Icon>
+              <Box component="span" sx={{ fontWeight: 'bold', color: '#2196f3', flexGrow: 1, fontSize: '1rem' }}>
                 {currentDept || 'Department'} Comments
               </Box>
               <IconButton
                 onClick={handleCloseDept}
                 size="small"
-                sx={{ color: '#2196f3' }}
+                sx={{ color: '#2196f3', padding: 0, minWidth: 'auto' }}
               >
-                <Icon>close</Icon>
+                <Icon sx={{ fontSize: '1rem' }}>close</Icon>
               </IconButton>
             </Box>
-            <Box sx={{ p: 2, pt: 1, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ mb: 1 }}>
                 <FormControl fullWidth size="small">
                   <Select
@@ -554,14 +554,16 @@ const StickyNote = () => {
                     }}
                     sx={{
                       backgroundColor: 'background.paper',
+                      fontSize: '0.95rem',
+                      '& .MuiSelect-select': { padding: '6px 8px' },
                       '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' },
                     }}
                   >
-                    <MenuItem value="">Select Department</MenuItem>
-                    <MenuItem value="Adult Medicine">Adult Medicine</MenuItem>
-                    <MenuItem value="Emergency Department">Emergency Department</MenuItem>
-                    <MenuItem value="Cardiology">Cardiology</MenuItem>
-                    <MenuItem value="Internal Medicine">Internal Medicine</MenuItem>
+                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
+                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Adult Medicine">Adult Medicine</MenuItem>
+                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Emergency Department">Emergency Department</MenuItem>
+                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Cardiology">Cardiology</MenuItem>
+                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Internal Medicine">Internal Medicine</MenuItem>
                   </Select>
                 </FormControl>
               </Box>
@@ -579,7 +581,7 @@ const StickyNote = () => {
                     boxSizing: 'border-box',
                     border: `1px solid ${currentDept ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,
                     borderRadius: 6,
-                    padding: 8,
+                    padding: 4,
                     backgroundColor: 'transparent',
                     color: currentDept ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.6)',
                     resize: 'none',
