@@ -101,10 +101,23 @@ let globalTopZ = 1200;
 
 const StickyNote = () => {
   const { useChart, useEncounter } = usePatient();
-  const chart = useChart();
-
-  // Wait until chart is loaded
-  if (!chart) return null;
+  const encounterAccessor = useEncounter();
+  
+  // Safely access the stickyNotes hook with proper fallback
+  let stickyNoteData = {};
+  let setStickyNoteData = () => {};
+  
+  try {
+    if (encounterAccessor && typeof encounterAccessor.stickyNotes === 'function') {
+      const result = encounterAccessor.stickyNotes({});
+      if (Array.isArray(result) && result.length >= 2) {
+        stickyNoteData = result[0] ?? {};
+        setStickyNoteData = result[1] ?? (() => {});
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to access stickyNotes:', err);
+  }
 
   // separate state for private note and department note so both can be open
   const [privateOpen, setPrivateOpen] = useState(false);
@@ -138,8 +151,13 @@ const StickyNote = () => {
   // resizing refs and flags
   const resizingRef = useRef({ type: null, startX: 0, startY: 0, startW: 0, startH: 0 });
 
-  // Use useEncounter for persistent data
-  const [stickyNoteData, setStickyNoteData] = useEncounter().stickyNotes({});
+  // Use useEncounter for persistent data.
+  // We probe the accessor once and store results in refs so we don't re-evaluate
+  // on every render (which would create new objects and trigger effects that
+  // overwrite local editing state). This keeps the sticky-note local state
+  // stable while still using the encounter-backed accessor when available.
+  const stickyNoteDataRef = useRef({});
+  const setStickyNoteDataRef = useRef(() => {});
 
   // Ensure stickyNoteData is always an object
   const safeStickyNoteData = stickyNoteData && typeof stickyNoteData === 'object' ? stickyNoteData : {};
@@ -148,7 +166,7 @@ const StickyNote = () => {
   useEffect(() => {
     const data = safeStickyNoteData;
     if (privateOpen) {
-      const content = data.private;
+      const content = data?.private;
       setPrivateContent(content ? String(content) : '');
       privateContentRef.current = content ? String(content) : '';
     } else {
