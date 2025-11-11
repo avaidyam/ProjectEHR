@@ -162,14 +162,14 @@ export default function Chat() {
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
 
-  // ✅ Chart-level demographics (like in your SnapshotTabContent)
+  // Chart-level demographics (like in your SnapshotTabContent)
   const [chart] = useChart()(); // chart has firstName, lastName, birthdate, address, maybe gender
   const firstName = chart?.firstName ?? '';
   const lastName = chart?.lastName ?? '';
   const birthdate = chart?.birthdate ?? '';
   const gender = chart?.gender ?? chart?.sex ?? ''; // try both if your model uses 'sex'
 
-  // ✅ Encounter object for concerns (like in your SnapshotTabContent)
+  // Encounter object for concerns (like in your SnapshotTabContent)
   const [currentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
