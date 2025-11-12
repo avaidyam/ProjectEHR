@@ -617,10 +617,13 @@ export const SidebarVitals = ({ ...props }) => {
   /** sort most recent to older */
   const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
   const allVitals = (vitals ?? []).toSorted((a, b) => _t(b) - _t(a))
+  const mostRecentDate = allVitals[0]?.measurementDate;
+  const mostRecentDT = DateHelpers.convertToDateTime(mostRecentDate);
+  const vitalsDateLabel = mostRecentDT && mostRecentDT.isValid ? ` ${DateHelpers.standardFormat(mostRecentDate)}` : '';
   return (
     <div style={{ display: 'flex', flexDirection: "column" }}>
       <Typography variant="h6" color="inherit" component="div" style={{ fontSize: '1.25em' }}>
-        Vitals {DateHelpers.standardFormat(allVitals[0]?.measurementDate)}
+        Vitals{vitalsDateLabel}
       </Typography>
       {allVitals[0] ? (
         <VitalsPopup vitals={allVitals} />
