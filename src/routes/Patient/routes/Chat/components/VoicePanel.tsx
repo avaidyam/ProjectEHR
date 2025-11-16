@@ -625,20 +625,35 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     return !!el.closest?.('[contenteditable=""],[contenteditable="true"]');
   };
 
-  // Push-to-talk (Space to hold)
+  // Push-to-talk (Space to hold) with 1-second delayed re-mute
   useEffect(() => {
+    const spacebarTimeoutRef = { current: null as number | null };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.code === 'Space' || e.key === ' ') && !isEditableTarget(e.target)) {
         if (!e.repeat) {
           e.preventDefault();
+
+          // Cancel any pending re-mute timeout
+          if (spacebarTimeoutRef.current) {
+            clearTimeout(spacebarTimeoutRef.current);
+            spacebarTimeoutRef.current = null;
+          }
+
           setMuted(false);
         }
       }
     };
+
     const handleKeyUp = (e: KeyboardEvent) => {
       if ((e.code === 'Space' || e.key === ' ') && !isEditableTarget(e.target)) {
         e.preventDefault();
-        setMuted(true);
+
+        // Delay re-muting by 1 second
+        spacebarTimeoutRef.current = window.setTimeout(() => {
+          setMuted(true);
+          spacebarTimeoutRef.current = null;
+        }, 1000);
       }
     };
 
@@ -648,6 +663,10 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown, { capture: true } as any);
       window.removeEventListener('keyup', handleKeyUp, { capture: true } as any);
+
+      if (spacebarTimeoutRef.current) {
+        clearTimeout(spacebarTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -684,9 +703,15 @@ function VoicePanel({ children }: { children?: ReactNode }) {
 
       {/* Instruction message in its own box, always visible, below all buttons */}
       <InstructionBox aria-live="polite" role="status">
-        {connected
-          ? '💡 Click or hold `Spacebar` to toggle mute or unmute'
-          : ''}
+        {connected ? (
+          <>
+            💡 Tip: You can mute the call to go into discussion!
+            <br />
+            Click or press spacebar to toggle mute/unmute
+          </>
+        ) : (
+          'Click the phone to start the call'
+        )}
       </InstructionBox>
     </>
   );
