@@ -705,9 +705,10 @@ function VoicePanel({ children }: { children?: ReactNode }) {
       <InstructionBox aria-live="polite" role="status">
         {connected ? (
           <>
-            💡 Tip: You can mute the call to go into discussion!
+            💡 Tip: You can ❗mute❗ the call to go into discussion!
             <br />
-            Click or press spacebar to toggle mute/unmute
+            <br />
+            <b>Click</b> the microphone or hold <b>spacebar</b> to toggle mute/unmute
           </>
         ) : (
           'Click the phone to start the call'
