@@ -162,14 +162,14 @@ export default function Chat() {
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
 
-  // ✅ Chart-level demographics (like in your SnapshotTabContent)
+  // Chart-level demographics (like in your SnapshotTabContent)
   const [chart] = useChart()(); // chart has firstName, lastName, birthdate, address, maybe gender
   const firstName = chart?.firstName ?? '';
   const lastName = chart?.lastName ?? '';
   const birthdate = chart?.birthdate ?? '';
   const gender = chart?.gender ?? chart?.sex ?? ''; // try both if your model uses 'sex'
 
-  // ✅ Encounter object for concerns (like in your SnapshotTabContent)
+  // Encounter object for concerns (like in your SnapshotTabContent)
   const [currentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
@@ -186,6 +186,7 @@ export default function Chat() {
     history,
     medications,
     allergies,
+    immunizations,
     smartData
   } = nextEncounter
 
@@ -196,6 +197,11 @@ export default function Chat() {
       setVoiceName(smartVoice);
     }
   }, [smartVoice]);
+
+  React.useEffect(() => {
+    console.log("🎤 Active voice:", voiceName);
+  }, [voiceName]);
+  
 
   // Notes
   const hpiNote = (documents || []).find(
@@ -300,6 +306,25 @@ export default function Chat() {
     }
     text += "\n";
 
+    // Immunizations
+    text += "### Immunizations\n";
+    if (Array.isArray(immunizations) && immunizations.length) {
+      immunizations.forEach(imm => {
+        const vaccine  = imm.vaccine || imm.name || "Unknown vaccine";
+        const received = imm.received || imm.date || "Unknown date";
+        const recorded = imm.recorded;
+        const recorder = imm.recorder;
+
+        text += `- ${vaccine} — received ${received}`;
+        if (recorded) text += `, recorded ${recorded}`;
+        if (recorder) text += `, recorded by ${recorder}`;
+        text += "\n";
+      });
+    } else {
+      text += "No immunizations on file.\n";
+    }
+    text += "\n";
+
     // Allergies
     text += "### Allergies\n";
     if (Array.isArray(allergies) && allergies.length) {
@@ -315,7 +340,7 @@ export default function Chat() {
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
     hpiNote, rosNote, medicalHistory, surgicalHistory, familyHistory,
-    socialDocumentation, medications, allergies
+    socialDocumentation, medications, immunizations, allergies
   ]);
 
   React.useEffect(() => {
