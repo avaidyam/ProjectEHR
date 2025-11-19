@@ -4,9 +4,10 @@ import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
-import patient_sample from 'util/data/patient_sample.json';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
+
+import { useDatabase } from 'components/contexts/PatientContext'
 
 // get today's date and display in text box
 function dateLocal() {
@@ -179,7 +180,8 @@ const columns = [
     headerName: 'Patient Name/MRN/Age/Gender',
     width: 300,
     renderCell: (params) => {
-      const data = patient_sample.patients[params.row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[params.row.patient.mrn]
       return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
@@ -195,7 +197,8 @@ const columns = [
       );
     },
     valueGetter: (value, row) => {
-      const data = patient_sample.patients[row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[row.patient.mrn]
       return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
         new Date(data.birthdate).age()
       } years old / ${data.gender}`;
@@ -211,7 +214,8 @@ const columns = [
       </Tooltip>
     ),
     /* valueGetter: (params) => {
-      const data = patient_sample.patients[params.row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[params.row.patient.mrn]
       const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
       return data2
     },// */
@@ -226,7 +230,8 @@ const columns = [
       </Tooltip>
     ),
     /* valueGetter: (params) => {
-      const data = patient_sample.patients[params.row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[params.row.patient.mrn]
       const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
       return data2 // FIXME we need an actual appointment object still but this will do for now
     },// */
@@ -236,7 +241,8 @@ const columns = [
     headerName: 'Provider Name',
     width: 200,
     valueGetter: (value, row) => {
-      const data = patient_sample.patients[row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[row.patient.mrn]
       const data2 = data.encounters[row.patient.enc]?.provider;
       return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
     },
@@ -247,7 +253,8 @@ const columns = [
     headerName: 'Coverage',
     width: 200,
     valueGetter: (value, row) => {
-      const data = patient_sample.patients[row.patient.mrn]
+      const [patientsDB] = useDatabase().patients()
+      const data = patientsDB[row.patient.mrn]
       return `${data.insurance.carrierName}`;
     },
   },
@@ -255,6 +262,8 @@ const columns = [
 
 // takes rows from json file and set columns to make table
 export function Schedule() {
+  const [patientsDB] = useDatabase().patients()
+  const [scheduleDB] = useDatabase().schedule()
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
   const [preview, setPreview] = React.useState(100); // set width of table
@@ -308,9 +317,9 @@ export function Schedule() {
             >
               {selPatient ? (
                 <>
-                  Name: {patient_sample.patients[selPatient.patient.mrn].firstName} {patient_sample.patients[selPatient.patient.mrn].lastName} <br />
-                  Age: {new Date(patient_sample.patients[selPatient.patient.mrn].birthdate).age()} <br />
-                  Gender: {patient_sample.patients[selPatient.patient.mrn].gender} <br />
+                  Name: {patientsDB[selPatient.patient.mrn].firstName} {patientsDB[selPatient.patient.mrn].lastName} <br />
+                  Age: {new Date(patientsDB[selPatient.patient.mrn].birthdate).age()} <br />
+                  Gender: {patientsDB[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
                 </>
@@ -323,7 +332,7 @@ export function Schedule() {
         <div>
           <DataGrid
             getRowHeight={() => 'auto'}
-            rows={patient_sample.schedule}
+            rows={scheduleDB}
             columns={columns}
             onRowClick={patientScheduleClick}
             onRowDoubleClick={({
@@ -343,7 +352,7 @@ export function Schedule() {
               //  return; // Prevent routing
               // } // FIXME later
               if (
-                !(Object.values(patient_sample.patients[selectedMRN]
+                !(Object.values(patientsDB[selectedMRN]
                   .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {

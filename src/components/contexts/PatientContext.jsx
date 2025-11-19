@@ -1,14 +1,20 @@
 import * as React from 'react'
 import { useNavigate, generatePath, useParams } from 'react-router-dom';
 import createStore from "teaful";
-import patient_sample from 'util/data/patient_sample.json'
 
+// 
+import patient_sample from 'util/data/patient_sample.json'
+import orderables from 'util/data/orderables.json'
+
+// 
 export const DatabaseContext = React.createContext()
 export const PatientContext = React.createContext()
 
 // 
 const initialStore = {
   patients: patient_sample.patients,
+  schedule: patient_sample.schedule,
+  orderables: orderables,
   test: [],
   another: {}
   // FIXME: add more databases here!
@@ -31,7 +37,7 @@ export const DatabaseProvider = ({ children }) => {
 
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider = ({ patient, encounter, children }) => {
-  const useStore = useDatabase()
+  const useStore1 = useDatabase()
   /*const [initialStore, setStore] = useDatabase().patients[patient]()
 
   // 
@@ -44,8 +50,8 @@ export const PatientProvider = ({ patient, encounter, children }) => {
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const value = React.useMemo(() => ({ 
-    useChart: () => useStore.patients[patient], 
-    useEncounter: () => useStore.patients[patient].encounters[encounter] 
+    useChart: () => useStore1.patients[patient], 
+    useEncounter: () => useStore1.patients[patient].encounters[encounter] 
   }), [patient, encounter])
   
   return (

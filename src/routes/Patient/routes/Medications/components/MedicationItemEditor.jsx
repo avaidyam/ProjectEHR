@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography, styled } from '@mui/material';
-import orderables from 'util/data/orderables.json';
+import { useDatabase } from 'components/contexts/PatientContext'
 
 const routesOfAdministration = [
   'Oral',
@@ -45,6 +45,7 @@ const PrnFormGroup = styled(FormGroup)({
 });
 
 export default function MedicationItemEditor({ medication, onSave, onCancel }) {
+  const [orderables] = useDatabase().orderables()
   const [editedMedication, setEditedMedication] = useState({
     ...medication,
     unit: unitMap[medication.unit] || medication.unit,

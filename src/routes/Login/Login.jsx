@@ -6,7 +6,7 @@ import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the di
 import Notification from './components/Notification.jsx';
 import PromptDialog from './components/PromptDialog.jsx';
 
-import patient_sample from 'util/data/patient_sample.json';
+import { useDatabase } from 'components/contexts/PatientContext'
 
 const departments = [
   { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE FOUNDATION HOSPITAL" },
@@ -17,6 +17,9 @@ const departments = [
 ];
 
 export const Login = ({ setIsLoggedIn }) => {
+  const [patientsDB] = useDatabase().patients()
+  const [schedule] = useDatabase().schedule()
+
   const [displayDepts, setDisplayDepts] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -46,17 +49,17 @@ export const Login = ({ setIsLoggedIn }) => {
 
   // Extract unique MRNs from patient_sample.json -> schedule
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(patient_sample.schedule.map((appt) => appt.patient.mrn)));
+    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
     setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
   }, []);
 
   // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(patient_sample.schedule.map((appt) => appt.patient.mrn)));
+    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
 
     // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
-      const patientInfo = patient_sample.patients[mrn]
+      const patientInfo = patientsDB[mrn]
       acc[mrn] = patientInfo?.encounters?.length || 0; // Use MRN as key and number of encounters as value
       return acc;
     }, {});
