@@ -38,7 +38,7 @@ const filterDocuments = (documents, conditionals, orders) => {
 
     // 2. Use the Array.filter method to check each document's validity
     return (documents ?? []).filter(doc => {
-        const requiredOrders = conditionals?.[doc.data.id];
+        const requiredOrders = conditionals?.[doc.id];
      
         // If the document ID has no entry in the conditionals, it passes the filter by default.
         if (!requiredOrders) {
