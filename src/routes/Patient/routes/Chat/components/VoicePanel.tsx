@@ -374,7 +374,9 @@ function VoicePanel({ children }: { children?: ReactNode }) {
             💡 Tip: You can ❗mute❗ the call to go into discussion!
             <br />
             <br />
-            <b>Click</b> the microphone or hold <b>spacebar</b> to toggle mute/unmute
+            <b>Click</b> the microphone to <b>toggle</b> mute/unmute
+            <br />
+            or hold spacebar for push-to-talk
           </>
         ) : (
           'Click the phone to start the call'
