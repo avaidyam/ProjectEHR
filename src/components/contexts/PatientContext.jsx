@@ -12,6 +12,7 @@ export const PatientContext = React.createContext()
 
 // 
 const initialStore = {
+  departments: patient_sample.departments,
   patients: patient_sample.patients,
   schedule: patient_sample.schedule,
   orderables: orderables,
