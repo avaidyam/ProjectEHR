@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography, styled } from '@mui/material';
-import medications from 'util/data/medications_list.json';
+import orderables from 'util/data/orderables.json';
 
 const routesOfAdministration = [
   'Oral',
@@ -51,9 +51,9 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
   });
 
   useEffect(() => {
-    const selectedMedication = medications.find(med => med.generic === editedMedication.name);
-    const brand = selectedMedication?.brand || '';
-    const possiblePrnReasons = selectedMedication?.prnReasons || [];
+    const selectedMedication = orderables.rxnorm.find(med => med.name === editedMedication.name);
+    const brand = selectedMedication?.brand || ''; // FIXME
+    const possiblePrnReasons = selectedMedication?.prnReasons || []; // FIXME
     setEditedMedication(prevState => ({
       ...prevState,
       brandName: brand,

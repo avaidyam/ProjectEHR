@@ -97,7 +97,7 @@ const transformPatientData = (patients) => {
   ];
 };
 
-const initialLists = transformPatientData(patient_sample);
+const initialLists = transformPatientData(patient_sample.patients);
 
 const createTreeItems = (lists) => {
   const myLists = lists.filter((list) => list.type === 'my');

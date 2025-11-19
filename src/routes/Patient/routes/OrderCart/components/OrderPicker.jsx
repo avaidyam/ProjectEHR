@@ -1,11 +1,8 @@
 import React from 'react';
 import { Button, TextField, Label, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
+import orderables from 'util/data/orderables.json'
 
-import labs_all from 'util/data/labs_all.json'
-import rxnorm_all from 'util/data/rxnorm_all.json'
-import misc_all from 'util/data/misc_orders.json'
-
-const all_orders = [...rxnorm_all, ...Object.values(labs_all.procedures).map(x => ({ name: x })), ...misc_all]
+const all_orders = [...orderables.rxnorm, ...Object.values(orderables.procedures).map(x => ({ name: x })), ...orderables.misc]
 const search_orders = (value = "", limit = null) => {
   const out = all_orders.filter(x => x.name.toLocaleLowerCase().includes(value?.toLocaleLowerCase() ?? ""))
   return out.slice(0, limit).toSorted()

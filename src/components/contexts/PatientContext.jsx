@@ -8,7 +8,7 @@ export const PatientContext = React.createContext()
 
 // 
 const initialStore = {
-  patients: patient_sample,
+  patients: patient_sample.patients,
   test: [],
   another: {}
   // FIXME: add more databases here!
@@ -35,11 +35,11 @@ export const PatientProvider = ({ patient, encounter, children }) => {
   /*const [initialStore, setStore] = useDatabase().patients[patient]()
 
   // 
-  //const initialStore = patient_sample[patient]
+  //const initialStore = patient_sample.patients[patient]
   const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
     // TODO: ...
   })*/
-  // const [data, setData] = useStore() // React.useState(patient_sample[patient])
+  // const [data, setData] = useStore() // React.useState(patient_sample.patients[patient])
   
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
   // eslint-disable-next-line react-hooks/exhaustive-deps
