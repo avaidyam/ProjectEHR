@@ -1,8 +1,9 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
+import DateHelpers from 'util/helpers.js';
 import { createPortal } from 'react-dom';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextField, TextareaAutosize, Dialog, DialogContent, DialogTitle } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
-import DateHelpers from 'util/helpers.js';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import Draggable from 'react-draggable';
 import { Icon, Label, Window } from 'components/ui/Core.jsx';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
@@ -93,13 +94,12 @@ export const VitalsPopup = ({ vitals, ...props }) => {
   );
 };
 
-import Draggable from 'react-draggable';
-
 // Module-level z-index counter so clicked windows come to front
 // high z so notes appear above any route/tab content; portal will render to body
 let globalTopZ = 1200;
 
 const StickyNote = () => {
+  const [departmentsDB] = useDatabase().departments()
   const { useChart, useEncounter } = usePatient();
   const encounterAccessor = useEncounter();
   
@@ -560,10 +560,7 @@ const StickyNote = () => {
                     }}
                   >
                     <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
-                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Adult Medicine">Adult Medicine</MenuItem>
-                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Emergency Department">Emergency Department</MenuItem>
-                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Cardiology">Cardiology</MenuItem>
-                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="Internal Medicine">Internal Medicine</MenuItem>
+                    {departmentsDB.map(x => (<MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.name}>{x.name}</MenuItem>))}
                   </Select>
                 </FormControl>
               </Box>
