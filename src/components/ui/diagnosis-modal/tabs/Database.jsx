@@ -18,7 +18,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import { Add as AddIcon, Check as CheckIcon } from '@mui/icons-material';
-import { useICD10InfiniteSearch } from '../../../../services/icd10';
+import { useICD10InfiniteSearch } from '../../../../util/icd10';
 import { useSelectedDiagnoses } from '../../../contexts/SelectedDiagnosesContext';
 
 const DiagnosisDatabaseTab = ({ searchTerm }) => {
