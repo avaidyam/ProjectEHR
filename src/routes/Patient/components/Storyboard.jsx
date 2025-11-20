@@ -95,11 +95,16 @@ export const VitalsPopup = ({ vitals, ...props }) => {
 
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
-  const [vitals, setVitals] = useEncounter().vitals()
+  const [vitals] = useEncounter().vitals()
+  const [documents] = useEncounter().documents()
+  const [conditionals] = useEncounter().conditionals()
+  const [orders] = useEncounter().orders()
+
+  const vitals2 = filterDocuments(vitals, conditionals, orders)
 
   /** sort most recent to older */
   const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
-  const allVitals = (vitals ?? []).toSorted((a, b) => _t(b) - _t(a))
+  const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
   const mostRecentDate = allVitals[0]?.measurementDate;
   const mostRecentDT = DateHelpers.convertToDateTime(mostRecentDate);
   const vitalsDateLabel = mostRecentDT && mostRecentDT.isValid ? ` ${DateHelpers.standardFormat(mostRecentDate)}` : '';
@@ -234,40 +239,41 @@ export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
   const [vitals] = useEncounter().vitals();
   const [documents] = useEncounter().documents();
+  const [conditionals] = useEncounter().conditionals()
+  const [orders] = useEncounter().orders()
+
+  const vitals2 = filterDocuments(vitals, conditionals, orders)
+  const documents2 = filterDocuments(documents, conditionals, orders)
 
   /** sort most recent to older */
   const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
-  const allVitals = (vitals ?? []).toSorted((a, b) => _t(b) - _t(a))
+  const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
-  //documents.filter(d => d.kind === "Lab")
-  // FIXME
-  //(allVitals[0].respiratoryRate > 22) && (allVitals[0].heartRate > 100) && (allVitals[0].Temp > 38) && 
+  const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
+  const labs = documents2
+                .filter(d => d.kind === "Lab")
+                .toSorted((a, b) => _t2(b) - _t2(a))
+                .flatMap(d => d.labResults)
+                .filter(x => x.name === "WBC")
+                .map(x => x.value > x.high)
+                .filter(x => x)
 
-  const isSepsis = false 
+  // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11
+  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0) 
 
-  return (
-    <>
-      {allergies && allergies.length > 0 ? (
-        allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
-          <Alert 
-          icon ={false}
-            sx={{ 
-              mt: .5, py:0.1,
-              bgcolor: '#ffcb00', 
-              color: 'black', 
-              fontWeight: 'bold', 
-            }}
-          >
-            Allergies: {allergies.map(a => a.allergen).join(", ")}
-          </Alert>
-        ) : (
-          <span>Allergies: {allergies.map(a => a.allergen).join(", ")}</span>
-        )
-      ) : (
-        <span>Allergies: None on file</span>
-      )}
-    </>
-  )
+  return isSepsis ? 
+    <Alert 
+      icon={false}
+      sx={{ 
+        mt: .5, py:0.1,
+        bgcolor: '#ffcb00', 
+        color: 'black', 
+        fontWeight: 'bold', 
+      }}
+    >
+      Sepsis Alert
+    </Alert> : 
+    <></>
 }
 
 export const SidebarProblemList = () => {
@@ -295,6 +301,7 @@ export const Storyboard = () => {
   return (
     <>
       <SidebarPatientInfo />
+      <SidebarSepsisAlert />
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarCareTeam />
       <Divider sx={{ bgcolor: "primary.light" }} />

@@ -25,7 +25,7 @@ export const useRouter = ({ onAfterRoute = null, preserveQueryParams = true } = 
 /**
  * Filters the documents based on whether their conditional orders are fully
  * satisfied by the available orders, accounting for multiplicity.
- * @param {Array} documents The list of documents to filter.
+ * @param {Array} documents The list of documents to filter. A document must have a top-level id string.
  * @param {Object} conditionals Map of document IDs to required order name arrays.
  * @param {Array} orders The list of available orders.
  * @returns {Array} The filtered list of documents.
@@ -59,7 +59,6 @@ export const filterDocuments = (documents, conditionals, orders) => {
         return Object.keys(requiredCounts).every(orderName => {
             const required = requiredCounts[orderName];
             const available = availableCounts[orderName] || 0; // Default to 0 if the order is not available
-            //console.log(`document[${doc.data.id}] requires ${orderName}: has ${available} but needs ${required} => ${available >= required}`)
 
             // The condition is met only if the available count is greater than or equal to the required count
             return available >= required;
