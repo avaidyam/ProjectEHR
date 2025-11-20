@@ -15,9 +15,10 @@ import {
   Icon,
   RichTextEditor
 } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 
 const Handoff = () => {
+  const [departmentsDB] = useDatabase().departments()
   const { useChart, useEncounter } = usePatient();
   const chart = useChart();
 
@@ -121,10 +122,7 @@ const Handoff = () => {
             displayEmpty
           >
             <MenuItem value="">Select Department</MenuItem>
-            <MenuItem value="Adult Medicine">Adult Medicine</MenuItem>
-            <MenuItem value="Emergency Department">Emergency Department</MenuItem>
-            <MenuItem value="Cardiology">Cardiology</MenuItem>
-            <MenuItem value="Internal Medicine">Internal Medicine</MenuItem>
+            {departmentsDB.map(x => (<MenuItem value={x.name}>{x.name}</MenuItem>))}
           </Select>
         </FormControl>
       </Box>

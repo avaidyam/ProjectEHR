@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Box, Icon, TreeView } from 'components/ui/Core.jsx';
 import { useDatabase } from 'components/contexts/PatientContext'
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
-import patient_sample from 'util/data/patient_sample.json';
 
 const ExpandMoreIcon = () => <Icon>expand_more</Icon>
 const ChevronRightIcon = () => <Icon>chevron_right</Icon>
@@ -96,8 +95,6 @@ const transformPatientData = (patients) => {
     },
   ];
 };
-
-const initialLists = transformPatientData(patient_sample);
 
 const createTreeItems = (lists) => {
   const myLists = lists.filter((list) => list.type === 'my');

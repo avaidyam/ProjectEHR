@@ -6,18 +6,13 @@ import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the di
 import Notification from './components/Notification.jsx';
 import PromptDialog from './components/PromptDialog.jsx';
 
-import schedule from 'util/data/schedule.json'; // Import the schedule JSON file for mrns
-import patient_sample from 'util/data/patient_sample.json';
-
-const departments = [
-  { id: 20, name: "ABSTRACTION", identityId: 200302050, specialty: "Hospital Services", location: "Pre-Registration", serviceArea: "CARLE FOUNDATION HOSPITAL" },
-  { id: 26, name: "ADULT MEDICINE PWAM PBB", identityId: 200612664, specialty: "Windsor Primary Care", location: "URBANA ON WINDSOR", serviceArea: "CARLE FOUNDATION HOSPITAL" },
-  { id: 30, name: "EMERGENCY DEPARTMENT", identityId: 200703416, specialty: "Emergency Medicine", location: "Main Building", serviceArea: "CARLE FOUNDATION HOSPITAL" },
-  { id: 30, name: "CARDIOLOGY", identityId: 200703456, specialty: "Heart Care", location: "Main Building", serviceArea: "CARLE FOUNDATION HOSPITAL" },
-  // Add more rows as needed...
-];
+import { useDatabase } from 'components/contexts/PatientContext'
 
 export const Login = ({ setIsLoggedIn }) => {
+  const [patientsDB] = useDatabase().patients()
+  const [schedule] = useDatabase().schedule()
+  const [departments] = useDatabase().departments()
+
   const [displayDepts, setDisplayDepts] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -45,19 +40,19 @@ export const Login = ({ setIsLoggedIn }) => {
     setPromptState({ ...promptState, open: false });
   };
 
-  // Extract unique MRNs from schedule.json
+  // Extract unique MRNs from patient_sample.json -> schedule
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(schedule.appts.map((appt) => appt.patient.mrn)));
+    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
     setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
   }, []);
 
   // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(schedule.appts.map((appt) => appt.patient.mrn)));
+    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
 
     // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
-      const patientInfo = patient_sample[mrn]
+      const patientInfo = patientsDB[mrn]
       acc[mrn] = patientInfo?.encounters?.length || 0; // Use MRN as key and number of encounters as value
       return acc;
     }, {});

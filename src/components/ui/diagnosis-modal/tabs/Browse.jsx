@@ -10,7 +10,7 @@ import {
     LinearProgress
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { useICD10Concept, useICD10Children, getAllCategories } from '../../../../services/icd10';
+import { useICD10Concept, useICD10Children, getAllCategories } from '../../../../util/icd10';
 import { useSelectedDiagnoses } from '../../../contexts/SelectedDiagnosesContext';
 
 // The diagnosis categories to fetch - using ICD-10 chapters

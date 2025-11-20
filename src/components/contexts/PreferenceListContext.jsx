@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
-import { getCodesForChapter, getAllCategories } from '../../services/icd10';
+import { getCodesForChapter, getAllCategories } from '../../util/icd10';
 
 const PreferenceListContext = createContext();
 
