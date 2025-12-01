@@ -1,22 +1,20 @@
 import React from 'react';
 import { Button, TextField, Label, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
+import { useDatabase } from 'components/contexts/PatientContext'
 
-import labs_all from 'util/data/labs_all.json'
-import rxnorm_all from 'util/data/rxnorm_all.json'
-import misc_all from 'util/data/misc_orders.json'
-
-const all_orders = [...rxnorm_all, ...Object.values(labs_all.procedures).map(x => ({ name: x })), ...misc_all]
-const search_orders = (value = "", limit = null) => {
+const search_orders = (orderables, value = "", limit = null) => {
+  const all_orders = [...orderables.rxnorm, ...Object.values(orderables.procedures).map(x => ({ name: x })), ...orderables.misc]
   const out = all_orders.filter(x => x.name.toLocaleLowerCase().includes(value?.toLocaleLowerCase() ?? ""))
   return out.slice(0, limit).toSorted()
 }
 
 export const OrderPicker = ({ searchTerm, open, onSelect, ...props }) => {
+  const [orderables] = useDatabase().orderables()
   const [value, setValue] = React.useState(searchTerm)
   const [data, setData] = React.useState([])
 
   useLazyEffect(() => { 
-    setData(search_orders(value, 100))
+    setData(search_orders(orderables, value, 100))
   }, [value])
 
   return (

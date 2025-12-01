@@ -5,6 +5,7 @@ import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
+import { filterDocuments } from 'util/helpers'
 
 const tabLabels = [
   "Encounters",
@@ -18,51 +19,6 @@ const tabLabels = [
   "Letter",
   "Referrals"
 ];
-
-/**
- * Filters the documents based on whether their conditional orders are fully
- * satisfied by the available orders, accounting for multiplicity.
- * * @param {Array} documents - The list of documents to filter.
- * @param {Object} conditionals - Map of document IDs to required order name arrays.
- * @param {Array} orders - The list of available orders.
- * @returns {Array} The filtered list of documents.
- */
-const filterDocuments = (documents, conditionals, orders) => {
-    
-    // 1. Pre-process available orders into a frequency map (Count of available items)
-    // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
-    const availableCounts = (orders ?? []).reduce((acc, order) => {
-        acc[order.name] = (acc[order.name] || 0) + 1;
-        return acc;
-    }, {});
-
-    // 2. Use the Array.filter method to check each document's validity
-    return (documents ?? []).filter(doc => {
-        const requiredOrders = conditionals?.[doc.data.id];
-     
-        // If the document ID has no entry in the conditionals, it passes the filter by default.
-        if (!requiredOrders) {
-            return true;
-        }
-
-        // 3. For the current document, calculate the frequency map of *required* orders
-        const requiredCounts = requiredOrders.reduce((acc, name) => {
-            acc[name] = (acc[name] || 0) + 1;
-            return acc;
-        }, {});
-
-        // 4. Check if *all* required counts are met by the available counts
-        // Object.keys gets the names of required orders, and .every checks them all.
-        return Object.keys(requiredCounts).every(orderName => {
-            const required = requiredCounts[orderName];
-            const available = availableCounts[orderName] || 0; // Default to 0 if the order is not available
-            //console.log(`document[${doc.data.id}] requires ${orderName}: has ${available} but needs ${required} => ${available >= required}`)
-
-            // The condition is met only if the available count is greater than or equal to the required count
-            return available >= required;
-        });
-    });
-};
 
 export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => {
   const [selectedRow, setSelectedRow] = useState(null);

@@ -4,10 +4,10 @@ import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
-import patient_sample from 'util/data/patient_sample.json';
-import { useRouter } from 'util/urlHelpers.js';
-import appt from 'util/data/schedule.json';
+import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
+
+import { useDatabase } from 'components/contexts/PatientContext'
 
 // get today's date and display in text box
 function dateLocal() {
@@ -127,135 +127,11 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
   return changeTextColor('gray', officeStatus, 'No Show');
 }
 
-// setting column fields for table
-const columns = [
-  {
-    field: 'bar',
-    headerName: '',
-    width: 10,
-    renderCell: (params) => {
-      return changeBarColorByStatus(params.row.officeStatus);
-    },
-  },
-  {
-    field: 'badge',
-    headerName: '',
-    sortable: false,
-    width: 100,
-    renderCell: () => {
-      return (
-        <FormControl>
-          <Select defaultValue="gray">
-            <MenuItem value="white">{changeBadge('white')}</MenuItem>
-            <MenuItem value="gray">{changeBadge('gray')}</MenuItem>
-            <MenuItem value="red">{changeBadge('red')}</MenuItem>
-            <MenuItem value="orange">{changeBadge('orange')}</MenuItem>
-            <MenuItem value="yellow">{changeBadge('yellow')}</MenuItem>
-            <MenuItem value="green">{changeBadge('green')}</MenuItem>
-            <MenuItem value="blue">{changeBadge('blue')}</MenuItem>
-            <MenuItem value="purple">{changeBadge('purple')}</MenuItem>
-          </Select>
-        </FormControl>
-      );
-    },
-  },
-  { field: 'apptTime', headerName: 'Time', width: 100 },
-  {
-    field: 'status',
-    headerName: 'Status',
-    width: 200,
-    renderCell: (params) => (
-      <div>
-        {changeTextByStatus(
-          params.row.officeStatus,
-          params.row.checkinTime,
-          params.row.checkoutTime,
-          params.row.room
-        )}
-      </div>
-    ),
-  },
-  {
-    field: 'fullName',
-    headerName: 'Patient Name/MRN/Age/Gender',
-    width: 300,
-    renderCell: (params) => {
-      const data = patient_sample[params.row.patient.mrn]
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
-          <Box sx={{ marginLeft: 1 }}>
-            <Typography>
-              {data.lastName}, {data.firstName} ({data.id})
-            </Typography>
-            <Typography color="textSecondary" fontSize="12px">
-              {new Date(data.birthdate).age()} years old / {data.gender}
-            </Typography>
-          </Box>
-        </Box>
-      );
-    },
-    valueGetter: (value, row) => {
-      const data = patient_sample[row.patient.mrn]
-      return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
-        new Date(data.birthdate).age()
-      } years old / ${data.gender}`;
-    },
-  },
-  {
-    field: 'cc',
-    headerName: 'CC',
-    width: 100,
-    renderCell: (params) => (
-      <Tooltip title={params.value}>
-        <span>{params.value}</span>
-      </Tooltip>
-    ),
-    /* valueGetter: (params) => {
-      const data = patient_sample[params.row.patient.mrn]
-      const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
-      return data2
-    },// */
-  },
-  {
-    field: 'notes',
-    headerName: 'Notes',
-    width: 200,
-    renderCell: (params) => (
-      <Tooltip title={params.value}>
-        <span>{params.value}</span>
-      </Tooltip>
-    ),
-    /* valueGetter: (params) => {
-      const data = patient_sample[params.row.patient.mrn]
-      const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
-      return data2 // FIXME we need an actual appointment object still but this will do for now
-    },// */
-  },
-  {
-    field: 'fullProviderName',
-    headerName: 'Provider Name',
-    width: 200,
-    valueGetter: (value, row) => {
-      const data = patient_sample[row.patient.mrn]
-      const data2 = data.encounters[row.patient.enc]?.provider;
-      return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
-    },
-  },
-  { field: 'type', headerName: 'Type', width: 100 },
-  {
-    field: 'insurName',
-    headerName: 'Coverage',
-    width: 200,
-    valueGetter: (value, row) => {
-      const data = patient_sample[row.patient.mrn]
-      return `${data.insurance.carrierName}`;
-    },
-  },
-];
-
 // takes rows from json file and set columns to make table
 export function Schedule() {
+  const [patientsDB] = useDatabase().patients()
+  const [scheduleDB] = useDatabase().schedule()
+
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
   const [preview, setPreview] = React.useState(100); // set width of table
@@ -309,9 +185,9 @@ export function Schedule() {
             >
               {selPatient ? (
                 <>
-                  Name: {patient_sample[selPatient.patient.mrn].firstName} {patient_sample[selPatient.patient.mrn].lastName} <br />
-                  Age: {new Date(patient_sample[selPatient.patient.mrn].birthdate).age()} <br />
-                  Gender: {patient_sample[selPatient.patient.mrn].gender} <br />
+                  Name: {patientsDB[selPatient.patient.mrn].firstName} {patientsDB[selPatient.patient.mrn].lastName} <br />
+                  Age: {new Date(patientsDB[selPatient.patient.mrn].birthdate).age()} <br />
+                  Gender: {patientsDB[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
                 </>
@@ -324,8 +200,132 @@ export function Schedule() {
         <div>
           <DataGrid
             getRowHeight={() => 'auto'}
-            rows={appt.appts}
-            columns={columns}
+            rows={scheduleDB}
+            columns={[
+              {
+                field: 'bar',
+                headerName: '',
+                width: 10,
+                renderCell: (params) => {
+                  return changeBarColorByStatus(params.row.officeStatus);
+                },
+              },
+              {
+                field: 'badge',
+                headerName: '',
+                sortable: false,
+                width: 100,
+                renderCell: () => {
+                  return (
+                    <FormControl>
+                      <Select defaultValue="gray">
+                        <MenuItem value="white">{changeBadge('white')}</MenuItem>
+                        <MenuItem value="gray">{changeBadge('gray')}</MenuItem>
+                        <MenuItem value="red">{changeBadge('red')}</MenuItem>
+                        <MenuItem value="orange">{changeBadge('orange')}</MenuItem>
+                        <MenuItem value="yellow">{changeBadge('yellow')}</MenuItem>
+                        <MenuItem value="green">{changeBadge('green')}</MenuItem>
+                        <MenuItem value="blue">{changeBadge('blue')}</MenuItem>
+                        <MenuItem value="purple">{changeBadge('purple')}</MenuItem>
+                      </Select>
+                    </FormControl>
+                  );
+                },
+              },
+              { field: 'apptTime', headerName: 'Time', width: 100 },
+              {
+                field: 'status',
+                headerName: 'Status',
+                width: 200,
+                renderCell: (params) => (
+                  <div>
+                    {changeTextByStatus(
+                      params.row.officeStatus,
+                      params.row.checkinTime,
+                      params.row.checkoutTime,
+                      params.row.room
+                    )}
+                  </div>
+                ),
+              },
+              {
+                field: 'fullName',
+                headerName: 'Patient Name/MRN/Age/Gender',
+                width: 300,
+                renderCell: (params) => {
+                  const data = patientsDB[params.row.patient.mrn]
+                  return (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <Avatar>{data.firstName.charAt(0).concat(data.lastName.charAt(0))}</Avatar>
+                      <Box sx={{ marginLeft: 1 }}>
+                        <Typography>
+                          {data.lastName}, {data.firstName} ({data.id})
+                        </Typography>
+                        <Typography color="textSecondary" fontSize="12px">
+                          {new Date(data.birthdate).age()} years old / {data.gender}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                },
+                valueGetter: (value, row) => {
+                  const data = patientsDB[row.patient.mrn]
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
+                    new Date(data.birthdate).age()
+                  } years old / ${data.gender}`;
+                },
+              },
+              {
+                field: 'cc',
+                headerName: 'CC',
+                width: 100,
+                renderCell: (params) => (
+                  <Tooltip title={params.value}>
+                    <span>{params.value}</span>
+                  </Tooltip>
+                ),
+                /* valueGetter: (params) => {
+                  const data = patientsDB[params.row.patient.mrn]
+                  const data2 = data.encounters[params.row.patient.enc]?.concerns[0] ?? ""
+                  return data2
+                },// */
+              },
+              {
+                field: 'notes',
+                headerName: 'Notes',
+                width: 200,
+                renderCell: (params) => (
+                  <Tooltip title={params.value}>
+                    <span>{params.value}</span>
+                  </Tooltip>
+                ),
+                /* valueGetter: (params) => {
+                  const data = patientsDB[params.row.patient.mrn]
+                  const data2 = data.encounters[params.row.patient.enc]?.concerns[1] ?? ""
+                  return data2 // FIXME we need an actual appointment object still but this will do for now
+                },// */
+              },
+              {
+                field: 'fullProviderName',
+                headerName: 'Provider Name',
+                width: 200,
+                valueGetter: (value, row) => {
+                  const data = patientsDB[row.patient.mrn]
+                  const data2 = data.encounters[row.patient.enc]?.provider;
+                  return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
+                },
+              },
+              { field: 'type', headerName: 'Type', width: 100 },
+              {
+                field: 'insurName',
+                headerName: 'Coverage',
+                width: 200,
+                valueGetter: (value, row) => {
+                  const data = patientsDB[row.patient.mrn]
+                  return `${data.insurance.carrierName}`;
+                },
+              },
+            ]}
             onRowClick={patientScheduleClick}
             onRowDoubleClick={({
               row: {
@@ -344,7 +344,7 @@ export function Schedule() {
               //  return; // Prevent routing
               // } // FIXME later
               if (
-                !(Object.values(patient_sample[selectedMRN]
+                !(Object.values(patientsDB[selectedMRN]
                   .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {
