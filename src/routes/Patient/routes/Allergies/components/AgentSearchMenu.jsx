@@ -19,7 +19,7 @@ const dummyAgents = [
   { allergen: 'Xanax [Alprazolam]', type: 'Drug Ingredient' },
   { allergen: 'Aspirin', type: 'Drug' },
   { allergen: 'Dust Mites', type: 'Environmental' },
-  { agallergenent: 'Bee Venom', type: 'Insect' },
+  { allergen: 'Bee Venom', type: 'Insect' },
   { allergen: 'Amoxicillin-potassium clavulanate', type: 'Drug' },
   { allergen: 'Other', type: 'Other' },
 ];
@@ -48,7 +48,7 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
             label="Select an agent"
             variant="outlined"
             size="small"
-            sx={{bgcolor: 'white',borderRadius: 1}}
+            sx={{ bgcolor: 'white', borderRadius: 1 }}
           />
         )}
         renderOption={(props, option) => (
