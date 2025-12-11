@@ -14,6 +14,8 @@ import { PatientListsContext } from 'components/contexts/PatientListContext.jsx'
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';
+import { PrintPreviewDialog } from './components/PrintPreviewDialog.jsx';
+
 
 function PatientLists() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +23,7 @@ function PatientLists() {
   const [lists, setLists] = useState([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
 
   const selectedList = lists.find(list => list.id === selectedListId);
 
@@ -107,7 +110,7 @@ function PatientLists() {
             <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Tooltip title="Print">
-                <IconButton size="small">
+                <IconButton size="small" onClick={() => setIsPrintPreviewOpen(true)}>
                   <Icon>print</Icon>
                 </IconButton>
               </Tooltip>
@@ -156,7 +159,14 @@ function PatientLists() {
             initialData={selectedList}
           />
         )}
+
+
       </Box>
+              <PrintPreviewDialog
+            open={isPrintPreviewOpen}
+            onClose={() => setIsPrintPreviewOpen(false)}
+            list={selectedList}
+          />
     </PatientListsContext.Provider>
   );
 }
