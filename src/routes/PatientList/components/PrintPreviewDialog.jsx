@@ -1,5 +1,4 @@
-// components/PrintPreviewDialog.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Dialog,
@@ -42,6 +41,22 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
     return mrn ? `${name} (${mrn})` : name;
   };
 
+  // Listen for Cmd+P / Ctrl+P
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePrintShortcut = (e) => {
+      // Cmd+P on Mac or Ctrl+P on Windows
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault(); // prevent default browser print
+        window.print();      // trigger print
+      }
+    };
+
+    window.addEventListener('keydown', handlePrintShortcut);
+    return () => window.removeEventListener('keydown', handlePrintShortcut);
+  }, [open]);
+
   return (
     <Dialog
       open={open}
@@ -59,7 +74,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
         },
       }}
     >
-      {/* Header: hidden when printing */}
+      {/* Header */}
       <DialogTitle
         sx={{
           bgcolor: '#424242',
@@ -148,11 +163,11 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
                   key={p.id || idx}
                   sx={{
                     backgroundColor: rowBg,
-                    height: 100, // fixed row height for screen
+                    height: 120, // fixed row height for screen
                     verticalAlign: 'top',
                     '@media print': {
-                      height: 100,      // fixed row height for print
-                      backgroundColor: rowBg, // preserve grey/white alternation in print
+                      height: 80, // fixed row height for print
+                      backgroundColor: rowBg, // preserve alternation
                     },
                   }}
                 >
@@ -191,7 +206,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
         </Table>
       </DialogContent>
 
-      {/* Buttons: hidden when printing */}
+      {/* Buttons hidden in print */}
       <DialogActions sx={{ pr: 2, '@media print': { display: 'none' } }}>
         <Button onClick={onClose}>Close</Button>
         <Button variant="contained" onClick={() => window.print()}>
