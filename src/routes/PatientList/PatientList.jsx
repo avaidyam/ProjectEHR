@@ -9,13 +9,12 @@ import {
   Icon
 } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
-import React, { createContext, useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PatientListsContext } from 'components/contexts/PatientListContext.jsx';
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';
 import { PrintPreviewDialog } from './components/PrintPreviewDialog.jsx';
-
 
 function PatientLists() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,36 +58,28 @@ function PatientLists() {
     setIsEditModalOpen(false);
   };
 
-  // Create the context value object with all the state and functions
-  const contextValue = {
-    selectedListId,
-    lists,
-    setLists
-  };
+  // Cmd/Ctrl+P shortcut to open print preview
+  useEffect(() => {
+    const handlePrintShortcut = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        setIsPrintPreviewOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handlePrintShortcut);
+    return () => window.removeEventListener('keydown', handlePrintShortcut);
+  }, []);
+
+  const contextValue = { selectedListId, lists, setLists };
 
   return (
     <PatientListsContext.Provider value={contextValue}>
-      <Box
-        sx={{
-          height: '100%',
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          p: 2,
-          gap: 2
-        }}
-      >
-        <Box 
-          sx={{ 
-            borderRadius: 1
-          }}
-        >
+      <Box sx={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', p: 2, gap: 2 }}>
+        <Box sx={{ borderRadius: 1 }}>
           <Box sx={{ p: 2 }}>
-            <Typography variant="h5" gutterBottom>
-              Patient Lists
-            </Typography>
+            <Typography variant="h5" gutterBottom>Patient Lists</Typography>
           </Box>
-          
+
           <Toolbar variant="dense" sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
@@ -160,13 +151,12 @@ function PatientLists() {
           />
         )}
 
-
+        <PrintPreviewDialog
+          open={isPrintPreviewOpen}
+          onClose={() => setIsPrintPreviewOpen(false)}
+          list={selectedList}
+        />
       </Box>
-              <PrintPreviewDialog
-            open={isPrintPreviewOpen}
-            onClose={() => setIsPrintPreviewOpen(false)}
-            list={selectedList}
-          />
     </PatientListsContext.Provider>
   );
 }
