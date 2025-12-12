@@ -46,10 +46,9 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
     if (!open) return;
 
     const handlePrintShortcut = (e) => {
-      // Cmd+P on Mac or Ctrl+P on Windows
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
-        e.preventDefault(); // prevent default browser print
-        window.print();      // trigger print
+        e.preventDefault();
+        window.print();
       }
     };
 
@@ -77,18 +76,12 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
       {/* Header */}
       <DialogTitle
         sx={{
-          bgcolor: '#424242',
-          color: '#fff',
+          bgcolor: '#bbbbbb',
           '@media print': { display: 'none' },
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h6" sx={{ color: '#fff' }}>
-            Print Preview — {list.name}
-          </Typography>
-          <Typography variant="caption" sx={{ color: '#e0e0e0' }}>
-            Last refreshed: {new Date().toLocaleString()}
-          </Typography>
+          <Typography variant="h6">Print Preview</Typography>
         </Box>
       </DialogTitle>
 
@@ -100,12 +93,22 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
           '@media print': { padding: 0 },
         }}
       >
+        <Typography
+          variant="subtitle1"
+          sx={{ mb: 2, fontWeight: 500, textAlign: 'left' }}
+        >
+          {list.name || 'TEAM NAME'} – Last Refreshed: {new Date().toLocaleString()}
+        </Typography>
+
         <Table
           size="small"
           sx={{
             borderCollapse: 'collapse',
             width: '100%',
-            displayPrint: 'table',
+            '@media print': {
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact',
+            },
             '& .MuiTableCell-root': {
               border: `1px solid ${theme.palette.divider}`,
               padding: '8px 10px',
@@ -115,32 +118,20 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
           <TableHead>
             <TableRow
               sx={{
-                backgroundColor: '#424242',
-                '@media print': { backgroundColor: '#424242', color: '#fff' },
+                backgroundColor: '#bbbbbb',
+                '@media print': {
+                  backgroundColor: '#bbbbbb',
+                  color: '#fff',
+                  WebkitPrintColorAdjust: 'exact',
+                  printColorAdjust: 'exact',
+                },
               }}
             >
-              <TableCell sx={{ color: '#fff', fontWeight: 700, width: '20%' }}>
-                Patient Name (MRN)
-              </TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 700, width: '12%' }}>
-                DOB
-              </TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 700, width: '25%' }}>
-                Location
-              </TableCell>
-              <TableCell sx={{ color: '#fff', fontWeight: 700, width: '13%' }}>
-                Status
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#fff',
-                  fontWeight: 700,
-                  width: '30%',
-                  textAlign: 'center',
-                }}
-              >
-                Notes
-              </TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '20%' }}>Patient Name (MRN)</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '12%' }}>DOB</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '25%' }}>Location</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '13%' }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '30%' }}>Notes</TableCell>
             </TableRow>
           </TableHead>
 
@@ -163,22 +154,22 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
                   key={p.id || idx}
                   sx={{
                     backgroundColor: rowBg,
-                    height: 120, // fixed row height for screen
+                    height: 100,
                     verticalAlign: 'top',
                     '@media print': {
-                      height: 80, // fixed row height for print
-                      backgroundColor: rowBg, // preserve alternation
+                      height: 100,
+                      backgroundColor: rowBg,
+                      WebkitPrintColorAdjust: 'exact',
+                      printColorAdjust: 'exact',
+                      breakInside: 'avoid',
                     },
                   }}
                 >
                   <TableCell>{getNameWithMrn(p)}</TableCell>
                   <TableCell>{formatDob(p.birthdate || p.dob)}</TableCell>
-
                   <TableCell>
                     <Box>
-                      <Typography variant="body2">
-                        {p.location || p.room || p.roomNumber || ''}
-                      </Typography>
+                      <Typography variant="body2">{p.location || p.room || p.roomNumber || ''}</Typography>
                       {p.bedStatus && (
                         <Typography variant="caption" color="text.secondary">
                           {p.bedStatus}
@@ -186,18 +177,9 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
                       )}
                     </Box>
                   </TableCell>
-
                   <TableCell>{p.status || p.codeStatus || ''}</TableCell>
-
-                  <TableCell
-                    sx={{
-                      verticalAlign: 'top',
-                      width: 220,
-                      paddingLeft: 12,
-                      paddingRight: 12,
-                    }}
-                  >
-                    {p.stickyNote || ''}
+                  <TableCell sx={{ verticalAlign: 'top', width: 220, px: 1.5 }}>
+                    {p.stickyNote || p.stickyNotes || ''}
                   </TableCell>
                 </TableRow>
               );
