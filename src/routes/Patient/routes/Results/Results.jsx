@@ -1,6 +1,5 @@
 
 ////// THIS CODE IS HELPFUL JUST TO SEE WHAT THE LABS ARE LIKE IN JSON !!! ------------------------------------------------
-
 // import React from 'react';
 // import { Box, Typography } from '@mui/material';
 // import { usePatient } from 'components/contexts/PatientContext.jsx';
@@ -45,6 +44,7 @@
 // };
 
 // export default LabDocumentsDump;
+
 // ------------------------------------------------------------------------------------------------------------------------
 
 
