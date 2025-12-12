@@ -1,8 +1,9 @@
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
-import { Icon } from '@mui/material';
+import { Avatar, Icon } from '@mui/material';
 import { keyframes, styled } from '@mui/material/styles';
 import { ReactNode, memo, useEffect, useRef, useState } from 'react';
+import { usePatient } from "components/contexts/PatientContext.jsx";
 
 /* ---------------- Animations ---------------- */
 const hoverAnimation = keyframes`
@@ -16,71 +17,97 @@ const opacityPulseAnimation = keyframes`
   100% { opacity: 0.9; }
 `;
 
+// New: profile enter/exit animations
+const profileEnter = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+`;
+
+const profileExit = keyframes`
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+  }
+`;
+
 /* ---------------- Styled Buttons ---------------- */
 const ActionButton = styled('button', {
-  shouldForwardProp: (prop) => !['disabled', 'outlined', 'connected'].includes(prop.toString()),
-})<{ disabled?: boolean; outlined?: boolean; connected?: boolean }>(
-  ({ outlined, connected }) => ({
+  shouldForwardProp: (prop) =>
+    !['disabled', 'outlined', 'connected'].includes(prop.toString()),
+})<{
+  disabled?: boolean;
+  outlined?: boolean;
+  connected?: boolean;
+}>(({ theme, outlined, connected }) => {
+  const isDark = theme.palette.mode === 'dark';
+
+  return {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#2a2f31',
-    color: '#888d8f',
+    background: isDark ? theme.palette.grey[900] : theme.palette.grey[100],
+    color: isDark ? theme.palette.text.secondary : theme.palette.text.primary,
     fontSize: '1.25rem',
-    lineHeight: '1.75rem',
-    textTransform: 'lowercase',
     cursor: 'pointer',
     animation: `${opacityPulseAnimation} 3s ease-in infinite`,
     transition: 'all 0.2s ease-in-out',
     width: 48,
     height: 48,
     borderRadius: 18,
-    border: '1px solid rgba(0, 0, 0, 0)',
+    border: `1px solid transparent`,
     userSelect: 'none',
 
     '&:focus': {
-      border: '2px solid #2a2f31',
-      outline: '2px solid #c3c6c7',
+      border: `2px solid ${theme.palette.divider}`,
+      outline: `2px solid ${theme.palette.primary.light}`,
     },
 
     ...(outlined && {
-      background: '#181a1b',
-      border: '1px solid #2a2f31',
+      background: theme.palette.background.paper,
+      border: `1px solid ${theme.palette.divider}`,
     }),
 
     '&:hover': {
-      background: 'rgba(0, 0, 0, 0)',
-      border: '1px solid #2a2f31',
+      background: isDark
+        ? theme.palette.grey[800]
+        : theme.palette.grey[200],
+      border: `1px solid ${theme.palette.divider}`,
     },
 
     ...(connected && {
-      background: '#0f3557',
-      color: '#1f94ff',
+      background: theme.palette.primary.dark,
+      color: theme.palette.getContrastText(theme.palette.primary.dark),
       '&:hover': {
-        border: '1px solid #1f94ff',
+        border: `1px solid ${theme.palette.primary.main}`,
       },
     }),
+  };
+});
 
-    '& .no-action': {
-      pointerEvents: 'none',
-    },
-  })
-);
-
-/* ---------------- Mic Button (green when unmuted) ---------------- */
 const MicButton = styled(ActionButton, {
   shouldForwardProp: (prop) => prop.toString() !== 'unmuted',
 })<{ unmuted?: boolean }>(({ unmuted }) => ({
   position: 'relative',
   zIndex: 1,
   color: 'black',
-  transition: 'all 0.2s ease-in',
   backgroundColor: unmuted ? '#22c55e' : '#ff4600',
+  transition: 'all 0.2s ease-in',
 
   '&:focus': {
-    border: '2px solid #2a2f31',
+    border: '2px solid transparent',
     outline: `2px solid ${unmuted ? '#22c55e' : '#ff4600'}`,
   },
+
   '&:hover': {
     backgroundColor: unmuted ? '#6ee7b7' : '#ff9c7a',
   },
@@ -102,118 +129,193 @@ const MicButton = styled(ActionButton, {
 }));
 
 const ConnectToggle = styled(ActionButton, {
-  shouldForwardProp: (prop) => !['connected'].includes(prop.toString()),
-})<{ connected?: boolean }>(({ connected }) => ({
+  shouldForwardProp: (prop) => prop.toString() !== 'connected',
+})<{ connected?: boolean }>(({ connected, theme }) => ({
   '&:focus': {
-    border: '2px solid #2a2f31',
-    outline: '2px solid #c3c6c7',
+    border: `2px solid ${theme.palette.divider}`,
+    outline: `2px solid ${theme.palette.primary.light}`,
   },
   ...(!connected && {
-    backgroundColor: '#1f94ff',
-    color: '#181a1b',
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.getContrastText(theme.palette.primary.main),
   }),
 }));
 
 /* ---------------- Layout Containers ---------------- */
 const ControlTray = styled('section')(() => ({
   width: '100%',
-  height: '100%',
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'flex-start',
   gap: 8,
   paddingBottom: 12,
   paddingTop: 20,
-
-  [`& .disabled ${ActionButton}, ${ActionButton}.disabled`]: {
-    background: 'rgba(0, 0, 0, 0)',
-    border: '1px solid #404547',
-    color: '#404547',
-  },
 }));
 
-const ConnectionContainer = styled('div')<{ connected?: boolean }>(({ connected }) => ({
+const ConnectionContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
   alignItems: 'center',
   gap: 4,
 
   '& .connection-button-container': {
     borderRadius: 27,
-    border: '1px solid #404547',
-    background: '#181a1b',
+    border: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
     padding: 10,
   },
 }));
 
-const ActionsNav = styled('nav')<{ disabled?: boolean }>(({ disabled }) => ({
-  background: '#181a1b',
-  border: '1px solid #404547',
+const ActionsNav = styled('nav')(({ theme }) => ({
+  background: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
   borderRadius: 27,
   display: 'inline-flex',
   gap: 12,
   alignItems: 'center',
-  overflow: 'clip',
   padding: 10,
-  transition: 'all 0.6s ease-in',
 
   '& > *': {
     display: 'flex',
-    alignItems: 'center',
     flexDirection: 'column',
-    gap: '1rem',
+    alignItems: 'center',
   },
 }));
 
+/* ---------------- Instruction box (bottom) ---------------- */
+const InstructionBox = styled('div')(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark';
+  return {
+    width: '100%',
+    maxWidth: 520,
+    margin: '12px auto 0',
+    border: `1px solid ${theme.palette.divider}`,
+    background: isDark
+      ? theme.palette.grey[900]
+      : theme.palette.background.paper,
+    color: theme.palette.text.primary,
+    borderRadius: 8,
+    padding: '10px 12px',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 1.4,
+  };
+});
+
+/* ---------------- Big square Zoom-style profile tile ---------------- */
+const CallProfileCard = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'state',
+})<{
+  state?: 'enter' | 'exit';
+}>(({ theme, state }) => ({
+  position: 'relative',
+  width: 'calc(100% - 24px)',          // inset slightly from the edges
+  maxWidth: 520,
+  margin: '16px auto 0',               // spacing from top/content
+  borderRadius: 16,                    // roundness back
+  border: `1px solid ${theme.palette.divider}`,
+  background: theme.palette.background.default,
+  color: theme.palette.text.primary,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '32px 24px',
+  minHeight: 260,
+
+  boxShadow:
+    theme.palette.mode === 'dark'
+      ? '0 12px 25px rgba(0,0,0,0.5)'
+      : '0 8px 18px rgba(0,0,0,0.12)',
+
+  animation:
+    state === 'enter'
+      ? `${profileEnter} 300ms ease-out`
+      : state === 'exit'
+      ? `${profileExit} 500ms ease-in`
+      : undefined,
+}));
+
+const CallProfileCenter = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 6,
+}));
+
+const CallProfileName = styled('div')(() => ({
+  fontSize: 24,
+  fontWeight: 600,
+  letterSpacing: 2,
+}));
+
+const CallProfileMeta = styled('div')(({ theme }) => ({
+  fontSize: 13,
+  color: theme.palette.text.secondary,
+}));
+
+const CallStatusPill = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  top: 12,
+  left: 12,
+  fontSize: 11,
+  padding: '3px 10px',
+  borderRadius: 999,
+  background: theme.palette.primary.dark,
+  color: theme.palette.getContrastText(theme.palette.primary.dark),
+  textTransform: 'uppercase',
+  letterSpacing: 0.08,
+}));
+
 /* ---------------- Audio Pulse ---------------- */
-const AudioPulseDiv = styled('div')<{ active?: boolean; hover?: boolean }>(({ active, hover }) => ({
+const AudioPulseDiv = styled('div')<{ active?: boolean }>(({ active, theme }) => ({
   display: 'flex',
   width: 24,
   justifyContent: 'space-evenly',
   alignItems: 'center',
-  transition: 'all 0.5s',
   height: 4,
-  opacity: active ? 1 : undefined,
 
   '& > div': {
-    backgroundColor: active ? '#c3c6c7' : '#404547',
+    backgroundColor: active
+      ? theme.palette.text.primary
+      : theme.palette.text.disabled,
     borderRadius: 1000,
     width: 4,
     minHeight: 4,
     transition: 'height 0.1s',
-    ...(hover && { animation: `${hoverAnimation} 1.4s infinite alternate ease-in-out` }),
   },
 }));
 
 export function AudioPulse({
   active,
   volume,
-  hover,
   lineCount = 3,
 }: {
   active: boolean;
   volume: number;
-  hover?: boolean;
   lineCount?: number;
 }) {
   const lines = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
     let timeout: number | null = null;
+
     const update = () => {
       lines.current.forEach(
         (line, i) =>
-          (line.style.height = `${Math.min(24, 4 + volume * (i === 1 ? 400 : 60))}px`)
+          (line.style.height = `${Math.min(
+            24,
+            4 + volume * (i === 1 ? 400 : 60)
+          )}px`)
       );
       timeout = window.setTimeout(update, 100);
     };
+
     update();
     return () => clearTimeout(timeout as number);
   }, [volume]);
 
   return (
-    <AudioPulseDiv className={`${active ? 'active' : ''} ${hover ? 'hover' : ''}`.trim()}>
+    <AudioPulseDiv active={active}>
       {Array(lineCount)
         .fill(null)
         .map((_, i) => (
@@ -227,22 +329,6 @@ export function AudioPulse({
   );
 }
 
-/* ---------------- Instruction Box (below all buttons) ---------------- */
-const InstructionBox = styled('div')(() => ({
-  width: '100%',
-  maxWidth: 520,
-  margin: '8px auto 0',
-  border: '1px solid #2a2f31',
-  background: '#111415',
-  color: '#c3c6c7',
-  borderRadius: 12,
-  padding: '10px 12px',
-  fontSize: 16,
-  lineHeight: 1.35,
-  textAlign: 'center',
-  boxShadow: '0 1px 0 rgba(0,0,0,0.2) inset',
-}));
-
 /* ---------------- Voice Panel ---------------- */
 function VoicePanel({ children }: { children?: ReactNode }) {
   const [inVolume, setInVolume] = useState(0);
@@ -251,6 +337,37 @@ function VoicePanel({ children }: { children?: ReactNode }) {
   const connectButtonRef = useRef<HTMLButtonElement>(null);
 
   const { client, connected, connect, disconnect, volume } = useGeminiAPIContext();
+
+  const { useChart } = usePatient();
+  const [firstName] = useChart().firstName();
+  const [lastName] = useChart().lastName();
+  const [avatarUrl] = useChart().avatarUrl();
+  const [mrn] = useChart().id();
+
+  const fullName =
+    [firstName, lastName].filter(Boolean).join(' ') || 'Patient';
+  const initials =
+    `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.trim() ||
+    fullName.charAt(0) ||
+    'P';
+
+  // New: manage enter/exit animation state for the profile tile
+  const [renderProfile, setRenderProfile] = useState(false);
+  const [profileState, setProfileState] = useState<'enter' | 'exit' | undefined>();
+
+  useEffect(() => {
+    if (connected) {
+      setRenderProfile(true);
+      setProfileState('enter');
+    } else if (renderProfile) {
+      setProfileState('exit');
+      const timeout = window.setTimeout(() => {
+        setRenderProfile(false);
+        setProfileState(undefined);
+      }, 190);
+      return () => window.clearTimeout(timeout);
+    }
+  }, [connected, renderProfile]);
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) connectButtonRef.current.focus();
@@ -279,82 +396,52 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     };
   }, [connected, client, muted, audioRecorder]);
 
-  const isEditableTarget = (el: EventTarget | null) => {
-    if (!(el instanceof HTMLElement)) return false;
-    const tag = el.tagName.toLowerCase();
-    if (['input', 'textarea', 'select'].includes(tag)) return true;
-    if (el.isContentEditable) return true;
-    return !!el.closest?.('[contenteditable=""],[contenteditable="true"]');
-  };
-
-  // Push-to-talk (Space to hold) with 1-second delayed re-mute
-  useEffect(() => {
-    const spacebarTimeoutRef = { current: null as number | null };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.code === 'Space' || e.key === ' ') && !isEditableTarget(e.target)) {
-        if (!e.repeat) {
-          e.preventDefault();
-
-          // Cancel any pending re-mute timeout
-          if (spacebarTimeoutRef.current) {
-            clearTimeout(spacebarTimeoutRef.current);
-            spacebarTimeoutRef.current = null;
-          }
-
-          setMuted(false);
-        }
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if ((e.code === 'Space' || e.key === ' ') && !isEditableTarget(e.target)) {
-        e.preventDefault();
-
-        // Delay re-muting by 1 second
-        spacebarTimeoutRef.current = window.setTimeout(() => {
-          setMuted(true);
-          spacebarTimeoutRef.current = null;
-        }, 1000);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown, { capture: true });
-    window.addEventListener('keyup', handleKeyUp, { capture: true });
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown, { capture: true } as any);
-      window.removeEventListener('keyup', handleKeyUp, { capture: true } as any);
-
-      if (spacebarTimeoutRef.current) {
-        clearTimeout(spacebarTimeoutRef.current);
-      }
-    };
-  }, []);
-
   return (
     <>
+      {/* Animated big square call tile at the top when connected */}
+      {renderProfile && (
+        <CallProfileCard state={profileState}>
+          <CallStatusPill>In call</CallStatusPill>
+
+          <CallProfileCenter>
+            <Avatar
+              src={avatarUrl || undefined}
+              alt={fullName}
+              sx={{ width: 96, height: 96, fontSize: 32 }}
+            >
+              {initials}
+            </Avatar>
+
+            <CallProfileName>{initials}</CallProfileName>
+
+            <CallProfileMeta>
+              {fullName}
+              {mrn ? ` · MRN: ${mrn}` : ''}
+            </CallProfileMeta>
+          </CallProfileCenter>
+        </CallProfileCard>
+      )}
+
+      {/* Buttons near the bottom */}
       <ControlTray>
-        <ActionsNav disabled={!connected}>
+        <ActionsNav>
           {connected && (
             <MicButton
               unmuted={!muted}
               onClick={() => setMuted((prev) => !prev)}
-              aria-pressed={!muted}
-              title={muted ? 'Click or hold Space to talk' : 'Click to mute (or release Space)'}
             >
               {!muted ? <Icon>mic</Icon> : <Icon>mic_off</Icon>}
             </MicButton>
           )}
 
           <ActionButton className="outlined no-action">
-            <AudioPulse volume={volume} active={connected && !muted} hover={false} />
+            <AudioPulse volume={volume} active={connected && !muted} />
           </ActionButton>
 
           {children}
         </ActionsNav>
 
-        <ConnectionContainer connected={connected}>
+        <ConnectionContainer>
           <div className="connection-button-container">
             <ConnectToggle
               ref={connectButtonRef}
@@ -367,16 +454,16 @@ function VoicePanel({ children }: { children?: ReactNode }) {
         </ConnectionContainer>
       </ControlTray>
 
-      {/* Instruction message in its own box, always visible, below all buttons */}
+      {/* Instructions at the bottom */}
       <InstructionBox aria-live="polite" role="status">
         {connected ? (
           <>
-            💡 Tip: You can ❗mute❗ the call to go into discussion!
+            💡 Tip: <b>You can ❗mute❗ the call to go into discussion!</b>
             <br />
             <br />
-            <b>Click</b> the microphone to <b>toggle</b> mute/unmute
+            Click the microphone to toggle mute/unmute
             <br />
-            or hold spacebar for push-to-talk
+            or hold space bar for push-to-talk
           </>
         ) : (
           'Click the phone to start the call'
