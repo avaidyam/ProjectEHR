@@ -178,9 +178,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
                     </Box>
                   </TableCell>
                   <TableCell>{p.status || p.codeStatus || ''}</TableCell>
-                <TableCell>
-                {p.stickyNotes?.private}
-                </TableCell>
+                <TableCell> {p.stickyNotes?.private} </TableCell>
 
                 </TableRow>
               );
