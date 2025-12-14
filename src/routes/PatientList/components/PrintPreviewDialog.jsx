@@ -81,7 +81,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant="h6">Print Preview</Typography>
+          <Typography variant="h8">Print Preview</Typography>
         </Box>
       </DialogTitle>
 
@@ -128,10 +128,10 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
               }}
             >
               <TableCell sx={{ fontWeight: 700, width: '20%' }}>Patient Name (MRN)</TableCell>
-              <TableCell sx={{ fontWeight: 700, width: '12%' }}>DOB</TableCell>
-              <TableCell sx={{ fontWeight: 700, width: '25%' }}>Location</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '10%' }}>DOB</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '22%' }}>Location</TableCell>
               <TableCell sx={{ fontWeight: 700, width: '13%' }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 700, width: '30%' }}>Notes</TableCell>
+              <TableCell sx={{ fontWeight: 700, width: '35%' }}>Notes</TableCell>
             </TableRow>
           </TableHead>
 
@@ -178,9 +178,10 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
                     </Box>
                   </TableCell>
                   <TableCell>{p.status || p.codeStatus || ''}</TableCell>
-                  <TableCell sx={{ verticalAlign: 'top', width: 220, px: 1.5 }}>
-                    {p.stickyNote || p.stickyNotes || ''}
-                  </TableCell>
+                <TableCell>
+                {p.stickyNotes?.private}
+                </TableCell>
+
                 </TableRow>
               );
             })}

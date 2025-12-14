@@ -23,34 +23,41 @@ const transformPatientData = (patients) => {
   });
 
   const transformPatient = (patient) => {
-    // Get the most recent encounter
-    const latestEncounter = Object.values(patient.encounters ?? {}).reduce((latest, current) => {
-      return new Date(current.startDate) > new Date(latest.startDate) ? current : latest;
-    }, Object.values(patient.encounters ?? {})[0]);
+  // Get the most recent encounter
+  const latestEncounter = Object.values(patient.encounters ?? {}).reduce(
+    (latest, current) =>
+      new Date(current.startDate) > new Date(latest.startDate) ? current : latest,
+    Object.values(patient.encounters ?? {})[0]
+  );
 
-    return {
-      id: patient.id,
-      name: `${patient.firstName} ${patient.lastName}`,
-      mrn: patient.id,
-      dob: patient.birthdate,
-      location: patient.address || 'Carle Foundation Hospital',
-      age: new Date(patient.birthdate).age(),
-      sex: patient.gender,
-      insuranceType: patient.insurance?.carrierName || 'Unknown',
-      attendingMD: latestEncounter?.provider || 'Not Assigned',
-      status: latestEncounter?.status || 'No encounters',
-      bedStatus: Math.random() > 0.5 ? 'In Room' : 'Out of Room',
-      admissionDate: latestEncounter?.startDate?.split(' ')[0] || 'N/A',
-      dischargeDate: latestEncounter?.endDate?.split(' ')[0] || 'N/A',
-      patientClass: latestEncounter?.type || 'N/A',
-      roomNumber: Math.random() > 0.5 ? '123' : '456',
-      visitReason: latestEncounter?.concerns?.[0] || 'N/A',
-      encounterData: latestEncounter ? {
-        patientId: patient.id,
-        encounterId: latestEncounter.id
-      } : null
-    };
+  return {
+    id: patient.id,
+    name: `${patient.firstName} ${patient.lastName}`,
+    mrn: patient.id,
+    dob: patient.birthdate,
+    location: patient.address || 'Carle Foundation Hospital',
+    age: new Date(patient.birthdate).age(),
+    sex: patient.gender,
+    insuranceType: patient.insurance?.carrierName || 'Unknown',
+    attendingMD: latestEncounter?.provider || 'Not Assigned',
+    status: latestEncounter?.status || 'No encounters',
+    bedStatus: Math.random() > 0.5 ? 'In Room' : 'Out of Room',
+    admissionDate: latestEncounter?.startDate?.split(' ')[0] || 'N/A',
+    dischargeDate: latestEncounter?.endDate?.split(' ')[0] || 'N/A',
+    patientClass: latestEncounter?.type || 'N/A',
+    roomNumber: Math.random() > 0.5 ? '123' : '456',
+    visitReason: latestEncounter?.concerns?.[0] || 'N/A',
+    encounterData: latestEncounter
+      ? {
+          patientId: patient.id,
+          encounterId: latestEncounter.id,
+        }
+      : null,
+    //stickyNotes: latestEncounter?.stickyNotes,
+    stickyNotes: latestEncounter?.stickyNotes?.stickyNotes,
+
   };
+};
 
   // TODO: Look into re-ordering best practices
   return [
