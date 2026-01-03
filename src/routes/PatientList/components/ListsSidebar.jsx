@@ -30,15 +30,6 @@ const transformPatientData = (patients) => {
     Object.values(patient.encounters ?? {})[0]
   );
 
-    // --- FINAL CRITICAL DIAGNOSTIC LOGGING (Optional - remove after fix) ---
-  if (patient.firstName === 'Thomas' && patient.lastName === 'Kenton') {
-      console.groupCollapsed(`🔴 FINAL CHECK: Raw Encounter Data for ${patient.name}`);
-      console.log('1. Full Encounter Object (Expand Me!):', latestEncounter);
-      console.log('2. Direct Property Access:', latestEncounter?.stickyNotes?.private);
-      console.groupEnd();
-  }
-  // ------------------------------------------------------------------------
-
   return {
     id: patient.id,
     name: `${patient.firstName} ${patient.lastName}`,
@@ -62,7 +53,7 @@ const transformPatientData = (patients) => {
           encounterId: latestEncounter.id,
         }
       : null,
-    stickyNotes: latestEncounter?.stickyNotes?.stickyNotes, // update after double nested issue is fixed
+    stickyNotes: latestEncounter?.stickyNotes,
 
   };
 };
