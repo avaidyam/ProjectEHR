@@ -1,5 +1,153 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core.jsx';
+import { Typography } from '@mui/material';
+
+/**
+ * Parse a dose string like "500 mg Tab" or "100 mg/5ml Susp" to extract:
+ * - strengthValue: numeric value (500, 100)
+ * - strengthUnit: unit (mg, mcg, g, etc.)
+ * - perVolume: for liquid doses, the volume (5 for "100 mg/5ml")
+ * - perVolumeUnit: unit for volume (ml)
+ * - form: dosage form (Tab, Cap, Susp, Sol, etc.)
+ * - formLabel: human-readable label for the form (tablet, capsule, mL, etc.)
+ */
+const parseDoseString = (doseStr) => {
+  if (!doseStr) return null;
+  
+  // Match patterns like "500 mg Tab", "100 mg/5ml Susp", "4 mg/ml Injection 200 ml"
+  // Pattern 1: Simple - "500 mg Tab"
+  const simpleMatch = doseStr.match(/^([\d.]+)\s*(mg|mcg|g|mEq|units?)\s+(.+)$/i);
+  
+  // Pattern 2: Concentration - "100 mg/5ml Susp" or "4 mg/ml Injection"
+  const concMatch = doseStr.match(/^([\d.]+)\s*(mg|mcg|g|mEq|units?)\/([\d.]*)(ml|l)\s+(.+)$/i);
+  
+  if (concMatch) {
+    const [, strengthValue, strengthUnit, perVolume, perVolumeUnit, form] = concMatch;
+    const volumeVal = perVolume ? parseFloat(perVolume) : 1;
+    return {
+      strengthValue: parseFloat(strengthValue),
+      strengthUnit: strengthUnit.toLowerCase(),
+      perVolume: volumeVal,
+      perVolumeUnit: perVolumeUnit.toLowerCase(),
+      form: form.trim(),
+      formLabel: 'mL',
+      isLiquid: true
+    };
+  }
+  
+  if (simpleMatch) {
+    const [, strengthValue, strengthUnit, form] = simpleMatch;
+    const formLower = form.toLowerCase();
+    let formLabel = 'unit';
+    
+    // Determine human-readable form label
+    if (formLower.includes('tab')) formLabel = 'tablet';
+    else if (formLower.includes('cap')) formLabel = 'capsule';
+    else if (formLower.includes('puff')) formLabel = 'puff';
+    else if (formLower.includes('patch')) formLabel = 'patch';
+    else if (formLower.includes('supp')) formLabel = 'suppository';
+    else if (formLower.includes('pwdr') || formLower.includes('powder')) formLabel = 'packet';
+    else if (formLower.includes('lozenge')) formLabel = 'lozenge';
+    else if (formLower.includes('gum')) formLabel = 'piece';
+    else if (formLower.includes('film')) formLabel = 'film';
+    else if (formLower.includes('spray')) formLabel = 'spray';
+    
+    return {
+      strengthValue: parseFloat(strengthValue),
+      strengthUnit: strengthUnit.toLowerCase(),
+      perVolume: null,
+      perVolumeUnit: null,
+      form: form.trim(),
+      formLabel,
+      isLiquid: false
+    };
+  }
+  
+  return null;
+};
+
+/**
+ * Calculate the number of units needed for a given dose
+ */
+const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
+  if (!parsedDose || !desiredDose || desiredDose <= 0) return null;
+  
+  // Normalize units for comparison
+  const normalizeUnit = (unit) => {
+    const u = unit?.toLowerCase() || '';
+    if (u === 'g' || u === 'gram' || u === 'grams') return 'g';
+    if (u === 'mg' || u === 'milligram' || u === 'milligrams') return 'mg';
+    if (u === 'mcg' || u === 'microgram' || u === 'micrograms' || u === 'µg') return 'mcg';
+    if (u === 'meq') return 'meq';
+    if (u === 'unit' || u === 'units') return 'units';
+    return u;
+  };
+  
+  // Convert to base unit (mg) for calculation
+  const toMg = (value, unit) => {
+    const normalizedUnit = normalizeUnit(unit);
+    if (normalizedUnit === 'g') return value * 1000;
+    if (normalizedUnit === 'mcg') return value / 1000;
+    return value; // assume mg
+  };
+  
+  const desiredMg = toMg(desiredDose, desiredUnit);
+  const strengthMg = toMg(parsedDose.strengthValue, parsedDose.strengthUnit);
+  
+  if (parsedDose.isLiquid) {
+    // For liquids: calculate mL needed
+    // e.g., 160 mg/5ml -> to get 320 mg, need (320/160)*5 = 10 ml
+    const mlPerMgRatio = parsedDose.perVolume / strengthMg;
+    const mlNeeded = desiredMg * mlPerMgRatio;
+    return {
+      quantity: mlNeeded,
+      label: parsedDose.formLabel,
+      isLiquid: true
+    };
+  } else {
+    // For solid doses: calculate number of units
+    const unitsNeeded = desiredMg / strengthMg;
+    return {
+      quantity: unitsNeeded,
+      label: parsedDose.formLabel,
+      isLiquid: false
+    };
+  }
+};
+
+/**
+ * Format the calculated dose for display
+ */
+const formatCalculatedDose = (calc) => {
+  if (!calc) return null;
+  
+  const { quantity, label, isLiquid } = calc;
+  
+  // Round to reasonable precision
+  let displayQty;
+  if (isLiquid) {
+    // For liquids, show up to 2 decimal places
+    displayQty = Math.round(quantity * 100) / 100;
+  } else {
+    // For solids, show common fractions or decimals
+    if (Math.abs(quantity - Math.round(quantity)) < 0.01) {
+      displayQty = Math.round(quantity);
+    } else if (Math.abs(quantity - Math.round(quantity * 2) / 2) < 0.01) {
+      // Close to 0.5
+      displayQty = Math.round(quantity * 2) / 2;
+    } else if (Math.abs(quantity - Math.round(quantity * 4) / 4) < 0.01) {
+      // Close to 0.25
+      displayQty = Math.round(quantity * 4) / 4;
+    } else {
+      displayQty = Math.round(quantity * 100) / 100;
+    }
+  }
+  
+  // Pluralize label
+  const pluralLabel = displayQty === 1 ? label : (label + 's').replace('capsules', 'capsules').replace('tablets', 'tablets');
+  
+  return `${displayQty} ${pluralLabel}`;
+};
 
 const rxParams = [
   {
@@ -123,14 +271,44 @@ const alwaysParams = [{ name: "Comments", required: false, type: "html" }]
 
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }) => {
   const [params, setParams] = useState({})
+  const [customDose, setCustomDose] = useState('')
+  const [customDoseUnit, setCustomDoseUnit] = useState('mg')
 
   // set the default route and dose when the route changes
   useEffect(() => {
     setParams(prev => ({ ...prev, ['Route']: Object.keys(tempMed?.route ?? {})?.[0] ?? '' }))
+    setCustomDose('')
   }, [tempMed])
   useEffect(() => {
     setParams(prev => ({ ...prev, ['Dose']: Object.values(tempMed?.route?.[params["Route"]] ?? {})?.[0] ?? '' }))
+    setCustomDose('')
   }, [params["Route"]])
+
+  // Parse the selected dose and calculate units needed
+  const parsedDose = useMemo(() => {
+    const result = parseDoseString(params["Dose"]);
+    console.log('[DoseCalc] Parsing dose:', params["Dose"], '-> Result:', result);
+    return result;
+  }, [params["Dose"]])
+  
+  const calculatedDose = useMemo(() => {
+    if (!customDose || !parsedDose) return null;
+    const result = calculateDose(parseFloat(customDose), customDoseUnit, parsedDose);
+    console.log('[DoseCalc] Calculating:', customDose, customDoseUnit, '-> Result:', result);
+    return result;
+  }, [customDose, customDoseUnit, parsedDose])
+  
+  const calculatedDoseDisplay = useMemo(() => formatCalculatedDose(calculatedDose), [calculatedDose])
+
+  // Debug log for rendering
+  console.log('[DoseCalc] Render state:', { 
+    hasTempMed: !!tempMed, 
+    hasRoute: !!tempMed?.route, 
+    currentDose: params["Dose"],
+    customDose,
+    parsedDose: !!parsedDose,
+    calculatedDoseDisplay
+  })
 
   // if this is an Rx then substitute the Route and Dose options
   // Push a default Comments field that exists for ALL orders.
@@ -157,17 +335,24 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
         {displayParams.filter(x => 
           Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
         ).map(x => (
-          <>
+          <React.Fragment key={x.name}>
             <Grid item xs={3}><Label>{x.name}</Label></Grid>
             <Grid item xs={9}>
               {x.type === "string" && x.options?.length > 0 && 
                 <Autocomplete 
                   fullWidth={false}
                   size="small"
+                  freeSolo={x.name === "Dose"} // Allow custom dose entry
                   options={x.options ?? []}
                   // if undefined on first render, the component will switch to uncontrolled mode, so set `null` instead
                   value={params[x.name] ?? null}
                   onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                  onInputChange={x.name === "Dose" ? (event, value) => {
+                    // For Dose field, also update on typing (freeSolo mode)
+                    if (event?.type === 'change') {
+                      setParams(prev => ({ ...prev, [x.name]: value }))
+                    }
+                  } : undefined}
                   sx={{ display: "inline-flex", width: 300, mr: 1 }}
                 />
               }
@@ -201,7 +386,80 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                 <Box sx={{ width: "98%" }}><RichTextEditor disableStickyFooter /></Box>
               }
             </Grid>
-          </>
+            
+            {/* Calculated Dose Display - shown after the Dose field for medications */}
+            {x.name === "Dose" && tempMed?.route && (
+              <>
+                <Grid item xs={3}></Grid>
+                <Grid item xs={9}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: 1, 
+                    mt: 0.5,
+                    mb: 1,
+                    p: 1.5,
+                    bgcolor: 'action.hover',
+                    borderRadius: 1,
+                    border: '1px solid',
+                    borderColor: 'divider'
+                  }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: 'fit-content', fontWeight: 500 }}>
+                      Calculated dose:
+                    </Typography>
+                    <TextField
+                      size="small"
+                      type="number"
+                      placeholder="Amount"
+                      value={customDose}
+                      onChange={(e) => setCustomDose(e.target.value)}
+                      sx={{ width: 90 }}
+                      inputProps={{ min: 0, step: "any" }}
+                    />
+                    <Autocomplete
+                      size="small"
+                      options={['mg', 'mcg', 'g', 'mEq', 'units']}
+                      value={customDoseUnit}
+                      onChange={(e, value) => setCustomDoseUnit(value || 'mg')}
+                      disableClearable
+                      sx={{ width: 90 }}
+                      renderInput={(inputProps) => <TextField {...inputProps} />}
+                    />
+                    {parsedDose && calculatedDoseDisplay ? (
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center',
+                        ml: 1,
+                        pl: 2,
+                        borderLeft: '2px solid',
+                        borderColor: 'primary.main'
+                      }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            fontWeight: 600, 
+                            color: calculatedDose?.quantity < 1 || (calculatedDose?.quantity % 1 !== 0 && !calculatedDose?.isLiquid) 
+                              ? 'warning.dark' 
+                              : 'success.dark',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5
+                          }}
+                        >
+                          <span style={{ fontWeight: 400, color: 'inherit', opacity: 0.8 }}>= </span>
+                          {calculatedDoseDisplay}
+                        </Typography>
+                      </Box>
+                    ) : customDose && !parsedDose ? (
+                      <Typography variant="body2" sx={{ color: 'text.disabled', fontStyle: 'italic', ml: 1 }}>
+                        Select a dose formulation above
+                      </Typography>
+                    ) : null}
+                  </Box>
+                </Grid>
+              </>
+            )}
+          </React.Fragment>
         ))}
       </Grid>
     </Window>
