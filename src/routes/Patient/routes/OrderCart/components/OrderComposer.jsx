@@ -271,51 +271,48 @@ const alwaysParams = [{ name: "Comments", required: false, type: "html" }]
 
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }) => {
   const [params, setParams] = useState({})
-  const [customDose, setCustomDose] = useState('')
-  const [customDoseUnit, setCustomDoseUnit] = useState('mg')
+  const [doseAmount, setDoseAmount] = useState('') // The numeric dose amount (e.g., "1600")
+  const [doseUnit, setDoseUnit] = useState('mg') // The unit for the dose amount
+  const [selectedFormulation, setSelectedFormulation] = useState('') // The selected package/formulation (e.g., "800 mg Tab")
 
-  // set the default route and dose when the route changes
+  // Get available formulations for the selected route
+  const availableFormulations = useMemo(() => {
+    return Object.values(tempMed?.route?.[params["Route"]] ?? {})
+  }, [tempMed, params["Route"]])
+
+  // set the default route when medication changes
   useEffect(() => {
     setParams(prev => ({ ...prev, ['Route']: Object.keys(tempMed?.route ?? {})?.[0] ?? '' }))
-    setCustomDose('')
+    setDoseAmount('')
+    setSelectedFormulation('')
   }, [tempMed])
-  useEffect(() => {
-    setParams(prev => ({ ...prev, ['Dose']: Object.values(tempMed?.route?.[params["Route"]] ?? {})?.[0] ?? '' }))
-    setCustomDose('')
-  }, [params["Route"]])
 
-  // Parse the selected dose and calculate units needed
-  const parsedDose = useMemo(() => {
-    const result = parseDoseString(params["Dose"]);
-    console.log('[DoseCalc] Parsing dose:', params["Dose"], '-> Result:', result);
-    return result;
-  }, [params["Dose"]])
+  // set the default formulation when route changes
+  useEffect(() => {
+    const formulations = Object.values(tempMed?.route?.[params["Route"]] ?? {})
+    setSelectedFormulation(formulations[0] ?? '')
+    setDoseAmount('')
+  }, [tempMed, params["Route"]])
+
+  // Parse the selected formulation and calculate units needed
+  const parsedFormulation = useMemo(() => {
+    return parseDoseString(selectedFormulation);
+  }, [selectedFormulation])
   
   const calculatedDose = useMemo(() => {
-    if (!customDose || !parsedDose) return null;
-    const result = calculateDose(parseFloat(customDose), customDoseUnit, parsedDose);
-    console.log('[DoseCalc] Calculating:', customDose, customDoseUnit, '-> Result:', result);
-    return result;
-  }, [customDose, customDoseUnit, parsedDose])
+    if (!doseAmount || !parsedFormulation) return null;
+    return calculateDose(parseFloat(doseAmount), doseUnit, parsedFormulation);
+  }, [doseAmount, doseUnit, parsedFormulation])
   
   const calculatedDoseDisplay = useMemo(() => formatCalculatedDose(calculatedDose), [calculatedDose])
-
-  // Debug log for rendering
-  console.log('[DoseCalc] Render state:', { 
-    hasTempMed: !!tempMed, 
-    hasRoute: !!tempMed?.route, 
-    currentDose: params["Dose"],
-    customDose,
-    parsedDose: !!parsedDose,
-    calculatedDoseDisplay
-  })
 
   // if this is an Rx then substitute the Route and Dose options
   // Push a default Comments field that exists for ALL orders.
   let displayParams = [...(!!tempMed?.route ? rxParams : consultParams), ...alwaysParams]
   if (!!tempMed?.route) {
     displayParams[0].options = Object.keys(tempMed?.route ?? {}) 
-    displayParams[1].options = Object.values(tempMed?.route?.[params["Route"]] ?? {})
+    // Remove the Dose options since we're handling it specially
+    displayParams[1].options = []
   }
 
   return (
@@ -327,7 +324,14 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       onClose={() => onSelect(null)} 
       ContentProps={{ sx: { p: 0 } }}
       footer={<>
-        <Button color="success.light" onClick={() => onSelect({ name: tempMed?.name ?? '', ...params })}><Icon>check</Icon>Accept</Button>
+        <Button color="success.light" onClick={() => onSelect({ 
+          name: tempMed?.name ?? '', 
+          ...params,
+          // Include dose information
+          Dose: doseAmount && doseUnit ? `${doseAmount} ${doseUnit}` : '',
+          Formulation: selectedFormulation,
+          CalculatedDose: calculatedDoseDisplay
+        })}><Icon>check</Icon>Accept</Button>
         <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
       </>}
     >
@@ -338,53 +342,97 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
           <React.Fragment key={x.name}>
             <Grid item xs={3}><Label>{x.name}</Label></Grid>
             <Grid item xs={9}>
-              {x.type === "string" && x.options?.length > 0 && 
-                <Autocomplete 
-                  fullWidth={false}
-                  size="small"
-                  freeSolo={x.name === "Dose"} // Allow custom dose entry
-                  options={x.options ?? []}
-                  // if undefined on first render, the component will switch to uncontrolled mode, so set `null` instead
-                  value={params[x.name] ?? null}
-                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
-                  onInputChange={x.name === "Dose" ? (event, value) => {
-                    // For Dose field, also update on typing (freeSolo mode)
-                    if (event?.type === 'change') {
-                      setParams(prev => ({ ...prev, [x.name]: value }))
-                    }
-                  } : undefined}
-                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
-                />
-              }
-              {x.type === "string" && (x.options?.length ?? 0) === 0 && 
-                <TextField 
-                  fullWidth={false}
-                  size="small"
-                  value={params[x.name]}
-                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
-                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
-                />
-              }
-              {x.type === "date" && 
-                <DatePicker
-                  value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
-                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
-                  slotProps={{ textField: { size: 'small' } }}
-                  sx={{ display: "inline-flex", width: 300, mr: 1 }}
-                />
-              }
-              {x.options?.length > 0 && 
-                <ButtonGroup
-                  exclusive
-                  value={params[x.name]}
-                  onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: prev[x.name] !== value ? value : undefined }))}
-                >
-                  {x.options?.slice(0, 3).map((m) => (<Button key={m} value={m}>{m}</Button>))}
-                </ButtonGroup>
-              }
-              {x.type === "html" && 
-                <Box sx={{ width: "98%" }}><RichTextEditor disableStickyFooter /></Box>
-              }
+              {/* Special handling for Dose field - numeric input + formulation buttons */}
+              {x.name === "Dose" && tempMed?.route ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  <TextField 
+                    fullWidth={false}
+                    size="small"
+                    type="number"
+                    placeholder="Enter dose"
+                    value={doseAmount}
+                    onChange={(e) => setDoseAmount(e.target.value)}
+                    sx={{ width: 120 }}
+                    inputProps={{ min: 0, step: "any" }}
+                  />
+                  <Autocomplete
+                    size="small"
+                    options={['mg', 'mcg', 'g', 'mEq', 'units']}
+                    value={doseUnit}
+                    onChange={(e, value) => setDoseUnit(value || 'mg')}
+                    disableClearable
+                    sx={{ width: 90 }}
+                    renderInput={(inputProps) => <TextField {...inputProps} />}
+                  />
+                  <ButtonGroup
+                    exclusive
+                    value={selectedFormulation}
+                    onChange={(event, value) => {
+                      if (value) setSelectedFormulation(value)
+                    }}
+                    sx={{ ml: 1 }}
+                  >
+                    {availableFormulations.slice(0, 4).map((form) => (
+                      <Button 
+                        key={form} 
+                        value={form}
+                        variant={selectedFormulation === form ? 'contained' : 'outlined'}
+                        onClick={() => setSelectedFormulation(form)}
+                        sx={{ 
+                          fontSize: '0.75rem',
+                          py: 0.5,
+                          px: 1,
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {form}
+                      </Button>
+                    ))}
+                  </ButtonGroup>
+                </Box>
+              ) : (
+                <>
+                  {x.type === "string" && x.options?.length > 0 && 
+                    <Autocomplete 
+                      fullWidth={false}
+                      size="small"
+                      options={x.options ?? []}
+                      value={params[x.name] ?? null}
+                      onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                      sx={{ display: "inline-flex", width: 300, mr: 1 }}
+                    />
+                  }
+                  {x.type === "string" && (x.options?.length ?? 0) === 0 && 
+                    <TextField 
+                      fullWidth={false}
+                      size="small"
+                      value={params[x.name]}
+                      onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                      sx={{ display: "inline-flex", width: 300, mr: 1 }}
+                    />
+                  }
+                  {x.type === "date" && 
+                    <DatePicker
+                      value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
+                      onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
+                      slotProps={{ textField: { size: 'small' } }}
+                      sx={{ display: "inline-flex", width: 300, mr: 1 }}
+                    />
+                  }
+                  {x.options?.length > 0 && 
+                    <ButtonGroup
+                      exclusive
+                      value={params[x.name]}
+                      onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: prev[x.name] !== value ? value : undefined }))}
+                    >
+                      {x.options?.slice(0, 3).map((m) => (<Button key={m} value={m}>{m}</Button>))}
+                    </ButtonGroup>
+                  }
+                  {x.type === "html" && 
+                    <Box sx={{ width: "98%" }}><RichTextEditor disableStickyFooter /></Box>
+                  }
+                </>
+              )}
             </Grid>
             
             {/* Calculated Dose Display - shown after the Dose field for medications */}
@@ -398,61 +446,36 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                     gap: 1, 
                     mt: 0.5,
                     mb: 1,
-                    p: 1.5,
-                    bgcolor: 'action.hover',
+                    py: 1,
+                    px: 1.5,
+                    bgcolor: calculatedDoseDisplay ? 'action.hover' : 'transparent',
                     borderRadius: 1,
-                    border: '1px solid',
-                    borderColor: 'divider'
+                    minHeight: 36
                   }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', minWidth: 'fit-content', fontWeight: 500 }}>
-                      Calculated dose:
-                    </Typography>
-                    <TextField
-                      size="small"
-                      type="number"
-                      placeholder="Amount"
-                      value={customDose}
-                      onChange={(e) => setCustomDose(e.target.value)}
-                      sx={{ width: 90 }}
-                      inputProps={{ min: 0, step: "any" }}
-                    />
-                    <Autocomplete
-                      size="small"
-                      options={['mg', 'mcg', 'g', 'mEq', 'units']}
-                      value={customDoseUnit}
-                      onChange={(e, value) => setCustomDoseUnit(value || 'mg')}
-                      disableClearable
-                      sx={{ width: 90 }}
-                      renderInput={(inputProps) => <TextField {...inputProps} />}
-                    />
-                    {parsedDose && calculatedDoseDisplay ? (
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center',
-                        ml: 1,
-                        pl: 2,
-                        borderLeft: '2px solid',
-                        borderColor: 'primary.main'
-                      }}>
+                    {calculatedDoseDisplay ? (
+                      <>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                          Calculated dose:
+                        </Typography>
                         <Typography 
                           variant="body2" 
                           sx={{ 
                             fontWeight: 600, 
                             color: calculatedDose?.quantity < 1 || (calculatedDose?.quantity % 1 !== 0 && !calculatedDose?.isLiquid) 
                               ? 'warning.dark' 
-                              : 'success.dark',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5
+                              : 'success.dark'
                           }}
                         >
-                          <span style={{ fontWeight: 400, color: 'inherit', opacity: 0.8 }}>= </span>
                           {calculatedDoseDisplay}
                         </Typography>
-                      </Box>
-                    ) : customDose && !parsedDose ? (
-                      <Typography variant="body2" sx={{ color: 'text.disabled', fontStyle: 'italic', ml: 1 }}>
-                        Select a dose formulation above
+                      </>
+                    ) : doseAmount && !selectedFormulation ? (
+                      <Typography variant="body2" sx={{ color: 'text.disabled', fontStyle: 'italic' }}>
+                        Select a formulation from the buttons above
+                      </Typography>
+                    ) : doseAmount && selectedFormulation && !parsedFormulation ? (
+                      <Typography variant="body2" sx={{ color: 'text.disabled', fontStyle: 'italic' }}>
+                        Unable to parse selected formulation
                       </Typography>
                     ) : null}
                   </Box>
