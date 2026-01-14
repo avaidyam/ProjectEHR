@@ -404,6 +404,7 @@ export default function Chat() {
         ---
     
         **Instructions:**
+        - IMPORTANT!: Do not volunteer all the information at once. Only provide details when asked directly.
         - Speak in a less educated, more conversational style.
         - Act like a regular person — don’t use medical jargon unless it would be natural for the character (e.g., “blood pressure,” not “hypertension”).
         - If unsure, say something like “I dunno” or “I never really thought about it.” Try not to make anything up.
