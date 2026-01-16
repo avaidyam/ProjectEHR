@@ -14,17 +14,22 @@ export const StickyNote = () => {
   const { useChart, useEncounter } = usePatient();
   const encounterAccessor = useEncounter();
   
-  // Safely access the stickyNotes hook with proper fallback
+  // Access encounter directly and manage stickyNotes property to avoid double nesting
   let stickyNoteData = {};
   let setStickyNoteData = () => {};
   
   try {
-    if (encounterAccessor && typeof encounterAccessor.stickyNotes === 'function') {
-      const result = encounterAccessor.stickyNotes({});
-      if (Array.isArray(result) && result.length >= 2) {
-        stickyNoteData = result[0] ?? {};
-        setStickyNoteData = result[1] ?? (() => {});
-      }
+    if (encounterAccessor && typeof encounterAccessor === 'function') {
+      const [encounterData, setEncounterData] = encounterAccessor();
+      stickyNoteData = encounterData?.stickyNotes ?? {};
+      setStickyNoteData = (updater) => {
+        setEncounterData(prev => ({
+          ...prev,
+          stickyNotes: typeof updater === 'function' 
+            ? updater(prev?.stickyNotes ?? {}) 
+            : updater
+        }));
+      };
     }
   } catch (err) {
     console.warn('Failed to access stickyNotes:', err);
