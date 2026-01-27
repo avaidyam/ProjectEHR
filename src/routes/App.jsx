@@ -31,6 +31,14 @@ export const App = () => {
             element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
           />
           <Route
+            path="/schedule/:department"
+            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
+            path="/schedule/:department/:date"
+            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
             path="/list"
             element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
           />
@@ -44,6 +52,14 @@ export const App = () => {
           />
           <Route
             path="/snapboard"
+            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
+            path="/snapboard/:department"
+            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
+            path="/snapboard/:department/:date"
             element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
           />
           <Route path="*" render={() => <Navigate replace to="/" />} />

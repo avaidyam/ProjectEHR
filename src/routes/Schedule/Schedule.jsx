@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
@@ -161,9 +162,45 @@ export function Schedule() {
   const [filterElem, setFilterElem] = React.useState(null); // for filter
   const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
+  const { department, date } = useParams();
+  const navigate = useNavigate();
+
   const [selPatient, setPatient] = React.useState(null);
-  const [selectedDept, setSelectedDept] = React.useState(schedulesDB[0]?.department || (departments[0]?.id));
-  const [selectedDate, setSelectedDate] = React.useState(dayjs('2026-01-01'));
+
+  // Initialize state from URL or defaults
+  const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
+
+  const [selectedDept, setSelectedDept] = React.useState(initialDept);
+  const [selectedDate, setSelectedDate] = React.useState(initialDate);
+
+  // Update URL function
+  const updateUrl = (dept, dateObj) => {
+    const dateStr = dateObj.format('YYYY-MM-DD');
+    navigate(`/schedule/${dept}/${dateStr}`, { replace: true });
+  };
+
+  // Wrapper setters to sync with URL
+  const handleSetSelectedDept = (dept) => {
+    setSelectedDept(dept);
+    updateUrl(dept, selectedDate);
+  };
+
+  const handleSetSelectedDate = (date) => {
+    setSelectedDate(date);
+    updateUrl(selectedDept, date);
+  };
+
+  // Effect to sync state if URL changes externally (e.g. back button)
+  useEffect(() => {
+    if (department) {
+      setSelectedDept(parseInt(department));
+    }
+    if (date) {
+      setSelectedDate(dayjs(date));
+    }
+  }, [department, date]);
+
   const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState(null);
   const [deleteConfirmation, setDeleteConfirmation] = React.useState(null);
@@ -240,7 +277,7 @@ export function Schedule() {
       });
 
       // Auto-switch to the scheduled department
-      setSelectedDept(targetDeptId);
+      handleSetSelectedDept(targetDeptId);
       showNotification("Patient scheduled successfully", "success");
     }
     setEditingAppointment(null);
@@ -551,12 +588,13 @@ export function Schedule() {
               panel: {
                 anchorEl: filterElem,
               },
+              // Update slotProps to pass the wrapper setters
               toolbar: {
                 setFilterElem,
                 selectedDate,
-                setSelectedDate,
+                setSelectedDate: handleSetSelectedDate,
                 selectedDept,
-                setSelectedDept,
+                setSelectedDept: handleSetSelectedDept,
                 schedulesDB,
                 departments,
                 open,

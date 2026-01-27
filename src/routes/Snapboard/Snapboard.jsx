@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Typography, Card, CardContent, Grid, FormControl, Select, MenuItem, Chip, Avatar } from '@mui/material';
 import { DatePicker, Button } from 'components/ui/Core.jsx';
@@ -10,8 +11,42 @@ export function Snapboard() {
     const [departments] = useDatabase().departments();
     const [locations] = useDatabase().locations();
 
-    const [selectedDate, setSelectedDate] = useState(dayjs('2026-01-01'));
-    const [selectedDept, setSelectedDept] = useState(schedulesDB[0]?.department || (departments[0]?.id));
+    const { department, date } = useParams();
+    const navigate = useNavigate();
+
+    // Initialize state from URL or defaults
+    const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
+    const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
+
+    const [selectedDate, setSelectedDate] = useState(initialDate);
+    const [selectedDept, setSelectedDept] = useState(initialDept);
+
+    // Update URL function
+    const updateUrl = (dept, dateObj) => {
+        const dateStr = dateObj.format('YYYY-MM-DD');
+        navigate(`/snapboard/${dept}/${dateStr}`, { replace: true });
+    };
+
+    // Wrapper setters
+    const handleSetSelectedDept = (dept) => {
+        setSelectedDept(dept);
+        updateUrl(dept, selectedDate);
+    };
+
+    const handleSetSelectedDate = (date) => {
+        setSelectedDate(date);
+        updateUrl(selectedDept, date);
+    };
+
+    // Effect to sync state if URL changes externally
+    useEffect(() => {
+        if (department) {
+            setSelectedDept(parseInt(department));
+        }
+        if (date) {
+            setSelectedDate(dayjs(date));
+        }
+    }, [department, date]);
 
     // 1. Filter locations by department
     const deptLocations = React.useMemo(() => {
@@ -49,12 +84,12 @@ export function Snapboard() {
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     <DatePicker
                         value={selectedDate}
-                        onChange={(newValue) => setSelectedDate(newValue)}
+                        onChange={(newValue) => handleSetSelectedDate(newValue)}
                     />
                     <FormControl variant="outlined" sx={{ minWidth: 200 }}>
                         <Select
                             value={selectedDept}
-                            onChange={(e) => setSelectedDept(e.target.value)}
+                            onChange={(e) => handleSetSelectedDept(e.target.value)}
                             displayEmpty
                         >
                             {schedulesDB.map((s) => (
