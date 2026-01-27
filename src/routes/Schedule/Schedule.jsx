@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker, Button, Window, Label } from 'components/ui/Core.jsx';
+import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
 import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
@@ -476,11 +476,10 @@ export function Schedule() {
               {
                 field: 'edit',
                 headerName: 'Actions',
-                width: 170, // Increased width for two buttons
+                width: 120, // Reduced width since icons are smaller
                 renderCell: (params) => (
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="outlined"
+                  <Box sx={{ display: 'flex' }}>
+                    <IconButton
                       size="small"
                       onClick={(e) => {
                         e.stopPropagation(); // Prevent row selection
@@ -492,10 +491,9 @@ export function Schedule() {
                         handleEditAppointment(appt);
                       }}
                     >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outlined"
+                      edit
+                    </IconButton>
+                    <IconButton
                       color="error"
                       size="small"
                       onClick={(e) => {
@@ -508,8 +506,8 @@ export function Schedule() {
                         handleDeleteClick(appt);
                       }}
                     >
-                      Delete
-                    </Button>
+                      delete
+                    </IconButton>
                   </Box>
                 ),
               },
