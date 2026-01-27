@@ -12,11 +12,11 @@ import { useDatabase } from 'components/contexts/PatientContext'
 // get today's date and display in text box
 function dateLocal() {
   return (
-      <DatePicker
-        defaultValue={dayjs(
-          `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
-        )}
-      />
+    <DatePicker
+      defaultValue={dayjs(
+        `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
+      )}
+    />
   );
 }
 
@@ -130,7 +130,8 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
 // takes rows from json file and set columns to make table
 export function Schedule() {
   const [patientsDB] = useDatabase().patients()
-  const [scheduleDB] = useDatabase().schedule()
+  const [schedulesDB] = useDatabase().schedules()
+  const [departments] = useDatabase().departments()
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -140,6 +141,11 @@ export function Schedule() {
   const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
   const [selPatient, setPatient] = React.useState(null);
+  const [selectedDept, setSelectedDept] = React.useState(schedulesDB[0]?.department || (departments[0]?.id));
+
+  const scheduleDB = React.useMemo(() => {
+    return schedulesDB.find(s => s.department === selectedDept)?.appointments || []
+  }, [schedulesDB, selectedDept]);
 
   const patientScheduleClick = (params) => {
     setPatient(params.row);
@@ -153,7 +159,22 @@ export function Schedule() {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <div>{dateLocal()}</div>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        {dateLocal()}
+        <FormControl variant="standard" sx={{ minWidth: 200 }}>
+          <Select
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            displayEmpty
+          >
+            {schedulesDB.map((s) => (
+              <MenuItem key={s.department} value={s.department}>
+                {departments.find(d => d.id === s.department)?.name || `Dept ${s.department}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       <Notification
         open={notification.open}
         onClose={() => setNotification({ ...notification, open: false })}
@@ -270,9 +291,8 @@ export function Schedule() {
                 },
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
-                    new Date(data.birthdate).age()
-                  } years old / ${data.gender}`;
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${new Date(data.birthdate).age()
+                    } years old / ${data.gender}`;
                 },
               },
               {
