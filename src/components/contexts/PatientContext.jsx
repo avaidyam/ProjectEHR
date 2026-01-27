@@ -15,6 +15,7 @@ const initialStore = {
   departments: patient_sample.departments,
   patients: patient_sample.patients,
   schedule: patient_sample.schedule,
+  providers: patient_sample.providers,
   orderables: orderables,
   test: [],
   another: {}
@@ -47,14 +48,14 @@ export const PatientProvider = ({ patient, encounter, children }) => {
     // TODO: ...
   })*/
   // const [data, setData] = useStore() // React.useState(patient_sample.patients[patient])
-  
+
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const value = React.useMemo(() => ({ 
-    useChart: () => useStore1.patients[patient], 
-    useEncounter: () => useStore1.patients[patient].encounters[encounter] 
+  const value = React.useMemo(() => ({
+    useChart: () => useStore1.patients[patient],
+    useEncounter: () => useStore1.patients[patient].encounters[encounter]
   }), [patient, encounter])
-  
+
   return (
     <PatientContext.Provider value={value}>
       {children}
