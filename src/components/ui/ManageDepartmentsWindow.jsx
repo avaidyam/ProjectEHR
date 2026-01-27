@@ -14,20 +14,50 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
     const [isAddingDept, setIsAddingDept] = useState(false);
     const [isAddingProvider, setIsAddingProvider] = useState(false);
     const [isMovingProvider, setIsMovingProvider] = useState(false);
+    const [isEditingDept, setIsEditingDept] = useState(false);
+    const [isEditingProvider, setIsEditingProvider] = useState(false);
 
     // Form Data
     const [deptName, setDeptName] = useState("");
+    const [editingDeptId, setEditingDeptId] = useState(null);
 
     const [providerData, setProviderData] = useState({
         name: "",
         specialty: "",
         department: "" // dept ID
     });
+    const [editingProviderId, setEditingProviderId] = useState(null);
 
     const [moveProviderData, setMoveProviderData] = useState({
         providerId: null,
         targetDeptId: ""
     });
+
+    const [draggedProviderId, setDraggedProviderId] = useState(null);
+
+    const handleDragStart = (e, providerId) => {
+        setDraggedProviderId(providerId);
+        e.dataTransfer.setData("text/plain", providerId);
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault(); // Necessary to allow dropping
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const handleDrop = (e, targetDeptId) => {
+        e.preventDefault();
+        const providerId = draggedProviderId;
+        if (!providerId || !targetDeptId) return;
+
+        setProviders(prev => prev.map(p =>
+            p.id === providerId
+                ? { ...p, department: targetDeptId }
+                : p
+        ));
+        setDraggedProviderId(null);
+    };
 
     const handleContextMenu = (event, type, id, parentId) => {
         event.preventDefault();
@@ -41,10 +71,7 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
                     id,
                     parentId
                 }
-                : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-                // Other native context menus might behave different.
-                // With this behavior we prevent contextmenu from the backdrop to re-locate existing context menus.
-                null,
+                : null,
         );
     };
 
@@ -70,6 +97,18 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
         setIsAddingDept(false);
     };
 
+    const handleEditDepartment = () => {
+        if (!deptName || !editingDeptId) return;
+
+        setDepartments(prev => prev.map(d =>
+            d.id === editingDeptId ? { ...d, name: deptName } : d
+        ));
+
+        setDeptName("");
+        setEditingDeptId(null);
+        setIsEditingDept(false);
+    };
+
     const handleAddProvider = () => {
         if (!providerData.name || !providerData.department) return;
 
@@ -84,6 +123,20 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
         setProviders(prev => [...prev, newProvider]);
         setProviderData({ name: "", specialty: "", department: "" });
         setIsAddingProvider(false);
+    };
+
+    const handleEditProvider = () => {
+        if (!providerData.name || !providerData.department || !editingProviderId) return;
+
+        setProviders(prev => prev.map(p =>
+            p.id === editingProviderId
+                ? { ...p, name: providerData.name, specialty: providerData.specialty, department: providerData.department }
+                : p
+        ));
+
+        setProviderData({ name: "", specialty: "", department: "" });
+        setEditingProviderId(null);
+        setIsEditingProvider(false);
     };
 
     const handleMoveProvider = () => {
@@ -105,86 +158,36 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
         handleCloseContextMenu();
     };
 
+    const startEditDepartment = (deptId) => {
+        const dept = departments.find(d => d.id === deptId);
+        if (dept) {
+            setDeptName(dept.name);
+            setEditingDeptId(deptId);
+            setIsEditingDept(true);
+        }
+        handleCloseContextMenu();
+    };
+
+    const startEditProvider = (provId) => {
+        const prov = providers.find(p => p.id === provId);
+        if (prov) {
+            setProviderData({
+                name: prov.name,
+                specialty: prov.specialty || "",
+                department: prov.department
+            });
+            setEditingProviderId(provId);
+            setIsEditingProvider(true);
+        }
+        handleCloseContextMenu();
+    };
+
     const startMoveProvider = (provId) => {
         setMoveProviderData(prev => ({ ...prev, providerId: provId }));
         setIsMovingProvider(true);
         handleCloseContextMenu();
     };
 
-    const items = React.useMemo(() => {
-        return departments.map(d => ({
-            id: `dept-${d.id}`,
-            label: d.name,
-            children: providers.filter(p => p.department === d.id).map(p => ({
-                id: `prov-${p.id}`,
-                label: p.name
-            }))
-        }));
-    }, [departments, providers]);
-
-    // Handle item reordering/moving
-    const handleItemOrderChange = (params) => {
-        if (!params) return;
-
-        const item = params.item || (params.items && params.items[0]);
-        const newParent = params.newParent;
-
-        if (item && newParent) {
-            const itemId = item.id;
-            const newParentId = newParent.id;
-
-            if (itemId.startsWith('prov-') && newParentId.startsWith('dept-')) {
-                const realProviderId = itemId.split('-')[1];
-                const realDeptId = newParentId.split('-')[1];
-
-                setProviders(prev => prev.map(p =>
-                    p.id === realProviderId
-                        ? { ...p, department: realDeptId }
-                        : p
-                ));
-            }
-        }
-    };
-
-    const CustomTreeItem = React.forwardRef((props, ref) => {
-        const { id, label, ...other } = props;
-
-        // Defensive: RichTreeView might render something else or id might be missing in some internal slots? 
-        // Usually safe if we are replacing 'item'.
-        if (!id) return <TreeItem ref={ref} {...props} />;
-
-        const isDept = id.startsWith('dept-');
-        const isProv = id.startsWith('prov-');
-        const realId = id.split('-')[1];
-
-        return (
-            <TreeItem
-                ref={ref}
-                {...props}
-                label={
-                    <Box
-                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1, width: '100%' }}
-                        onContextMenu={(e) => {
-                            if (isDept) handleContextMenu(e, 'dept', realId);
-                            if (isProv) handleContextMenu(e, 'prov', realId);
-                        }}
-                    >
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Icon sx={{ mr: 1, fontSize: 20 }}>{isDept ? 'apartment' : 'person'}</Icon>
-                            {label}
-                        </Box>
-                        <IconButton size="small" onClick={(e) => {
-                            e.stopPropagation();
-                            if (isDept) handleContextMenu(e, 'dept', realId);
-                            if (isProv) handleContextMenu(e, 'prov', realId);
-                        }}>
-                            <Icon sx={{ fontSize: 16 }}>more_vert</Icon>
-                        </IconButton>
-                    </Box>
-                }
-            />
-        );
-    });
 
     const renderContent = () => {
         if (isAddingDept) {
@@ -199,6 +202,23 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                         <Button onClick={() => setIsAddingDept(false)}>Cancel</Button>
                         <Button variant="contained" onClick={handleAddDepartment}>Add</Button>
+                    </Box>
+                </Box>
+            );
+        }
+
+        if (isEditingDept) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                        label="Department Name"
+                        value={deptName}
+                        onChange={e => setDeptName(e.target.value)}
+                        autoFocus
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Button onClick={() => setIsEditingDept(false)}>Cancel</Button>
+                        <Button variant="contained" onClick={handleEditDepartment}>Save</Button>
                     </Box>
                 </Box>
             );
@@ -238,6 +258,40 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
             );
         }
 
+        if (isEditingProvider) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                        label="Provider Name"
+                        value={providerData.name}
+                        onChange={e => setProviderData(prev => ({ ...prev, name: e.target.value }))}
+                        autoFocus
+                    />
+                    <TextField
+                        label="Specialty"
+                        value={providerData.specialty}
+                        onChange={e => setProviderData(prev => ({ ...prev, specialty: e.target.value }))}
+                    />
+                    <FormControl fullWidth>
+                        <InputLabel>Department</InputLabel>
+                        <Select
+                            value={providerData.department}
+                            label="Department"
+                            onChange={e => setProviderData(prev => ({ ...prev, department: e.target.value }))}
+                        >
+                            {departments.map(d => (
+                                <MenuItem key={d.id} value={d.id}>{d.name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Button onClick={() => setIsEditingProvider(false)}>Cancel</Button>
+                        <Button variant="contained" onClick={handleEditProvider}>Save</Button>
+                    </Box>
+                </Box>
+            );
+        }
+
         if (isMovingProvider) {
             const provider = providers.find(p => p.id === moveProviderData.providerId);
             return (
@@ -265,16 +319,63 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
 
         return (
             <TreeView
-                rich={true}
-                items={items}
                 aria-label="file system navigator"
                 defaultCollapseIcon={<Icon>expand_more</Icon>}
                 defaultExpandIcon={<Icon>chevron_right</Icon>}
-                experimentalFeatures={{ itemsReordering: true }}
-                onItemOrderChange={handleItemOrderChange}
                 sx={{ overflowY: 'auto', flexGrow: 1 }}
-                slots={{ item: CustomTreeItem }}
-            />
+            >
+                {departments.map((dept) => (
+                    <TreeItem
+                        key={`dept-${dept.id}`}
+                        itemId={`dept-${dept.id}`}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, dept.id)}
+                        label={
+                            <Box
+                                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}
+                                onContextMenu={(e) => handleContextMenu(e, 'dept', dept.id)}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Icon sx={{ mr: 1, fontSize: 20 }}>apartment</Icon>
+                                    {dept.name}
+                                </Box>
+                                <IconButton size="small" onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleContextMenu(e, 'dept', dept.id);
+                                }}>
+                                    <Icon sx={{ fontSize: 16 }}>more_vert</Icon>
+                                </IconButton>
+                            </Box>
+                        }
+                    >
+                        {providers.filter(p => p.department === dept.id).map(prov => (
+                            <TreeItem
+                                key={`prov-${prov.id}`}
+                                itemId={`prov-${prov.id}`}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, prov.id)}
+                                label={
+                                    <Box
+                                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}
+                                        onContextMenu={(e) => handleContextMenu(e, 'prov', prov.id, dept.id)}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Icon sx={{ mr: 1, fontSize: 20 }}>person</Icon>
+                                            {prov.name}
+                                        </Box>
+                                        <IconButton size="small" onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleContextMenu(e, 'prov', prov.id, dept.id);
+                                        }}>
+                                            <Icon sx={{ fontSize: 16 }}>more_vert</Icon>
+                                        </IconButton>
+                                    </Box>
+                                }
+                            />
+                        ))}
+                    </TreeItem>
+                ))}
+            </TreeView>
         );
     };
 
@@ -287,12 +388,12 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
             maxWidth="md"
         >
             <Box sx={{ mb: 2, display: 'flex', gap: 1 }}>
-                {!isAddingDept && !isAddingProvider && !isMovingProvider && (
+                {!isAddingDept && !isAddingProvider && !isMovingProvider && !isEditingDept && !isEditingProvider && (
                     <Button variant="contained" startIcon={<Icon>add</Icon>} onClick={() => setIsAddingDept(true)}>
                         Add Department
                     </Button>
                 )}
-                {!isAddingDept && !isAddingProvider && !isMovingProvider && (
+                {!isAddingDept && !isAddingProvider && !isMovingProvider && !isEditingDept && !isEditingProvider && (
                     <Button variant="outlined" startIcon={<Icon>person_add</Icon>} onClick={() => {
                         setIsAddingProvider(true);
                         setProviderData({ name: "", specialty: "", department: "" });
@@ -315,10 +416,16 @@ export const ManageDepartmentsWindow = ({ open, onClose }) => {
                 }
             >
                 {contextMenu?.type === 'dept' && (
-                    <MenuItem onClick={() => startAddProvider(contextMenu.id)}>Add Provider</MenuItem>
+                    <>
+                        <MenuItem onClick={() => startAddProvider(contextMenu.id)}>Add Provider</MenuItem>
+                        <MenuItem onClick={() => startEditDepartment(contextMenu.id)}>Edit Department</MenuItem>
+                    </>
                 )}
                 {contextMenu?.type === 'prov' && (
-                    <MenuItem onClick={() => startMoveProvider(contextMenu.id)}>Move Provider</MenuItem>
+                    <>
+                        <MenuItem onClick={() => startMoveProvider(contextMenu.id)}>Move Provider</MenuItem>
+                        <MenuItem onClick={() => startEditProvider(contextMenu.id)}>Edit Provider</MenuItem>
+                    </>
                 )}
             </Menu>
         </Window>
