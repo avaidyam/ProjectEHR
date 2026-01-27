@@ -164,6 +164,7 @@ export const Titlebar = ({ onLogout }) => {
             sx={{ flexGrow: 1, justifyContent: 'center' }}
           >
             <Tab value="/schedule" label={<Icon>calendar_month</Icon>} onClick={() => navigate('/schedule')} sx={{ minWidth: 45 }} />
+            <Tab value="/snapboard" label={<Icon>dashboard</Icon>} onClick={() => navigate('/snapboard')} sx={{ minWidth: 45 }} />
             <Tab value="/list" label={<Icon>people</Icon>} onClick={() => navigate('/list')} sx={{ minWidth: 45 }} />
             {tabHistory.filter(x => x.startsWith('/patient')).map((pathname, index) => (
               <Tab onClick={() => navigate(pathname)} key={pathname} value={pathname} label={

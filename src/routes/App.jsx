@@ -9,6 +9,7 @@ import { Schedule } from './Schedule/Schedule.jsx';
 import { PatientLists } from './PatientList/PatientList.jsx';
 import { Login } from './Login/Login.jsx';
 import { Patient } from './Patient/Patient.jsx';
+import { Snapboard } from './Snapboard/Snapboard.jsx';
 
 export const App = () => {
   const navigate = useNavigate()
@@ -21,25 +22,29 @@ export const App = () => {
       <DatabaseProvider>
         {isLoggedIn && <Titlebar onLogout={handleLogout} />}
         <Routes>
-          <Route 
-            path="/" 
-            element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />} 
+          <Route
+            path="/"
+            element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />}
           />
-          <Route 
-            path="/schedule" 
-            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />} 
+          <Route
+            path="/schedule"
+            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
           />
-          <Route 
-            path="/list" 
-            element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />} 
+          <Route
+            path="/list"
+            element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
           />
-          <Route 
-            path="/patient/:mrn" 
-            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />} 
+          <Route
+            path="/patient/:mrn"
+            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
           />
-          <Route 
-            path="/patient/:mrn/encounter/:enc" 
-            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />} 
+          <Route
+            path="/patient/:mrn/encounter/:enc"
+            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
+            path="/snapboard"
+            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
           />
           <Route path="*" render={() => <Navigate replace to="/" />} />
         </Routes>
