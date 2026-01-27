@@ -101,7 +101,9 @@ function changeBarColorByStatus(officeStatus) {
 }
 
 // decide on color of text in status column based on what status is
-function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
+function changeTextByStatus(officeStatus, checkinTime, checkoutTime, locationId, locations) {
+  const roomName = locationId ? (locations.find(l => l.id === locationId)?.name || 'Unknown Room') : 'Unknown Room';
+
   if (officeStatus === 'Scheduled') {
     return changeTextColor('blue', officeStatus, '');
   }
@@ -112,28 +114,28 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
     return changeTextColor(
       'pink',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Waiting') {
     return changeTextColor(
       'orange',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Visit in Progress') {
     return changeTextColor(
       'yellow',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Visit Complete') {
     return changeTextColor(
       'green',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Checked Out') {
@@ -150,6 +152,7 @@ export function Schedule() {
   const [patientsDB] = useDatabase().patients()
   const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
   const [departments] = useDatabase().departments()
+  const [locations] = useDatabase().locations()
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -214,7 +217,7 @@ export function Schedule() {
         officeStatus: "Scheduled",
         checkinTime: "",
         checkoutTime: "",
-        room: "",
+        location: null,
         type: type || "Office Visit",
         notes: notes || "",
         cc: cc || ""
@@ -392,7 +395,8 @@ export function Schedule() {
                       params.row.officeStatus,
                       params.row.checkinTime,
                       params.row.checkoutTime,
-                      params.row.room
+                      params.row.location,
+                      locations
                     )}
                   </div>
                 ),

@@ -16,6 +16,7 @@ const initialStore = {
   patients: patient_sample.patients,
   schedules: patient_sample.schedules,
   providers: patient_sample.providers,
+  locations: patient_sample.locations,
   orderables: orderables,
   test: [],
   another: {}
