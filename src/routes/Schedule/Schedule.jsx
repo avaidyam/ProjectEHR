@@ -162,6 +162,7 @@ export function Schedule() {
   const [selectedDept, setSelectedDept] = React.useState(schedulesDB[0]?.department || (departments[0]?.id));
   const [selectedDate, setSelectedDate] = React.useState(dayjs('2026-01-01'));
   const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
+  const [editingAppointment, setEditingAppointment] = React.useState(null);
 
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
@@ -172,43 +173,73 @@ export function Schedule() {
     setPatient(params.row);
   };
 
-  const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes }) => {
-    const newAppointment = {
-      id: Math.floor(Math.random() * 100000), // Generate random ID
-      apptTime: date, // ISO format from modal
-      status: "Scheduled",
-      patient: { mrn: patientId, enc: encounterId },
-      officeStatus: "Scheduled",
-      checkinTime: "",
-      checkoutTime: "",
-      room: "",
-      type: type || "Office Visit",
-      notes: notes || "",
-      cc: cc || ""
-    };
+  const handleEditAppointment = (appointment) => {
+    setEditingAppointment(appointment);
+    setIsScheduleModalOpen(true);
+  };
 
+  const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes, id }) => {
     const targetDeptId = parseInt(department);
 
-    setSchedulesDB(prev => {
-      const index = prev.findIndex(s => s.department === targetDeptId);
-      if (index >= 0) {
-        // Update existing
-        const newSchedules = [...prev];
-        newSchedules[index] = {
-          ...newSchedules[index],
-          appointments: [...newSchedules[index].appointments, newAppointment]
-        };
-        return newSchedules;
-      } else {
-        // Create new entry
-        return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
-      }
-    });
+    // If editing (id exists)
+    if (id) {
+      setSchedulesDB(prev => prev.map(s => {
+        if (s.department === targetDeptId) {
+          return {
+            ...s,
+            appointments: s.appointments.map(appt => {
+              if (appt.id === id) {
+                return {
+                  ...appt,
+                  apptTime: date,
+                  type: type || appt.type,
+                  notes: notes,
+                  cc: cc
+                };
+              }
+              return appt;
+            })
+          };
+        }
+        return s;
+      }));
+      showNotification("Appointment updated successfully", "success");
+    } else {
+      const newAppointment = {
+        id: Math.floor(Math.random() * 100000), // Generate random ID
+        apptTime: date, // ISO format from modal
+        status: "Scheduled",
+        patient: { mrn: patientId, enc: encounterId },
+        officeStatus: "Scheduled",
+        checkinTime: "",
+        checkoutTime: "",
+        room: "",
+        type: type || "Office Visit",
+        notes: notes || "",
+        cc: cc || ""
+      };
 
-    // Auto-switch to the scheduled department
-    setSelectedDept(targetDeptId);
+      setSchedulesDB(prev => {
+        const index = prev.findIndex(s => s.department === targetDeptId);
+        if (index >= 0) {
+          // Update existing
+          const newSchedules = [...prev];
+          newSchedules[index] = {
+            ...newSchedules[index],
+            appointments: [...newSchedules[index].appointments, newAppointment]
+          };
+          return newSchedules;
+        } else {
+          // Create new entry
+          return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
+        }
+      });
 
-    showNotification("Patient scheduled successfully", "success");
+      // Auto-switch to the scheduled department
+      setSelectedDept(targetDeptId);
+      showNotification("Patient scheduled successfully", "success");
+    }
+    setEditingAppointment(null);
   };
 
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
@@ -221,7 +252,7 @@ export function Schedule() {
     <Box sx={{ position: 'relative' }}>
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" gutterBottom>Schedule</Typography>
-        <Button variant="contained" onClick={() => setIsScheduleModalOpen(true)}>Schedule Patient</Button>
+        <Button variant="contained" onClick={() => { setEditingAppointment(null); setIsScheduleModalOpen(true); }}>Schedule Patient</Button>
       </Box>
 
       <Notification
@@ -232,10 +263,11 @@ export function Schedule() {
       />
       <SchedulePatientModal
         open={isScheduleModalOpen}
-        onClose={() => setIsScheduleModalOpen(false)}
+        onClose={() => { setIsScheduleModalOpen(false); setEditingAppointment(null); }}
         onSubmit={handleSchedulePatient}
         patientsDB={patientsDB}
         departments={departments}
+        appointment={editingAppointment}
       />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
@@ -399,6 +431,28 @@ export function Schedule() {
                   const data = patientsDB[row.patient.mrn]
                   return `${data.insurance.carrierName}`;
                 },
+              },
+              {
+                field: 'edit',
+                headerName: 'Actions',
+                width: 100,
+                renderCell: (params) => (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row selection
+                      // Need to construct the appointment object with department info since it's flattened
+                      const appt = {
+                        ...params.row,
+                        department: selectedDept
+                      };
+                      handleEditAppointment(appt);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                ),
               },
             ]}
             onRowClick={patientScheduleClick}

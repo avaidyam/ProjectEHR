@@ -20,17 +20,43 @@ const VISIT_TYPES = [
     "Emergency Room"
 ];
 
-export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, departments }) => {
-    const [step, setStep] = useState(1);
-    const [selectedPatientId, setSelectedPatientId] = useState(null);
-    const [selectedEncounterId, setSelectedEncounterId] = useState(null);
+export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, departments, appointment }) => {
+    const [step, setStep] = useState(appointment ? 2 : 1);
+    const [selectedPatientId, setSelectedPatientId] = useState(appointment?.patient?.mrn || null);
+    const [selectedEncounterId, setSelectedEncounterId] = useState(appointment?.patient?.enc || null);
     const [formData, setFormData] = useState({
-        department: '',
-        date: dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
-        type: 'Office Visit',
-        cc: '',
-        notes: ''
+        department: appointment ? appointment.department : '',
+        date: appointment ? appointment.apptTime : dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
+        type: appointment?.type || 'Office Visit',
+        cc: appointment?.cc || '',
+        notes: appointment?.notes || ''
     });
+
+    React.useEffect(() => {
+        if (open && appointment) {
+            setStep(2);
+            setSelectedPatientId(appointment.patient.mrn);
+            setSelectedEncounterId(appointment.patient.enc);
+            setFormData({
+                department: appointment.department, // Ensure this matches how it's stored (ID vs Name) - checking Schedule.jsx logic, it seems we need ID here? Schedule.jsx stores appointment.department as ID.
+                date: appointment.apptTime,
+                type: appointment.type || 'Office Visit',
+                cc: appointment.cc || '',
+                notes: appointment.notes || ''
+            });
+        } else if (open && !appointment) {
+            setStep(1);
+            setSelectedPatientId(null);
+            setSelectedEncounterId(null);
+            setFormData({
+                department: '',
+                date: dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
+                type: 'Office Visit',
+                cc: '',
+                notes: ''
+            });
+        }
+    }, [open, appointment]);
 
     const handleNodeSelect = (event, nodeId) => {
         // IDs are formatted like "patient-123" or "enc-123-456"
@@ -63,20 +89,11 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                 date: formData.date,
                 type: formData.type,
                 cc: formData.cc,
-                notes: formData.notes
+                notes: formData.notes,
+                id: appointment?.id
             });
             onClose();
-            // Reset state
-            setStep(1);
-            setSelectedPatientId(null);
-            setSelectedEncounterId(null);
-            setFormData({
-                department: '',
-                date: dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
-                type: 'Office Visit',
-                cc: '',
-                notes: ''
-            });
+            // Reset state is handled by useEffect
         } else {
             alert("Please select a department and date.");
         }
@@ -180,11 +197,11 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
     const footer = (
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, width: '100%' }}>
             <Button variant="outlined" onClick={onClose}>Cancel</Button>
-            {step === 2 && <Button variant="outlined" onClick={handleBack}>Back</Button>}
+            {step === 2 && !appointment && <Button variant="outlined" onClick={handleBack}>Back</Button>}
             {step === 1 ? (
                 <Button variant="contained" onClick={handleNext} disabled={!selectedEncounterId}>Next</Button>
             ) : (
-                <Button variant="contained" onClick={handleSubmit}>Schedule</Button>
+                <Button variant="contained" onClick={handleSubmit}>{appointment ? "Save Changes" : "Schedule"}</Button>
             )}
         </Box>
     );
@@ -193,7 +210,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
         <Window
             open={open}
             onClose={onClose}
-            title="Schedule Patient"
+            title={appointment ? "Edit Appointment" : "Schedule Patient"}
             footer={footer}
             fullWidth
             maxWidth="sm"
