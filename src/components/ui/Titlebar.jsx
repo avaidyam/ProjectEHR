@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mu
 import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
 import { useDatabase } from 'components/contexts/PatientContext'
 import { CreateEncounterDialog } from './CreateEncounterDialog.jsx'
+import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
 
 const placeholders = [
   "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
@@ -31,6 +32,7 @@ export const Titlebar = ({ onLogout }) => {
   const [providers] = useDatabase().providers()
 
   const [createEncounterOpen, setCreateEncounterOpen] = useState(false)
+  const [manageDeptsOpen, setManageDeptsOpen] = useState(false)
 
   const handleOpenCreateEncounter = () => {
     // Check if we are on a patient chart
@@ -143,6 +145,12 @@ export const Titlebar = ({ onLogout }) => {
               <MenuItem onClick={handleOpenCreateEncounter}>
                 Create Encounter
               </MenuItem>
+              <MenuItem onClick={() => {
+                setManageDeptsOpen(true);
+                setAnchorEl(null);
+              }}>
+                Manage Departments
+              </MenuItem>
             </Menu>
           </Stack>
           <Tabs
@@ -202,6 +210,11 @@ export const Titlebar = ({ onLogout }) => {
         onSubmit={handleCreateEncounter}
         departments={departments}
         providers={providers}
+      />
+
+      <ManageDepartmentsWindow
+        open={manageDeptsOpen}
+        onClose={() => setManageDeptsOpen(false)}
       />
     </>
   )
