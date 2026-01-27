@@ -9,16 +9,7 @@ import Notification from '../Login/components/Notification.jsx';
 
 import { useDatabase } from 'components/contexts/PatientContext'
 
-// get today's date and display in text box
-function dateLocal() {
-  return (
-    <DatePicker
-      defaultValue={dayjs(
-        `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
-      )}
-    />
-  );
-}
+
 
 // filter bar
 function customFilterBar({ setFilterElem }) {
@@ -142,10 +133,12 @@ export function Schedule() {
 
   const [selPatient, setPatient] = React.useState(null);
   const [selectedDept, setSelectedDept] = React.useState(schedulesDB[0]?.department || (departments[0]?.id));
+  const [selectedDate, setSelectedDate] = React.useState(dayjs('2026-01-01'));
 
   const scheduleDB = React.useMemo(() => {
-    return schedulesDB.find(s => s.department === selectedDept)?.appointments || []
-  }, [schedulesDB, selectedDept]);
+    const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
+    return deptSchedule.filter(appt => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+  }, [schedulesDB, selectedDept, selectedDate]);
 
   const patientScheduleClick = (params) => {
     setPatient(params.row);
@@ -160,7 +153,10 @@ export function Schedule() {
   return (
     <Box sx={{ position: 'relative' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        {dateLocal()}
+        <DatePicker
+          value={selectedDate}
+          onChange={(newValue) => setSelectedDate(newValue)}
+        />
         <FormControl variant="standard" sx={{ minWidth: 200 }}>
           <Select
             value={selectedDept}
@@ -253,7 +249,12 @@ export function Schedule() {
                   );
                 },
               },
-              { field: 'apptTime', headerName: 'Time', width: 100 },
+              {
+                field: 'apptTime',
+                headerName: 'Time',
+                width: 100,
+                renderCell: (params) => new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+              },
               {
                 field: 'status',
                 headerName: 'Status',
