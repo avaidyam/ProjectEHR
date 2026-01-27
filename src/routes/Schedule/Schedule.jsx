@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
-import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography, Button } from '@mui/material';
+import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
+import { DataGrid, DatePicker, Button, Window, Label } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
 import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
@@ -163,6 +163,7 @@ export function Schedule() {
   const [selectedDate, setSelectedDate] = React.useState(dayjs('2026-01-01'));
   const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
   const [editingAppointment, setEditingAppointment] = React.useState(null);
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState(null);
 
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
@@ -242,6 +243,27 @@ export function Schedule() {
     setEditingAppointment(null);
   };
 
+  const handleDeleteClick = (appointment) => {
+    setDeleteConfirmation(appointment);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmation) {
+      const targetDeptId = deleteConfirmation.department; // Ensure appointment has department info attached
+      setSchedulesDB(prev => prev.map(s => {
+        if (s.department === targetDeptId) {
+          return {
+            ...s,
+            appointments: s.appointments.filter(appt => appt.id !== deleteConfirmation.id)
+          };
+        }
+        return s;
+      }));
+      showNotification("Appointment deleted successfully", "success");
+      setDeleteConfirmation(null);
+    }
+  };
+
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
 
   const showNotification = (message, severity = 'info') => {
@@ -269,6 +291,25 @@ export function Schedule() {
         departments={departments}
         appointment={editingAppointment}
       />
+
+      <Window
+        open={!!deleteConfirmation}
+        onClose={() => setDeleteConfirmation(null)}
+        title="Confirm Delete"
+        footer={
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, width: '100%' }}>
+            <Button onClick={() => setDeleteConfirmation(null)}>Cancel</Button>
+            <Button onClick={handleConfirmDelete} color="error" variant="contained">Delete</Button>
+          </Box>
+        }
+        maxWidth="sm"
+      >
+        <Label>
+          Are you sure you want to delete the appointment for {deleteConfirmation ?
+            `${patientsDB[deleteConfirmation.patient.mrn].firstName} ${patientsDB[deleteConfirmation.patient.mrn].lastName}`
+            : 'this patient'}?
+        </Label>
+      </Window>
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
         <div>
@@ -435,23 +476,41 @@ export function Schedule() {
               {
                 field: 'edit',
                 headerName: 'Actions',
-                width: 100,
+                width: 170, // Increased width for two buttons
                 renderCell: (params) => (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent row selection
-                      // Need to construct the appointment object with department info since it's flattened
-                      const appt = {
-                        ...params.row,
-                        department: selectedDept
-                      };
-                      handleEditAppointment(appt);
-                    }}
-                  >
-                    Edit
-                  </Button>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row selection
+                        // Need to construct the appointment object with department info since it's flattened
+                        const appt = {
+                          ...params.row,
+                          department: selectedDept
+                        };
+                        handleEditAppointment(appt);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row selection
+                        // Need to construct the appointment object with department info since it's flattened
+                        const appt = {
+                          ...params.row,
+                          department: selectedDept
+                        };
+                        handleDeleteClick(appt);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
                 ),
               },
             ]}
