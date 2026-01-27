@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
-import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
+import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography, Button } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
+import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
 
 import { useDatabase } from 'components/contexts/PatientContext'
 
@@ -147,7 +148,7 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
 // takes rows from json file and set columns to make table
 export function Schedule() {
   const [patientsDB] = useDatabase().patients()
-  const [schedulesDB] = useDatabase().schedules()
+  const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
   const [departments] = useDatabase().departments()
 
   const onHandleClickRoute = useRouter();
@@ -160,6 +161,7 @@ export function Schedule() {
   const [selPatient, setPatient] = React.useState(null);
   const [selectedDept, setSelectedDept] = React.useState(schedulesDB[0]?.department || (departments[0]?.id));
   const [selectedDate, setSelectedDate] = React.useState(dayjs('2026-01-01'));
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
 
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
@@ -170,6 +172,45 @@ export function Schedule() {
     setPatient(params.row);
   };
 
+  const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes }) => {
+    const newAppointment = {
+      id: Math.floor(Math.random() * 100000), // Generate random ID
+      apptTime: date, // ISO format from modal
+      status: "Scheduled",
+      patient: { mrn: patientId, enc: encounterId },
+      officeStatus: "Scheduled",
+      checkinTime: "",
+      checkoutTime: "",
+      room: "",
+      type: type || "Office Visit",
+      notes: notes || "",
+      cc: cc || ""
+    };
+
+    const targetDeptId = parseInt(department);
+
+    setSchedulesDB(prev => {
+      const index = prev.findIndex(s => s.department === targetDeptId);
+      if (index >= 0) {
+        // Update existing
+        const newSchedules = [...prev];
+        newSchedules[index] = {
+          ...newSchedules[index],
+          appointments: [...newSchedules[index].appointments, newAppointment]
+        };
+        return newSchedules;
+      } else {
+        // Create new entry
+        return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
+      }
+    });
+
+    // Auto-switch to the scheduled department
+    setSelectedDept(targetDeptId);
+
+    showNotification("Patient scheduled successfully", "success");
+  };
+
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
 
   const showNotification = (message, severity = 'info') => {
@@ -178,8 +219,9 @@ export function Schedule() {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" gutterBottom>Schedule</Typography>
+        <Button variant="contained" onClick={() => setIsScheduleModalOpen(true)}>Schedule Patient</Button>
       </Box>
 
       <Notification
@@ -187,6 +229,13 @@ export function Schedule() {
         onClose={() => setNotification({ ...notification, open: false })}
         message={notification.message}
         severity={notification.severity}
+      />
+      <SchedulePatientModal
+        open={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        onSubmit={handleSchedulePatient}
+        patientsDB={patientsDB}
+        departments={departments}
       />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
