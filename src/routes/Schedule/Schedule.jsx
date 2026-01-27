@@ -12,10 +12,36 @@ import { useDatabase } from 'components/contexts/PatientContext'
 
 
 // filter bar
-function customFilterBar({ setFilterElem }) {
+function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selectedDept, setSelectedDept, schedulesDB, departments, open, setOpen, preview, setPreview, hide, setHide }) {
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer sx={{ gap: 2, alignItems: 'center' }}>
       <GridToolbarFilterButton ref={setFilterElem} />
+      <DatePicker
+        value={selectedDate}
+        onChange={(newValue) => setSelectedDate(newValue)}
+      />
+      <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+        <Select
+          value={selectedDept}
+          onChange={(e) => setSelectedDept(e.target.value)}
+          displayEmpty
+        >
+          {schedulesDB.map((s) => (
+            <MenuItem key={s.department} value={s.department}>
+              {departments.find(d => d.id === s.department)?.name || `Dept ${s.department}`}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControlLabel
+        onClick={() => {
+          setOpen(!open);
+          setPreview(preview === 50 ? 100 : 50);
+          setHide(hide === 0 ? 50 : 0);
+        }}
+        control={<Checkbox checked={open} />}
+        label="Preview"
+      />
     </GridToolbarContainer>
   );
 }
@@ -152,25 +178,10 @@ export function Schedule() {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <DatePicker
-          value={selectedDate}
-          onChange={(newValue) => setSelectedDate(newValue)}
-        />
-        <FormControl variant="standard" sx={{ minWidth: 200 }}>
-          <Select
-            value={selectedDept}
-            onChange={(e) => setSelectedDept(e.target.value)}
-            displayEmpty
-          >
-            {schedulesDB.map((s) => (
-              <MenuItem key={s.department} value={s.department}>
-                {departments.find(d => d.id === s.department)?.name || `Dept ${s.department}`}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h5" gutterBottom>Schedule</Typography>
       </Box>
+
       <Notification
         open={notification.open}
         onClose={() => setNotification({ ...notification, open: false })}
@@ -178,17 +189,7 @@ export function Schedule() {
         severity={notification.severity}
       />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
-        <div style={{ textAlign: 'right' }}>
-          <FormControlLabel
-            onClick={() => {
-              setOpen(!open);
-              setPreview(preview === 50 ? 100 : 50);
-              setHide(hide === 0 ? 50 : 0);
-            }}
-            control={<Checkbox />}
-            label="Preview"
-          />
-        </div>
+
         <div>
           {open && ( // shows text if preview box is checked
             <Typography
@@ -253,7 +254,11 @@ export function Schedule() {
                 field: 'apptTime',
                 headerName: 'Time',
                 width: 100,
-                renderCell: (params) => new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
+                renderCell: (params) => (
+                  <Tooltip title={new Date(params.value).toLocaleString()}>
+                    <span>{new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                  </Tooltip>
+                ),
               },
               {
                 field: 'status',
@@ -384,6 +389,18 @@ export function Schedule() {
               },
               toolbar: {
                 setFilterElem,
+                selectedDate,
+                setSelectedDate,
+                selectedDept,
+                setSelectedDept,
+                schedulesDB,
+                departments,
+                open,
+                setOpen,
+                preview,
+                setPreview,
+                hide,
+                setHide,
               },
             }}
             initialState={{
