@@ -5,6 +5,7 @@ import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/C
 import { useDatabase } from 'components/contexts/PatientContext'
 import { CreateEncounterDialog } from './CreateEncounterDialog.jsx'
 import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
+import { OpenPatientChartDialog } from './OpenPatientChartDialog.jsx'
 
 const placeholders = [
   "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
@@ -33,6 +34,7 @@ export const Titlebar = ({ onLogout }) => {
 
   const [createEncounterOpen, setCreateEncounterOpen] = useState(false)
   const [manageDeptsOpen, setManageDeptsOpen] = useState(false)
+  const [openPatientChartOpen, setOpenPatientChartOpen] = useState(false)
 
   const handleOpenCreateEncounter = () => {
     // Check if we are on a patient chart
@@ -146,6 +148,12 @@ export const Titlebar = ({ onLogout }) => {
                 Create Encounter
               </MenuItem>
               <MenuItem onClick={() => {
+                setOpenPatientChartOpen(true);
+                setAnchorEl(null);
+              }}>
+                Open Patient Chart
+              </MenuItem>
+              <MenuItem onClick={() => {
                 setManageDeptsOpen(true);
                 setAnchorEl(null);
               }}>
@@ -216,6 +224,11 @@ export const Titlebar = ({ onLogout }) => {
       <ManageDepartmentsWindow
         open={manageDeptsOpen}
         onClose={() => setManageDeptsOpen(false)}
+      />
+
+      <OpenPatientChartDialog
+        open={openPatientChartOpen}
+        onClose={() => setOpenPatientChartOpen(false)}
       />
     </>
   )
