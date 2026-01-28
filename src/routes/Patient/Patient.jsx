@@ -56,12 +56,12 @@ const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Demographics": {} }, { "PDMP": {} }, 
+  { "Allergies": {} }, { "Demographics": {} }, { "PDMP": {} },
   { "Flowsheet": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
-  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} }, 
+  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} },
 ]
 
 export const Patient = ({ ...props }) => {
@@ -75,7 +75,7 @@ export const Patient = ({ ...props }) => {
 
   return (
     <PatientProvider patient={patientMRN} encounter={enc}>
-      <Box display="flex" direction="row" sx={{ overflowY: 'hidden', ...props.sx }} {...props}>
+      <Box display="flex" direction="row" sx={{ overflowY: 'hidden', height: 'calc(100vh - 48px)', ...props.sx }} {...props}>
         <Drawer
           variant={isMobile ? "temporary" : "persistent"}
           anchor="left"

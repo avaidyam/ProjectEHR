@@ -6,201 +6,205 @@ import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea
 import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext.jsx';
 
 const DraggableTab = ({ index, child, ...props }) => {
-  return (
-    <Draggable
-      draggableId={`${index}`}
-      index={index}
-      disableInteractiveElementBlocking
-    >
-      {(draggableProvided) => (
-        <div
-          ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
+    return (
+        <Draggable
+            draggableId={`${index}`}
+            index={index}
+            disableInteractiveElementBlocking
         >
-          {React.cloneElement(child, {
-            ...props,
-            ...draggableProvided.dragHandleProps
-          })}
-        </div>
-      )}
-    </Draggable>
-  );
+            {(draggableProvided) => (
+                <div
+                    ref={draggableProvided.innerRef}
+                    {...draggableProvided.draggableProps}
+                >
+                    {React.cloneElement(child, {
+                        ...props,
+                        ...draggableProvided.dragHandleProps
+                    })}
+                </div>
+            )}
+        </Draggable>
+    );
 }
 
 const TabWithMenu = ({ onMove, onClose, ...props }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  return (
-    <>
-    <Tab
-      onContextMenu={(event) => {
-        event.preventDefault()
-        setAnchorEl(event.currentTarget)
-      }}
-      {...props}
-    />
-    <Menu
-      anchorEl={anchorEl}
-      open={!!anchorEl}
-      onClose={() => setAnchorEl(null)}>
-      <MenuItem onClick={onMove}>Move to Sidebar</MenuItem>
-      <MenuItem onClick={onClose}>Close</MenuItem>
-    </Menu>
-    </>
-  )
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    return (
+        <>
+            <Tab
+                onContextMenu={(event) => {
+                    event.preventDefault()
+                    setAnchorEl(event.currentTarget)
+                }}
+                {...props}
+            />
+            <Menu
+                anchorEl={anchorEl}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}>
+                <MenuItem onClick={onMove}>Move to Sidebar</MenuItem>
+                <MenuItem onClick={onClose}>Close</MenuItem>
+            </Menu>
+        </>
+    )
 }
 
 export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, accessories, ...props }) => {
-  const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
-  const [isCollapsed, setCollapsed] = useState(false)
+    const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
+    const [isCollapsed, setCollapsed] = useState(false)
 
-  // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
+    // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
 
-  const [mainTabs, setMainTabs] = useState(defaultMainTabs)
-  const [sideTabs, setSideTabs] = useState(defaultSideTabs)
-  const [selectedMainTab, setSelectedMainTab] = useState(0)
-  const [selectedSideTab, setSelectedSideTab] = useState(0)
-  const providerState = { 
-      mainTabs, setMainTabs,
-      sideTabs, setSideTabs,
-      selectedMainTab, setSelectedMainTab,
-      selectedSideTab, setSelectedSideTab,
-  }
+    const [mainTabs, setMainTabs] = useState(defaultMainTabs)
+    const [sideTabs, setSideTabs] = useState(defaultSideTabs)
+    const [selectedMainTab, setSelectedMainTab] = useState(0)
+    const [selectedSideTab, setSelectedSideTab] = useState(0)
+    const providerState = {
+        mainTabs, setMainTabs,
+        sideTabs, setSideTabs,
+        selectedMainTab, setSelectedMainTab,
+        selectedSideTab, setSelectedSideTab,
+    }
 
-  return (
-    <SplitViewContext.Provider value={providerState}>
-        <DragDropContext onDragEnd={({ source, destination }) => {
-            if (destination == null) return;
-            if (source.droppableId === "main" && destination.droppableId === "main") {
-                const newTabs = [...mainTabs];
-                const draggedTab = newTabs.splice(source.index, 1)[0];
-                newTabs.splice(destination.index, 0, draggedTab);
-                setMainTabs(newTabs);
-                setSelectedMainTab(destination.index)
-            } else if (source.droppableId === "side" && destination.droppableId === "side") {
-                const newTabs = [...sideTabs];
-                const draggedTab = newTabs.splice(source.index, 1)[0];
-                newTabs.splice(destination.index, 0, draggedTab);
-                setSideTabs(newTabs);
-                setSelectedSideTab(destination.index)
-            } else if (source.droppableId === "main" && destination.droppableId === "side") {
-                const newMainTabs = [...mainTabs];
-                const newSideTabs = [...sideTabs];
-                const draggedTab = newMainTabs.splice(source.index, 1)[0];
-                newSideTabs.splice(destination.index, 0, draggedTab);
-                setMainTabs(newMainTabs);
-                setSideTabs(newSideTabs);
-                setSelectedMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-                setSelectedSideTab(destination.index);
-            } else if (source.droppableId === "side" && destination.droppableId === "main") { 
-                const newMainTabs = [...mainTabs];
-                const newSideTabs = [...sideTabs];
-                const draggedTab = newSideTabs.splice(source.index, 1)[0];
-                newMainTabs.splice(destination.index, 0, draggedTab);
-                setMainTabs(newMainTabs);
-                setSideTabs(newSideTabs);
-                setSelectedSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-                setSelectedMainTab(destination.index);
-            }           
-        }}>
-        <PanelGroup direction="horizontal" onLayout={(layout) => setCollapsed(layout[1] === 0)}>
-            <Panel defaultSize={65} minSize={35}>
-                <TabContext value={selectedMainTab}>
-                    <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                        {accessories}
-                        <Droppable droppableId="main" direction="horizontal"> 
-                            {(droppable) => (
-                            <TabList 
-                                ref={droppable.innerRef}
-                                {...droppable.droppableProps}
-                                variant="scrollable" 
-                                textColor="inherit"
-                                scrollButtons="auto"
-                                allowScrollButtonsMobile 
-                                TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                                onChange={(event, newValue) => setSelectedMainTab(newValue)}
-                            >
-                                {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
-                                <DraggableTab
-                                    label={k}
-                                    index={i}
-                                    value={i}
-                                    key={i}
-                                    child={<TabWithMenu 
-                                    onClose={() => {
-                                        setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                    }}
-                                    onMove={() => {
-                                        setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                        setSideTabs(prev => [...prev, {[k]: v}])
-                                    }}
-                                    />}
-                                />
-                                )}
-                                {droppable ? droppable.placeholder : null}
-                            </TabList>
-                            )}
-                        </Droppable>
-                    </Stack>
-                    <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                        {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                            <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
-                        ))}
-                    </Box>
-                </TabContext>
-            </Panel>
-            {(!isMobile && sideTabs.length > 0) && 
-                <PanelResizeHandle>
-                    <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
-                </PanelResizeHandle>
-            }
-            {(!isMobile && sideTabs.length > 0) &&
-                <Panel collapsible defaultSize={35} minSize={35} collapsedSize={0}>
-                    <TabContext value={selectedSideTab}>
-                        <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                            <Droppable droppableId="side" direction="horizontal"> 
-                            {(droppable) => (
-                                <TabList 
-                                    ref={droppable.innerRef}
-                                    {...droppable.droppableProps}
-                                    variant="scrollable" 
-                                    textColor="inherit"
-                                    scrollButtons="auto"
-                                    allowScrollButtonsMobile 
-                                    TabIndicatorProps={{ style: { backgroundColor: '#fff' }}}
-                                    onChange={(event, newValue) => setSelectedSideTab(newValue)}
-                                >
-                                    {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => 
-                                        <DraggableTab
-                                        label={k}
-                                        index={i}
-                                        value={i}
-                                        key={i}
-                                        child={<TabWithMenu 
-                                            onClose={() => {
-                                            setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                            }}
-                                            onMove={() => {
-                                            setMainTabs(prev => [...prev, {[k]: v}])
-                                            setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                            }}
-                                        />}
-                                        />
-                                    )}
-                                    {droppable ? droppable.placeholder : null}
-                                </TabList>
-                            )}
-                            </Droppable>
-                        </Stack>
-                        <Box sx={{ overflowY: 'auto', height: "100%" }}>
-                            {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                                <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
-                            ))}
-                        </Box>
-                    </TabContext>
-                </Panel>
-            }
-        </PanelGroup>
-        </DragDropContext>
-    </SplitViewContext.Provider>
-  )
+    return (
+        <SplitViewContext.Provider value={providerState}>
+            <DragDropContext onDragEnd={({ source, destination }) => {
+                if (destination == null) return;
+                if (source.droppableId === "main" && destination.droppableId === "main") {
+                    const newTabs = [...mainTabs];
+                    const draggedTab = newTabs.splice(source.index, 1)[0];
+                    newTabs.splice(destination.index, 0, draggedTab);
+                    setMainTabs(newTabs);
+                    setSelectedMainTab(destination.index)
+                } else if (source.droppableId === "side" && destination.droppableId === "side") {
+                    const newTabs = [...sideTabs];
+                    const draggedTab = newTabs.splice(source.index, 1)[0];
+                    newTabs.splice(destination.index, 0, draggedTab);
+                    setSideTabs(newTabs);
+                    setSelectedSideTab(destination.index)
+                } else if (source.droppableId === "main" && destination.droppableId === "side") {
+                    const newMainTabs = [...mainTabs];
+                    const newSideTabs = [...sideTabs];
+                    const draggedTab = newMainTabs.splice(source.index, 1)[0];
+                    newSideTabs.splice(destination.index, 0, draggedTab);
+                    setMainTabs(newMainTabs);
+                    setSideTabs(newSideTabs);
+                    setSelectedMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+                    setSelectedSideTab(destination.index);
+                } else if (source.droppableId === "side" && destination.droppableId === "main") {
+                    const newMainTabs = [...mainTabs];
+                    const newSideTabs = [...sideTabs];
+                    const draggedTab = newSideTabs.splice(source.index, 1)[0];
+                    newMainTabs.splice(destination.index, 0, draggedTab);
+                    setMainTabs(newMainTabs);
+                    setSideTabs(newSideTabs);
+                    setSelectedSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
+                    setSelectedMainTab(destination.index);
+                }
+            }}>
+                <PanelGroup direction="horizontal" onLayout={(layout) => setCollapsed(layout[1] === 0)}>
+                    <Panel defaultSize={65} minSize={35}>
+                        <TabContext value={selectedMainTab}>
+                            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                                    {accessories}
+                                    <Droppable droppableId="main" direction="horizontal">
+                                        {(droppable) => (
+                                            <TabList
+                                                ref={droppable.innerRef}
+                                                {...droppable.droppableProps}
+                                                variant="scrollable"
+                                                textColor="inherit"
+                                                scrollButtons="auto"
+                                                allowScrollButtonsMobile
+                                                TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
+                                                onChange={(event, newValue) => setSelectedMainTab(newValue)}
+                                            >
+                                                {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) =>
+                                                    <DraggableTab
+                                                        label={k}
+                                                        index={i}
+                                                        value={i}
+                                                        key={i}
+                                                        child={<TabWithMenu
+                                                            onClose={() => {
+                                                                setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                                            }}
+                                                            onMove={() => {
+                                                                setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                                                setSideTabs(prev => [...prev, { [k]: v }])
+                                                            }}
+                                                        />}
+                                                    />
+                                                )}
+                                                {droppable ? droppable.placeholder : null}
+                                            </TabList>
+                                        )}
+                                    </Droppable>
+                                </Stack>
+                                <Box sx={{ overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
+                                    {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                                        <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
+                                    ))}
+                                </Box>
+                            </Box>
+                        </TabContext>
+                    </Panel>
+                    {(!isMobile && sideTabs.length > 0) &&
+                        <PanelResizeHandle>
+                            <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
+                        </PanelResizeHandle>
+                    }
+                    {(!isMobile && sideTabs.length > 0) &&
+                        <Panel collapsible defaultSize={35} minSize={35} collapsedSize={0}>
+                            <TabContext value={selectedSideTab}>
+                                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+                                        <Droppable droppableId="side" direction="horizontal">
+                                            {(droppable) => (
+                                                <TabList
+                                                    ref={droppable.innerRef}
+                                                    {...droppable.droppableProps}
+                                                    variant="scrollable"
+                                                    textColor="inherit"
+                                                    scrollButtons="auto"
+                                                    allowScrollButtonsMobile
+                                                    TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
+                                                    onChange={(event, newValue) => setSelectedSideTab(newValue)}
+                                                >
+                                                    {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) =>
+                                                        <DraggableTab
+                                                            label={k}
+                                                            index={i}
+                                                            value={i}
+                                                            key={i}
+                                                            child={<TabWithMenu
+                                                                onClose={() => {
+                                                                    setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                                                }}
+                                                                onMove={() => {
+                                                                    setMainTabs(prev => [...prev, { [k]: v }])
+                                                                    setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
+                                                                }}
+                                                            />}
+                                                        />
+                                                    )}
+                                                    {droppable ? droppable.placeholder : null}
+                                                </TabList>
+                                            )}
+                                        </Droppable>
+                                    </Stack>
+                                    <Box sx={{ overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
+                                        {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+                                            <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
+                                        ))}
+                                    </Box>
+                                </Box>
+                            </TabContext>
+                        </Panel>
+                    }
+                </PanelGroup>
+            </DragDropContext>
+        </SplitViewContext.Provider>
+    )
 }
