@@ -22,9 +22,8 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
   const theme = useTheme();
   const [patientsDB] = useDatabase().patients();
 
-  if (!list) return null;
-
   const patients = React.useMemo(() => {
+    if (!list) return [];
     if (list.id === 'all-patients') return Object.values(patientsDB);
 
     return (list.patients || []).map(p => {
@@ -66,6 +65,8 @@ export const PrintPreviewDialog = ({ open, onClose, list }) => {
     window.addEventListener('keydown', handlePrintShortcut);
     return () => window.removeEventListener('keydown', handlePrintShortcut);
   }, [open]);
+
+  if (!list) return null;
 
   return (
     <>
