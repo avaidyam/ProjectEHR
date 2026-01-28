@@ -43,6 +43,10 @@ export const App = () => {
             element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
           />
           <Route
+            path="/list/:listId"
+            element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
+          />
+          <Route
             path="/patient/:mrn"
             element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
           />

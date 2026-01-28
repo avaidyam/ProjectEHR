@@ -1,25 +1,28 @@
-import { 
-  Box, 
-  Button,  
-  Typography, 
+import {
+  Box,
+  Button,
+  Typography,
   Toolbar,
   IconButton,
   Tooltip,
   Divider,
   Icon
 } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { PatientListsContext } from 'components/contexts/PatientListContext.jsx';
+import { useDatabase } from 'components/contexts/PatientContext';
 import { ListFormModal } from './components/ListFormModal.jsx';
 import { PatientsTable } from './components/PatientsTable.jsx';
 import { ListsSidebar } from './components/ListsSidebar.jsx';
 import { PrintPreviewDialog } from './components/PrintPreviewDialog.jsx';
 
 function PatientLists() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedListId = searchParams.get('listId');
-  const [lists, setLists] = useState([]);
+  const { listId } = useParams();
+  const navigate = useNavigate();
+  const [lists, setLists] = useDatabase().lists();
+
+  const selectedListId = listId;
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
@@ -44,12 +47,12 @@ function PatientLists() {
 
     setLists((prevLists) => [...prevLists, newList]);
     setIsCreateModalOpen(false);
-    setSearchParams({ listId: newList.id }, { replace: true });
+    navigate(`/list/${newList.id}`);
   };
 
   const handleEditList = (name, columns) => {
-    setLists(prevLists => 
-      prevLists.map(list => 
+    setLists(prevLists =>
+      prevLists.map(list =>
         list.id === selectedListId
           ? { ...list, name, columns }
           : list

@@ -15,6 +15,7 @@ const initialStore = {
   departments: patient_sample.departments,
   patients: patient_sample.patients,
   schedules: patient_sample.schedules,
+  lists: patient_sample.lists,
   providers: patient_sample.providers,
   locations: patient_sample.locations,
   orderables: orderables,
