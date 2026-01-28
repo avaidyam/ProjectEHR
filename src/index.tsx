@@ -20,8 +20,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <CssBaseline />
       <GlobalStyles styles={{
         html: { height: '100%', overflow: 'hidden', overscrollBehavior: 'none' },
-        body: { height: '100%', overflow: 'hidden', overscrollBehavior: 'none' },
-        '#root': { height: '100%', display: 'flex', flexDirection: 'column' }
+        body: { height: '100%', overflow: 'hidden', overscrollBehavior: 'none', userSelect: 'none', WebkitUserSelect: 'none' },
+        '#root': { height: '100%', display: 'flex', flexDirection: 'column' },
+        'input, textarea, [contenteditable="true"]': { userSelect: 'text', WebkitUserSelect: 'text', cursor: 'auto' }
       }} />
       <HashRouter>
         <AuthProvider>

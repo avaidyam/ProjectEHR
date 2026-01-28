@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
@@ -17,6 +17,31 @@ export const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated)
   const handleLogin = () => { setIsLoggedIn(true); navigate(0) }
   const handleLogout = () => { logout(); setIsLoggedIn(false); navigate('/') }
+
+  useEffect(() => {
+    let lastRightClickTime = 0;
+
+    const handleContextMenu = (e) => {
+      const currentTime = new Date().getTime();
+      const timeDiff = currentTime - lastRightClickTime;
+
+      if (timeDiff < 300) {
+        // Double right click - allow system menu, hide functionality
+        lastRightClickTime = 0;
+        e.stopPropagation();
+      } else {
+        // Single right click - prevent system menu, allow functionality
+        e.preventDefault();
+        lastRightClickTime = currentTime;
+      }
+    };
+
+    window.addEventListener('contextmenu', handleContextMenu, true);
+    return () => {
+      window.removeEventListener('contextmenu', handleContextMenu, true);
+    };
+  }, []);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatabaseProvider>
