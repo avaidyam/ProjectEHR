@@ -97,9 +97,17 @@ export const Titlebar = ({ onLogout }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname])
   const removePathnameFromHistory = (pathname) => {
-    setTabHistory((prev) => [...new Set(prev.filter(t => t !== pathname))])
-    if (pathname === location.pathname)
-      navigate('/')
+    const newHistory = tabHistory.filter(t => t !== pathname)
+    setTabHistory([...new Set(newHistory)])
+
+    if (pathname === location.pathname) {
+      const remainingPatientTabs = newHistory.filter(t => t.startsWith('/patient'))
+      if (remainingPatientTabs.length > 0) {
+        navigate(remainingPatientTabs[remainingPatientTabs.length - 1])
+      } else {
+        navigate('/')
+      }
+    }
   }
   const pathnameToTab = (path) => {
     const mrn = path.split('/')?.[2] ?? null
@@ -178,7 +186,7 @@ export const Titlebar = ({ onLogout }) => {
               <Tab onClick={() => navigate(pathname)} key={pathname} value={pathname} label={
                 <span>
                   {pathnameToTab(pathname)}
-                  <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={() => removePathnameFromHistory(pathname)}>close</IconButton>
+                  <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={(e) => { e.stopPropagation(); removePathnameFromHistory(pathname) }}>close</IconButton>
                 </span>
               } />
             ))}
