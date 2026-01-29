@@ -1,33 +1,53 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
-import { DEFAULT_ROWS, FlowsheetEntry, TimeColumn } from '../types/flowsheet.types';
+import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
+import { v4 as uuidv4 } from 'uuid';
 
 interface FlowsheetGridProps {
-  onCellEdit: (rowId: string, columnIndex: number) => void;
-  onCellSave: () => void;
-  onCellCancel: () => void;
-  flowsheet: any; // Type this properly based on your flowsheet hook return type
+  rowsDefinition: FlowsheetRow[];
+  entries: FlowsheetEntry[];
+  timeColumns: TimeColumn[];
+  onAddEntry: (entry: Omit<FlowsheetEntry, 'id'>) => void;
+  onUpdateEntry: (id: string, updates: Partial<FlowsheetEntry>) => void;
+  onAddTimeColumn: (column: TimeColumn) => void;
+  onUpdateTimeColumn: (id: string, updates: Partial<TimeColumn>) => void;
 }
 
 export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
-  onCellEdit,
-  onCellSave,
-  onCellCancel,
-  flowsheet,
+  rowsDefinition,
+  entries,
+  timeColumns,
+  onAddEntry,
+  onUpdateEntry,
+  onAddTimeColumn,
+  onUpdateTimeColumn
 }) => {
-  const { entries, visibleRows, addEntry, updateEntry, timeColumns } = flowsheet;
+  // "Now" column logic: Update the display time of the current time column every minute
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      const currentColumn = timeColumns.find((col: TimeColumn) => col.isCurrentTime);
+      if (currentColumn) {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const displayTime = `${hours}${minutes}`;
 
-  console.log('FlowsheetGrid - entries:', entries);
-  console.log('FlowsheetGrid - timeColumns:', timeColumns);
-  console.log('FlowsheetGrid - visibleRows:', visibleRows);
+        // Only update if time changed (roughly)
+        if (currentColumn.displayTime !== displayTime) {
+          onUpdateTimeColumn(currentColumn.id, {
+            displayTime: displayTime,
+            timestamp: now.toISOString()
+          });
+        }
+      }
+    };
 
-  // Get visible rows in order
-  const orderedVisibleRows = useMemo(() => {
-    return DEFAULT_ROWS
-      .filter(row => visibleRows.includes(row.id))
-      .sort((a, b) => a.order - b.order);
-  }, [visibleRows]);
+    const intervalId = setInterval(updateCurrentTime, 10000); // Check every 10 seconds
+    updateCurrentTime(); // Initial update
+
+    return () => clearInterval(intervalId);
+  }, [timeColumns, onUpdateTimeColumn]);
 
   // Create a map of entries by row and columnId for quick lookup
   const entriesMap = useMemo(() => {
@@ -38,42 +58,40 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
       }
       map.get(entry.rowId)!.set(entry.columnId, entry);
     });
-    console.log('FlowsheetGrid - entriesMap created:', map);
     return map;
   }, [entries]);
 
   // Prepare data for DataGrid - each row needs a unique id
   const rows = useMemo(() => {
-    const rowData = orderedVisibleRows.map((row) => {
+    return rowsDefinition.map((row) => {
       const rowObj: any = {
-        id: row.id,
-        label: row.label,
-        unit: row.unit,
+        id: row.name || row.id || '', // Support both naming conventions
+        label: row.label || row.name,
+        unit: row.unit || row.type === 'number' ? '' : '', // Basic unit logic
       };
 
       // Add time column data
       timeColumns.forEach((column: TimeColumn) => {
-        const entry = entriesMap.get(row.id)?.get(column.id);
+        // Support looking up by name (new format) or id (old format)
+        const rowId = row.name || row.id || '';
+        const entry = entriesMap.get(rowId)?.get(column.id);
         rowObj[column.id] = entry?.value || '';
-        console.log(`Setting ${row.id}.${column.id} = ${entry?.value || ''}`);
       });
 
       return rowObj;
     });
-
-    return rowData;
-  }, [orderedVisibleRows, timeColumns, entriesMap]);
+  }, [rowsDefinition, timeColumns, entriesMap]);
 
   // Prepare columns for DataGrid
   const columns = useMemo(() => {
     const cols: any[] = [
       {
         field: 'label',
-        headerName: 'Encounter Vitals',
-        minWidth: 170,
+        headerName: 'Flowsheet Data',
+        minWidth: 200,
         editable: false,
         sortable: false,
-        resizable: false,
+        resizable: true,
       },
     ];
 
@@ -81,22 +99,24 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     timeColumns.forEach((column: TimeColumn) => {
       cols.push({
         field: column.id,
-        headerName: column.displayTime,
-        minWidth: 60,
-        maxWidth: 100,
-        width: 80,
+        headerName: column.displayTime + (column.isCurrentTime ? ' (Now)' : ''),
+        minWidth: 80,
+        width: 100,
         editable: true,
         sortable: false,
         resizable: true,
+        renderHeader: (params: any) => (
+          <Box sx={{ fontWeight: column.isCurrentTime ? 'bold' : 'normal', color: column.isCurrentTime ? 'primary.main' : 'inherit' }}>
+            {params.colDef.headerName}
+          </Box>
+        )
       });
     });
 
     return cols;
-  }, [timeColumns, entriesMap, addEntry, updateEntry]);
+  }, [timeColumns]);
 
   const processRowUpdate = (newRow: any, oldRow: any) => {
-    console.log('processRowUpdate called:', { newRow, oldRow });
-
     // Find which fields changed
     const changedFields = Object.keys(newRow).filter(key =>
       key !== 'id' && key !== 'label' && key !== 'unit' &&
@@ -108,14 +128,32 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
       const columnId = field;
       const value = newRow[field];
 
+      const column = timeColumns.find((c: TimeColumn) => c.id === columnId);
+
+      // Special logic for "Now" column
+      if (column && column.isCurrentTime) {
+        // 1. Convert current "Now" column to a static column
+        onUpdateTimeColumn(column.id, { isCurrentTime: false });
+
+        // 2. Create a NEW "Now" column
+        const now = new Date();
+        // Add 1 minute to avoid duplicate timestamp issues if processed immediately, 
+        // or just rely on UUID. The Effect will picking up the time.
+        onAddTimeColumn({
+          id: uuidv4(),
+          timestamp: now.toISOString(),
+          displayTime: 'Now', // Will be updated by effect
+          isCurrentTime: true,
+          index: timeColumns.length + 1
+        });
+      }
+
       const existingEntry = entriesMap.get(rowId)?.get(columnId);
 
       if (existingEntry) {
-        console.log('Updating existing entry:', existingEntry.id, 'with value:', value);
-        updateEntry(existingEntry.id, { value });
+        onUpdateEntry(existingEntry.id, { value });
       } else {
-        console.log('Adding new entry:', { rowId, columnId, value, status: 'draft' });
-        addEntry({
+        onAddEntry({
           rowId,
           columnId,
           value,
@@ -145,6 +183,9 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         '& .MuiDataGrid-virtualScroller': {
           overflow: 'auto',
         },
+        '& .MuiDataGrid-columnHeaderTitle': {
+          fontWeight: 600
+        }
       }}
     />
   );

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, Tabs, Tab, TextField, InputAdornment } from '@mui/material';
-import { Icon } from 'components/ui/Core.jsx';
+import { Box, Tabs, Tab } from '@mui/material';
 
 interface SecondaryBarProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   searchValue: string;
   onSearchChange: (value: string) => void;
+  tabs?: { id: string; label: string }[];
 }
 
 export const SecondaryBar: React.FC<SecondaryBarProps> = ({
@@ -14,14 +14,8 @@ export const SecondaryBar: React.FC<SecondaryBarProps> = ({
   onTabChange,
   searchValue,
   onSearchChange,
+  tabs = []
 }) => {
-  const tabs = [
-    { value: 'encounter-vitals', label: 'Encounter Vitals' },
-    { value: 'vs-pt-reported', label: 'VS/Pt Reported' },
-    { value: 'travel-history', label: 'Travel History' },
-    { value: 'labs', label: 'Labs' },
-  ];
-
   return (
     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
       <Tabs
@@ -31,7 +25,7 @@ export const SecondaryBar: React.FC<SecondaryBarProps> = ({
         scrollButtons="auto"
       >
         {tabs.map((tab) => (
-          <Tab key={tab.value} value={tab.value} label={tab.label} />
+          <Tab key={tab.id} value={tab.id} label={tab.label} />
         ))}
       </Tabs>
     </Box>

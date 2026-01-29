@@ -4,15 +4,24 @@ export interface FlowsheetEntry {
   rowId: string; // e.g., "BP", "Pulse"
   value: string | number;
   unit?: string;
-  status: "draft" | "final";
+  status: "draft" | "final" | "saved";
 }
 
 export interface FlowsheetRow {
-  id: string;
+  id?: string; // Legacy support
+  name: string;
   label: string;
+  type: string;
+  options?: string[];
   unit?: string;
-  group: string;
-  order: number;
+  group?: string; // Legacy support
+  order?: number; // Legacy support
+}
+
+export interface FlowsheetGroup {
+  id: string;
+  name: string;
+  rows: FlowsheetRow[];
 }
 
 export interface TimeColumn {
@@ -54,18 +63,18 @@ export type FlowsheetStore = FlowsheetState & FlowsheetActions;
 
 // Default vital signs rows
 export const DEFAULT_ROWS: FlowsheetRow[] = [
-  { id: 'BP', label: 'BP', unit: 'mmHg', group: 'Enc Vitals', order: 1 },
-  { id: 'Pulse', label: 'Pulse', unit: 'bpm', group: 'Enc Vitals', order: 2 },
-  { id: 'Resp', label: 'Resp', unit: '/min', group: 'Enc Vitals', order: 3 },
-  { id: 'Temp', label: 'Temp', unit: '°F', group: 'Enc Vitals', order: 4 },
-  { id: 'Temp_src', label: 'Temp src', group: 'Enc Vitals', order: 5 },
-  { id: 'SpO2', label: 'SpO2', unit: '%', group: 'Enc Vitals', order: 6 },
-  { id: 'Weight', label: 'Weight', unit: 'lbs', group: 'Enc Vitals', order: 7 },
-  { id: 'Height', label: 'Height', unit: 'in', group: 'Enc Vitals', order: 8 },
-  { id: 'Head_Circumference', label: 'Head Circumference', unit: 'cm', group: 'Enc Vitals', order: 9 },
-  { id: 'Pain_Score', label: 'Pain Score', group: 'Enc Vitals', order: 10 },
-  { id: 'Pain_Loc', label: 'Pain Loc', group: 'Enc Vitals', order: 11 },
-  { id: 'Pain_Education', label: 'Pain Education', group: 'Enc Vitals', order: 12 },
+  { name: 'BP', label: 'BP', unit: 'mmHg', type: 'string', group: 'Enc Vitals', order: 1 },
+  { name: 'Pulse', label: 'Pulse', unit: 'bpm', type: 'number', group: 'Enc Vitals', order: 2 },
+  { name: 'Resp', label: 'Resp', unit: '/min', type: 'number', group: 'Enc Vitals', order: 3 },
+  { name: 'Temp', label: 'Temp', unit: '°F', type: 'number', group: 'Enc Vitals', order: 4 },
+  { name: 'Temp_src', label: 'Temp src', type: 'string', group: 'Enc Vitals', order: 5 },
+  { name: 'SpO2', label: 'SpO2', unit: '%', type: 'number', group: 'Enc Vitals', order: 6 },
+  { name: 'Weight', label: 'Weight', unit: 'lbs', type: 'number', group: 'Enc Vitals', order: 7 },
+  { name: 'Height', label: 'Height', unit: 'in', type: 'number', group: 'Enc Vitals', order: 8 },
+  { name: 'Head_Circumference', label: 'Head Circumference', unit: 'cm', type: 'number', group: 'Enc Vitals', order: 9 },
+  { name: 'Pain_Score', label: 'Pain Score', type: 'number', group: 'Enc Vitals', order: 10 },
+  { name: 'Pain_Loc', label: 'Pain Loc', type: 'string', group: 'Enc Vitals', order: 11 },
+  { name: 'Pain_Education', label: 'Pain Education', type: 'string', group: 'Enc Vitals', order: 12 },
 ];
 
 export const INTERVAL_OPTIONS = [
