@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid } from 'components/ui/Core'
 import { Box } from '@mui/material';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,6 +9,7 @@ interface FlowsheetGridProps {
   entries: FlowsheetEntry[];
   timeColumns: TimeColumn[];
   visibleRows?: string[];
+  lastFiledValues?: { [key: string]: string | number };
   onAddEntry: (entry: Omit<FlowsheetEntry, 'id'>) => void;
   onUpdateEntry: (id: string, updates: Partial<FlowsheetEntry>) => void;
   onAddTimeColumn: (column: TimeColumn) => void;
@@ -20,6 +21,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
   entries,
   timeColumns,
   visibleRows,
+  lastFiledValues = {},
   onAddEntry,
   onUpdateEntry,
   onAddTimeColumn,
@@ -96,6 +98,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
           label: row.label || row.name,
           unit: row.unit || (row.type === 'number' ? '' : ''),
           isHeader: false,
+          lastFiled: lastFiledValues[row.name || row.id || ''] // Add Last Filed Value
         };
 
         timeColumns.forEach((column: TimeColumn) => {
@@ -109,7 +112,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     });
 
     return finalRows;
-  }, [rowsDefinition, timeColumns, entriesMap, visibleRows]);
+  }, [rowsDefinition, timeColumns, entriesMap, visibleRows, lastFiledValues]);
 
   const columns = useMemo(() => {
     const cols: any[] = [
@@ -120,6 +123,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         editable: false,
         sortable: false,
         resizable: true,
+        pinned: 'left', // Pin label to left if supported
         renderCell: (params: any) => (
           <Box sx={{
             fontWeight: params.row.isHeader ? 'bold' : 'normal',
@@ -148,6 +152,22 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
       });
     });
 
+    // Add Last Filed Column
+    cols.push({
+      field: 'lastFiled',
+      headerName: 'Last Filed',
+      minWidth: 100,
+      width: 120,
+      editable: false,
+      sortable: false,
+      resizable: true,
+      renderCell: (params: any) => (
+        <Box sx={{ color: 'text.secondary' }}>
+          {params.value}
+        </Box>
+      )
+    });
+
     return cols;
   }, [timeColumns]);
 
@@ -155,7 +175,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     if (newRow.isHeader) return oldRow; // Updates not allowed on headers
 
     const changedFields = Object.keys(newRow).filter(key =>
-      key !== 'id' && key !== 'label' && key !== 'unit' && key !== 'isHeader' &&
+      key !== 'id' && key !== 'label' && key !== 'unit' && key !== 'isHeader' && key !== 'lastFiled' &&
       newRow[key] !== oldRow[key]
     );
 
@@ -205,8 +225,13 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
       disableRowSelectionOnClick
       hideFooter
       processRowUpdate={processRowUpdate}
-      isCellEditable={(params) => !params.row.isHeader}
-      getRowClassName={(params) => params.row.isHeader ? 'flowsheet-header-row' : ''}
+      isCellEditable={(params: any) => !params.row.isHeader && params.field !== 'lastFiled'}
+      getRowClassName={(params: any) => params.row.isHeader ? 'flowsheet-header-row' : ''}
+      initialState={{
+        pinnedColumns: {
+          right: ['lastFiled']
+        }
+      }}
       sx={{
         border: 'none',
         width: '100%',
@@ -220,8 +245,12 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         },
         '& .flowsheet-header-row .MuiDataGrid-cell': {
           borderBottom: 'none',
+        },
+        '& .flowsheet-header-row .MuiDataGrid-cell--pinnedRight': {
+          bgcolor: '#f5f5f5',
         }
       }}
+      children={null}
     />
   );
 };

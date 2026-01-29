@@ -4,15 +4,15 @@ import { debounce } from "lodash"
 import dayjs2 from "dayjs"
 import {
   alpha as MUIalpha,
-  Box as MUIBox, 
-  Stack as MUIStack, 
+  Box as MUIBox,
+  Stack as MUIStack,
   Grid as MUIGrid,
   GridLegacy as MUIGridLegacy,
-  Typography as MUITypography, 
-  TextField as MUITextField, 
+  Typography as MUITypography,
+  TextField as MUITextField,
   Autocomplete as MUIAutocomplete,
-  Button as MUIButton, 
-  ButtonGroup as MUIButtonGroup, 
+  Button as MUIButton,
+  ButtonGroup as MUIButtonGroup,
   Icon as MUIIcon,
   IconButton as MUIIconButton,
   Avatar as MUIAvatar,
@@ -31,29 +31,29 @@ import {
   DialogTitle as MUIDialogTitle,
   Tab as MUITab
 } from '@mui/material'
-import { 
+import {
   Masonry as MUIMasonry,
-  TabContext as MUITabContext, 
-  TabList as MUITabList, 
+  TabContext as MUITabContext,
+  TabList as MUITabList,
   TabPanel as MUITabPanel
 } from '@mui/lab'
-import { 
+import {
   DatePicker as MUIDatePicker
 } from '@mui/x-date-pickers-pro'
-import { 
+import {
   DataGridPremium as MUIDataGrid
 } from '@mui/x-data-grid-premium'
-import { 
-  RichTreeViewPro as MUIRichTreeView, 
-  SimpleTreeView as MUISimpleTreeView, 
+import {
+  RichTreeViewPro as MUIRichTreeView,
+  SimpleTreeView as MUISimpleTreeView,
   TreeItem as MUITreeItem
 } from '@mui/x-tree-view-pro'
 import { LicenseInfo } from '@mui/x-license-pro'
-import { 
+import {
   // eslint-disable-next-line import/no-named-default
-  default as MUIDraggable 
+  default as MUIDraggable
 } from 'react-draggable'
-import { 
+import {
   Editor as MUIEditor,
   EditorReadOnly as MUIEditorReadOnly
 } from './Editor.jsx'
@@ -72,7 +72,7 @@ export const Box = React.forwardRef(({ paper, children, ...props }, ref) => {
   return (<MUIBox ref={ref} {...props}>{children}</MUIBox>)
 })
 
-export const Stack = ({ direction="column", spacing=0, children, ...props }) => (
+export const Stack = ({ direction = "column", spacing = 0, children, ...props }) => (
   <MUIStack direction={direction} spacing={spacing} {...props}>
     {children}
   </MUIStack>
@@ -85,9 +85,9 @@ export const Grid = ({ masonry = false, children, ...props }) => {
 }
 
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
-    <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
-        {children}
-    </MUITypography>
+  <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
+    {children}
+  </MUITypography>
 )
 
 // Render HTML rich text content in a read-only view.
@@ -124,28 +124,28 @@ export const Autocomplete = ({ label, options, value, onChange, TextFieldProps, 
 // To use as a ToggleButton, MUST provide `value`!
 export const Button = ({ contained = false, outlined = false, color = 'primary', value, children, ...props }) => {
   return (
-    <MUIButton 
+    <MUIButton
       value={value}
-      variant={contained ? "contained" : outlined ? "outlined" : "text"} 
-      color={color} 
+      variant={contained ? "contained" : outlined ? "outlined" : "text"}
+      color={color}
       {...props}
     >
-        {children}
+      {children}
     </MUIButton>
   )
 }
 
 // FIXME: Need to make sure `exclusive=false` mode works correctly!
 // Buttons inside this MUST have prop `toggle={true}`
-export const ButtonGroup = ({ exclusive=false, variant, value, onChange, children, ...props }) => {
+export const ButtonGroup = ({ exclusive = false, variant, value, onChange, children, ...props }) => {
   const childrenWithProps = React.Children.map(children, child => {
-    if (!React.isValidElement(child)) 
+    if (!React.isValidElement(child))
       return child
     // Must have value for parent ButtonGroup and child Button to be considered a toggle
     // If exclusive toggle, check array contains, else must equal
     const isToggle = !!value && !!child.props.value
     const isSelected = isToggle && ((Array.isArray(value) && value.includes(child.props.value)) || (value === child.props.value))
-    return React.cloneElement(child, { 
+    return React.cloneElement(child, {
       variant: isToggle ? (isSelected ? "contained" : "outlined") : variant,
       onClick: (event) => {
         // Call parent ButtonGroup onChange if requested, providing child Button 
@@ -159,7 +159,7 @@ export const ButtonGroup = ({ exclusive=false, variant, value, onChange, childre
 }
 
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
-  <MUIIconButton size={size} color={color} { ...props }>
+  <MUIIconButton size={size} color={color} {...props}>
     <MUIIcon fontSize={size} {...iconProps}>{children}</MUIIcon>
   </MUIIconButton>
 )
@@ -172,11 +172,11 @@ export const Chip = ({ children, ...props }) => (
 
 // To see a complete list of icons, visit: https://fonts.google.com/icons
 export const Icon = ({ avatar = false, size = undefined, children, avatarProps, ...props }) => avatar ? (
-  <MUIAvatar {...avatarProps} sx={{ width: size, height: size, ...avatarProps?.sx}}>
-    <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>
+  <MUIAvatar {...avatarProps} sx={{ width: size, height: size, ...avatarProps?.sx }}>
+    <MUIIcon color="inherit" {...props}>{children}</MUIIcon>
   </MUIAvatar>
 ) : (
-  <MUIIcon color="inherit" { ...props }>{children}</MUIIcon>
+  <MUIIcon color="inherit" {...props}>{children}</MUIIcon>
 )
 
 export const Divider = ({ ...props }) => (
@@ -293,11 +293,11 @@ export const Tab = ({ children, ...props }) => (
 
 // TODO: Automate the useState()/onChange() so the client does not need to worry
 export const TabList = ({ children, ...props }) => (
-  <MUITabList 
-    variant="scrollable" 
+  <MUITabList
+    variant="scrollable"
     textColor="inherit"
     scrollButtons="auto"
-    allowScrollButtonsMobile 
+    allowScrollButtonsMobile
     {...props}
   >
     {children}
@@ -338,25 +338,25 @@ export const DataGrid = ({ children, ...props }) => {
  ```
  */
 export const TitledCard = ({ emphasized, title, color, children, ...props }) => {
-  return(
-    <MUIPaper sx={{ 
+  return (
+    <MUIPaper sx={{
       borderLeftWidth: 8,
       borderLeftColor: color,
       borderLeftStyle: 'solid',
       borderTop: '1px solid #ccc',
       borderRight: '1px solid #ccc',
-      borderBottom: '1px solid #ccc', 
-      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', 
+      borderBottom: '1px solid #ccc',
+      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
       marginBottom: '8px',
       borderRadius: '8px',
       overflow: 'hidden',
       position: 'relative'
     }} {...props}>
-      <Label 
-        bold={500} 
-        sx={{ 
+      <Label
+        bold={500}
+        sx={{
           display: "inline-block",
-          fontSize: "1.2em", 
+          fontSize: "1.2em",
           bgcolor: emphasized ? MUIalpha(color, 0.25) : "background.paper",
           color: emphasized ? color : "color.inherit",
           borderRadius: emphasized ? '0px 100em 100em 0px' : 0,
@@ -412,7 +412,7 @@ export const Window = ({ title, open, onClose, header, footer, children, ...prop
       {!!footer &&
         <MUIDialogActions {...props.FooterProps}>
           {footer}
-        </MUIDialogActions> 
+        </MUIDialogActions>
       }
     </MUIDialog>
   );

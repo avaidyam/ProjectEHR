@@ -109,6 +109,29 @@ export const Flowsheet = () => {
         return flattenedEntries;
     }, [flowsheetData, activeGroup]);
 
+    // 3. Last Filed Values
+    const lastFiledValues = useMemo(() => {
+        if (!activeGroup || !flowsheetData) return {};
+
+        const groupData = (flowsheetData || [])
+            .filter((d: any) => d.flowsheet === activeGroup.id)
+            .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+        const lastValues: { [key: string]: string | number } = {};
+
+        // Iterate sorted data (oldest to newest) to find last non-null value
+        groupData.forEach((d: any) => {
+            activeGroup.rows.forEach((row: any) => {
+                const key = row.name;
+                if (d[key] !== undefined && d[key] !== null && d[key] !== '') {
+                    lastValues[key] = d[key];
+                }
+            });
+        });
+
+        return lastValues;
+    }, [flowsheetData, activeGroup]);
+
     // --- Handlers ---
 
     // Update the "Now" column's timestamp (called by timer) OR convert to persisted
@@ -287,6 +310,7 @@ export const Flowsheet = () => {
                             entries={entriesWithBetterIds}
                             timeColumns={timeColumns}
                             visibleRows={visibleRows} // Pass visibility state
+                            lastFiledValues={lastFiledValues}
                             onAddEntry={handleAddEntry}
                             onUpdateEntry={handleUpdateEntry}
                             onAddTimeColumn={handleAddTimeColumn}
