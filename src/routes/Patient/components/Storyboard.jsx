@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DateHelpers from 'util/helpers.js';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import { filterDocuments } from 'util/helpers'
 import { StickyNote } from './StickyNote'
 
@@ -35,7 +35,7 @@ export const VitalsPopup = ({ vitals, ...props }) => {
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
       <span>Temp: {Temp}</span>
       <span
-        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({ systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
         BP: {bloodPressureSystolic}/{bloodPressureDiastolic}
       </span>
@@ -153,7 +153,7 @@ export const SidebarPatientInfo = () => {
         <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
         <span>MRN: {mrn}</span>
         <strong>Preferred language: {preferredLanguage}</strong>
-        {preferredLanguage !== 'English' && 
+        {preferredLanguage !== 'English' &&
           <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
         }
       </div>
@@ -162,24 +162,30 @@ export const SidebarPatientInfo = () => {
 }
 
 export const SidebarCareTeam = () => {
-  const { useChart, useEncounter } = usePatient();
-  const [PCP, setPCP] = useChart().PCP();
-  const [insurance, setInsurance] = useChart().insurance();
+  const { useChart } = usePatient();
+  const [careTeam] = useChart().careTeam();
+  const [providers] = useDatabase().providers();
+  const [insurance] = useChart().insurance();
   return (
     <>
       <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
-        <div style={{ display: 'flex', marginBottom: '0.5em' }}>
-          <Avatar
-            src={PCP?.avatarUrl}
-            sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
-          >
-            {PCP?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
-          </Avatar>
-          <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
-            <span>{PCP?.name}, {PCP?.title}</span>
-            <strong>{PCP?.role}</strong>
-          </div>
-        </div>
+        {(careTeam || []).map((member) => {
+          const provider = providers.find(p => p.id === member.provider);
+          return (
+            <div key={member.provider} style={{ display: 'flex', marginBottom: '0.5em' }}>
+              <Avatar
+                src={provider?.avatarUrl}
+                sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+              >
+                {provider?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
+              </Avatar>
+              <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
+                <span>{provider?.name}</span>
+                <strong>{member.role}</strong>
+              </div>
+            </div>
+          )
+        })}
       </div>
       <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
     </>
@@ -193,13 +199,13 @@ export const SidebarAllergies = () => {
     <>
       {allergies && allergies.length > 0 ? (
         allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
-          <Alert 
-          icon ={false}
-            sx={{ 
-              mt: .5, py:0.1,
-              bgcolor: '#ffcb00', 
-              color: 'black', 
-              fontWeight: 'bold', 
+          <Alert
+            icon={false}
+            sx={{
+              mt: .5, py: 0.1,
+              bgcolor: '#ffcb00',
+              color: 'black',
+              fontWeight: 'bold',
             }}
           >
             Allergies: {allergies.map(a => a.allergen).join(", ")}
@@ -219,7 +225,7 @@ export const SidebarClinicalImpressions = () => {
   const [clinicalImpressions, setClinicalImpressions] = useEncounter().clinicalImpressions();
   return (
     <>
-      <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em'}}>
+      <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em' }}>
         Clinical Impressions
       </Typography>
       {clinicalImpressions?.length > 0 ? (
@@ -251,28 +257,28 @@ export const SidebarSepsisAlert = () => {
 
   const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
   const labs = documents2
-                .filter(d => d.kind === "Lab")
-                .toSorted((a, b) => _t2(b) - _t2(a))
-                .flatMap(d => d.labResults)
-                .filter(x => x.name === "WBC")
-                .map(x => x.value > x.high)
-                .filter(x => x)
+    .filter(d => d.kind === "Lab")
+    .toSorted((a, b) => _t2(b) - _t2(a))
+    .flatMap(d => d.labResults)
+    .filter(x => x.name === "WBC")
+    .map(x => x.value > x.high)
+    .filter(x => x)
 
   // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11
-  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0) 
+  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0)
 
-  return isSepsis ? 
-    <Alert 
+  return isSepsis ?
+    <Alert
       icon={false}
-      sx={{ 
-        mt: .5, py:0.1,
-        bgcolor: '#ffcb00', 
-        color: 'black', 
-        fontWeight: 'bold', 
+      sx={{
+        mt: .5, py: 0.1,
+        bgcolor: '#ffcb00',
+        color: 'black',
+        fontWeight: 'bold',
       }}
     >
       Sepsis Alert
-    </Alert> : 
+    </Alert> :
     <></>
 }
 
@@ -307,12 +313,12 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarAllergies />
       <Divider sx={{ bgcolor: "primary.light" }} />
-      {!!encounter ? 
+      {!!encounter ?
         <>
           <Typography variant="h6">Encounter</Typography>
           <Typography>Type: {encounter?.type}</Typography>
           <Typography>Date: {encounter?.startDate}</Typography>
-          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography> 
+          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography>
         </> :
         <>
           <Typography variant="h6">Chart Review</Typography>
