@@ -1,116 +1,148 @@
-import React, { useState } from 'react';
-import { Box, Checkbox, FormControlLabel, TextField, IconButton, Collapse } from '@mui/material';
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { DEFAULT_ROWS } from '../types/flowsheet.types';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
+import { KeyboardArrowRight, Search } from '@mui/icons-material';
+import { FlowsheetRow } from '../types/flowsheet.types';
 
 interface LeftRailProps {
-  width?: number;
-  flowsheet: any; // Type this properly based on your flowsheet hook return type
+  rows: FlowsheetRow[];
+  visibleRows: string[]; // List of row names that are visible
+  onToggleRow: (rowName: string) => void;
+  onToggleCategory: (category: string, allSelected: boolean) => void;
+  className?: string;
 }
 
-export const LeftRail: React.FC<LeftRailProps> = ({ width = 250, flowsheet }) => {
-  const { visibleRows, setVisibleRows } = flowsheet;
+const LeftRail: React.FC<LeftRailProps> = ({
+  rows,
+  visibleRows,
+  onToggleRow,
+  onToggleCategory,
+  className,
+}) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  // Get all Enc Vitals row IDs
-  const encVitalsRows = DEFAULT_ROWS
-    .filter(row => row.group === 'Enc Vitals')
-    .map(row => row.id);
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
-  // Check if all Enc Vitals are visible
-  const allEncVitalsVisible = encVitalsRows.every(rowId => visibleRows.includes(rowId));
+  // Group rows by category
+  const categorizedRows = useMemo(() => {
+    const groups: { [key: string]: FlowsheetRow[] } = {};
+    rows.forEach((row) => {
+      const category = row.category || row.group || 'Uncategorized';
+      if (!groups[category]) {
+        groups[category] = [];
+      }
+      groups[category].push(row);
+    });
+    return groups;
+  }, [rows]);
 
-  // Check if all rows are visible (Show All state)
-  const showAll = visibleRows.length === DEFAULT_ROWS.length &&
-    DEFAULT_ROWS.every(row => visibleRows.includes(row.id));
+  // Handle Search
+  const filteredCategories = useMemo(() => {
+    if (!debouncedSearch.trim()) return categorizedRows;
 
-  const handleEncVitalsToggle = () => {
-    console.log('LeftRail: Encounter Vitals toggle clicked, allEncVitalsVisible:', allEncVitalsVisible, 'visibleRows:', visibleRows);
-    if (allEncVitalsVisible) {
-      // Hide all Enc Vitals
-      const newVisibleRows = visibleRows.filter((rowId: string) => !encVitalsRows.includes(rowId));
-      console.log('LeftRail: Hiding Enc Vitals, new visibleRows:', newVisibleRows);
-      setVisibleRows(newVisibleRows);
-    } else {
-      // Show all Enc Vitals
-      const newVisibleRows = [...new Set([...visibleRows, ...encVitalsRows])];
-      console.log('LeftRail: Showing Enc Vitals, new visibleRows:', newVisibleRows);
-      setVisibleRows(newVisibleRows);
-    }
-  };
+    const query = debouncedSearch.toLowerCase();
+    const filtered: { [key: string]: FlowsheetRow[] } = {};
 
-  const handleShowAllToggle = () => {
-    console.log('LeftRail: Show All toggle clicked, showAll:', showAll, 'visibleRows:', visibleRows);
-    if (showAll) {
-      // Hide all rows
-      console.log('LeftRail: Hiding all rows');
-      setVisibleRows([]);
-    } else {
-      // Show all rows
-      const newVisibleRows = DEFAULT_ROWS.map(row => row.id);
-      console.log('LeftRail: Showing all rows, new visibleRows:', newVisibleRows);
-      setVisibleRows(newVisibleRows);
-    }
-  };
+    Object.entries(categorizedRows).forEach(([category, categoryRows]) => {
+      // Match category name OR any row within it
+      const matchesCategory = category.toLowerCase().includes(query);
+      const hasMatchingRows = categoryRows.some(row => row.label.toLowerCase().includes(query));
+
+      if (matchesCategory || hasMatchingRows) {
+        filtered[category] = categoryRows;
+      }
+    });
+
+    return filtered;
+  }, [categorizedRows, debouncedSearch]);
+
 
   return (
-    <Box sx={{ position: 'relative', display: 'flex' }}>
+    <Box sx={{ position: 'relative', display: 'flex', height: '100%' }} className={className}>
       <Box
         sx={{
-          width: isCollapsed ? 24 : width,
+          width: isCollapsed ? 0 : 250,
           flexShrink: 0,
-          bgcolor: 'grey.50',
+          bgcolor: '#f5f5f5',
           borderRight: 1,
           borderColor: 'divider',
-          p: isCollapsed ? 1 : 2,
-          overflowY: 'auto',
-          height: '100%',
-          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           transition: 'width 0.3s ease-in-out',
+          height: '100%',
         }}
       >
-        <Collapse
-          in={!isCollapsed}
-          orientation="horizontal"
-          timeout="auto"
-          sx={{
-            '.MuiCollapse-wrapperInner': {
-              flex: 1,
-            }
-          }}
-        >
-          <Box>
-            {/* Search */}
-            <TextField
-              size="small"
-              placeholder="Search"
-              sx={{ width: '100%', mb: 2 }}
-            />
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              {/* Show All */}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={showAll}
-                    onChange={handleShowAllToggle}
-                    size="small"
-                  />
-                }
-                label="Show All"
+        <Collapse in={!isCollapsed} orientation="horizontal" timeout="auto" sx={{ height: '100%', '& .MuiCollapse-wrapperInner': { height: '100%', width: 250 } }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: 250 }}>
+            <Box sx={{ p: 1, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff' }}>
+              <TextField
+                size="small"
+                placeholder="Search groups..."
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: <Search fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />,
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
               />
+              {(searchTerm !== '') && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', cursor: 'pointer' }} onClick={() => setSearchTerm('')}>
+                    Clear
+                  </Typography>
+                </Box>
+              )}
+            </Box>
 
-              {/* Encounter Vitals */}
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={allEncVitalsVisible}
-                    onChange={handleEncVitalsToggle}
-                    size="small"
-                  />
-                }
-                label="Encounter Vitals"
-                sx={{ mb: 2, fontWeight: 'bold' }}
-              />
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 1 }}>
+              {Object.entries(filteredCategories).map(([category, categoryRows]) => {
+                const visibleCount = categoryRows.filter((row) => visibleRows.includes(row.name)).length;
+                const isAllSelected = visibleCount === categoryRows.length;
+                const isIndeterminate = visibleCount > 0 && !isAllSelected;
+
+                return (
+                  <Box key={category} sx={{ mb: 1 }}>
+                    <Box sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      '&:hover': { bgcolor: '#e0e0e0' },
+                      borderRadius: 1,
+                      pr: 1,
+                      pl: 1,
+                      py: 0.5
+                    }}>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600, userSelect: 'none', flex: 1 }}>
+                        {category}
+                      </Typography>
+                      <Checkbox
+                        size="small"
+                        checked={isAllSelected}
+                        indeterminate={isIndeterminate}
+                        onChange={() => onToggleCategory(category, isAllSelected)}
+                        sx={{ p: 0.5 }}
+                      />
+                    </Box>
+                  </Box>
+                );
+              })}
+
+              {Object.keys(filteredCategories).length === 0 && (
+                <Box sx={{ p: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    No results found
+                  </Typography>
+                </Box>
+              )}
             </Box>
           </Box>
         </Collapse>
@@ -122,20 +154,23 @@ export const LeftRail: React.FC<LeftRailProps> = ({ width = 250, flowsheet }) =>
         sx={{
           position: 'absolute',
           top: '1.5rem',
-          right: -12,
+          left: isCollapsed ? 0 : 238,
+          zIndex: 1001,
           width: 24,
           height: 24,
           backgroundColor: 'grey.100',
           border: 1,
           borderColor: 'divider',
-          zIndex: 1001,
+          transition: 'left 0.3s ease-in-out',
           '&:hover': {
             backgroundColor: 'grey.200',
           },
         }}
       >
-        {isCollapsed ? <ChevronRight fontSize="small" /> : <ChevronLeft fontSize="small" />}
+        {isCollapsed ? <KeyboardArrowRight fontSize="small" /> : <KeyboardArrowRight fontSize="small" sx={{ transform: 'rotate(180deg)' }} />}
       </IconButton>
     </Box>
   );
 };
+
+export default React.memo(LeftRail);

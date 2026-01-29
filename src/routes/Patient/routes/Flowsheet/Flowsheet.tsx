@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
-import { TopAppBar } from './components/TopAppBar';
-import { SecondaryBar } from './components/SecondaryBar';
 import { FlowsheetGrid } from './components/FlowsheetGrid';
+import LeftRail from './components/LeftRail';
 import { FlowsheetEntry, TimeColumn } from './types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
 import DateHelpers from 'util/helpers.js';
@@ -45,7 +44,7 @@ export const Flowsheet = () => {
     };
 
     // Prepare tab list from definitions
-    const tabs = (flowsheetDefs || []).map((group: any) => {
+    const tabs = useMemo(() => (flowsheetDefs || []).map((group: any) => {
         if (group.rows && Array.isArray(group.rows)) {
             return {
                 id: group.id || group.name, // Use ID if available, fall back to name
@@ -54,9 +53,9 @@ export const Flowsheet = () => {
             };
         }
         return null;
-    }).filter((t: any) => t !== null);
+    }).filter((t: any) => t !== null), [flowsheetDefs]);
 
-    const activeGroup = tabs.find((t: any) => t.id === activeTab) || tabs[0];
+    const activeGroup = useMemo(() => tabs.find((t: any) => t.id === activeTab) || tabs[0], [tabs, activeTab]);
 
     // --- Derived State ---
 
@@ -207,32 +206,98 @@ export const Flowsheet = () => {
     }, [flowsheetData, activeGroup]);
 
 
+    // --- Visibility State ---
+    const [visibleRows, setVisibleRows] = useState<string[]>([]);
+
+    // Reset visible rows when active group changes
+    useEffect(() => {
+        if (activeGroup?.rows) {
+            setVisibleRows(activeGroup.rows.map((r: any) => r.name));
+        }
+    }, [activeGroup]);
+
+    const handleToggleRow = useCallback((rowName: string) => {
+        setVisibleRows(prev => {
+            if (prev.includes(rowName)) {
+                return prev.filter(r => r !== rowName);
+            }
+            return [...prev, rowName];
+        });
+    }, []);
+
+    const handleToggleCategory = useCallback((category: string, allSelected: boolean) => {
+        if (!activeGroup?.rows) return;
+
+        const categoryRows = activeGroup.rows.filter((r: any) =>
+            (r.category || r.group || 'Uncategorized') === category
+        ).map((r: any) => r.name);
+
+        setVisibleRows(prev => {
+            if (allSelected) {
+                // Deselect all in category
+                return prev.filter(r => !categoryRows.includes(r));
+            } else {
+                // Select all in category
+                const newRows = [...prev];
+                categoryRows.forEach((r: string) => {
+                    if (!newRows.includes(r)) newRows.push(r);
+                });
+                return newRows;
+            }
+        });
+    }, [activeGroup]);
+
+    const [isManageOpen, setIsManageOpen] = useState(false);
+
     return (
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <TopAppBar />
-            <SecondaryBar
-                activeTab={activeTab}
-                onTabChange={handleTabChange}
-                searchValue=""
-                onSearchChange={() => { }}
-                tabs={tabs.map((t: any) => ({ id: t.id, label: t.label }))}
-            />
-            <Box sx={{ flexGrow: 1, overflow: 'hidden', p: 2 }}>
-                {activeGroup ? (
-                    <FlowsheetGrid
-                        rowsDefinition={activeGroup.rows}
-                        entries={entriesWithBetterIds} // Use the one with "::" IDs
-                        timeColumns={timeColumns}
-                        onAddEntry={handleAddEntry}
-                        onUpdateEntry={handleUpdateEntry}
-                        onAddTimeColumn={handleAddTimeColumn}
-                        onUpdateTimeColumn={handleUpdateTimeColumn}
+            <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: '1.2rem', textTransform: 'none' }}>
+                    Flowsheets
+                </Typography>
+            </Box>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs
+                    value={activeTab}
+                    onChange={(_, value) => handleTabChange(value)}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                    {tabs.map((t: any) => ({ id: t.id, label: t.label })).map((tab: any) => (
+                        <Tab key={tab.id} value={tab.id} label={tab.label} />
+                    ))}
+                </Tabs>
+            </Box>
+            <Box sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex' }}>
+                {/* Sidebar */}
+                {activeGroup && (
+                    <LeftRail
+                        rows={activeGroup.rows}
+                        visibleRows={visibleRows}
+                        onToggleRow={handleToggleRow}
+                        onToggleCategory={handleToggleCategory}
                     />
-                ) : (
-                    <Box sx={{ p: 4, textAlign: 'center' }}>
-                        <Typography color="textSecondary">No flowsheet definitions found.</Typography>
-                    </Box>
                 )}
+
+                {/* Main Grid Area */}
+                <Box sx={{ flex: 1, overflow: 'hidden', p: 2 }}>
+                    {activeGroup ? (
+                        <FlowsheetGrid
+                            rowsDefinition={activeGroup.rows}
+                            entries={entriesWithBetterIds}
+                            timeColumns={timeColumns}
+                            visibleRows={visibleRows} // Pass visibility state
+                            onAddEntry={handleAddEntry}
+                            onUpdateEntry={handleUpdateEntry}
+                            onAddTimeColumn={handleAddTimeColumn}
+                            onUpdateTimeColumn={handleUpdateTimeColumn}
+                        />
+                    ) : (
+                        <Box sx={{ p: 4, textAlign: 'center' }}>
+                            <Typography color="textSecondary">No flowsheet definitions found.</Typography>
+                        </Box>
+                    )}
+                </Box>
             </Box>
         </Box>
     );

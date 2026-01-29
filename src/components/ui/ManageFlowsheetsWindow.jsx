@@ -23,6 +23,7 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
     const [rowData, setRowData] = useState({
         name: "", // check unique within group? or globally? assuming globally or within group.
         label: "",
+        category: "",
         type: "number",
         targetGroupId: ""
     });
@@ -107,6 +108,7 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
                     rows: [...g.rows, {
                         name: rowData.name,
                         label: rowData.label,
+                        category: rowData.category,
                         type: rowData.type,
                         options: []
                     }]
@@ -115,7 +117,7 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
             return g;
         }));
 
-        setRowData({ name: "", label: "", type: "number", targetGroupId: "" });
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: "" });
         setIsAddingRow(false);
     };
 
@@ -126,13 +128,13 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
             if (g.id === rowData.targetGroupId) {
                 return {
                     ...g,
-                    rows: g.rows.map(r => r.name === rowData.name ? { ...r, label: rowData.label, type: rowData.type } : r)
+                    rows: g.rows.map(r => r.name === rowData.name ? { ...r, label: rowData.label, category: rowData.category, type: rowData.type } : r)
                 };
             }
             return g;
         }));
 
-        setRowData({ name: "", label: "", type: "number", targetGroupId: "" });
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: "" });
         setIsEditingRow(false);
     };
 
@@ -149,7 +151,7 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
     };
 
     const startAddRow = (groupId) => {
-        setRowData({ name: "", label: "", type: "number", targetGroupId: groupId });
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: groupId });
         setIsAddingRow(true);
         handleCloseContextMenu();
     };
@@ -161,6 +163,7 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
             setRowData({
                 name: row.name,
                 label: row.label,
+                category: row.category || "",
                 type: row.type || "number",
                 targetGroupId: groupId
             });
@@ -206,6 +209,11 @@ export const ManageFlowsheetsWindow = ({ open, onClose }) => {
                         onChange={e => setRowData(prev => ({ ...prev, label: e.target.value }))}
                         required
                         autoFocus={isEditingRow}
+                    />
+                    <TextField
+                        label="Category"
+                        value={rowData.category}
+                        onChange={e => setRowData(prev => ({ ...prev, category: e.target.value }))}
                     />
                     <FormControl fullWidth>
                         <InputLabel>Type</InputLabel>

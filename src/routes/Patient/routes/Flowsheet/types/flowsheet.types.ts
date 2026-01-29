@@ -15,6 +15,7 @@ export interface FlowsheetRow {
   options?: string[];
   unit?: string;
   group?: string; // Legacy support
+  category?: string; // New field for sidebar grouping/headers
   order?: number; // Legacy support
 }
 
