@@ -154,6 +154,7 @@ export function Schedule() {
   const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
   const [departments] = useDatabase().departments()
   const [locations] = useDatabase().locations()
+  const [providers] = useDatabase().providers()
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -500,8 +501,9 @@ export function Schedule() {
                 width: 200,
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  const data2 = data.encounters[row.patient.enc]?.provider;
-                  return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
+                  const providerId = data.encounters[row.patient.enc]?.provider;
+                  const provider = providers.find(p => p.id === providerId);
+                  return provider ? provider.name : providerId;
                 },
               },
               { field: 'type', headerName: 'Type', width: 100 },

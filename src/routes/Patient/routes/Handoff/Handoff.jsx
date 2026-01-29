@@ -6,12 +6,12 @@ import {
   MenuItem,
   TextField,
 } from '@mui/material';
-import { 
-  Box, 
-  Label, 
-  IconButton, 
-  Stack, 
-  Button, 
+import {
+  Box,
+  Label,
+  IconButton,
+  Stack,
+  Button,
   Icon,
   RichTextEditor
 } from 'components/ui/Core.jsx';
@@ -68,7 +68,7 @@ const Handoff = () => {
     if (!currentDepartment) {
       return;
     }
-        
+
     const handler = setTimeout(() => {
       const data = {
         summary: localSummary,
@@ -90,6 +90,9 @@ const Handoff = () => {
   const handleCancel = () => {
     // Cancel functionality - for now just a placeholder
   };
+
+
+  const currentDeptName = departmentsDB.find(d => d.id === currentDepartment)?.name || '';
 
   return (
     <Box
@@ -115,14 +118,14 @@ const Handoff = () => {
           Handoff
         </Label>
 
-        <FormControl size="small" sx={{ minWidth: 200}}>
+        <FormControl size="small" sx={{ minWidth: 200 }}>
           <Select
             value={currentDepartment}
             onChange={(e) => handleDepartmentChange(e.target.value)}
             displayEmpty
           >
             <MenuItem value="">Select Department</MenuItem>
-            {departmentsDB.map(x => (<MenuItem value={x.name}>{x.name}</MenuItem>))}
+            {departmentsDB.map(x => (<MenuItem key={x.id} value={x.id}>{x.name}</MenuItem>))}
           </Select>
         </FormControl>
       </Box>
@@ -166,7 +169,7 @@ const Handoff = () => {
               variant="outlined"
               value={localSummary}
               onChange={(e) => setLocalSummary(e.target.value)}
-              placeholder={currentDepartment ? "Enter summary details..." : "Please select a department first"}
+              placeholder={currentDepartment ? `Enter summary details for ${currentDeptName}...` : "Please select a department first"}
               disabled={!currentDepartment}
               sx={{
                 minHeight: '200px',
@@ -224,7 +227,7 @@ const Handoff = () => {
               variant="outlined"
               value={localTodo}
               onChange={(e) => setLocalTodo(e.target.value)}
-              placeholder={currentDepartment ? "Enter to-do tasks or follow-ups..." : "Please select a department first"}
+              placeholder={currentDepartment ? `Enter to-do tasks or follow-ups for ${currentDeptName}...` : "Please select a department first"}
               disabled={!currentDepartment}
               sx={{
                 minHeight: '200px',

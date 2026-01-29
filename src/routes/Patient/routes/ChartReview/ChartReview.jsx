@@ -41,11 +41,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 
     if (selectedTabLabel === 'Lab') {
       // Open new tabs in the main view
-      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
       // Cardiac Labs special case
-      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
       const isPathologySlide = row.data.accessionNumber?.startsWith("PATH") || row.data.id?.startsWith("PATH")
@@ -58,7 +58,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: false } }]);
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Note') {
-      setSideTabs(prev => [...prev, {"Note": { selectedRow: row }}])
+      setSideTabs(prev => [...prev, { "Note": { selectedRow: row } }])
       setSelectedSideTab(sideTabs.length)
     } else {
       // TODO: handle other tabs somehow?
@@ -106,7 +106,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                   ))}
                   <Divider />
                   {(selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') && selectedRow && (
-                    <ImagingTabContent selectedRow={selectedRow} viewerId={viewerId}/>
+                    <ImagingTabContent selectedRow={selectedRow} viewerId={viewerId} />
                   )}
                 </div>
               )}
@@ -140,27 +140,35 @@ export const ChartReview = ({ ...props }) => {
 
   const documents = filterDocuments(documents2, conditionals, orders)
 
-  const encountersData = Object.values(chart.encounters).map(x => ({
-    kind: 'Encounters',
-    data: {
-      date: x.startDate,
-      type: x.type,
-      department: x.department,
-      specialty: x.specialty,
-      provider: x.provider
-    }
-  }))
+  const [departments] = useDatabase().departments()
+  const [providers] = useDatabase().providers()
 
-  
+  const encountersData = Object.values(chart.encounters).map(x => {
+    const dept = departments.find(d => d.id === x.department)
+    const prov = providers.find(p => p.id === x.provider)
+
+    return {
+      kind: 'Encounters',
+      data: {
+        date: x.startDate,
+        type: x.type,
+        department: dept ? dept.name : x.department,
+        specialty: prov ? prov.specialty : '',
+        provider: prov ? prov.name : x.provider
+      }
+    }
+  })
+
+
   return (
     <div>
       <Label variant="h6" sx={{ p: 1, pb: 0 }}>Chart Review</Label>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs 
-          variant="scrollable" 
+        <Tabs
+          variant="scrollable"
           textColor="inherit"
           scrollButtons="auto"
-          allowScrollButtonsMobile 
+          allowScrollButtonsMobile
           value={selectedTabLabel}
           onChange={(event, newValue) => setSelectedTabLabel(newValue)}>
           {tabLabels.map((label) => (
