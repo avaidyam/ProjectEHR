@@ -19,6 +19,7 @@ const initialStore = {
   providers: patient_sample.providers,
   locations: patient_sample.locations,
   orderables: orderables,
+  flowsheets: patient_sample.flowsheets,
   test: [],
   another: {}
   // FIXME: add more databases here!

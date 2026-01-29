@@ -5,6 +5,7 @@ import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/C
 import { useDatabase } from 'components/contexts/PatientContext'
 import { CreateEncounterDialog } from './CreateEncounterDialog.jsx'
 import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
+import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow.jsx'
 import { OpenPatientChartDialog } from './OpenPatientChartDialog.jsx'
 
 const placeholders = [
@@ -34,6 +35,7 @@ export const Titlebar = ({ onLogout }) => {
 
   const [createEncounterOpen, setCreateEncounterOpen] = useState(false)
   const [manageDeptsOpen, setManageDeptsOpen] = useState(false)
+  const [manageFlowsheetsOpen, setManageFlowsheetsOpen] = useState(false)
   const [openPatientChartOpen, setOpenPatientChartOpen] = useState(false)
 
   const handleOpenCreateEncounter = () => {
@@ -70,7 +72,7 @@ export const Titlebar = ({ onLogout }) => {
         concerns: [],
         diagnoses: [],
         problems: [],
-        vitals: [],
+        flowsheets: [],
         documents: []
       };
 
@@ -167,6 +169,12 @@ export const Titlebar = ({ onLogout }) => {
               }}>
                 Manage Departments
               </MenuItem>
+              <MenuItem onClick={() => {
+                setManageFlowsheetsOpen(true);
+                setAnchorEl(null);
+              }}>
+                Flowsheet Definitions
+              </MenuItem>
             </Menu>
           </Stack>
           <Tabs
@@ -232,6 +240,11 @@ export const Titlebar = ({ onLogout }) => {
       <ManageDepartmentsWindow
         open={manageDeptsOpen}
         onClose={() => setManageDeptsOpen(false)}
+      />
+
+      <ManageFlowsheetsWindow
+        open={manageFlowsheetsOpen}
+        onClose={() => setManageFlowsheetsOpen(false)}
       />
 
       <OpenPatientChartDialog

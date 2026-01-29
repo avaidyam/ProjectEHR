@@ -11,7 +11,7 @@ import {
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
 
-export const VitalsPopup = ({ vitals, ...props }) => {
+export const VitalsPopup = ({ vitals, definition, ...props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const handleMenuOpen = (e) => {
@@ -22,31 +22,37 @@ export const VitalsPopup = ({ vitals, ...props }) => {
     setOpen(false);
     setAnchorEl(null);
   };
-  const {
-    measurementDate,
-    bloodPressureSystolic,
-    bloodPressureDiastolic,
-    height,
-    weight,
-    bmi,
-    respiratoryRate,
-    heartRate,
-    SpO2,
-    Temp
-  } = vitals[0] ?? {};
+
+  // Determine which rows to show: only those that have at least one non-null value in the vitals array
+  // and are defined in the flowsheet definition.
+  const rowsToShow = definition?.rows?.filter(row => {
+    return vitals.some(v => v[row.name] != null && v[row.name] !== "");
+  }) ?? [];
+
+  // Special handling to combine BP fields
+  let bpRowAdded = false;
+  const processedRows = rowsToShow.flatMap(row => {
+    if (row.name.startsWith('bloodPressure')) {
+      if (bpRowAdded) return [];
+      bpRowAdded = true;
+      return [{ name: 'bp', label: 'Blood Pressure (mmHg)' }];
+    }
+    return [row];
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
-      <span>Temp: {Temp}</span>
+      <span>Temp: {vitals[0]?.Temp}</span>
       <span
-        style={_isBPProblematic({ systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({ systolic: vitals[0]?.bloodPressureSystolic, diastolic: vitals[0]?.bloodPressureDiastolic }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BP: {bloodPressureSystolic}/{bloodPressureDiastolic}
+        BP: {vitals[0]?.bloodPressureSystolic}/{vitals[0]?.bloodPressureDiastolic}
       </span>
-      <span>HR: {heartRate}</span>
+      <span>HR: {vitals[0]?.heartRate}</span>
       <span
-        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBMIProblematic({ bmi: vitals[0]?.bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BMI: {bmi} ({weight} lbs)
+        BMI: {vitals[0]?.bmi} ({vitals[0]?.weight} lbs)
       </span>
       <Popper open={open} anchorEl={anchorEl} placement="right" transition>
         {({ TransitionProps }) => (
@@ -61,30 +67,25 @@ export const VitalsPopup = ({ vitals, ...props }) => {
             >
               <div style={{ display: 'flex', flexDirection: "column", padding: "10px 10px 10px 10px" }}>
                 <span style={{ visibility: 'hidden' }}>hidden</span>
-                <span>Temperature (˚C)</span>
-                <span>Blood Pressure (mmHg)</span>
-                <span>Pulse Rate (bpm)</span>
-                <span>Respiratory Rate (bpm)</span>
-                <span>SpO2 (%)</span>
-                <span>Height (cm)</span>
-                <span>Weight (kg)</span>
-                <span>BMI (kg/m2)</span>
+                {processedRows.map(row => (
+                  <span key={row.name}>{row.label || row.name}</span>
+                ))}
               </div>
               <div style={{ display: "flex", flex: 1 }}>
-                {vitals.map((vitals) => (
+                {vitals.map((entry) => (
                   <div
-                    key={vitals.measurementDate}
+                    key={entry.date}
                     style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>{DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/dd/yy')}</span>
-                    <span>{vitals.Temp ?? <br />}</span>
-                    <span>{vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}</span>
-                    <span>{vitals.heartRate ?? <br />}</span>
-                    <span>{vitals.respiratoryRate ?? <br />}</span>
-                    <span>{vitals.SpO2 ?? <br />}</span>
-                    <span>{vitals.height ?? <br />}</span>
-                    <span>{vitals.weight ?? <br />}</span>
-                    <span>{vitals.bmi ?? <br />}</span>
+                    <span>{DateHelpers.convertToDateTime(entry.date).toFormat('MM/dd/yy')}</span>
+                    {processedRows.map(row => {
+                      if (row.name === 'bp') {
+                        const { bloodPressureSystolic: sys, bloodPressureDiastolic: dia } = entry;
+                        if (sys == null && dia == null) return <br key={row.name} />;
+                        return <span key={row.name}>{sys ?? 'x'} / {dia ?? 'x'}</span>;
+                      }
+                      return <span key={row.name}>{entry[row.name] ?? <br />}</span>
+                    })}
                   </div>
                 ))}
               </div>
@@ -98,17 +99,20 @@ export const VitalsPopup = ({ vitals, ...props }) => {
 
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
-  const [vitals] = useEncounter().vitals()
+  const [flowsheets] = useEncounter().flowsheets()
   const [documents] = useEncounter().documents()
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
+  const [flowsheetDefs] = useDatabase().flowsheets()
 
-  const vitals2 = filterDocuments(vitals, conditionals, orders)
+  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
+  const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339")
+  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
 
   /** sort most recent to older */
-  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
-  const mostRecentDate = allVitals[0]?.measurementDate;
+  const mostRecentDate = allVitals[0]?.date;
   const mostRecentDT = DateHelpers.convertToDateTime(mostRecentDate);
   const vitalsDateLabel = mostRecentDT && mostRecentDT.isValid ? ` ${DateHelpers.standardFormat(mostRecentDate)}` : '';
   return (
@@ -117,7 +121,7 @@ export const SidebarVitals = ({ ...props }) => {
         Vitals{vitalsDateLabel}
       </Typography>
       {allVitals[0] ? (
-        <VitalsPopup vitals={allVitals} />
+        <VitalsPopup vitals={allVitals} definition={vitalsDefinition} />
       ) : (
         <i>No vitals to display</i>
       )}
@@ -380,16 +384,17 @@ export const SidebarClinicalImpressions = () => {
 
 export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
-  const [vitals] = useEncounter().vitals();
+  const [flowsheets] = useEncounter().flowsheets();
   const [documents] = useEncounter().documents();
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
-  const vitals2 = filterDocuments(vitals, conditionals, orders)
+  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
+  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
   const documents2 = filterDocuments(documents, conditionals, orders)
 
   /** sort most recent to older */
-  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
   const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
