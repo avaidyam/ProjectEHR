@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { DataGrid } from 'components/ui/Core'
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, Select, MenuItem, Autocomplete } from '@mui/material';
+import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
@@ -18,7 +19,62 @@ interface FlowsheetGridProps {
   onUpdateTimeColumn: (id: string, updates: Partial<TimeColumn>) => void;
 }
 
-const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
+const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
+  const { id, field, value, row } = params;
+  const apiRef = useGridApiContext();
+
+  const isSelect = row.type === 'select' && row.options && row.options.length > 0;
+  const options = isSelect ? row.options : [];
+
+  return (
+    <Autocomplete
+      disablePortal
+      fullWidth
+      clearOnEscape
+      openOnFocus
+      autoHighlight
+      autoSelect
+      freeSolo={!isSelect}
+      value={value}
+      options={options}
+      onChange={(event, newValue) => {
+        apiRef.current.setEditCellValue({ id, field, value: newValue });
+        if (apiRef.current.getCellMode(id, field) === 'edit') {
+          apiRef.current.stopCellEditMode({ id, field });
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          autoFocus
+          fullWidth
+          variant="standard"
+          sx={{ height: '100%', p: 0 }}
+          InputProps={{
+            ...params.InputProps,
+            disableUnderline: true,
+            style: { fontSize: 'inherit', textAlign: 'center', height: '100%', padding: 0 }
+          }}
+        />
+      )}
+      sx={{
+        height: '100%',
+        '& .MuiAutocomplete-inputRoot': { height: '100%', p: '0 !important', display: 'flex', alignItems: 'center' },
+        '& .MuiAutocomplete-input': { p: '0 !important', textAlign: 'center' }
+      }}
+      slotProps={{
+        popper: {
+          sx: {
+            width: 'auto !important',
+            minWidth: '200px'
+          }
+        }
+      }}
+    />
+  );
+};
+
+export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
 
@@ -170,7 +226,9 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
           label: row.label || row.name,
           unit: row.unit || (row.type === 'number' ? '' : ''),
           isHeader: false,
-          lastFiled: lastFiledValues[row.name || row.id || ''] // Add Last Filed Value
+          lastFiled: lastFiledValues[row.name || row.id || ''], // Add Last Filed Value
+          type: row.type, // Pass metadata
+          options: row.options // Pass metadata
         };
 
         timeColumns.forEach((column: TimeColumn) => {
@@ -218,7 +276,8 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         resizable: true,
         renderHeader: (params: any) => (
           <FlowsheetColumnHeader column={column} onUpdate={onUpdateTimeColumn} />
-        )
+        ),
+        renderEditCell: (params: GridRenderEditCellParams) => <FlowsheetEditCell {...params} />
       });
     });
 
