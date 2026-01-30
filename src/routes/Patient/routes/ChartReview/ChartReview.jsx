@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
-import { Box, Divider, Button, Label, DataGrid } from 'components/ui/Core'
+import { Box, Divider, Button, Label, DataGrid, Icon } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 import { filterDocuments } from 'util/helpers'
+import { NewLabResultDialog } from './NewLabResultDialog';
+import { NewImagingResultDialog } from './NewImagingResultDialog';
 
 const tabLabels = [
   "Encounters",
@@ -128,6 +130,8 @@ export const ChartReview = ({ ...props }) => {
   const [documents1] = useEncounter().documents()
 
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
+  const [isNewResultOpen, setIsNewResultOpen] = useState(false);
+  const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
@@ -159,11 +163,42 @@ export const ChartReview = ({ ...props }) => {
     }
   })
 
+  const handleSaveNewLabResult = (newDoc) => {
+    const encounterId = encounter.id;
+    const newEncounters = { ...chart.encounters };
+
+    if (newEncounters[encounterId]) {
+      newEncounters[encounterId] = {
+        ...newEncounters[encounterId],
+        documents: [...newEncounters[encounterId].documents, newDoc]
+      };
+
+      const newChart = { ...chart, encounters: newEncounters };
+      setChart(newChart);
+      setEncounter(newEncounters[encounterId]);
+    }
+  };
+
+  const handleSaveNewImaging = (newDoc) => {
+    const encounterId = encounter.id;
+    const newEncounters = { ...chart.encounters };
+
+    if (newEncounters[encounterId]) {
+      newEncounters[encounterId] = {
+        ...newEncounters[encounterId],
+        documents: [...newEncounters[encounterId].documents, newDoc]
+      };
+
+      const newChart = { ...chart, encounters: newEncounters };
+      setChart(newChart);
+      setEncounter(newEncounters[encounterId]);
+    }
+  };
 
   return (
     <div>
       <Label variant="h6" sx={{ p: 1, pb: 0 }}>Chart Review</Label>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
         <Tabs
           variant="scrollable"
           textColor="inherit"
@@ -179,8 +214,38 @@ export const ChartReview = ({ ...props }) => {
             />
           ))}
         </Tabs>
+        {selectedTabLabel === 'Lab' && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => setIsNewResultOpen(true)}
+          >
+            New Result
+          </Button>
+        )}
+        {selectedTabLabel === 'Imaging' && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => setIsNewImagingOpen(true)}
+          >
+            New Result
+          </Button>
+        )}
       </Box>
       <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
+      <NewLabResultDialog
+        open={isNewResultOpen}
+        onClose={() => setIsNewResultOpen(false)}
+        onSave={handleSaveNewLabResult}
+      />
+      <NewImagingResultDialog
+        open={isNewImagingOpen}
+        onClose={() => setIsNewImagingOpen(false)}
+        onSave={handleSaveNewImaging}
+      />
     </div>
   );
 };
