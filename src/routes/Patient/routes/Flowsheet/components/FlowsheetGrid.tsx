@@ -4,7 +4,7 @@ import { Box, TextField } from '@mui/material';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
-import { DateTimePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 interface FlowsheetGridProps {
   rowsDefinition: FlowsheetRow[];
@@ -23,16 +23,16 @@ const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpd
   const [tempValue, setTempValue] = useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
 
   const handleDoubleClick = () => {
-    if (column.isCurrentTime) return; // Don't edit "Now" inline
     setTempValue(dayjs(column.timestamp));
     setIsEditing(true);
   };
 
   const handleAccept = (newValue: dayjs.Dayjs | null) => {
-    if (newValue) {
+    if (newValue && newValue.isValid()) {
       onUpdate(column.id, {
         timestamp: newValue.toISOString(),
-        displayTime: newValue.format('HHmm')
+        displayTime: newValue.format('HHmm'),
+        ...(column.isCurrentTime ? { isCurrentTime: false } : {})
       });
     }
     setIsEditing(false);
@@ -41,13 +41,6 @@ const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpd
   const handleClose = () => {
     setIsEditing(false);
   }
-
-  // Auto-open logic: When editing starts, we want the picker open immediately?
-  // Using `open={true}` on DateTimePicker might force the popup.
-  // Or just render the input and let user click icon?
-  // "inline date/time picker, not a text field" -> suggests they might want the full calendar INLINE?
-  // Or just the standard picker input.
-  // Given previous request "it should not bring up a dialog", standard Popper is fine.
 
   if (isEditing) {
     return (
