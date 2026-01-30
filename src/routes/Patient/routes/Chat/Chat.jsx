@@ -61,7 +61,7 @@ export default function Chat() {
   React.useEffect(() => {
     console.log("🎤 Active voice:", voiceName);
   }, [voiceName]);
-  
+
 
   // Notes
   const hpiNote = (documents || []).find(
@@ -170,7 +170,7 @@ export default function Chat() {
     text += "### Immunizations\n";
     if (Array.isArray(immunizations) && immunizations.length) {
       immunizations.forEach(imm => {
-        const vaccine  = imm.vaccine || imm.name || "Unknown vaccine";
+        const vaccine = imm.vaccine || imm.name || "Unknown vaccine";
         const received = imm.received || imm.date || "Unknown date";
         const recorded = imm.recorded;
         const recorder = imm.recorder;
@@ -280,20 +280,21 @@ export default function Chat() {
       }}
     >
       <TabView value={tab}>
-        <Label variant="h6" sx={{ fontWeight: "bold", color: "secondary.main", px: 2 }}>
-          BICEP CHAT
-        </Label>
-        
-        <TabList onChange={handleTabChange}>
-          {/* LLM Chat disabled */}
-          {/* <Tab value="chat" label="LLM Chat" /> */}
-          <Tab value="voice" label="Speech Mode" />
-          <Tab value="modelConfig" label="Model Config" />
-        </TabList>
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+          <Label variant="h6" sx={{ fontWeight: "bold", color: "secondary.main", px: 2 }}>
+            BICEP CHAT
+          </Label>
 
-        <Box sx={{ overflowY: "auto" }}>
-          {/* ⛔ Entire LLM Chat panel removed */}
-          {/*
+          <TabList onChange={handleTabChange}>
+            {/* LLM Chat disabled */}
+            {/* <Tab value="chat" label="LLM Chat" /> */}
+            <Tab value="voice" label="Speech Mode" />
+            <Tab value="modelConfig" label="Model Config" />
+          </TabList>
+
+          <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+            {/* ⛔ Entire LLM Chat panel removed */}
+            {/*
           <TabPanel sx={{ p: 0 }} value="chat">
             <Box sx={{ display: "flex", gap: 2 }}>
               <Box sx={{ flexGrow: 1 }}>
@@ -306,29 +307,30 @@ export default function Chat() {
           </TabPanel>
           */}
 
-          <TabPanel sx={{ p: 0 }} value="voice">
-            <VoicePanel />
-          </TabPanel>
+            <TabPanel sx={{ p: 0, height: '100%', overflowY: 'auto' }} value="voice">
+              <VoicePanel />
+            </TabPanel>
 
-          <TabPanel sx={{ p: 0 }} value="modelConfig">
-            {configUnlocked ? (
-              <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
-            ) : (
-              <Box
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "gray",
-                  fontStyle: "italic",
-                  p: 4,
-                }}
-              >
-                🔒 Model Config is locked.
-              </Box>
-            )}
-          </TabPanel>
+            <TabPanel sx={{ p: 0, height: '100%' }} value="modelConfig">
+              {configUnlocked ? (
+                <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
+              ) : (
+                <Box
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "gray",
+                    fontStyle: "italic",
+                    p: 4,
+                  }}
+                >
+                  🔒 Model Config is locked.
+                </Box>
+              )}
+            </TabPanel>
+          </Box>
         </Box>
       </TabView>
     </GeminiAPIProvider>

@@ -142,9 +142,9 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                         )}
                                     </Droppable>
                                 </Stack>
-                                <Box sx={{ overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
+                                <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                                     {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                                        <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
+                                        <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
                                     ))}
                                 </Box>
                             </Box>
@@ -194,9 +194,9 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                             )}
                                         </Droppable>
                                     </Stack>
-                                    <Box sx={{ overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
+                                    <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                                         {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                                            <TabPanel sx={{ p: 0 }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
+                                            <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>{tabsDirectory[k](v)}</TabPanel>
                                         ))}
                                     </Box>
                                 </Box>

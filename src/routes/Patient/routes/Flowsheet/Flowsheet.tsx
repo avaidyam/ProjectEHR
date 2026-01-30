@@ -72,36 +72,6 @@ export const Flowsheet = () => {
         if (tab) setActiveTab(tab);
     }, [searchParams]);
 
-    // Data Sanitization: Ensure unique IDs
-    useEffect(() => {
-        if (!flowsheetData) return;
-
-        const seenIds = new Set();
-        let hasDuplicates = false;
-
-        for (const item of flowsheetData) {
-            if (seenIds.has(item.id)) {
-                hasDuplicates = true;
-                break;
-            }
-            seenIds.add(item.id);
-        }
-
-        if (hasDuplicates) {
-            console.warn("Duplicate IDs detected in flowsheet data, sanitizing...");
-            setFlowsheetData((prev: any[]) => {
-                const newIds = new Set();
-                return prev.map((item: any) => {
-                    if (newIds.has(item.id)) {
-                        return { ...item, id: generateId() };
-                    }
-                    newIds.add(item.id);
-                    return item;
-                });
-            });
-        }
-    }, [flowsheetData, setFlowsheetData]);
-
     const handleTabChange = (newTab: string) => {
         setActiveTab(newTab);
         setSearchParams({ tab: newTab }, { replace: true });
@@ -160,7 +130,7 @@ export const Flowsheet = () => {
                 const key = row.name;
                 if (d[key] !== undefined && d[key] !== null) {
                     flattenedEntries.push({
-                        id: `${d.id}-${key}`, // synthetic ID
+                        id: `${d.id}::${key}`, // synthetic ID
                         rowId: key,
                         columnId: d.id,
                         value: d[key],
@@ -269,30 +239,6 @@ export const Flowsheet = () => {
         }
     }, [setFlowsheetData]);
 
-    // Re-memoize entries with better ID
-    const entriesWithBetterIds = useMemo(() => {
-        if (!activeGroup || !flowsheetData) return [];
-        const groupData = flowsheetData.filter((d: any) => d.flowsheet === activeGroup.id);
-        const flattenedEntries: FlowsheetEntry[] = [];
-
-        groupData.forEach((d: any) => {
-            activeGroup.rows.forEach((row: any) => {
-                const key = row.name;
-                if (d[key] !== undefined && d[key] !== null) {
-                    flattenedEntries.push({
-                        id: `${d.id}::${key}`, // Better separator
-                        rowId: key,
-                        columnId: d.id,
-                        value: d[key],
-                        status: 'saved'
-                    });
-                }
-            });
-        });
-        return flattenedEntries;
-    }, [flowsheetData, activeGroup]);
-
-
     // --- Visibility State ---
     const [visibleRows, setVisibleRows] = useState<string[]>([]);
 
@@ -334,10 +280,8 @@ export const Flowsheet = () => {
         });
     }, [activeGroup]);
 
-    const [isManageOpen, setIsManageOpen] = useState(false);
-
     return (
-        <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Typography variant="h4" sx={{ fontWeight: 'bold', fontSize: '1.2rem', textTransform: 'none' }}>
                     Flowsheets
@@ -371,7 +315,7 @@ export const Flowsheet = () => {
                     {activeGroup ? (
                         <FlowsheetGrid
                             rowsDefinition={activeGroup.rows}
-                            entries={entriesWithBetterIds}
+                            entries={entries}
                             timeColumns={timeColumns}
                             visibleRows={visibleRows} // Pass visibility state
                             lastFiledValues={lastFiledValues}
