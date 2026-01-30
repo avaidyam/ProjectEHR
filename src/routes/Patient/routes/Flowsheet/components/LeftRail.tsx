@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
 import { KeyboardArrowRight, Search } from '@mui/icons-material';
-import { FlowsheetRow } from '../types/flowsheet.types';
+import { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
   rows: FlowsheetRow[];

@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { DataGrid } from 'components/ui/Core'
 import { Box, TextField, Select, MenuItem, Autocomplete } from '@mui/material';
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
-import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
+import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../Flowsheet';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';

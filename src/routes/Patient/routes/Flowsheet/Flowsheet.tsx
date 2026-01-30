@@ -4,9 +4,43 @@ import { useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
 import { FlowsheetGrid } from './components/FlowsheetGrid';
 import LeftRail from './components/LeftRail';
-import { FlowsheetEntry, TimeColumn } from './types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
 import DateHelpers from 'util/helpers.js';
+
+export interface FlowsheetEntry {
+    id: string;
+    columnId: string; // Changed from timestamp to columnId
+    rowId: string; // e.g., "BP", "Pulse"
+    value: string | number;
+    unit?: string;
+    status: "draft" | "final" | "saved";
+}
+
+export interface FlowsheetRow {
+    id?: string; // Legacy support
+    name: string;
+    label: string;
+    type: string;
+    options?: string[];
+    unit?: string;
+    group?: string; // Legacy support
+    category?: string; // New field for sidebar grouping/headers
+    order?: number; // Legacy support
+}
+
+export interface FlowsheetGroup {
+    id: string;
+    name: string;
+    rows: FlowsheetRow[];
+}
+
+export interface TimeColumn {
+    id: string; // Unique ID for the column
+    timestamp: string; // ISO 8601 - for display purposes
+    displayTime: string; // Military time format
+    isCurrentTime: boolean;
+    index: number;
+}
 
 const generateId = () => uuidv4();
 
