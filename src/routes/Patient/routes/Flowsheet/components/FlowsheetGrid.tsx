@@ -1,8 +1,10 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { DataGrid } from 'components/ui/Core'
-import { Box } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../types/flowsheet.types';
 import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
+import { DateTimePicker } from '@mui/x-date-pickers';
 
 interface FlowsheetGridProps {
   rowsDefinition: FlowsheetRow[];
@@ -15,6 +17,83 @@ interface FlowsheetGridProps {
   onAddTimeColumn: (column: TimeColumn) => void;
   onUpdateTimeColumn: (id: string, updates: Partial<TimeColumn>) => void;
 }
+
+const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempValue, setTempValue] = useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
+
+  const handleDoubleClick = () => {
+    if (column.isCurrentTime) return; // Don't edit "Now" inline
+    setTempValue(dayjs(column.timestamp));
+    setIsEditing(true);
+  };
+
+  const handleAccept = (newValue: dayjs.Dayjs | null) => {
+    if (newValue) {
+      onUpdate(column.id, {
+        timestamp: newValue.toISOString(),
+        displayTime: newValue.format('HHmm')
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const handleClose = () => {
+    setIsEditing(false);
+  }
+
+  // Auto-open logic: When editing starts, we want the picker open immediately?
+  // Using `open={true}` on DateTimePicker might force the popup.
+  // Or just render the input and let user click icon?
+  // "inline date/time picker, not a text field" -> suggests they might want the full calendar INLINE?
+  // Or just the standard picker input.
+  // Given previous request "it should not bring up a dialog", standard Popper is fine.
+
+  if (isEditing) {
+    return (
+      <Box sx={{ width: '100%', p: 0 }}>
+        <DateTimePicker
+          value={tempValue}
+          onChange={(newValue) => setTempValue(newValue)}
+          onAccept={handleAccept}
+          onClose={handleClose}
+          autoFocus
+          format="HHmm"
+          slotProps={{
+            textField: {
+              size: 'small',
+              fullWidth: true,
+              variant: 'standard',
+              autoFocus: true,
+              InputProps: {
+                style: { fontSize: 'inherit', textAlign: 'center' }
+              }
+            },
+            popper: {
+              sx: { zIndex: 99999 }
+            }
+          }}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      onDoubleClick={handleDoubleClick}
+      sx={{
+        fontWeight: column.isCurrentTime ? 'bold' : 'normal',
+        color: column.isCurrentTime ? 'primary.main' : 'inherit',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'center',
+        userSelect: 'none'
+      }}
+    >
+      {column.displayTime + (column.isCurrentTime ? ' (Now)' : '')}
+    </Box>
+  );
+};
 
 export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
   rowsDefinition,
@@ -145,9 +224,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         sortable: false,
         resizable: true,
         renderHeader: (params: any) => (
-          <Box sx={{ fontWeight: column.isCurrentTime ? 'bold' : 'normal', color: column.isCurrentTime ? 'primary.main' : 'inherit' }}>
-            {params.colDef.headerName}
-          </Box>
+          <FlowsheetColumnHeader column={column} onUpdate={onUpdateTimeColumn} />
         )
       });
     });
