@@ -171,6 +171,28 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     return cols;
   }, [timeColumns]);
 
+  const columnGroupingModel = useMemo(() => {
+    const groups: { [key: string]: string[] } = {};
+
+    timeColumns.forEach((col) => {
+      const date = new Date(col.timestamp);
+      const dateKey = date.toLocaleDateString(); // e.g., "1/9/2022" - grouping key and label
+
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(col.id);
+    });
+
+    return Object.entries(groups).map(([date, fields]) => ({
+      groupId: date,
+      headerName: date,
+      headerAlign: 'center',
+      children: fields.map(field => ({ field })),
+      headerClassName: 'flowsheet-group-header'
+    }));
+  }, [timeColumns]);
+
   const processRowUpdate = (newRow: any, oldRow: any) => {
     if (newRow.isHeader) return oldRow; // Updates not allowed on headers
 
@@ -188,9 +210,28 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
 
       if (column && column.isCurrentTime) {
         onUpdateTimeColumn(column.id, { isCurrentTime: false });
-        // Spawn new Now column logic
-        // 2. Create a NEW "Now" column
-        const now = new Date();
+
+        // Spawn new "Now" column logic
+        let now = new Date();
+
+        // Ensure uniqueness down to the second
+        let collision = true;
+        while (collision) {
+          const timeToken = Math.floor(now.getTime() / 1000);
+          // Check against existing columns
+          const isTaken = timeColumns.some((c: TimeColumn) => {
+            const cDate = new Date(c.timestamp);
+            return Math.floor(cDate.getTime() / 1000) === timeToken;
+          });
+
+          if (isTaken) {
+            // Add 1 second
+            now = new Date(now.getTime() + 1000);
+          } else {
+            collision = false;
+          }
+        }
+
         onAddTimeColumn({
           id: uuidv4(),
           timestamp: now.toISOString(),
@@ -232,6 +273,8 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
           right: ['lastFiled']
         }
       }}
+      columnGroupingModel={columnGroupingModel}
+      columnGroupHeaderHeight={28}
       sx={{
         border: 'none',
         width: '100%',
@@ -248,6 +291,14 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         },
         '& .flowsheet-header-row .MuiDataGrid-cell--pinnedRight': {
           bgcolor: '#f5f5f5',
+        },
+        '& .flowsheet-group-header': {
+          bgcolor: '#e0e0e0',
+          fontWeight: 'bold',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          lineHeight: '28px'
         }
       }}
       children={null}

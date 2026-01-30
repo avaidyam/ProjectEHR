@@ -38,6 +38,36 @@ export const Flowsheet = () => {
         if (tab) setActiveTab(tab);
     }, [searchParams]);
 
+    // Data Sanitization: Ensure unique IDs
+    useEffect(() => {
+        if (!flowsheetData) return;
+
+        const seenIds = new Set();
+        let hasDuplicates = false;
+
+        for (const item of flowsheetData) {
+            if (seenIds.has(item.id)) {
+                hasDuplicates = true;
+                break;
+            }
+            seenIds.add(item.id);
+        }
+
+        if (hasDuplicates) {
+            console.warn("Duplicate IDs detected in flowsheet data, sanitizing...");
+            setFlowsheetData((prev: any[]) => {
+                const newIds = new Set();
+                return prev.map((item: any) => {
+                    if (newIds.has(item.id)) {
+                        return { ...item, id: generateId() };
+                    }
+                    newIds.add(item.id);
+                    return item;
+                });
+            });
+        }
+    }, [flowsheetData, setFlowsheetData]);
+
     const handleTabChange = (newTab: string) => {
         setActiveTab(newTab);
         setSearchParams({ tab: newTab }, { replace: true });
