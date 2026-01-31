@@ -7,6 +7,7 @@ import { CreateEncounterDialog } from './CreateEncounterDialog.jsx'
 import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
 import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow.jsx'
 import { OpenPatientChartDialog } from './OpenPatientChartDialog.jsx'
+import { DatabaseManagementWindow } from './DatabaseManagementWindow.jsx'
 
 const placeholders = [
   "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
@@ -36,6 +37,7 @@ export const Titlebar = ({ onLogout }) => {
   const [createEncounterOpen, setCreateEncounterOpen] = useState(false)
   const [manageDeptsOpen, setManageDeptsOpen] = useState(false)
   const [manageFlowsheetsOpen, setManageFlowsheetsOpen] = useState(false)
+  const [dbManagementOpen, setDbManagementOpen] = useState(false)
   const [openPatientChartOpen, setOpenPatientChartOpen] = useState(false)
 
   const handleOpenCreateEncounter = () => {
@@ -175,6 +177,12 @@ export const Titlebar = ({ onLogout }) => {
               }}>
                 Flowsheet Definitions
               </MenuItem>
+              <MenuItem onClick={() => {
+                setDbManagementOpen(true);
+                setAnchorEl(null);
+              }}>
+                Database Management
+              </MenuItem>
             </Menu>
           </Stack>
           <Tabs
@@ -250,6 +258,11 @@ export const Titlebar = ({ onLogout }) => {
       <OpenPatientChartDialog
         open={openPatientChartOpen}
         onClose={() => setOpenPatientChartOpen(false)}
+      />
+
+      <DatabaseManagementWindow
+        open={dbManagementOpen}
+        onClose={() => setDbManagementOpen(false)}
       />
     </>
   )
