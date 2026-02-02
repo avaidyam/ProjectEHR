@@ -1,30 +1,49 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext.jsx';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker } from 'components/ui/Core.jsx';
+import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
+import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
 
 import { useDatabase } from 'components/contexts/PatientContext'
 
-// get today's date and display in text box
-function dateLocal() {
-  return (
-      <DatePicker
-        defaultValue={dayjs(
-          `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`
-        )}
-      />
-  );
-}
+
 
 // filter bar
-function customFilterBar({ setFilterElem }) {
+function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selectedDept, setSelectedDept, schedulesDB, departments, open, setOpen, preview, setPreview, hide, setHide }) {
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer sx={{ gap: 2, alignItems: 'center' }}>
       <GridToolbarFilterButton ref={setFilterElem} />
+      <DatePicker
+        value={selectedDate}
+        onChange={(newValue) => setSelectedDate(newValue)}
+      />
+      <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+        <Select
+          value={selectedDept}
+          onChange={(e) => setSelectedDept(e.target.value)}
+          displayEmpty
+        >
+          {schedulesDB.map((s) => (
+            <MenuItem key={s.department} value={s.department}>
+              {departments.find(d => d.id === s.department)?.name || `Dept ${s.department}`}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <FormControlLabel
+        onClick={() => {
+          setOpen(!open);
+          setPreview(preview === 50 ? 100 : 50);
+          setHide(hide === 0 ? 50 : 0);
+        }}
+        control={<Checkbox checked={open} />}
+        label="Preview"
+      />
     </GridToolbarContainer>
   );
 }
@@ -83,7 +102,9 @@ function changeBarColorByStatus(officeStatus) {
 }
 
 // decide on color of text in status column based on what status is
-function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
+function changeTextByStatus(officeStatus, checkinTime, checkoutTime, locationId, locations) {
+  const roomName = locationId ? (locations.find(l => l.id === locationId)?.name || 'Unknown Room') : 'Unknown Room';
+
   if (officeStatus === 'Scheduled') {
     return changeTextColor('blue', officeStatus, '');
   }
@@ -94,28 +115,28 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
     return changeTextColor(
       'pink',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Waiting') {
     return changeTextColor(
       'orange',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Visit in Progress') {
     return changeTextColor(
       'yellow',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Visit Complete') {
     return changeTextColor(
       'green',
       officeStatus,
-      'Exam Room: '.concat(room, ' (', checkinTime, ')')
+      'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
   if (officeStatus === 'Checked Out') {
@@ -130,7 +151,10 @@ function changeTextByStatus(officeStatus, checkinTime, checkoutTime, room) {
 // takes rows from json file and set columns to make table
 export function Schedule() {
   const [patientsDB] = useDatabase().patients()
-  const [scheduleDB] = useDatabase().schedule()
+  const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
+  const [departments] = useDatabase().departments()
+  const [locations] = useDatabase().locations()
+  const [providers] = useDatabase().providers()
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -139,10 +163,146 @@ export function Schedule() {
   const [filterElem, setFilterElem] = React.useState(null); // for filter
   const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
 
+  const { department, date } = useParams();
+  const navigate = useNavigate();
+
   const [selPatient, setPatient] = React.useState(null);
+
+  // Initialize state from URL or defaults
+  const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDate = date ? dayjs(date) : dayjs()//dayjs('2026-01-01')
+
+  const [selectedDept, setSelectedDept] = React.useState(initialDept);
+  const [selectedDate, setSelectedDate] = React.useState(initialDate);
+
+  // Update URL function
+  const updateUrl = (dept, dateObj) => {
+    const dateStr = dateObj.format('YYYY-MM-DD');
+    navigate(`/schedule/${dept}/${dateStr}`, { replace: true });
+  };
+
+  // Wrapper setters to sync with URL
+  const handleSetSelectedDept = (dept) => {
+    setSelectedDept(dept);
+    updateUrl(dept, selectedDate);
+  };
+
+  const handleSetSelectedDate = (date) => {
+    setSelectedDate(date);
+    updateUrl(selectedDept, date);
+  };
+
+  // Effect to sync state if URL changes externally (e.g. back button)
+  useEffect(() => {
+    if (department) {
+      setSelectedDept(parseInt(department));
+    }
+    if (date) {
+      setSelectedDate(dayjs(date));
+    }
+  }, [department, date]);
+
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
+  const [editingAppointment, setEditingAppointment] = React.useState(null);
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState(null);
+
+  const scheduleDB = React.useMemo(() => {
+    const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
+    return deptSchedule.filter(appt => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+  }, [schedulesDB, selectedDept, selectedDate]);
 
   const patientScheduleClick = (params) => {
     setPatient(params.row);
+  };
+
+  const handleEditAppointment = (appointment) => {
+    setEditingAppointment(appointment);
+    setIsScheduleModalOpen(true);
+  };
+
+  const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes, id }) => {
+    const targetDeptId = parseInt(department);
+
+    // If editing (id exists)
+    if (id) {
+      setSchedulesDB(prev => prev.map(s => {
+        if (s.department === targetDeptId) {
+          return {
+            ...s,
+            appointments: s.appointments.map(appt => {
+              if (appt.id === id) {
+                return {
+                  ...appt,
+                  apptTime: date,
+                  type: type || appt.type,
+                  notes: notes,
+                  cc: cc
+                };
+              }
+              return appt;
+            })
+          };
+        }
+        return s;
+      }));
+      showNotification("Appointment updated successfully", "success");
+    } else {
+      const newAppointment = {
+        id: Math.floor(Math.random() * 100000), // Generate random ID
+        apptTime: date, // ISO format from modal
+        status: "Scheduled",
+        patient: { mrn: patientId, enc: encounterId },
+        officeStatus: "Scheduled",
+        checkinTime: "",
+        checkoutTime: "",
+        location: null,
+        type: type || "Office Visit",
+        notes: notes || "",
+        cc: cc || ""
+      };
+
+      setSchedulesDB(prev => {
+        const index = prev.findIndex(s => s.department === targetDeptId);
+        if (index >= 0) {
+          // Update existing
+          const newSchedules = [...prev];
+          newSchedules[index] = {
+            ...newSchedules[index],
+            appointments: [...newSchedules[index].appointments, newAppointment]
+          };
+          return newSchedules;
+        } else {
+          // Create new entry
+          return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
+        }
+      });
+
+      // Auto-switch to the scheduled department
+      handleSetSelectedDept(targetDeptId);
+      showNotification("Patient scheduled successfully", "success");
+    }
+    setEditingAppointment(null);
+  };
+
+  const handleDeleteClick = (appointment) => {
+    setDeleteConfirmation(appointment);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmation) {
+      const targetDeptId = deleteConfirmation.department; // Ensure appointment has department info attached
+      setSchedulesDB(prev => prev.map(s => {
+        if (s.department === targetDeptId) {
+          return {
+            ...s,
+            appointments: s.appointments.filter(appt => appt.id !== deleteConfirmation.id)
+          };
+        }
+        return s;
+      }));
+      showNotification("Appointment deleted successfully", "success");
+      setDeleteConfirmation(null);
+    }
   };
 
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
@@ -153,25 +313,46 @@ export function Schedule() {
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <div>{dateLocal()}</div>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h5" gutterBottom>Schedule</Typography>
+        <Button variant="contained" onClick={() => { setEditingAppointment(null); setIsScheduleModalOpen(true); }}>Schedule Patient</Button>
+      </Box>
+
       <Notification
         open={notification.open}
         onClose={() => setNotification({ ...notification, open: false })}
         message={notification.message}
         severity={notification.severity}
       />
+      <SchedulePatientModal
+        open={isScheduleModalOpen}
+        onClose={() => { setIsScheduleModalOpen(false); setEditingAppointment(null); }}
+        onSubmit={handleSchedulePatient}
+        patientsDB={patientsDB}
+        departments={departments}
+        appointment={editingAppointment}
+      />
+
+      <Window
+        open={!!deleteConfirmation}
+        onClose={() => setDeleteConfirmation(null)}
+        title="Confirm Delete"
+        footer={
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, width: '100%' }}>
+            <Button onClick={() => setDeleteConfirmation(null)}>Cancel</Button>
+            <Button onClick={handleConfirmDelete} color="error" variant="contained">Delete</Button>
+          </Box>
+        }
+        maxWidth="sm"
+      >
+        <Label>
+          Are you sure you want to delete the appointment for {deleteConfirmation ?
+            `${patientsDB[deleteConfirmation.patient.mrn].firstName} ${patientsDB[deleteConfirmation.patient.mrn].lastName}`
+            : 'this patient'}?
+        </Label>
+      </Window>
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
-        <div style={{ textAlign: 'right' }}>
-          <FormControlLabel
-            onClick={() => {
-              setOpen(!open);
-              setPreview(preview === 50 ? 100 : 50);
-              setHide(hide === 0 ? 50 : 0);
-            }}
-            control={<Checkbox />}
-            label="Preview"
-          />
-        </div>
+
         <div>
           {open && ( // shows text if preview box is checked
             <Typography
@@ -232,7 +413,16 @@ export function Schedule() {
                   );
                 },
               },
-              { field: 'apptTime', headerName: 'Time', width: 100 },
+              {
+                field: 'apptTime',
+                headerName: 'Time',
+                width: 100,
+                renderCell: (params) => (
+                  <Tooltip title={new Date(params.value).toLocaleString()}>
+                    <span>{new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                  </Tooltip>
+                ),
+              },
               {
                 field: 'status',
                 headerName: 'Status',
@@ -243,7 +433,8 @@ export function Schedule() {
                       params.row.officeStatus,
                       params.row.checkinTime,
                       params.row.checkoutTime,
-                      params.row.room
+                      params.row.location,
+                      locations
                     )}
                   </div>
                 ),
@@ -270,9 +461,8 @@ export function Schedule() {
                 },
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${
-                    new Date(data.birthdate).age()
-                  } years old / ${data.gender}`;
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${new Date(data.birthdate).age()
+                    } years old / ${data.gender}`;
                 },
               },
               {
@@ -311,8 +501,9 @@ export function Schedule() {
                 width: 200,
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  const data2 = data.encounters[row.patient.enc]?.provider;
-                  return data2; // `${data2.provider.lastName}, ${data2.provider.firstName}`
+                  const providerId = data.encounters[row.patient.enc]?.provider;
+                  const provider = providers.find(p => p.id === providerId);
+                  return provider ? provider.name : providerId;
                 },
               },
               { field: 'type', headerName: 'Type', width: 100 },
@@ -324,6 +515,44 @@ export function Schedule() {
                   const data = patientsDB[row.patient.mrn]
                   return `${data.insurance.carrierName}`;
                 },
+              },
+              {
+                field: 'edit',
+                headerName: 'Actions',
+                width: 120, // Reduced width since icons are smaller
+                renderCell: (params) => (
+                  <Box sx={{ display: 'flex' }}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row selection
+                        // Need to construct the appointment object with department info since it's flattened
+                        const appt = {
+                          ...params.row,
+                          department: selectedDept
+                        };
+                        handleEditAppointment(appt);
+                      }}
+                    >
+                      edit
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row selection
+                        // Need to construct the appointment object with department info since it's flattened
+                        const appt = {
+                          ...params.row,
+                          department: selectedDept
+                        };
+                        handleDeleteClick(appt);
+                      }}
+                    >
+                      delete
+                    </IconButton>
+                  </Box>
+                ),
               },
             ]}
             onRowClick={patientScheduleClick}
@@ -361,8 +590,21 @@ export function Schedule() {
               panel: {
                 anchorEl: filterElem,
               },
+              // Update slotProps to pass the wrapper setters
               toolbar: {
                 setFilterElem,
+                selectedDate,
+                setSelectedDate: handleSetSelectedDate,
+                selectedDept,
+                setSelectedDept: handleSetSelectedDept,
+                schedulesDB,
+                departments,
+                open,
+                setOpen,
+                preview,
+                setPreview,
+                hide,
+                setHide,
               },
             }}
             initialState={{

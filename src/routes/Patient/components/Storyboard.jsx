@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import DateHelpers from 'util/helpers.js';
-import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import { filterDocuments } from 'util/helpers'
 import { StickyNote } from './StickyNote'
+import {
+  Window, Button, TextField, Icon, IconButton
+} from 'components/ui/Core.jsx';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese
 
-export const VitalsPopup = ({ vitals, ...props }) => {
+export const VitalsPopup = ({ vitals, definition, ...props }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const handleMenuOpen = (e) => {
@@ -19,31 +22,37 @@ export const VitalsPopup = ({ vitals, ...props }) => {
     setOpen(false);
     setAnchorEl(null);
   };
-  const {
-    measurementDate,
-    bloodPressureSystolic,
-    bloodPressureDiastolic,
-    height,
-    weight,
-    bmi,
-    respiratoryRate,
-    heartRate,
-    SpO2,
-    Temp
-  } = vitals[0] ?? {};
+
+  // Determine which rows to show: only those that have at least one non-null value in the vitals array
+  // and are defined in the flowsheet definition.
+  const rowsToShow = definition?.rows?.filter(row => {
+    return vitals.some(v => v[row.name] != null && v[row.name] !== "");
+  }) ?? [];
+
+  // Special handling to combine BP fields
+  let bpRowAdded = false;
+  const processedRows = rowsToShow.flatMap(row => {
+    if (row.name.startsWith('bloodPressure')) {
+      if (bpRowAdded) return [];
+      bpRowAdded = true;
+      return [{ name: 'bp', label: 'Blood Pressure (mmHg)' }];
+    }
+    return [row];
+  });
+
   return (
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
-      <span>Temp: {Temp}</span>
+      <span>Temp: {vitals[0]?.Temp}</span>
       <span
-        style={_isBPProblematic({systolic: bloodPressureSystolic, diastolic: bloodPressureDiastolic}) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({ systolic: vitals[0]?.bloodPressureSystolic, diastolic: vitals[0]?.bloodPressureDiastolic }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BP: {bloodPressureSystolic}/{bloodPressureDiastolic}
+        BP: {vitals[0]?.bloodPressureSystolic}/{vitals[0]?.bloodPressureDiastolic}
       </span>
-      <span>HR: {heartRate}</span>
+      <span>HR: {vitals[0]?.heartRate}</span>
       <span
-        style={_isBMIProblematic({ bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBMIProblematic({ bmi: vitals[0]?.bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BMI: {bmi} ({weight} lbs)
+        BMI: {vitals[0]?.bmi} ({vitals[0]?.weight} lbs)
       </span>
       <Popper open={open} anchorEl={anchorEl} placement="right" transition>
         {({ TransitionProps }) => (
@@ -58,30 +67,25 @@ export const VitalsPopup = ({ vitals, ...props }) => {
             >
               <div style={{ display: 'flex', flexDirection: "column", padding: "10px 10px 10px 10px" }}>
                 <span style={{ visibility: 'hidden' }}>hidden</span>
-                <span>Temperature (˚C)</span>
-                <span>Blood Pressure (mmHg)</span>
-                <span>Pulse Rate (bpm)</span>
-                <span>Respiratory Rate (bpm)</span>
-                <span>SpO2 (%)</span>
-                <span>Height (cm)</span>
-                <span>Weight (kg)</span>
-                <span>BMI (kg/m2)</span>
+                {processedRows.map(row => (
+                  <span key={row.name}>{row.label || row.name}</span>
+                ))}
               </div>
               <div style={{ display: "flex", flex: 1 }}>
-                {vitals.map((vitals) => (
+                {vitals.map((entry) => (
                   <div
-                    key={vitals.measurementDate}
+                    key={entry.date}
                     style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>{DateHelpers.convertToDateTime(vitals.measurementDate).toFormat('MM/dd/yy')}</span>
-                    <span>{vitals.Temp ?? <br />}</span>
-                    <span>{vitals.bloodPressureSystolic}/{vitals.bloodPressureDiastolic}</span>
-                    <span>{vitals.heartRate ?? <br />}</span>
-                    <span>{vitals.respiratoryRate ?? <br />}</span>
-                    <span>{vitals.SpO2 ?? <br />}</span>
-                    <span>{vitals.height ?? <br />}</span>
-                    <span>{vitals.weight ?? <br />}</span>
-                    <span>{vitals.bmi ?? <br />}</span>
+                    <span>{DateHelpers.convertToDateTime(entry.date).toFormat('MM/dd/yy')}</span>
+                    {processedRows.map(row => {
+                      if (row.name === 'bp') {
+                        const { bloodPressureSystolic: sys, bloodPressureDiastolic: dia } = entry;
+                        if (sys == null && dia == null) return <br key={row.name} />;
+                        return <span key={row.name}>{sys ?? 'x'} / {dia ?? 'x'}</span>;
+                      }
+                      return <span key={row.name}>{entry[row.name] ?? <br />}</span>
+                    })}
                   </div>
                 ))}
               </div>
@@ -95,17 +99,20 @@ export const VitalsPopup = ({ vitals, ...props }) => {
 
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
-  const [vitals] = useEncounter().vitals()
+  const [flowsheets] = useEncounter().flowsheets()
   const [documents] = useEncounter().documents()
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
+  const [flowsheetDefs] = useDatabase().flowsheets()
 
-  const vitals2 = filterDocuments(vitals, conditionals, orders)
+  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
+  const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339")
+  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
 
   /** sort most recent to older */
-  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
-  const mostRecentDate = allVitals[0]?.measurementDate;
+  const mostRecentDate = allVitals[0]?.date;
   const mostRecentDT = DateHelpers.convertToDateTime(mostRecentDate);
   const vitalsDateLabel = mostRecentDT && mostRecentDT.isValid ? ` ${DateHelpers.standardFormat(mostRecentDate)}` : '';
   return (
@@ -114,7 +121,7 @@ export const SidebarVitals = ({ ...props }) => {
         Vitals{vitalsDateLabel}
       </Typography>
       {allVitals[0] ? (
-        <VitalsPopup vitals={allVitals} />
+        <VitalsPopup vitals={allVitals} definition={vitalsDefinition} />
       ) : (
         <i>No vitals to display</i>
       )}
@@ -153,7 +160,7 @@ export const SidebarPatientInfo = () => {
         <span>DOB: {DateHelpers.standardFormat(birthdate)}</span>
         <span>MRN: {mrn}</span>
         <strong>Preferred language: {preferredLanguage}</strong>
-        {preferredLanguage !== 'English' && 
+        {preferredLanguage !== 'English' &&
           <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
         }
       </div>
@@ -161,27 +168,167 @@ export const SidebarPatientInfo = () => {
   )
 }
 
+
+
+const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }) => {
+  const [localCareTeam, setLocalCareTeam] = useState(careTeam || []);
+  const [newProviderId, setNewProviderId] = useState('');
+  const [newProviderRole, setNewProviderRole] = useState('');
+
+  // Sync local state when prop changes
+  React.useEffect(() => {
+    setLocalCareTeam(careTeam || []);
+  }, [careTeam]);
+
+  const handleSave = () => {
+    setCareTeam(localCareTeam);
+    onClose();
+  };
+
+  const handleAddMember = () => {
+    if (newProviderId && newProviderRole) {
+      // Check if already exists
+      if (localCareTeam.some(m => m.provider === newProviderId)) {
+        alert("Provider already in care team!");
+        return;
+      }
+      setLocalCareTeam([...localCareTeam, { provider: newProviderId, role: newProviderRole }]);
+      setNewProviderId('');
+      setNewProviderRole('');
+    }
+  };
+
+  const handleRemoveMember = (providerId) => {
+    setLocalCareTeam(localCareTeam.filter(m => m.provider !== providerId));
+  };
+
+  const handleRoleChange = (providerId, newRole) => {
+    setLocalCareTeam(localCareTeam.map(m =>
+      m.provider === providerId ? { ...m, role: newRole } : m
+    ));
+  };
+
+  // Filter out providers already in the team for the dropdown
+  const availableProviders = allProviders.filter(p => !localCareTeam.some(m => m.provider === p.id));
+
+  return (
+    <Window
+      open={open}
+      onClose={onClose}
+      title="Manage Care Team"
+      maxWidth="md"
+      fullWidth
+      footer={
+        <Button variant="contained" onClick={handleSave}>Save Changes</Button>
+      }
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {/* List of current members */}
+        {localCareTeam.map((member) => {
+          const provider = allProviders.find(p => p.id === member.provider);
+          return (
+            <Box key={member.provider} sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 1, border: '1px solid #eee', borderRadius: 1 }}>
+              <Avatar
+                src={provider?.avatarUrl}
+                sx={{ bgcolor: colors.blue[500], height: 40, width: 40 }}
+              >
+                {provider?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
+              </Avatar>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="subtitle1">{provider?.name}</Typography>
+                <Typography variant="caption" color="textSecondary">{provider?.specialty}</Typography>
+              </Box>
+              <TextField
+                label="Role"
+                size="small"
+                value={member.role}
+                onChange={(e) => handleRoleChange(member.provider, e.target.value)}
+                sx={{ width: 150 }}
+              />
+              <IconButton onClick={() => handleRemoveMember(member.provider)} color="error">
+                <Icon>delete</Icon>
+              </IconButton>
+            </Box>
+          );
+        })}
+
+        {localCareTeam.length === 0 && <Typography sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No care team members assigned.</Typography>}
+
+        <Divider sx={{ my: 1 }}>Add New Member</Divider>
+
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
+          <FormControl fullWidth size="small">
+            <InputLabel>Provider</InputLabel>
+            <Select
+              value={newProviderId}
+              label="Provider"
+              onChange={(e) => setNewProviderId(e.target.value)}
+            >
+              {availableProviders.map(p => (
+                <MenuItem key={p.id} value={p.id}>{p.name} - {p.specialty}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Role"
+            size="small"
+            fullWidth
+            value={newProviderRole}
+            onChange={(e) => setNewProviderRole(e.target.value)}
+          />
+          <Button variant="contained" onClick={handleAddMember} disabled={!newProviderId || !newProviderRole}>
+            Add
+          </Button>
+        </Box>
+      </Box>
+    </Window>
+  );
+};
+
 export const SidebarCareTeam = () => {
-  const { useChart, useEncounter } = usePatient();
-  const [PCP, setPCP] = useChart().PCP();
-  const [insurance, setInsurance] = useChart().insurance();
+  const { useChart } = usePatient();
+  const [careTeam, setCareTeam] = useChart().careTeam();
+  const [providers] = useDatabase().providers();
+  const [insurance] = useChart().insurance();
+  const [open, setOpen] = useState(false);
+
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: "column", marginBottom: '1em' }}>
-        <div style={{ display: 'flex', marginBottom: '0.5em' }}>
-          <Avatar
-            src={PCP?.avatarUrl}
-            sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
-          >
-            {PCP?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
-          </Avatar>
-          <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
-            <span>{PCP?.name}, {PCP?.title}</span>
-            <strong>{PCP?.role}</strong>
-          </div>
-        </div>
+      <div
+        style={{ display: 'flex', flexDirection: "column", marginBottom: '1em', cursor: 'pointer' }}
+        onClick={() => setOpen(true)}
+      >
+        <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em', marginBottom: '0.5em' }}>
+          Care Team <Icon sx={{ fontSize: '0.8em', verticalAlign: 'middle', opacity: 0.5 }}>edit</Icon>
+        </Typography>
+        {(careTeam || []).map((member) => {
+          const provider = providers.find(p => p.id === member.provider);
+          return (
+            <div key={member.provider} style={{ display: 'flex', marginBottom: '0.5em' }}>
+              <Avatar
+                src={provider?.avatarUrl}
+                sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
+              >
+                {provider?.name.split(" ").map(x => x?.charAt(0) ?? '').join("")}
+              </Avatar>
+              <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
+                <span>{provider?.name}</span>
+                <strong>{member.role}</strong>
+              </div>
+            </div>
+          )
+        })}
+        {(!careTeam || careTeam.length === 0) && <i>Click to add care team</i>}
       </div>
       <span>Coverage: <span style={{ textTransform: 'uppercase' }}>{insurance?.carrierName}</span></span>
+
+      <CareTeamDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        careTeam={careTeam}
+        setCareTeam={setCareTeam}
+        allProviders={providers}
+      />
     </>
   )
 }
@@ -193,13 +340,13 @@ export const SidebarAllergies = () => {
     <>
       {allergies && allergies.length > 0 ? (
         allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
-          <Alert 
-          icon ={false}
-            sx={{ 
-              mt: .5, py:0.1,
-              bgcolor: '#ffcb00', 
-              color: 'black', 
-              fontWeight: 'bold', 
+          <Alert
+            icon={false}
+            sx={{
+              mt: .5, py: 0.1,
+              bgcolor: '#ffcb00',
+              color: 'black',
+              fontWeight: 'bold',
             }}
           >
             Allergies: {allergies.map(a => a.allergen).join(", ")}
@@ -219,7 +366,7 @@ export const SidebarClinicalImpressions = () => {
   const [clinicalImpressions, setClinicalImpressions] = useEncounter().clinicalImpressions();
   return (
     <>
-      <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em'}}>
+      <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em' }}>
         Clinical Impressions
       </Typography>
       {clinicalImpressions?.length > 0 ? (
@@ -237,42 +384,43 @@ export const SidebarClinicalImpressions = () => {
 
 export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
-  const [vitals] = useEncounter().vitals();
+  const [flowsheets] = useEncounter().flowsheets();
   const [documents] = useEncounter().documents();
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
-  const vitals2 = filterDocuments(vitals, conditionals, orders)
+  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
+  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
   const documents2 = filterDocuments(documents, conditionals, orders)
 
   /** sort most recent to older */
-  const _t = (x) => DateHelpers.convertToDateTime(x.measurementDate).toMillis()
+  const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
   const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
   const labs = documents2
-                .filter(d => d.kind === "Lab")
-                .toSorted((a, b) => _t2(b) - _t2(a))
-                .flatMap(d => d.labResults)
-                .filter(x => x.name === "WBC")
-                .map(x => x.value > x.high)
-                .filter(x => x)
+    .filter(d => d.kind === "Lab")
+    .toSorted((a, b) => _t2(b) - _t2(a))
+    .flatMap(d => d.labResults)
+    .filter(x => x.name === "WBC")
+    .map(x => x.value > x.high)
+    .filter(x => x)
 
   // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11
-  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0) 
+  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0)
 
-  return isSepsis ? 
-    <Alert 
+  return isSepsis ?
+    <Alert
       icon={false}
-      sx={{ 
-        mt: .5, py:0.1,
-        bgcolor: '#ffcb00', 
-        color: 'black', 
-        fontWeight: 'bold', 
+      sx={{
+        mt: .5, py: 0.1,
+        bgcolor: '#ffcb00',
+        color: 'black',
+        fontWeight: 'bold',
       }}
     >
       Sepsis Alert
-    </Alert> : 
+    </Alert> :
     <></>
 }
 
@@ -307,12 +455,12 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <SidebarAllergies />
       <Divider sx={{ bgcolor: "primary.light" }} />
-      {!!encounter ? 
+      {!!encounter ?
         <>
           <Typography variant="h6">Encounter</Typography>
           <Typography>Type: {encounter?.type}</Typography>
           <Typography>Date: {encounter?.startDate}</Typography>
-          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography> 
+          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography>
         </> :
         <>
           <Typography variant="h6">Chart Review</Typography>

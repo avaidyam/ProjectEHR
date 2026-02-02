@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, GlobalStyles } from '@mui/material';
 import 'util/helpers.js';
 
-import { App } from './routes/App.jsx'; 
+import { App } from './routes/App.jsx';
 import { AuthProvider } from './components/contexts/AuthContext.jsx';
 
 const theme = createTheme({
@@ -18,10 +18,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme} defaultMode="system">
       <CssBaseline />
+      <GlobalStyles styles={{
+        html: { height: '100%', overflow: 'hidden', overscrollBehavior: 'none' },
+        body: { height: '100%', overflow: 'hidden', overscrollBehavior: 'none', userSelect: 'none', WebkitUserSelect: 'none' },
+        '#root': { height: '100%', display: 'flex', flexDirection: 'column' },
+        'input, textarea, [contenteditable="true"]': { userSelect: 'text', WebkitUserSelect: 'text', cursor: 'auto' }
+      }} />
       <HashRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </HashRouter>
     </ThemeProvider>
   </React.StrictMode>

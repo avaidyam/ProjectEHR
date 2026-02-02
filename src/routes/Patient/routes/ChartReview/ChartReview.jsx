@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
-import { Box, Divider, Button, Label, DataGrid } from 'components/ui/Core'
+import { Box, Divider, Button, Label, DataGrid, Icon } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import LabReport from '../LabReport/LabReport.jsx';
 import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 import { filterDocuments } from 'util/helpers'
+import { NewLabResultDialog } from './NewLabResultDialog';
+import { NewImagingResultDialog } from './NewImagingResultDialog';
 
 const tabLabels = [
   "Encounters",
@@ -41,11 +43,11 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 
     if (selectedTabLabel === 'Lab') {
       // Open new tabs in the main view
-      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
       // Cardiac Labs special case
-      setMainTabs(prev => [...prev, {"Lab Report": { labReport: row }}])
+      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
       const isPathologySlide = row.data.accessionNumber?.startsWith("PATH") || row.data.id?.startsWith("PATH")
@@ -58,7 +60,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: false } }]);
       setSelectedMainTab(mainTabs.length)
     } else if (selectedTabLabel === 'Note') {
-      setSideTabs(prev => [...prev, {"Note": { selectedRow: row }}])
+      setSideTabs(prev => [...prev, { "Note": { selectedRow: row } }])
       setSelectedSideTab(sideTabs.length)
     } else {
       // TODO: handle other tabs somehow?
@@ -106,7 +108,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
                   ))}
                   <Divider />
                   {(selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') && selectedRow && (
-                    <ImagingTabContent selectedRow={selectedRow} viewerId={viewerId}/>
+                    <ImagingTabContent selectedRow={selectedRow} viewerId={viewerId} />
                   )}
                 </div>
               )}
@@ -128,6 +130,8 @@ export const ChartReview = ({ ...props }) => {
   const [documents1] = useEncounter().documents()
 
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
+  const [isNewResultOpen, setIsNewResultOpen] = useState(false);
+  const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
@@ -140,27 +144,66 @@ export const ChartReview = ({ ...props }) => {
 
   const documents = filterDocuments(documents2, conditionals, orders)
 
-  const encountersData = Object.values(chart.encounters).map(x => ({
-    kind: 'Encounters',
-    data: {
-      date: x.startDate,
-      type: x.type,
-      department: x.department,
-      specialty: x.specialty,
-      provider: x.provider
-    }
-  }))
+  const [departments] = useDatabase().departments()
+  const [providers] = useDatabase().providers()
 
-  
+  const encountersData = Object.values(chart.encounters).map(x => {
+    const dept = departments.find(d => d.id === x.department)
+    const prov = providers.find(p => p.id === x.provider)
+
+    return {
+      kind: 'Encounters',
+      data: {
+        date: x.startDate,
+        type: x.type,
+        department: dept ? dept.name : x.department,
+        specialty: prov ? prov.specialty : '',
+        provider: prov ? prov.name : x.provider
+      }
+    }
+  })
+
+  const handleSaveNewLabResult = (newDoc) => {
+    const encounterId = encounter.id;
+    const newEncounters = { ...chart.encounters };
+
+    if (newEncounters[encounterId]) {
+      newEncounters[encounterId] = {
+        ...newEncounters[encounterId],
+        documents: [...newEncounters[encounterId].documents, newDoc]
+      };
+
+      const newChart = { ...chart, encounters: newEncounters };
+      setChart(newChart);
+      setEncounter(newEncounters[encounterId]);
+    }
+  };
+
+  const handleSaveNewImaging = (newDoc) => {
+    const encounterId = encounter.id;
+    const newEncounters = { ...chart.encounters };
+
+    if (newEncounters[encounterId]) {
+      newEncounters[encounterId] = {
+        ...newEncounters[encounterId],
+        documents: [...newEncounters[encounterId].documents, newDoc]
+      };
+
+      const newChart = { ...chart, encounters: newEncounters };
+      setChart(newChart);
+      setEncounter(newEncounters[encounterId]);
+    }
+  };
+
   return (
     <div>
       <Label variant="h6" sx={{ p: 1, pb: 0 }}>Chart Review</Label>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs 
-          variant="scrollable" 
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: 2 }}>
+        <Tabs
+          variant="scrollable"
           textColor="inherit"
           scrollButtons="auto"
-          allowScrollButtonsMobile 
+          allowScrollButtonsMobile
           value={selectedTabLabel}
           onChange={(event, newValue) => setSelectedTabLabel(newValue)}>
           {tabLabels.map((label) => (
@@ -171,8 +214,38 @@ export const ChartReview = ({ ...props }) => {
             />
           ))}
         </Tabs>
+        {selectedTabLabel === 'Lab' && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => setIsNewResultOpen(true)}
+          >
+            New Result
+          </Button>
+        )}
+        {selectedTabLabel === 'Imaging' && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => setIsNewImagingOpen(true)}
+          >
+            New Result
+          </Button>
+        )}
       </Box>
       <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
+      <NewLabResultDialog
+        open={isNewResultOpen}
+        onClose={() => setIsNewResultOpen(false)}
+        onSave={handleSaveNewLabResult}
+      />
+      <NewImagingResultDialog
+        open={isNewImagingOpen}
+        onClose={() => setIsNewImagingOpen(false)}
+        onSave={handleSaveNewImaging}
+      />
     </div>
   );
 };

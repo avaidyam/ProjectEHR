@@ -13,11 +13,11 @@ export const StickyNote = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useChart, useEncounter } = usePatient();
   const encounterAccessor = useEncounter();
-  
+
   // Access encounter directly and manage stickyNotes property to avoid double nesting
   let stickyNoteData = {};
-  let setStickyNoteData = () => {};
-  
+  let setStickyNoteData = () => { };
+
   try {
     if (encounterAccessor && typeof encounterAccessor === 'function') {
       const [encounterData, setEncounterData] = encounterAccessor();
@@ -25,8 +25,8 @@ export const StickyNote = () => {
       setStickyNoteData = (updater) => {
         setEncounterData(prev => ({
           ...prev,
-          stickyNotes: typeof updater === 'function' 
-            ? updater(prev?.stickyNotes ?? {}) 
+          stickyNotes: typeof updater === 'function'
+            ? updater(prev?.stickyNotes ?? {})
             : updater
         }));
       };
@@ -73,7 +73,7 @@ export const StickyNote = () => {
   // overwrite local editing state). This keeps the sticky-note local state
   // stable while still using the encounter-backed accessor when available.
   const stickyNoteDataRef = useRef({});
-  const setStickyNoteDataRef = useRef(() => {});
+  const setStickyNoteDataRef = useRef(() => { });
 
   // Ensure stickyNoteData is always an object
   const safeStickyNoteData = stickyNoteData && typeof stickyNoteData === 'object' ? stickyNoteData : {};
@@ -346,30 +346,30 @@ export const StickyNote = () => {
                 overflow: 'hidden',
               }}
             >
-            <Box
-              className="drag-handle-private"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                p: 0,
-                pb: 0,
-                cursor: 'move',
-                userSelect: 'none',
-              }}
-            >
-              <Icon sx={{ color: '#fbc02d', fontSize: '1rem' }}>sticky_note_2</Icon>
-              <Box component="span" sx={{ fontWeight: 'bold', color: '#fbc02d', flexGrow: 1, fontSize: '1rem' }}>
-                My Sticky Note
-              </Box>
-              <IconButton
-                onClick={handleClosePrivate}
-                size="small"
-                sx={{ color: '#fbc02d', padding: 0, minWidth: 'auto' }}
+              <Box
+                className="drag-handle-private"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  p: 0,
+                  pb: 0,
+                  cursor: 'move',
+                  userSelect: 'none',
+                }}
               >
-                <Icon sx={{ fontSize: '1rem' }}>close</Icon>
-              </IconButton>
-            </Box>
+                <Icon sx={{ color: '#fbc02d', fontSize: '1rem' }}>sticky_note_2</Icon>
+                <Box component="span" sx={{ fontWeight: 'bold', color: '#fbc02d', flexGrow: 1, fontSize: '1rem' }}>
+                  My Sticky Note
+                </Box>
+                <IconButton
+                  onClick={handleClosePrivate}
+                  size="small"
+                  sx={{ color: '#fbc02d', padding: 0, minWidth: 'auto' }}
+                >
+                  <Icon sx={{ fontSize: '1rem' }}>close</Icon>
+                </IconButton>
+              </Box>
               <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <TextareaAutosize
                   minRows={2}
@@ -432,79 +432,79 @@ export const StickyNote = () => {
                 overflow: 'hidden',
               }}
             >
-            <Box
-              className="drag-handle-dept"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.75,
-                p: 0,
-                pb: 0,
-                cursor: 'move',
-                userSelect: 'none',
-              }}
-            >
-              <Icon sx={{ color: '#2196f3', fontSize: '1rem' }}>sticky_note_2</Icon>
-              <Box component="span" sx={{ fontWeight: 'bold', color: '#2196f3', flexGrow: 1, fontSize: '1rem' }}>
-                {currentDept || 'Department'} Comments
-              </Box>
-              <IconButton
-                onClick={handleCloseDept}
-                size="small"
-                sx={{ color: '#2196f3', padding: 0, minWidth: 'auto' }}
+              <Box
+                className="drag-handle-dept"
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  p: 0,
+                  pb: 0,
+                  cursor: 'move',
+                  userSelect: 'none',
+                }}
               >
-                <Icon sx={{ fontSize: '1rem' }}>close</Icon>
-              </IconButton>
-            </Box>
-            <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ mb: 1 }}>
-                <FormControl fullWidth size="small">
-                  <Select
-                    value={currentDept}
-                    onChange={(e) => handleDepartmentChange(e.target.value)}
-                    displayEmpty
-                    MenuProps={{
-                      PaperProps: { 
-                        style: { zIndex: 10000 }
-                      }
-                    }}
-                    sx={{
-                      backgroundColor: 'background.paper',
-                      fontSize: '0.95rem',
-                      '& .MuiSelect-select': { padding: '6px 8px' },
-                      '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' },
-                    }}
-                  >
-                    <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
-                    {departmentsDB.map(x => (<MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.name}>{x.name}</MenuItem>))}
-                  </Select>
-                </FormControl>
+                <Icon sx={{ color: '#2196f3', fontSize: '1rem' }}>sticky_note_2</Icon>
+                <Box component="span" sx={{ fontWeight: 'bold', color: '#2196f3', flexGrow: 1, fontSize: '1rem' }}>
+                  {currentDept ? (departmentsDB.find(d => d.id === currentDept)?.name || 'Department') : 'Department'} Comments
+                </Box>
+                <IconButton
+                  onClick={handleCloseDept}
+                  size="small"
+                  sx={{ color: '#2196f3', padding: 0, minWidth: 'auto' }}
+                >
+                  <Icon sx={{ fontSize: '1rem' }}>close</Icon>
+                </IconButton>
               </Box>
+              <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ mb: 1 }}>
+                  <FormControl fullWidth size="small">
+                    <Select
+                      value={currentDept}
+                      onChange={(e) => handleDepartmentChange(e.target.value)}
+                      displayEmpty
+                      MenuProps={{
+                        PaperProps: {
+                          style: { zIndex: 10000 }
+                        }
+                      }}
+                      sx={{
+                        backgroundColor: 'background.paper',
+                        fontSize: '0.95rem',
+                        '& .MuiSelect-select': { padding: '6px 8px' },
+                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' },
+                      }}
+                    >
+                      <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
+                      {departmentsDB.map(x => (<MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
+                    </Select>
+                  </FormControl>
+                </Box>
 
-              <Box sx={{ p: 0, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <TextareaAutosize
-                  minRows={2}
-                  value={deptContent}
-                  onChange={handleDeptContentChange}
-                  placeholder={currentDept ? `Enter notes for ${currentDept}...` : "Please select a department first"}
-                  disabled={!currentDept}
-                  style={{
-                    flex: 1,
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    border: `1px solid ${currentDept ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,
-                    borderRadius: 6,
-                    padding: 4,
-                    backgroundColor: 'transparent',
-                    color: currentDept ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.6)',
-                    resize: 'none',
-                    height: '100%',
-                    fontSize: '1rem',
-                    lineHeight: 1.4
-                  }}
-                />
+                <Box sx={{ p: 0, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                  <TextareaAutosize
+                    minRows={2}
+                    value={deptContent}
+                    onChange={handleDeptContentChange}
+                    placeholder={currentDept ? `Enter notes for ${departmentsDB.find(d => d.id === currentDept)?.name || 'Department'}...` : "Please select a department first"}
+                    disabled={!currentDept}
+                    style={{
+                      flex: 1,
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      border: `1px solid ${currentDept ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,
+                      borderRadius: 6,
+                      padding: 4,
+                      backgroundColor: 'transparent',
+                      color: currentDept ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.6)',
+                      resize: 'none',
+                      height: '100%',
+                      fontSize: '1rem',
+                      lineHeight: 1.4
+                    }}
+                  />
+                </Box>
               </Box>
-            </Box>
               {/* Resize handle bottom-right for department window */}
               <Box
                 onMouseDown={(e) => startResizing('department', e)}

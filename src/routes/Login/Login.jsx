@@ -10,7 +10,7 @@ import { useDatabase } from 'components/contexts/PatientContext'
 
 export const Login = ({ setIsLoggedIn }) => {
   const [patientsDB] = useDatabase().patients()
-  const [schedule] = useDatabase().schedule()
+  const [schedules] = useDatabase().schedules()
   const [departments] = useDatabase().departments()
 
   const [displayDepts, setDisplayDepts] = useState(false);
@@ -40,15 +40,17 @@ export const Login = ({ setIsLoggedIn }) => {
     setPromptState({ ...promptState, open: false });
   };
 
-  // Extract unique MRNs from patient_sample.json -> schedule
+  // Extract unique MRNs from patient_sample.json -> schedules
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
+    const allAppointments = schedules.flatMap(s => s.appointments);
+    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn)));
     setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
-  }, []);
+  }, [schedules]);
 
   // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
   useEffect(() => {
-    const uniqueMRNs = Array.from(new Set(schedule.map((appt) => appt.patient.mrn)));
+    const allAppointments = schedules.flatMap(s => s.appointments);
+    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn)));
 
     // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
@@ -58,7 +60,7 @@ export const Login = ({ setIsLoggedIn }) => {
     }, {});
 
     setEncounterCounts(encountersHash); // Update state with the hash
-  }, []);
+  }, [schedules, patientsDB]);
 
   useEffect(() => {
     if (Object.keys(enabledEncounters).length === 0 && patients.length > 0) {
@@ -122,7 +124,7 @@ export const Login = ({ setIsLoggedIn }) => {
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", position: "relative", bgcolor: "primary.dark" }}>
       <Paper elevation={6} sx={{ p: 4, minHeight: "98vh", width: "100%", maxWidth: 600, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", position: "relative" }}>
         <Typography variant="h2" sx={{ color: "primary.main", fontStyle: "italic", fontWeight: 900 }}>ProjectEHR</Typography>
-        <Box component="form" sx={{ display: !displayDepts ? 'block' : 'none', width: "100%" }} onSubmit={(e) => { setDisplayDepts(true); e.preventDefault()}}>
+        <Box component="form" sx={{ display: !displayDepts ? 'block' : 'none', width: "100%" }} onSubmit={(e) => { setDisplayDepts(true); e.preventDefault() }}>
           <TextField
             fullWidth
             margin="normal"
@@ -202,16 +204,16 @@ export const Login = ({ setIsLoggedIn }) => {
             )}
           />
           <Stack direction="row" spacing={2} sx={{ mt: 2, mb: 2 }}>
-            <Button fullWidth sx={{ }} variant="contained" type="submit">
+            <Button fullWidth sx={{}} variant="contained" type="submit">
               Continue
             </Button>
-            <Button fullWidth sx={{ }} variant="outlined" type="submit">
+            <Button fullWidth sx={{}} variant="outlined" type="submit">
               Cancel
             </Button>
           </Stack>
         </Box>
-        <Box 
-          sx={{ position: "absolute", bottom: 20, left: 20, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }} 
+        <Box
+          sx={{ position: "absolute", bottom: 20, left: 20, zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }}
           onClick={handleConfigure}
         >
           <Icon style={{ fontSize: '36px', cursor: 'pointer' }}>settings</Icon>
