@@ -41,7 +41,9 @@ import {
   DatePicker as MUIDatePicker
 } from '@mui/x-date-pickers-pro'
 import {
-  DataGridPremium as MUIDataGrid
+  DataGridPremium as MUIDataGrid,
+  useGridApiRef as MUIuseGridApiRef,
+  useKeepGroupedColumnsHidden as MUIuseKeepGroupedColumnsHidden
 } from '@mui/x-data-grid-premium'
 import {
   RichTreeViewPro as MUIRichTreeView,
@@ -436,3 +438,6 @@ export function useLazyEffect(effect, deps = [], wait = 250) {
       cleanUp.current instanceof Function ? cleanUp.current() : undefined
   }, [])
 }
+
+export const useGridApiRef = MUIuseGridApiRef
+export const useKeepGroupedColumnsHidden = MUIuseKeepGroupedColumnsHidden
