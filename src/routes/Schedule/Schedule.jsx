@@ -170,7 +170,7 @@ export function Schedule() {
 
   // Initialize state from URL or defaults
   const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
-  const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
+  const initialDate = date ? dayjs(date) : dayjs()//dayjs('2026-01-01')
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
   const [selectedDate, setSelectedDate] = React.useState(initialDate);
