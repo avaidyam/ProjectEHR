@@ -4,7 +4,7 @@ import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
 function Pdmp() {
   const { useEncounter } = usePatient();
-  const [dispenseHistory, setDispenseHistory] = useEncounter().dispenseHistory();
+  const [dispenseHistory, setDispenseHistory] = useEncounter().dispenseHistory([]);
   const [providers] = useDatabase().providers();
   const apiRef = useGridApiRef();
 
