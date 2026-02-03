@@ -29,7 +29,9 @@ import {
   DialogContent as MUIDialogContent,
   DialogContentText as MUIDialogContentText,
   DialogTitle as MUIDialogTitle,
-  Tab as MUITab
+  Tab as MUITab,
+  Menu as MUIMenu,
+  MenuItem as MUIMenuItem
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -439,5 +441,18 @@ export function useLazyEffect(effect, deps = [], wait = 250) {
   }, [])
 }
 
+
 export const useGridApiRef = MUIuseGridApiRef
 export const useKeepGroupedColumnsHidden = MUIuseKeepGroupedColumnsHidden
+
+export const Menu = ({ children, ...props }) => (
+  <MUIMenu {...props}>
+    {children}
+  </MUIMenu>
+)
+
+export const MenuItem = ({ children, ...props }) => (
+  <MUIMenuItem {...props}>
+    {children}
+  </MUIMenuItem>
+)

@@ -8,6 +8,7 @@ import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
 import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow.jsx'
 import { OpenPatientChartDialog } from './OpenPatientChartDialog.jsx'
 import { DatabaseManagementWindow } from './DatabaseManagementWindow.jsx'
+import { PDMPManagerWindow } from './PDMPManagerWindow.jsx'
 
 const placeholders = [
   "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
@@ -39,6 +40,12 @@ export const Titlebar = ({ onLogout }) => {
   const [manageFlowsheetsOpen, setManageFlowsheetsOpen] = useState(false)
   const [dbManagementOpen, setDbManagementOpen] = useState(false)
   const [openPatientChartOpen, setOpenPatientChartOpen] = useState(false)
+  const [pdmpManagerOpen, setPdmpManagerOpen] = useState(false)
+
+  // Extract MRN and EncounterID from URL if present
+  const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/);
+  const currentMrn = match ? match[1] : null;
+  const currentEncID = match ? match[2] : null;
 
   const handleOpenCreateEncounter = () => {
     // Check if we are on a patient chart
@@ -165,6 +172,14 @@ export const Titlebar = ({ onLogout }) => {
               }}>
                 Open Patient Chart
               </MenuItem>
+              <MenuItem
+                disabled={!currentMrn || !currentEncID}
+                onClick={() => {
+                  setPdmpManagerOpen(true);
+                  setAnchorEl(null);
+                }}>
+                PDMP Manager
+              </MenuItem>
               <MenuItem onClick={() => {
                 setManageDeptsOpen(true);
                 setAnchorEl(null);
@@ -263,6 +278,13 @@ export const Titlebar = ({ onLogout }) => {
       <DatabaseManagementWindow
         open={dbManagementOpen}
         onClose={() => setDbManagementOpen(false)}
+      />
+
+      <PDMPManagerWindow
+        open={pdmpManagerOpen}
+        onClose={() => setPdmpManagerOpen(false)}
+        mrn={currentMrn}
+        encounterId={currentEncID}
       />
     </>
   )
