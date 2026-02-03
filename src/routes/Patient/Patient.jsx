@@ -28,6 +28,7 @@ import Demographics from './routes/Demographics/Demographics.jsx';
 import BottomBar from './components/BottomBar.jsx';
 import { EncounterAlert } from './components/EncounterAlert.jsx'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
+import EditNote from './routes/EditNote/EditNote.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -50,6 +51,7 @@ const ALL_TABS = {
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
   "Flowsheet": (props) => <Flowsheet {...props} />,
+  "Edit Note": (props) => <EditNote {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
@@ -61,7 +63,7 @@ const DEFAULT_MAIN_TABS = [
 ]
 
 const DEFAULT_SIDE_TABS = [
-  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} },
+  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} }, { "Edit Note": {} },
 ]
 
 export const Patient = ({ ...props }) => {

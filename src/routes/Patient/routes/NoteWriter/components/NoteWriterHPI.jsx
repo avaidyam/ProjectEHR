@@ -1,15 +1,14 @@
 // NoteWriterHPI.js
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Button, FormControl, MenuItem, Select, TextField, List, ListItem, Paper, Icon } from '@mui/material';
-import { Editor } from 'components/ui/Editor.jsx';
 
 // Eventually this will be much more robust, and will have a map to each of the HPI Forms, but for now it's just a simple map
-const HPI_FORM_MAP = { 
-  34: 'Diabetes', 
-  266: 'Hypertension', 
-  22: 'CHF', 
-  150: 'Animal Bite', 
-  11: 'Asthma' 
+const HPI_FORM_MAP = {
+  34: 'Diabetes',
+  266: 'Hypertension',
+  22: 'CHF',
+  150: 'Animal Bite',
+  11: 'Asthma'
 };
 
 const NoteWriterHPI = ({ editorState, setEditorState }) => {
@@ -44,8 +43,7 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
   return (
     <form style={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ position: 'relative', flexGrow: 1 }}>
-        <Editor initialContent={editorState} onSave={setEditorState} />
-        <Box 
+        <Box
           ref={textFieldRef}
           sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1, width: '300px' }}
           onBlur={handleBlur}
@@ -74,20 +72,6 @@ const NoteWriterHPI = ({ editorState, setEditorState }) => {
             </Paper>
           )}
         </Box>
-      </Box>
-
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 3 }}>
-        <FormControl sx={{ minWidth: 220 }} size="small">
-          <Select value={submitOption} onChange={(event) => setSubmitOption(event.target.value)} displayEmpty>
-            <MenuItem value={0}>Pend on Accept</MenuItem>
-            <MenuItem value={1}>Sign on Accept</MenuItem>
-            <MenuItem value="">Sign when Signing Visit</MenuItem>
-          </Select>
-        </FormControl>
-        {/* Getting rid of the submit changing MRN for now (may want to add some submit funcitonality prior to backend, what this is tho*/}
-        <Button variant="contained" >
-          Submit
-        </Button>
       </Box>
     </form>
   );

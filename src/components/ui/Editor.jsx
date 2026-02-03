@@ -380,10 +380,10 @@ export function EditorReadOnly({ value }) {
       content={value}
       extensions={extensions}
     />
-  ) 
+  )
 }
 
-export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter=false, initialContent, onSave }) {
+export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter = false, initialContent, onSave, onUpdate }) {
   const extensions = useExtensions({
     placeholder: placeholder,
   });
@@ -391,6 +391,12 @@ export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter=
   const [isEditable, setIsEditable] = useState(true);
   const [showMenuBar, setShowMenuBar] = useState(true);
   const [submittedContent, setSubmittedContent] = useState(initialContent);
+
+  const handleUpdate = useCallback(({ editor }) => {
+    if (onUpdate) {
+      onUpdate(editor.getHTML());
+    }
+  }, [onUpdate]);
 
   const handleNewImageFiles = useCallback(
     (files, insertPosition) => {
@@ -482,6 +488,7 @@ export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter=
       content={submittedContent}
       editable={isEditable}
       editorProps={{ handleDrop, handlePaste }}
+      onUpdate={handleUpdate}
       renderControls={() => <EditorMenuControls />}
       RichTextFieldProps={{
         // The "outlined" variant is the default (shown here only as

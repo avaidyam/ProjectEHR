@@ -1,76 +1,13 @@
-// This component is used to render the Review of Systems (ROS) section of the NoteWriter tab.
-// Right now, it will render a list of body systems with checkboxes for each symptom and a "Neg" checkbox to mark all symptoms as negative.
-// Depending on what the user selects, the ROS text will be updated automatically in the editor.
-
+// NoteWriterROS.jsx
 import React, { useState, useEffect } from 'react';
 import { FormControlLabel, Checkbox, Box, Typography, IconButton, Icon, Grid } from '@mui/material';
-import CustomNoteModal from './CustomNoteModal.jsx'; // Import the custom note modal component
-
-
-const replaceROSText = (editorState, rosState) => {
-  const contentState = editorState.getCurrentContent();
-  const blocks = contentState.getBlockMap().toArray();
-
-  let rosText = "";
-  Object.entries(rosState).forEach(([systemName, symptoms]) => {
-    const positives = [];
-    const negatives = [];
-    let customNote = null;
-
-    Object.entries(symptoms).forEach(([symptom, state]) => {
-      if (state === true) positives.push(symptom);
-      if (state === false) negatives.push(symptom);
-      if (symptom === 'custom' && state) customNote = state;
-    });
-
-    if (positives.length || negatives.length || customNote) {
-      if (rosText === '') rosText = "Review of Systems:\n";
-      rosText += `${systemName.charAt(0).toUpperCase() + systemName.slice(1)}: `;
-      if (positives.length) rosText += `Positive for ${positives.join(", ")}. `;
-      if (negatives.length) rosText += `Negative for ${negatives.join(", ")}. `;
-      if (customNote) rosText += `${customNote}. `;
-      rosText += '\n';
-    }
-  });
-
-  const startIndex = blocks.findIndex(block => block.getText().includes("Review of Systems:"));
-  let contentStateWithoutROS = contentState;
-
-  if (startIndex !== -1) {
-    const startKey = blocks[startIndex].getKey();
-    const selectionState = SelectionState.createEmpty(startKey).merge({
-      focusKey: startKey,
-      focusOffset: blocks[startIndex].getLength(),
-    });
-
-    contentStateWithoutROS = Modifier.replaceText(
-      contentState,
-      selectionState,
-      rosText
-    );
-  } else {
-    contentStateWithoutROS = Modifier.insertText(
-      contentState,
-      contentState.getSelectionAfter(),
-      rosText
-    );
-  }
-
-  // If content hasn't changed, return the original editor state
-  if (contentStateWithoutROS === contentState) {
-    return editorState;
-  }
-
-  return EditorState.push(editorState, contentStateWithoutROS, 'insert-characters');
-};
+import CustomNoteModal from './CustomNoteModal.jsx';
 
 const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSystemState }) => {
-  const [isNegChecked, setIsNegChecked] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for controlling modal visibility
-  const [currentCustomNote, setCurrentCustomNote] = useState(''); // State to hold the custom note
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentCustomNote, setCurrentCustomNote] = useState('');
 
   const handleNegCheck = (e) => {
-    setIsNegChecked(e.target.checked);
     updateSystemState(
       symptoms.reduce(
         (acc, symptom) => ({
@@ -84,16 +21,16 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
 
   const handleCustomNote = () => {
     const existingNote = systemState?.custom || '';
-    setCurrentCustomNote(existingNote); // Set the current note
-    setIsModalOpen(true); // Open the modal
+    setCurrentCustomNote(existingNote);
+    setIsModalOpen(true);
   };
 
   const handleSaveCustomNote = (newCustomNote) => {
     updateSystemState({
       ...systemState,
-      custom: newCustomNote, // Update the custom note
+      custom: newCustomNote,
     });
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
   };
 
   const allNegative = Object.values(systemState ?? {}).every((state) => state === false);
@@ -110,15 +47,11 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between">
         <Grid item>
           <IconButton onClick={handleCustomNote}>
-            <Icon
-              sx={{ color: systemState?.custom ? '#2e8fff' : 'inherit' }} // Change to light blue if custom note exists
-            >description</Icon>
+            <Icon sx={{ color: systemState?.custom ? '#2e8fff' : 'inherit' }}>description</Icon>
           </IconButton>
         </Grid>
         <Grid item xs>
-          <Typography variant="h6" sx={{ marginLeft: 2 }}>
-            {title}
-          </Typography>
+          <Typography variant="h6" sx={{ marginLeft: 2 }}>{title}</Typography>
         </Grid>
         <Grid item>
           <FormControlLabel
@@ -134,35 +67,21 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
             <Grid item xs={12}>
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '4px',
-                  borderRadius: 1,
-                  backgroundColor:
-                    systemState[symptom] === true
-                      ? 'red'
-                      : systemState[symptom] === false
-                      ? 'green'
-                      : '#f0f0f0',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '4px', borderRadius: 1,
+                  backgroundColor: systemState[symptom] === true ? 'red' : systemState[symptom] === false ? 'green' : '#f0f0f0',
                   color: systemState[symptom] != null ? 'white' : 'black',
-                  cursor: 'pointer',
-                  width: '100%',
-                  height: '30px',
+                  cursor: 'pointer', width: '100%', height: '30px',
                 }}
               >
                 <Typography sx={{ marginLeft: 2 }}>{symptom}</Typography>
                 <Box>
-                  <IconButton
-                    onClick={() => handleSymptomClick(symptom, true)}
-                    sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
-                  >
+                  <IconButton onClick={() => handleSymptomClick(symptom, true)}
+                    sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}>
                     <Icon>add</Icon>
                   </IconButton>
-                  <IconButton
-                    onClick={() => handleSymptomClick(symptom, false)}
-                    sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}
-                  >
+                  <IconButton onClick={() => handleSymptomClick(symptom, false)}
+                    sx={{ color: systemState[symptom] === false ? 'white' : 'inherit' }}>
                     <Icon>remove</Icon>
                   </IconButton>
                 </Box>
@@ -172,7 +91,6 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
         ))}
       </Box>
 
-      {/* Custom Note Modal */}
       <CustomNoteModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -186,17 +104,11 @@ const BodySystemComponent = React.memo(({ title, symptoms, systemState, updateSy
 
 
 const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bodySystems }) => {
+  // We can re-introduce auto-update logic here if needed, or rely on Button in Parent
+  // For now, let's assume the parent might fetch the Note content using the generator.
 
-  /*
-  useEffect(() => {
-    const newEditorState = replaceROSText(editorState, rosState);
-    
-    // Avoid setting state if the new editor state is identical to the current one
-    if (newEditorState.getCurrentContent() !== editorState.getCurrentContent()) {
-      setEditorState(newEditorState);
-    }
-  }, [rosState, setEditorState]); // Remove `editorState` from the dependency array
-  */
+  // Optionally, we could update the Editor immediately here using HTML replacement, 
+  // but simpler to let the User click "Generate" or the Parent handle it.
 
   return (
     <Box sx={{ padding: 2 }}>
@@ -206,13 +118,13 @@ const NoteWriterROS = ({ editorState, setEditorState, rosState, setRosState, bod
             <BodySystemComponent
               title={system.title}
               symptoms={system.symptoms}
-              systemState={rosState[system.title.toLowerCase()]} // Pass specific state slice
+              systemState={rosState[system.title.toLowerCase()]}
               updateSystemState={(updatedSymptoms) =>
                 setRosState(prevState => ({
                   ...prevState,
                   [system.title.toLowerCase()]: updatedSymptoms,
                 }))
-              } // Function to update state slice
+              }
             />
           </Grid>
         ))}
