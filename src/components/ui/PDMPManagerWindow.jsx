@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete } from 'components/ui/Core.jsx';
+import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete, IconButton } from 'components/ui/Core.jsx';
 import { useDatabase } from 'components/contexts/PatientContext';
 
 export const PDMPManagerWindow = ({ open, onClose, mrn, encounterId }) => {
@@ -23,6 +23,7 @@ export const PDMPManagerWindow = ({ open, onClose, mrn, encounterId }) => {
     );
 };
 
+// ... DrugPicker and ProviderPicker (unchanged) ...
 const DrugPicker = ({ value, onChange }) => {
     const [orderables] = useDatabase().orderables();
 
@@ -153,6 +154,10 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }) => {
         });
     };
 
+    const handleDelete = (id) => {
+        setDispenseHistory(prev => prev.filter((_, idx) => idx !== id));
+    };
+
     if (view === 'add') {
         return (
             <Stack spacing={2} sx={{ p: 2 }}>
@@ -223,6 +228,16 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }) => {
                         { field: 'quantity', headerName: 'Qty', width: 80 },
                         { field: 'prescriber', headerName: 'Prescriber', width: 150 },
                         { field: 'dispensedFormatted', headerName: 'Dispensed', width: 120 },
+                        {
+                            field: 'actions',
+                            headerName: '',
+                            width: 50,
+                            renderCell: (params) => (
+                                <IconButton onClick={() => handleDelete(params.id)} size="small">
+                                    <Icon>delete</Icon>
+                                </IconButton>
+                            )
+                        }
                     ]}
                     density="compact"
                     disableRowSelectionOnClick

@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataGrid, Box, dayjs, useGridApiRef, useKeepGroupedColumnsHidden } from 'components/ui/Core';
+import { DataGrid, Box, dayjs, useGridApiRef, useKeepGroupedColumnsHidden, TitledCard, Icon } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
 function Pdmp() {
@@ -30,7 +30,12 @@ function Pdmp() {
   });
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
+    <TitledCard
+      emphasized
+      color="#9F3494"
+      title={<><Icon sx={{ verticalAlign: 'text-bottom', mr: 1 }}>history</Icon> Medication Dispense History</>}
+      sx={{ m: 2 }}
+    >
       <DataGrid
         apiRef={apiRef}
         rows={rows}
@@ -49,7 +54,7 @@ function Pdmp() {
         disableRowSelectionOnClick
         groupingColDef={{ leafField: 'drugName' }}
       />
-    </Box>
+    </TitledCard>
   );
 }
 
