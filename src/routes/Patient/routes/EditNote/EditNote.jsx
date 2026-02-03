@@ -28,7 +28,7 @@ const EditNote = () => {
     const [_, setDocuments] = useEncounter().documents();
     const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
     const [departments] = useDatabase().departments();
-    const { setSideTabs } = useSplitView();
+    const { setSideTabs, setMainTabs } = useSplitView();
 
     useEffect(() => {
         if (!activeNote) {
@@ -41,6 +41,11 @@ const EditNote = () => {
             });
         }
     }, [activeNote, setActiveNote]);
+
+    const closeTabs = () => {
+        setSideTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "Edit Note"));
+        setMainTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "NoteWriter"));
+    }
 
     const handleAccept = () => {
         setDocuments(prev => [...prev, {
@@ -56,8 +61,7 @@ const EditNote = () => {
             }
         }])
         setActiveNote(null);
-        // close the tab
-        setSideTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "Edit Note"));
+        closeTabs();
     };
 
     const [isUnsavedDialogVisible, setIsUnsavedDialogVisible] = useState(false);
@@ -66,14 +70,14 @@ const EditNote = () => {
         if (activeNote?.editorState || activeNote?.summary || activeNote?.noteType || activeNote?.service) {
             setIsUnsavedDialogVisible(true);
         } else {
-            setSideTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "Edit Note"));
+            closeTabs();
         }
     }
 
     const handleDiscard = () => {
         setIsUnsavedDialogVisible(false);
         setActiveNote(null);
-        setSideTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "Edit Note"));
+        closeTabs();
     }
 
     return (
@@ -97,7 +101,7 @@ const EditNote = () => {
                                 type="datetime-local"
                                 variant="standard"
                                 size="small"
-                                value={activeNote.date || ""}
+                                value={activeNote?.date ?? ""}
                                 onChange={(e) => setActiveNote({ ...activeNote, date: e.target.value })}
                                 sx={{ width: 190 }}
                             />
@@ -106,7 +110,7 @@ const EditNote = () => {
                             <Label variant="body2" color="text.secondary">Type:</Label>
                             <Autocomplete
                                 options={NOTE_TYPES}
-                                value={activeNote.noteType || null}
+                                value={activeNote?.noteType ?? null}
                                 onChange={(_, newValue) => setActiveNote({ ...activeNote, noteType: newValue })}
                                 fullWidth
                                 size="small"
@@ -118,7 +122,7 @@ const EditNote = () => {
                             <Autocomplete
                                 options={departments}
                                 getOptionLabel={(option) => option.name || ""}
-                                value={activeNote.service || null}
+                                value={activeNote?.service ?? null}
                                 onChange={(_, newValue) => setActiveNote({ ...activeNote, service: newValue })}
                                 fullWidth
                                 size="small"
@@ -133,7 +137,7 @@ const EditNote = () => {
                     <TextField
                         variant="standard"
                         fullWidth
-                        value={activeNote.summary || ""}
+                        value={activeNote?.summary ?? ""}
                         onChange={(e) => setActiveNote({ ...activeNote, summary: e.target.value })}
                         InputProps={{ disableUnderline: false }}
                     />
@@ -148,7 +152,7 @@ const EditNote = () => {
             }}>
                 <Editor
                     disableStickyFooter
-                    initialContent={activeNote.editorState || ""}
+                    initialContent={activeNote?.editorState ?? ""}
                     onSave={(val) => setActiveNote(prev => ({ ...prev, editorState: val }))}
                     onUpdate={(val) => setActiveNote(prev => ({ ...prev, editorState: val }))}
                 />

@@ -57,7 +57,7 @@ const ALL_TABS = {
 const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
-  { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
+  { "Results Review": {} }, { "Immunizations": {} },
   { "Allergies": {} }, { "Demographics": {} }, { "PDMP": {} },
   { "Flowsheet": {} }
 ]
