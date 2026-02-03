@@ -36,6 +36,12 @@ const TabWithMenu = ({ onMove, onClose, ...props }) => {
                     event.preventDefault()
                     setAnchorEl(event.currentTarget)
                 }}
+                sx={{
+                    whiteSpace: 'nowrap',
+                    minHeight: 48,
+                    height: 48,
+                    ...props.sx
+                }}
                 {...props}
             />
             <Menu
@@ -59,11 +65,112 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
     const [sideTabs, setSideTabs] = useState(defaultSideTabs)
     const [selectedMainTab, setSelectedMainTab] = useState(0)
     const [selectedSideTab, setSelectedSideTab] = useState(0)
+
+    const closeMainTab = (index) => {
+        const newTabs = mainTabs.filter((_, i) => i !== index)
+        setMainTabs(newTabs)
+        setSelectedMainTab(prevSelected => {
+            if (newTabs.length === 0) return 0
+            if (index === prevSelected) {
+                // Closing currently selected tab - select closest neighbor
+                return Math.min(index, newTabs.length - 1)
+            } else if (index < prevSelected) {
+                // Closing a tab before selected - shift index down
+                return prevSelected - 1
+            }
+            return prevSelected
+        })
+    }
+
+    const closeSideTab = (index) => {
+        const newTabs = sideTabs.filter((_, i) => i !== index)
+        setSideTabs(newTabs)
+        setSelectedSideTab(prevSelected => {
+            if (newTabs.length === 0) return 0
+            if (index === prevSelected) {
+                // Closing currently selected tab - select closest neighbor
+                return Math.min(index, newTabs.length - 1)
+            } else if (index < prevSelected) {
+                // Closing a tab before selected - shift index down
+                return prevSelected - 1
+            }
+            return prevSelected
+        })
+    }
+
+    /**
+     * Close a tab by name
+     * @param {string} name - The name of the tab to close
+     * @param {"main"|"side"|null} pane - Which pane to search ("main", "side", or null for either)
+     * @returns {boolean} - True if a tab was closed, false otherwise
+     */
+    const closeTab = (name, pane = null) => {
+        if (pane === null || pane === "main") {
+            const index = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
+            if (index !== -1) {
+                closeMainTab(index)
+                return true
+            }
+        }
+
+        if (pane === null || pane === "side") {
+            const index = sideTabs.findIndex(tab => Object.keys(tab)[0] === name)
+            if (index !== -1) {
+                closeSideTab(index)
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * Open a tab, or select it if it already exists
+     * @param {string} name - The name of the tab
+     * @param {any} data - The data to pass to the tab
+     * @param {"main"|"side"} pane - Which pane to open in ("main" or "side")
+     * @param {boolean} selectIfExists - If true and tab exists, select it instead of opening duplicate
+     * @returns {number} - The index of the opened/selected tab
+     */
+    const openTab = (name, data, pane = "main", selectIfExists = true) => {
+        if (pane === "main") {
+            const existingIndex = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
+            if (existingIndex !== -1 && selectIfExists) {
+                setSelectedMainTab(existingIndex)
+                return existingIndex
+            }
+
+            const newTab = { [name]: data }
+            setMainTabs(prev => [...prev, newTab])
+            const newIndex = mainTabs.length
+            setSelectedMainTab(newIndex)
+            return newIndex
+        } else if (pane === "side") {
+            const existingIndex = sideTabs.findIndex(tab => Object.keys(tab)[0] === name)
+            if (existingIndex !== -1 && selectIfExists) {
+                setSelectedSideTab(existingIndex)
+                return existingIndex
+            }
+
+            const newTab = { [name]: data }
+            setSideTabs(prev => [...prev, newTab])
+            const newIndex = sideTabs.length
+            setSelectedSideTab(newIndex)
+            return newIndex
+        }
+
+        return -1
+    }
+
     const providerState = {
         mainTabs, setMainTabs,
         sideTabs, setSideTabs,
         selectedMainTab, setSelectedMainTab,
         selectedSideTab, setSelectedSideTab,
+        closeMainTab,
+        closeSideTab,
+        closeTab,
+        openTab,
     }
 
     return (
@@ -127,9 +234,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                                         value={i}
                                                         key={i}
                                                         child={<TabWithMenu
-                                                            onClose={() => {
-                                                                setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                                            }}
+                                                            onClose={() => closeMainTab(i)}
                                                             onMove={() => {
                                                                 setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
                                                                 setSideTabs(prev => [...prev, { [k]: v }])
@@ -179,9 +284,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                                             value={i}
                                                             key={i}
                                                             child={<TabWithMenu
-                                                                onClose={() => {
-                                                                    setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                                                }}
+                                                                onClose={() => closeSideTab(i)}
                                                                 onMove={() => {
                                                                     setMainTabs(prev => [...prev, { [k]: v }])
                                                                     setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))

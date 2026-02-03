@@ -26,7 +26,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
-  const { mainTabs, setMainTabs, setSelectedMainTab, sideTabs, setSideTabs, setSelectedSideTab } = useSplitView()
+  const { openTab } = useSplitView()
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
@@ -42,26 +42,20 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
     //setTableWidth('50%');
 
     if (selectedTabLabel === 'Lab') {
-      // Open new tabs in the main view
-      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
-      setSelectedMainTab(mainTabs.length)
+      openTab("Lab Report", { labReport: row }, "main", false)
     } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
       // Cardiac Labs special case
-      setMainTabs(prev => [...prev, { "Lab Report": { labReport: row } }])
-      setSelectedMainTab(mainTabs.length)
+      openTab("Lab Report", { labReport: row }, "main", false)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
       const isPathologySlide = row.data.accessionNumber?.startsWith("PATH") || row.data.id?.startsWith("PATH")
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: !isPathologySlide } }]);
-      setSelectedMainTab(mainTabs.length)
+      openTab("Imaging Viewer", { selectedRow: row, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false)
     } else if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
       // EKG special case
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      setMainTabs(prev => [...prev, { "Imaging Viewer": { selectedRow: row, viewerId: viewerId, convertMonochrome: false } }]);
-      setSelectedMainTab(mainTabs.length)
+      openTab("Imaging Viewer", { selectedRow: row, viewerId: viewerId, convertMonochrome: false }, "main", false)
     } else if (selectedTabLabel === 'Note') {
-      setSideTabs(prev => [...prev, { "Note": { selectedRow: row } }])
-      setSelectedSideTab(sideTabs.length)
+      openTab("Note", { selectedRow: row }, "side", false)
     } else {
       // TODO: handle other tabs somehow?
     }
@@ -129,27 +123,18 @@ export const ChartReview = ({ ...props }) => {
   const [orders] = useEncounter().orders()
   const [documents1] = useEncounter().documents()
 
-  const { sideTabs, setSideTabs, setSelectedSideTab, setMainTabs } = useSplitView()
+  const { openTab } = useSplitView()
 
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [isNewResultOpen, setIsNewResultOpen] = useState(false);
   const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
   const handleNewNote = () => {
-    // Open Edit Note (side tab)
-    const existingIndex = sideTabs.findIndex(tab => Object.keys(tab)[0] === "Edit Note");
-    if (existingIndex !== -1) {
-      setSelectedSideTab(existingIndex);
-    } else {
-      setSideTabs(prev => [...prev, { "Edit Note": {} }]);
-      setSelectedSideTab(sideTabs.length); // Use current length as new index
-    }
+    // Open Edit Note (side tab) - select if exists
+    openTab("Edit Note", {}, "side", true);
 
-    // Make NoteWriter available (main tab) but don't auto-open
-    setMainTabs(prev => {
-      if (prev.find(tab => Object.keys(tab)[0] === "NoteWriter")) return prev;
-      return [...prev, { "NoteWriter": {} }];
-    });
+    // Make NoteWriter available (main tab) but don't auto-select
+    openTab("NoteWriter", {}, "main", false);
   };
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS

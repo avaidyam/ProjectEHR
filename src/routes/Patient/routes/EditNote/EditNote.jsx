@@ -28,7 +28,7 @@ const EditNote = () => {
     const [_, setDocuments] = useEncounter().documents();
     const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
     const [departments] = useDatabase().departments();
-    const { setSideTabs, setMainTabs } = useSplitView();
+    const { closeTab } = useSplitView();
 
     useEffect(() => {
         if (!activeNote) {
@@ -43,8 +43,8 @@ const EditNote = () => {
     }, [activeNote, setActiveNote]);
 
     const closeTabs = () => {
-        setSideTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "Edit Note"));
-        setMainTabs(prev => prev.filter(tab => Object.keys(tab)[0] !== "NoteWriter"));
+        closeTab("Edit Note", "side");
+        closeTab("NoteWriter", "main");
     }
 
     const handleAccept = () => {
