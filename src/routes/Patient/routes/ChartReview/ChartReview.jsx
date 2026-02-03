@@ -129,9 +129,33 @@ export const ChartReview = ({ ...props }) => {
   const [orders] = useEncounter().orders()
   const [documents1] = useEncounter().documents()
 
+  const { sideTabs, setSideTabs, setSelectedSideTab } = useSplitView()
+
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [isNewResultOpen, setIsNewResultOpen] = useState(false);
   const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
+
+  const handleNewNote = () => {
+    setSideTabs(prev => {
+      const existingIndex = prev.findIndex(tab => Object.keys(tab)[0] === "Edit Note");
+      if (existingIndex !== -1) {
+        setSelectedSideTab(existingIndex);
+        return prev;
+      }
+      return [...prev, { "Edit Note": {} }];
+    });
+    // Set selected tab to the end (newly added) if it didn't exist
+    // Note: Due to async state update, we might need a workaround or just optimistically set it.
+    // However, if we're using the functional update pattern for setSideTabs, we can't easily know the new length *inside* that call to use for setSelectedSideTab immediately.
+    // A better way is:
+    const existingIndex = sideTabs.findIndex(tab => Object.keys(tab)[0] === "Edit Note");
+    if (existingIndex !== -1) {
+      setSelectedSideTab(existingIndex);
+    } else {
+      setSideTabs(prev => [...prev, { "Edit Note": {} }]);
+      setSelectedSideTab(sideTabs.length); // Use current length as new index
+    }
+  };
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
@@ -232,6 +256,16 @@ export const ChartReview = ({ ...props }) => {
             onClick={() => setIsNewImagingOpen(true)}
           >
             New Result
+          </Button>
+        )}
+        {selectedTabLabel === 'Note' && (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={handleNewNote}
+          >
+            New Note
           </Button>
         )}
       </Box>

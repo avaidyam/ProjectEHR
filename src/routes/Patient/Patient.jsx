@@ -63,7 +63,7 @@ const DEFAULT_MAIN_TABS = [
 ]
 
 const DEFAULT_SIDE_TABS = [
-  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} }, { "Edit Note": {} },
+  { "Orders": {} }, { "Clinical Impressions": {} }, { "Chat": {} }, { "Handoff": {} },
 ]
 
 export const Patient = ({ ...props }) => {
