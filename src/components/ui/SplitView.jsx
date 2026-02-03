@@ -27,7 +27,7 @@ const DraggableTab = ({ index, child, ...props }) => {
     );
 }
 
-const TabWithMenu = ({ onMove, onClose, ...props }) => {
+const TabWithMenu = ({ onMove, onClose, isSelected, ...props }) => {
     const [anchorEl, setAnchorEl] = React.useState(null)
     return (
         <>
@@ -42,14 +42,33 @@ const TabWithMenu = ({ onMove, onClose, ...props }) => {
                     height: 48,
                     ...props.sx
                 }}
+                style={{ marginLeft: "-8px", marginRight: "-8px" }}
                 {...props}
+                iconPosition="end"
+                icon={<IconButton
+                    size="small"
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        setAnchorEl(e.currentTarget)
+                    }}
+                    sx={{ color: 'inherit', visibility: isSelected ? undefined : "hidden" }}
+                    style={{ marginLeft: "-8px", marginRight: "-16px" }}
+                >
+                    <span className="material-icons">expand_more</span>
+                </IconButton>}
             />
             <Menu
                 anchorEl={anchorEl}
                 open={!!anchorEl}
                 onClose={() => setAnchorEl(null)}>
-                <MenuItem onClick={onMove}>Move to Sidebar</MenuItem>
-                <MenuItem onClick={onClose}>Close</MenuItem>
+                <MenuItem onClick={() => {
+                    onMove()
+                    setAnchorEl(null)
+                }}>Move to Sidebar</MenuItem>
+                <MenuItem onClick={() => {
+                    onClose()
+                    setAnchorEl(null)
+                }}>Close</MenuItem>
             </Menu>
         </>
     )
@@ -235,6 +254,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                                                         value={i}
                                                         key={i}
                                                         child={<TabWithMenu
+                                                            isSelected={selectedMainTab === i}
                                                             onClose={() => closeMainTab(i)}
                                                             onMove={() => {
                                                                 setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
@@ -335,6 +355,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                                                             value={i}
                                                             key={i}
                                                             child={<TabWithMenu
+                                                                isSelected={selectedSideTab === i}
                                                                 onClose={() => closeSideTab(i)}
                                                                 onMove={() => {
                                                                     setMainTabs(prev => [...prev, { [k]: v }])
