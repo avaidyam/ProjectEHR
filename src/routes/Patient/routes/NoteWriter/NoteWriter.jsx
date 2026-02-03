@@ -146,18 +146,18 @@ const physicalExamBodySystems = [
     subsections: [
       {
         // subsectionTitle: 'General', 
-        checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'], 
-        symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'], 
-      }, 
+        checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'],
+        symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'],
+      },
     ],
   },
-  { 
-    title: 'Neck', 
-    subsections: [ 
-      { 
-        checkboxes: ['ROM Normal', 'Supple'], 
-        symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'], 
-      }, 
+  {
+    title: 'Neck',
+    subsections: [
+      {
+        checkboxes: ['ROM Normal', 'Supple'],
+        symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'],
+      },
     ],
   },
   {
@@ -289,20 +289,20 @@ const physicalExamBodySystems = [
       },
       {
         subsectionTitle: 'Ears (Left)',
-        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'], 
-        symptoms: ['Impacted Cerumen'], 
-      }, 
-      { 
-        subsectionTitle: 'Nose', 
-        checkboxes: ['Nose Normal'], 
-        symptoms: ['Congestion', 'Rhinorrhea'], 
-      }, 
-      { 
-        subsectionTitle: 'Mouth/Throat', 
-        checkboxes: ['Moist'], 
-        symptoms: ['Clear', 'Exudate', 'Erythema'], 
-      }, 
-    ], 
+        checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'],
+        symptoms: ['Impacted Cerumen'],
+      },
+      {
+        subsectionTitle: 'Nose',
+        checkboxes: ['Nose Normal'],
+        symptoms: ['Congestion', 'Rhinorrhea'],
+      },
+      {
+        subsectionTitle: 'Mouth/Throat',
+        checkboxes: ['Moist'],
+        symptoms: ['Clear', 'Exudate', 'Erythema'],
+      },
+    ],
   },
   {
     title: 'Cardiovascular',
@@ -339,7 +339,7 @@ export const Notewriter = () => {
 
   const generateInitialRosState = (systems) => {
     const initialState = {};
-  
+
     systems.forEach(system => {
       const systemState = {};
       system.symptoms.forEach(symptom => {
@@ -348,24 +348,24 @@ export const Notewriter = () => {
       systemState['custom'] = null; // Add a custom entry for custom ROS text (DescriptionIcon)
       initialState[system.title.toLowerCase()] = systemState;
     });
-  
+
     return initialState;
   };
 
   const generateInitialPEState = (systems) => {
     // We need a separate function to generate the initial state for the physical exam because it has subsections
     const initialState = {};
-  
+
     systems.forEach(system => {
       const systemState = {};
       system.subsections.forEach((subsection, idx) => {
         const subsectionTitle = subsection.subsectionTitle ? subsection.subsectionTitle.toLowerCase() : '';
-        systemState[subsectionTitle] = {symptoms: null, checkboxes: null}; // Initial state for each subsection is null
+        systemState[subsectionTitle] = { symptoms: null, checkboxes: null }; // Initial state for each subsection is null
       });
       initialState[system.title.toLowerCase()] = systemState;
       systemState['custom'] = null; // Add a custom entry for custom PE text (DescriptionIcon)
     });
-  
+
     return initialState;
   };
 
@@ -376,23 +376,31 @@ export const Notewriter = () => {
   // const [editorState, setEditorState] = useState(() => (temporaryStorage.patientMRN?.enc?.editorState) ?? EditorState.createEmpty());
   // const [peState, setPEState] = useState(temporaryStorage.patientMRN?.enc?.peState ?? generateInitialPEState(physicalExamBodySystems));
   // const [rosState, setRosState] = useState(temporaryStorage.patientMRN?.enc?.rosState ?? generateInitialRosState(bodySystems));
-  
+
+  const [activeContextId, setActiveContextId] = useState(null);
+  const currentContextId = `${patientMRN}-${enc}`;
+
   useEffect(() => {
-    if(temporaryStorage[patientMRN]?.[enc] === undefined) {
-      temporaryStorage[patientMRN] = {
-        [enc]: {
-          editorState: exampleContent,// EditorState.createEmpty(),
-          peState: generateInitialPEState(physicalExamBodySystems),
-          rosState: generateInitialRosState(bodySystems)
-        }
-      }
+    if (!patientMRN || !enc) return;
+
+    if (temporaryStorage[patientMRN]?.[enc] === undefined) {
+      if (!temporaryStorage[patientMRN]) temporaryStorage[patientMRN] = {};
+
+      temporaryStorage[patientMRN][enc] = {
+        editorState: exampleContent,
+        peState: generateInitialPEState(physicalExamBodySystems),
+        rosState: generateInitialRosState(bodySystems)
+      };
     }
-  }, []);
+    setActiveContextId(currentContextId);
+  }, [patientMRN, enc, currentContextId]);
 
   const handleTabChange = (newTab, idx) => {
     setSelectedTabLabel(newTab);
     setSelectedTabIndex(idx);
   };
+
+  const isReady = activeContextId === currentContextId;
 
   return (
     <div>
@@ -405,21 +413,22 @@ export const Notewriter = () => {
             variant={selectedTabIndex === idx ? "filled" : "outlined"}
             color={selectedTabIndex === idx ? "primary" : "default"}
             style={{ margin: 5 }}
+            disabled={!isReady}
           />
         ))}
       </Box>
-      {selectedTabLabel === 'HPI' && (
+      {isReady && selectedTabLabel === 'HPI' && (
         <NoteWriterHPI editorState={editorState} setEditorState={setEditorState} />
       )}
-      {selectedTabLabel === 'ROS' && (
-        <NoteWriterROS 
+      {isReady && selectedTabLabel === 'ROS' && (
+        <NoteWriterROS
           editorState={editorState} setEditorState={setEditorState}
           rosState={rosState} setRosState={setRosState} bodySystems={bodySystems} />
       )}
-      {selectedTabLabel === 'Physical Exam' && (
-        <NoteWriterPE 
+      {isReady && selectedTabLabel === 'Physical Exam' && (
+        <NoteWriterPE
           editorState={editorState} setEditorState={setEditorState}
-          peState={peState} setPEState={setPEState} bodySystemsPE={physicalExamBodySystems}/>
+          peState={peState} setPEState={setPEState} bodySystemsPE={physicalExamBodySystems} />
       )}
     </div>
   );
