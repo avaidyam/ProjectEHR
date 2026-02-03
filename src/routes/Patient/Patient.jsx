@@ -57,9 +57,12 @@ const ALL_TABS = {
 const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
-  { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Demographics": {} }, { "PDMP": {} },
-  { "Flowsheet": {} }
+  { "Results Review": {} },
+]
+
+const OVERFLOW_MENU_TABS = [
+  { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
+  { "PDMP": {} }, { "Flowsheet": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
@@ -106,6 +109,7 @@ export const Patient = ({ ...props }) => {
             <SplitView
               defaultMainTabs={DEFAULT_MAIN_TABS}
               defaultSideTabs={DEFAULT_SIDE_TABS}
+              overflowMenuTabs={OVERFLOW_MENU_TABS}
               tabsDirectory={ALL_TABS}
               accessories={
                 <IconButton

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
-import { Box, Tab, Stack, Menu, MenuItem, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea/dnd";
 import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext.jsx';
@@ -55,7 +55,7 @@ const TabWithMenu = ({ onMove, onClose, ...props }) => {
     )
 }
 
-export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, accessories, ...props }) => {
+export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }) => {
     const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
     const [isCollapsed, setCollapsed] = useState(false)
 
@@ -65,6 +65,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
     const [sideTabs, setSideTabs] = useState(defaultSideTabs)
     const [selectedMainTab, setSelectedMainTab] = useState(0)
     const [selectedSideTab, setSelectedSideTab] = useState(0)
+    const [overflowMenuAnchor, setOverflowMenuAnchor] = useState(null)
 
     const closeMainTab = (index) => {
         const newTabs = mainTabs.filter((_, i) => i !== index)
@@ -246,6 +247,56 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, tabsDirectory, acc
                                             </TabList>
                                         )}
                                     </Droppable>
+                                    <IconButton
+                                        size="small"
+                                        sx={{ color: 'inherit', borderRadius: 1, ml: 'auto' }}
+                                        onClick={(e) => setOverflowMenuAnchor(e.currentTarget)}
+                                    >
+                                        <span className="material-icons">more_vert</span>
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={overflowMenuAnchor}
+                                        open={!!overflowMenuAnchor}
+                                        onClose={() => setOverflowMenuAnchor(null)}
+                                    >
+                                        {(() => {
+                                            const currentMainTabNames = mainTabs.flatMap(x => Object.keys(x));
+                                            const currentSideTabNames = sideTabs.flatMap(x => Object.keys(x));
+
+                                            const closedDefaultMainTabs = defaultMainTabs
+                                                .flatMap(x => Object.entries(x))
+                                                .filter(([name, data]) => !currentMainTabNames.includes(name))
+                                                .map(([name, data]) => ({ name, data, pane: "main" }));
+
+                                            const closedDefaultSideTabs = defaultSideTabs
+                                                .flatMap(x => Object.entries(x))
+                                                .filter(([name, data]) => !currentSideTabNames.includes(name))
+                                                .map(([name, data]) => ({ name, data, pane: "side" }));
+
+                                            const overflowTabs = overflowMenuTabs
+                                                .flatMap(x => Object.entries(x))
+                                                .filter(([name, data]) => !currentMainTabNames.includes(name) && !currentSideTabNames.includes(name))
+                                                .map(([name, data]) => ({ name, data, pane: "main" }));
+
+                                            const allClosedDefaultTabs = [...closedDefaultMainTabs, ...closedDefaultSideTabs, ...overflowTabs];
+
+                                            if (allClosedDefaultTabs.length === 0) {
+                                                return <MenuItem disabled>No closed tabs</MenuItem>;
+                                            }
+
+                                            return allClosedDefaultTabs.map(({ name, data, pane }) => (
+                                                <MenuItem
+                                                    key={name}
+                                                    onClick={() => {
+                                                        openTab(name, data, pane, false);
+                                                        setOverflowMenuAnchor(null);
+                                                    }}
+                                                >
+                                                    {name}
+                                                </MenuItem>
+                                            ));
+                                        })()}
+                                    </Menu>
                                 </Stack>
                                 <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                                     {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
