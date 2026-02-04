@@ -20,20 +20,41 @@ const tabLabels = [
   "Referrals"
 ];
 
+const CARDIAC_ORDERS = [
+  "EKG",
+  "ECG",
+  "Echocardiogram",
+  "CT CORONARY ANGIOGRAM",
+  "CT CORONARY ANGIOGRAM (POST-PCI)"
+];
+
 export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
   const { openTab } = useSplitView()
 
-  const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
+  const filteredData = selectedTabLabel ? data.filter(item => {
+    const isCardiac = CARDIAC_ORDERS.some(t => (item.Test || item.exam || "").includes(t))
+    if (selectedTabLabel === 'Cardiac') return isCardiac;
+    if (item.kind !== selectedTabLabel) return false;
+    return !isCardiac;
+  }) : [];
 
   const getRowData = (row) => row.data || row;
 
-  const columns = filteredData.length > 0 ? Object.keys(getRowData(filteredData[0])).filter(column => column !== 'id' && column !== 'content' && column !== 'image' && column !== 'kind') : [];
+  const getAllKeys = (data) => {
+    const keys = new Set();
+    data.forEach(row => {
+      Object.keys(getRowData(row)).forEach(key => keys.add(key));
+    });
+    return Array.from(keys);
+  };
+
+  const columns = filteredData.length > 0 ? getAllKeys(filteredData).filter(column => column !== 'id' && column !== 'content' && column !== 'image' && column !== 'kind' && column !== 'enc') : [];
 
   const visibleColumns = columns.filter(column =>
-    filteredData.every(row => {
+    filteredData.some(row => {
       const d = getRowData(row);
       return d[column] !== undefined && d[column] !== null && d[column] !== ''
     })
@@ -110,20 +131,14 @@ export const ChartReview = ({ ...props }) => {
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
-  // Load all document types from the current encounter
-  const [activeNotes] = useEncounter().notes()
-  const [activeLabs] = useEncounter().labs()
-  const [activeImaging] = useEncounter().imaging()
-  const [activeCardiac] = useEncounter().cardiac()
-  const [activeSpecialtyTests] = useEncounter().specialtyTests()
-  const [activeScanDocs] = useEncounter().scanDocs()
-  const [activeMedDocs] = useEncounter().medDocs()
-  const [activeLetters] = useEncounter().letters()
-  const [activeReferrals] = useEncounter().referrals()
-  const [activeOthers] = useEncounter().others()
-
   const [departments] = useDatabase().departments()
   const [providers] = useDatabase().providers()
+
+  const { openTab } = useSplitView()
+
+  const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
+  const [isNewResultOpen, setIsNewResultOpen] = useState(false);
+  const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
   const enrichDocs = (docs, kind, enc) => (docs || []).map(d => ({
     ...d,
@@ -133,25 +148,6 @@ export const ChartReview = ({ ...props }) => {
     encType: enc?.type,
     encounterProvider: providers.find(p => p.id === enc?.provider)?.name
   }))
-
-  const documents1 = [
-    ...enrichDocs(activeNotes, 'Note', encounter),
-    ...enrichDocs(activeLabs, 'Lab', encounter),
-    ...enrichDocs(activeImaging, 'Imaging', encounter),
-    ...enrichDocs(activeCardiac, 'Cardiac', encounter),
-    ...enrichDocs(activeSpecialtyTests, 'Specialty Test', encounter),
-    ...enrichDocs(activeScanDocs, 'Scan Doc', encounter),
-    ...enrichDocs(activeMedDocs, 'Meds', encounter),
-    ...enrichDocs(activeLetters, 'Letter', encounter),
-    ...enrichDocs(activeReferrals, 'Referrals', encounter),
-    ...enrichDocs(activeOthers, 'Other', encounter)
-  ];
-
-  const { openTab } = useSplitView()
-
-  const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [isNewResultOpen, setIsNewResultOpen] = useState(false);
-  const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
   const handleNewNote = () => {
     // Open Edit Note (side tab) - select if exists
@@ -171,14 +167,7 @@ export const ChartReview = ({ ...props }) => {
     .flatMap(x => [
       ...enrichDocs(x.notes, 'Note', x),
       ...enrichDocs(x.labs, 'Lab', x),
-      ...enrichDocs(x.imaging, 'Imaging', x),
-      ...enrichDocs(x.cardiac, 'Cardiac', x),
-      ...enrichDocs(x.specialtyTests, 'Specialty Test', x),
-      ...enrichDocs(x.scanDocs, 'Scan Doc', x),
-      ...enrichDocs(x.medDocs, 'Meds', x),
-      ...enrichDocs(x.letters, 'Letter', x),
-      ...enrichDocs(x.referrals, 'Referrals', x),
-      ...enrichDocs(x.others, 'Other', x)
+      ...enrichDocs(x.imaging, 'Imaging', x)
     ])
 
   const documents = filterDocuments(documents2, conditionals, orders)
