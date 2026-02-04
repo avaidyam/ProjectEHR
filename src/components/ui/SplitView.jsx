@@ -362,12 +362,16 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                                         "&:hover": {
                                             bgcolor: "primary.dark"
                                         },
-                                        zIndex: 1000
+                                        zIndex: 1000,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 0.5
                                     }}
                                 >
                                     <span className="material-icons" style={{ fontSize: 16 }}>
                                         {isCollapsed ? 'chevron_left' : 'chevron_right'}
                                     </span>
+                                    {isCollapsed && <span style={{ writingMode: 'vertical-rl', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>Open Sidebar</span>}
                                 </IconButton>
                             </Box>
                         </PanelResizeHandle>
