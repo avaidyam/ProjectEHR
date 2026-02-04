@@ -100,7 +100,7 @@ export const VitalsPopup = ({ vitals, definition, ...props }) => {
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [flowsheets] = useEncounter().flowsheets()
-  const [documents] = useEncounter().documents()
+
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
   const [flowsheetDefs] = useDatabase().flowsheets()
@@ -385,21 +385,20 @@ export const SidebarClinicalImpressions = () => {
 export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
   const [flowsheets] = useEncounter().flowsheets();
-  const [documents] = useEncounter().documents();
+  const [labs] = useEncounter().labs();
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
   const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
-  const documents2 = filterDocuments(documents, conditionals, orders)
+  const labsFiltered = filterDocuments(labs, conditionals, orders)
 
   /** sort most recent to older */
   const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
-  const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
-  const labs = documents2
-    .filter(d => d.kind === "Lab")
+  const _t2 = (x) => DateHelpers.convertToDateTime(x["Date/Time"]).toMillis()
+  const wbcLabs = labsFiltered
     .toSorted((a, b) => _t2(b) - _t2(a))
     .flatMap(d => d.labResults)
     .filter(x => x.name === "WBC")
@@ -407,7 +406,7 @@ export const SidebarSepsisAlert = () => {
     .filter(x => x)
 
   // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11
-  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0)
+  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (wbcLabs.length > 0)
 
   return isSepsis ?
     <Alert

@@ -1,53 +1,3 @@
-
-////// THIS CODE IS HELPFUL JUST TO SEE WHAT THE LABS ARE LIKE IN JSON !!! ------------------------------------------------
-// import React from 'react';
-// import { Box, Typography } from '@mui/material';
-// import { usePatient } from 'components/contexts/PatientContext.jsx';
-
-// export const LabDocumentsDump = () => {
-//   const { useEncounter } = usePatient();
-//   const [documents] = useEncounter().documents();
-
-//   // Filter out only the lab documents
-//   const labDocs = (documents || []).filter(doc => doc.kind === 'Lab');
-
-//   return (
-//     <Box sx={{ p: 2, bgcolor: 'black', minHeight: '100vh' }}>
-//       <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: 'white' }}>
-//         Lab Documents (JSON)
-//       </Typography>
-
-//       {labDocs.length === 0 ? (
-//         <Typography variant="body1" sx={{ color: 'gray' }}>
-//           No lab documents found.
-//         </Typography>
-//       ) : (
-//         labDocs.map((doc, idx) => (
-//           <pre
-//             key={idx}
-//             style={{
-//               background: 'black',
-//               color: 'limegreen',
-//               padding: '1rem',
-//               borderRadius: '8px',
-//               overflowX: 'auto',
-//               fontSize: '0.9rem',
-//               marginBottom: '1.5rem'
-//             }}
-//           >
-//             {JSON.stringify(doc, null, 2)}
-//           </pre>
-//         ))
-//       )}
-//     </Box>
-//   );
-// };
-
-// export default LabDocumentsDump;
-
-// ------------------------------------------------------------------------------------------------------------------------
-
-
 import React, { useMemo, useState, useCallback } from "react";
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from "@mui/x-data-grid";
 import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label } from "components/ui/Core.jsx";
@@ -123,18 +73,17 @@ function brightHSLFromName(name) {
   return `hsl(${h} ${s}% ${l}%)`;
 }
 
-/** 🔑 Hook to normalize Lab documents into Epic-style panels */
+/** 🔑 Hook to normalize Lab results into Epic-style panels */
 function useNormalizedLabs() {
   const { useEncounter } = usePatient();
-  const [documents] = useEncounter().documents();
+  const [labs] = useEncounter().labs();
 
   return useMemo(() => {
-    const labs = (documents || []).filter((d) => d.kind === "Lab");
     const panels = {};
 
-    for (const doc of labs) {
-      const panelName = doc.data?.Test || "Unknown Panel";
-      const time = doc.data?.["Date/Time"] || doc.collected;
+    for (const doc of (labs || [])) {
+      const panelName = doc.Test || "Unknown Panel";
+      const time = doc["Date/Time"] || doc.collected;
       if (!panels[panelName]) panels[panelName] = {};
 
       for (const r of doc.labResults || []) {
@@ -172,7 +121,7 @@ function useNormalizedLabs() {
         results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
       })),
     }));
-  }, [documents]);
+  }, [labs]);
 }
 
 export default function ResultsReviewEpic() {
@@ -324,15 +273,15 @@ export default function ResultsReviewEpic() {
         const hit = t.results.find((r) => r.time === iso);
         row[`t${i}`] = hit
           ? {
-              value: hit.value,
-              flag: hit.flag,
-              iso,
-              test: t.name,
-              ref: t.referenceRange || "",
-              unit: t.unit || "",
-              agency: hit.agency || "",
-              label: fmtDateTime(iso),
-            }
+            value: hit.value,
+            flag: hit.flag,
+            iso,
+            test: t.name,
+            ref: t.referenceRange || "",
+            unit: t.unit || "",
+            agency: hit.agency || "",
+            label: fmtDateTime(iso),
+          }
           : null;
       });
       return row;

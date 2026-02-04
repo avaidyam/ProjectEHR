@@ -82,7 +82,7 @@ export const Titlebar = ({ onLogout }) => {
         diagnoses: [],
         problems: [],
         flowsheets: [],
-        documents: []
+        notes: []
       };
 
       return {

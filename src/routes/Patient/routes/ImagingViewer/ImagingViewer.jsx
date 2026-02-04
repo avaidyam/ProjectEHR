@@ -7,7 +7,7 @@ export const ImagingTabContent = ({ selectedRow, viewerId, convertMonochrome }) 
     console.log("ImagingTabContent: Component rendering.");
     const basePath = './img/Anonymized_20240903/series-00001/';
     const dicomFiles = Array.from({ length: 21 }, (_, i) => `${basePath}image-${String(i).padStart(5, '0')}.dcm`);
-    const images = selectedRow?.data?.image ? [selectedRow?.data?.image] : dicomFiles;
+    const images = selectedRow?.data?.image || selectedRow?.image ? [selectedRow?.data?.image || selectedRow?.image] : dicomFiles;
 
     const [currentLayout, setCurrentLayout] = useState('1x1');
     const [currentImageSet, setCurrentImageSet] = useState(images);
@@ -37,21 +37,21 @@ export const ImagingTabContent = ({ selectedRow, viewerId, convertMonochrome }) 
 
             <Grid container spacing={1} sx={{ flexGrow: 1, marginTop: 2, p: 0 }}>
                 {Array.from({ length: numViewers }).map((_, index) => (
-                    <Grid 
-                        item 
+                    <Grid
+                        item
                         key={index}
                         {...layoutGridProps[currentLayout]}
                         sx={{
                             height: (numViewers > 2) ? '50%' : '100%',
-                            display: 'flex', 
-                            justifyContent: 'center', 
+                            display: 'flex',
+                            justifyContent: 'center',
                             alignItems: 'center',
                         }}
                         style={{ paddingLeft: 0, paddingTop: 0 }}
                     >
-                        <DWVViewer 
-                            images={currentImageSet} 
-                            viewerId={`${viewerId}-${index}`} 
+                        <DWVViewer
+                            images={currentImageSet}
+                            viewerId={`${viewerId}-${index}`}
                             convertMonochrome={convertMonochrome}
                         />
                     </Grid>

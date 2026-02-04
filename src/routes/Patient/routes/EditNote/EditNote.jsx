@@ -25,7 +25,7 @@ const NOTE_TYPES = [
 
 const EditNote = () => {
     const { useEncounter } = usePatient();
-    const [_, setDocuments] = useEncounter().documents();
+    const [_, setNotes] = useEncounter().notes();
     const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
     const [departments] = useDatabase().departments();
     const { closeTab } = useSplitView();
@@ -48,17 +48,14 @@ const EditNote = () => {
     }
 
     const handleAccept = () => {
-        setDocuments(prev => [...prev, {
-            kind: "Note",
-            data: {
-                id: crypto.randomUUID(),
-                date: activeNote.date.toString(),
-                summary: activeNote.summary,
-                author: "CurrentUser",
-                status: "Signed",
-                noteType: activeNote.noteType,
-                content: activeNote.editorState
-            }
+        setNotes(prev => [...prev, {
+            id: crypto.randomUUID(),
+            date: activeNote.date.toString(),
+            summary: activeNote.summary,
+            author: "CurrentUser",
+            status: "Signed",
+            noteType: activeNote.noteType,
+            content: activeNote.editorState
         }])
         setActiveNote(null);
         closeTabs();

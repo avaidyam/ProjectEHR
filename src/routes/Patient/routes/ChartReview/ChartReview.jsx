@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
-import { Box, Divider, Button, Label, DataGrid, Icon } from 'components/ui/Core'
+import { Box, Button, Label, DataGrid, Icon } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
-import LabReport from '../LabReport/LabReport.jsx';
-import ImagingTabContent from '../ImagingViewer/ImagingViewer.jsx';
 import { filterDocuments } from 'util/helpers'
 import { NewLabResultDialog } from './NewLabResultDialog';
 import { NewImagingResultDialog } from './NewImagingResultDialog';
@@ -30,32 +28,32 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 
   const filteredData = selectedTabLabel ? data.filter(item => item.kind === selectedTabLabel) : [];
 
-  const columns = filteredData.length > 0 ? Object.keys(filteredData[0].data).filter(column => column !== 'id' && column !== 'content' && column !== 'image') : [];
+  const getRowData = (row) => row.data || row;
+
+  const columns = filteredData.length > 0 ? Object.keys(getRowData(filteredData[0])).filter(column => column !== 'id' && column !== 'content' && column !== 'image' && column !== 'kind') : [];
 
   const visibleColumns = columns.filter(column =>
-    filteredData.every(row => row.data[column] !== undefined && row.data[column] !== null && row.data[column] !== '')
+    filteredData.every(row => {
+      const d = getRowData(row);
+      return d[column] !== undefined && d[column] !== null && d[column] !== ''
+    })
   );
 
   const handleRowClick = (row) => {
-    //setSelectedRow(row);
-    //setIsWindowOpen(true);
-    //setTableWidth('50%');
-
+    const rowData = getRowData(row);
     if (selectedTabLabel === 'Lab') {
-      openTab("Lab Report", { labReport: row }, "main", false)
+      openTab("Lab Report", { labReport: rowData }, "main", false)
     } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
-      // Cardiac Labs special case
-      openTab("Lab Report", { labReport: row }, "main", false)
     } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
-      const isPathologySlide = row.data.accessionNumber?.startsWith("PATH") || row.data.id?.startsWith("PATH")
+      const isPathologySlide = rowData.accessionNumber?.startsWith("PATH") || rowData.id?.startsWith("PATH")
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      openTab("Imaging Viewer", { selectedRow: row, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false)
-    } else if (selectedTabLabel === 'Cardiac' && !!row.data.image) {
+      openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false)
+    } else if (selectedTabLabel === 'Cardiac' && !!rowData.image) {
       // EKG special case
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      openTab("Imaging Viewer", { selectedRow: row, viewerId: viewerId, convertMonochrome: false }, "main", false)
+      openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: false }, "main", false)
     } else if (selectedTabLabel === 'Note') {
-      openTab("Note", { selectedRow: row }, "side", false)
+      openTab("Note", { selectedRow: rowData }, "side", false)
     } else {
       // TODO: handle other tabs somehow?
     }
@@ -73,7 +71,10 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
           <DataGrid
             showToolbar
             columns={visibleColumns.map(x => ({ field: x, headerName: x, flex: 1, minWidth: 100 }))}
-            rows={filteredData.map(x => ({ ...x.data, id: JSON.stringify(x.data), _obj: x }))}
+            rows={filteredData.map(x => {
+              const d = getRowData(x);
+              return { ...d, id: JSON.stringify(d), _obj: x }
+            })}
             onCellDoubleClick={(params) => handleRowClick(params.row._obj)}
             pageSizeOptions={[25, 50, 100]}
             localeText={{
@@ -90,20 +91,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
               {selectedRow && (
                 <div>
                   <Button onClick={handleCloseWindow}>Close</Button>
-                  {selectedTabLabel === 'Lab' && (
-                    <LabReport labReport={selectedRow} />
-                  )}
-                  {selectedTabLabel !== 'Lab' && Object.keys(selectedRow.data).map((key, index) => (
-                    (key !== 'content' && key !== 'image') && (
-                      <Box key={index}>
-                        <strong>{key}:</strong> {selectedRow.data[key]}
-                      </Box>
-                    )
-                  ))}
-                  <Divider />
-                  {(selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') && selectedRow && (
-                    <ImagingTabContent selectedRow={selectedRow} viewerId={viewerId} />
-                  )}
+                  {/* TODO: The old preview code has been deleted. Please rewrite it! */}
                 </div>
               )}
             </div>
@@ -121,7 +109,43 @@ export const ChartReview = ({ ...props }) => {
 
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
-  const [documents1] = useEncounter().documents()
+
+  // Load all document types from the current encounter
+  const [activeNotes] = useEncounter().notes()
+  const [activeLabs] = useEncounter().labs()
+  const [activeImaging] = useEncounter().imaging()
+  const [activeCardiac] = useEncounter().cardiac()
+  const [activeSpecialtyTests] = useEncounter().specialtyTests()
+  const [activeScanDocs] = useEncounter().scanDocs()
+  const [activeMedDocs] = useEncounter().medDocs()
+  const [activeLetters] = useEncounter().letters()
+  const [activeReferrals] = useEncounter().referrals()
+  const [activeOthers] = useEncounter().others()
+
+  const [departments] = useDatabase().departments()
+  const [providers] = useDatabase().providers()
+
+  const enrichDocs = (docs, kind, enc) => (docs || []).map(d => ({
+    ...d,
+    kind,
+    encDate: enc?.startDate?.split(" ")[0], // Assuming StartDate is "YYYY-MM-DD HH:MM"
+    encDept: departments.find(dep => dep.id === enc?.department)?.name,
+    encType: enc?.type,
+    encounterProvider: providers.find(p => p.id === enc?.provider)?.name
+  }))
+
+  const documents1 = [
+    ...enrichDocs(activeNotes, 'Note', encounter),
+    ...enrichDocs(activeLabs, 'Lab', encounter),
+    ...enrichDocs(activeImaging, 'Imaging', encounter),
+    ...enrichDocs(activeCardiac, 'Cardiac', encounter),
+    ...enrichDocs(activeSpecialtyTests, 'Specialty Test', encounter),
+    ...enrichDocs(activeScanDocs, 'Scan Doc', encounter),
+    ...enrichDocs(activeMedDocs, 'Meds', encounter),
+    ...enrichDocs(activeLetters, 'Letter', encounter),
+    ...enrichDocs(activeReferrals, 'Referrals', encounter),
+    ...enrichDocs(activeOthers, 'Other', encounter)
+  ];
 
   const { openTab } = useSplitView()
 
@@ -144,12 +168,20 @@ export const ChartReview = ({ ...props }) => {
   const documents2 = Object.values(chart.encounters)
     .toSorted((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
     .filter(x => (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
-    .flatMap(x => x.documents)
+    .flatMap(x => [
+      ...enrichDocs(x.notes, 'Note', x),
+      ...enrichDocs(x.labs, 'Lab', x),
+      ...enrichDocs(x.imaging, 'Imaging', x),
+      ...enrichDocs(x.cardiac, 'Cardiac', x),
+      ...enrichDocs(x.specialtyTests, 'Specialty Test', x),
+      ...enrichDocs(x.scanDocs, 'Scan Doc', x),
+      ...enrichDocs(x.medDocs, 'Meds', x),
+      ...enrichDocs(x.letters, 'Letter', x),
+      ...enrichDocs(x.referrals, 'Referrals', x),
+      ...enrichDocs(x.others, 'Other', x)
+    ])
 
   const documents = filterDocuments(documents2, conditionals, orders)
-
-  const [departments] = useDatabase().departments()
-  const [providers] = useDatabase().providers()
 
   const encountersData = Object.values(chart.encounters).map(x => {
     const dept = departments.find(d => d.id === x.department)
@@ -174,7 +206,7 @@ export const ChartReview = ({ ...props }) => {
     if (newEncounters[encounterId]) {
       newEncounters[encounterId] = {
         ...newEncounters[encounterId],
-        documents: [...newEncounters[encounterId].documents, newDoc]
+        labs: [...(newEncounters[encounterId].labs || []), newDoc]
       };
 
       const newChart = { ...chart, encounters: newEncounters };
@@ -190,7 +222,7 @@ export const ChartReview = ({ ...props }) => {
     if (newEncounters[encounterId]) {
       newEncounters[encounterId] = {
         ...newEncounters[encounterId],
-        documents: [...newEncounters[encounterId].documents, newDoc]
+        imaging: [...(newEncounters[encounterId].imaging || []), newDoc]
       };
 
       const newChart = { ...chart, encounters: newEncounters };

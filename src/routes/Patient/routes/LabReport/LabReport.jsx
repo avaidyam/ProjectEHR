@@ -2,10 +2,15 @@ import React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography, Box } from '@mui/material';
 
 const LabReport = ({ labReport, ...props }) => {
-  const { data, labResults, collected, resulted, resultingAgency, labReportComment } = labReport;
+  const { data } = labReport; // access data if it exists
+  const labResults = labReport.labResults || data?.labResults || [];
+  const collected = labReport.collected || data?.collected;
+  const resulted = labReport.resulted || data?.resulted;
+  const resultingAgency = labReport.resultingAgency || data?.resultingAgency;
+  const labReportComment = labReport.labReportComment || data?.labReportComment;
 
   // Extract the test name
-  const testName = data?.Test;
+  const testName = data?.Test || labReport.Test;
 
   // Format the reference interval
   const formatReferenceInterval = (low, high, units) => {
@@ -147,10 +152,10 @@ const LabReport = ({ labReport, ...props }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      {Object.keys(labReport.data).map((key, index) => (
-        (key !== 'content' && key !== 'image') && (
+      {Object.keys(data || labReport).map((key, index) => (
+        (key !== 'content' && key !== 'image' && key !== 'labResults' && key !== 'kind' && key !== 'id' && key !== '_obj' && key !== 'collected' && key !== 'resulted' && key !== 'resultingAgency' && key !== 'labReportComment') && (
           <Box key={index}>
-            <strong>{key}:</strong> {labReport.data[key]}
+            <strong>{key}:</strong> {(data || labReport)[key]}
           </Box>
         )
       ))}
