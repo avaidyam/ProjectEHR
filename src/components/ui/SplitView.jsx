@@ -77,6 +77,7 @@ const TabWithMenu = ({ onMove, onClose, isSelected, ...props }) => {
 export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }) => {
     const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
     const [isCollapsed, setCollapsed] = useState(false)
+    const sidePanelRef = React.useRef(null)
 
     // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
 
@@ -328,11 +329,51 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                     </Panel>
                     {(!isMobile && sideTabs.length > 0) &&
                         <PanelResizeHandle>
-                            <Box sx={{ bgcolor: "primary.main", width: "8px", height: "100%" }} />
+                            <Box
+                                sx={{
+                                    bgcolor: "primary.main",
+                                    width: "8px",
+                                    height: "100%",
+                                    position: "relative",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                <IconButton
+                                    size="small"
+                                    onClick={() => {
+                                        if (sidePanelRef.current) {
+                                            if (sidePanelRef.current.isCollapsed()) {
+                                                sidePanelRef.current.expand()
+                                                setCollapsed(false)
+                                            } else {
+                                                sidePanelRef.current.collapse()
+                                                setCollapsed(true)
+                                            }
+                                        }
+                                    }}
+                                    sx={{
+                                        bgcolor: "primary.main",
+                                        color: "primary.contrastText",
+                                        position: "absolute",
+                                        padding: "4px",
+                                        borderRadius: "4px",
+                                        "&:hover": {
+                                            bgcolor: "primary.dark"
+                                        },
+                                        zIndex: 1000
+                                    }}
+                                >
+                                    <span className="material-icons" style={{ fontSize: 16 }}>
+                                        {isCollapsed ? 'chevron_left' : 'chevron_right'}
+                                    </span>
+                                </IconButton>
+                            </Box>
                         </PanelResizeHandle>
                     }
                     {(!isMobile && sideTabs.length > 0) &&
-                        <Panel collapsible defaultSize={35} minSize={35} collapsedSize={0}>
+                        <Panel ref={sidePanelRef} collapsible defaultSize={35} minSize={35} collapsedSize={0}>
                             <TabContext value={selectedSideTab}>
                                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                                     <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
