@@ -1,19 +1,14 @@
-import {
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Box,
-  Typography,
-  Chip,
-  Icon
-} from '@mui/material';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Button,
+  Box,
+  Label,
+  Chip,
+  Icon,
+  DataGrid
+} from 'components/ui/Core.jsx';
+import { Paper } from '@mui/material'
 import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
 import { useDatabase } from 'components/contexts/PatientContext';
 import { AddToListModal } from './AddToListModal.jsx';
@@ -31,45 +26,6 @@ const getStatusColor = (status) => {
       return 'info';
     default:
       return 'default';
-  }
-};
-
-// Helper function to get column value with formatting
-const getColumnValue = (patient, columnId) => {
-  switch (columnId) {
-    case 'name':
-      return `${patient.lastName}, ${patient.firstName}`;
-    case 'mrn':
-      return patient.id;
-    case 'dob':
-      try {
-        return new Date(patient.birthdate || patient.dob).toLocaleDateString();
-      } catch {
-        return patient.birthdate || patient.dob;
-      }
-    case 'location':
-      return (
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="body2">{patient.location || patient.address || 'Carle Foundation Hospital'}</Typography>
-          {(patient.bedStatus || true) && (
-            <Typography variant="caption" color="text.secondary">
-              {patient.bedStatus || (Math.random() > 0.5 ? 'In Room' : 'Out of Room')}
-            </Typography>
-          )}
-        </Box>
-      );
-    case 'status':
-      const status = patient.status || 'No encounters';
-      return (
-        <Chip
-          label={status}
-          size="small"
-          color={getStatusColor(status)}
-          sx={{ minWidth: 85 }}
-        />
-      );
-    default:
-      return patient[columnId] || '';
   }
 };
 
@@ -101,8 +57,9 @@ export const PatientsTable = () => {
     }
   }, [listPatients]);
 
-  const handlePatientClick = (patient, event) => {
+  const handlePatientClick = (params, event) => {
     if (event.target.closest('button')) return;
+    const patient = params.row;
 
     if (patient.encounterData) {
       navigate(
@@ -112,6 +69,107 @@ export const PatientsTable = () => {
       navigate(`/patient/${patient.id}`);
     }
   };
+
+  /* Safe defaults for hooks */
+  const columnsConfig = selectedList?.columns || [
+    { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+    { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+    { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+    { id: 'location', label: 'Location', selected: true, order: 3 },
+    { id: 'status', label: 'Status', selected: true, order: 4 },
+  ];
+
+  const columns = useMemo(() => {
+    const defaultCols = columnsConfig
+      .filter((col) => col.selected)
+      .sort((a, b) => a.order - b.order)
+      .map((col) => {
+        const baseCol = {
+          field: col.id,
+          headerName: col.label,
+          flex: 1,
+          minWidth: 150,
+        };
+
+        switch (col.id) {
+          case 'name':
+            return {
+              ...baseCol,
+              valueGetter: (value, row) => `${row.lastName}, ${row.firstName}`,
+            };
+          case 'mrn':
+            return {
+              ...baseCol,
+              valueGetter: (value, row) => row.id
+            };
+          case 'dob':
+            return {
+              ...baseCol,
+              valueGetter: (value, row) => {
+                try {
+                  return new Date(row.birthdate || row.dob).toLocaleDateString();
+                } catch {
+                  return row.birthdate || row.dob;
+                }
+              }
+            };
+          case 'location':
+            return {
+              ...baseCol,
+              renderCell: (params) => (
+                <Box sx={{ display: 'flex', flexDirection: 'column', py: 1 }}>
+                  <Label variant="body2" sx={{ lineHeight: 1.2 }}>{params.row.location || params.row.address || 'Carle Foundation Hospital'}</Label>
+                  {(params.row.bedStatus || true) && (
+                    <Label variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+                      {params.row.bedStatus || (Math.random() > 0.5 ? 'In Room' : 'Out of Room')}
+                    </Label>
+                  )}
+                </Box>
+              ),
+            };
+          case 'status':
+            return {
+              ...baseCol,
+              renderCell: (params) => {
+                const status = params.row.status || 'No encounters';
+                return (
+                  <Chip
+                    label={status}
+                    size="small"
+                    color={getStatusColor(status)}
+                    sx={{ minWidth: 85 }}
+                  />
+                );
+              },
+            };
+          default:
+            return baseCol;
+        }
+      });
+
+    if (selectedList?.type === 'available') {
+      defaultCols.push({
+        field: 'actions',
+        headerName: 'Actions',
+        width: 100,
+        sortable: false,
+        renderCell: (params) => (
+          <Button
+            variant='text'
+            startIcon={<Icon>add</Icon>}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedPatient(params.row);
+            }}
+            sx={{ minWidth: 'auto' }}
+          >
+            Add
+          </Button>
+        )
+      });
+    }
+    return defaultCols;
+  }, [columnsConfig, selectedList?.type]);
 
   if (!selectedListId || !selectedList || !ready) {
     return (
@@ -125,90 +183,34 @@ export const PatientsTable = () => {
           height: '100%',
         }}
       >
-        <Typography variant='body1' color='text.secondary' align='center'>
+        <Label variant='body1' color='text.secondary' align='center'>
           Loading patients...
-        </Typography>
+        </Label>
       </Box>
     );
   }
 
-  const columns = selectedList.columns || [
-    { id: 'name', label: 'Patient Name', selected: true, order: 0 },
-    { id: 'mrn', label: 'MRN', selected: true, order: 1 },
-    { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
-    { id: 'location', label: 'Location', selected: true, order: 3 },
-    { id: 'status', label: 'Status', selected: true, order: 4 },
-  ];
-
-  const selectedColumns = [...columns]
-    .sort((a, b) => a.order - b.order)
-    .filter((col) => col.selected);
-
   return (
     <>
-      <TableContainer
-        component={Paper}
+      <Paper
         variant='outlined'
-        sx={{ display: 'flex', flexDirection: 'column' }}
+        sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
       >
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              {selectedColumns.map((column) => (
-                <TableCell key={column.id} sx={{ fontWeight: 500 }}>
-                  {column.label}
-                </TableCell>
-              ))}
-              {selectedList.type === 'available' && (
-                <TableCell align='right' sx={{ fontWeight: 500 }}>
-                  Actions
-                </TableCell>
-              )}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {listPatients.map((patient) => (
-              <TableRow
-                key={patient.id}
-                hover
-                onClick={(event) => handlePatientClick(patient, event)}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 }, cursor: 'pointer' }}
-              >
-                {selectedColumns.map((column) => (
-                  <TableCell key={column.id}>
-                    {getColumnValue(patient, column.id)}
-                  </TableCell>
-                ))}
-                {selectedList.type === 'available' && (
-                  <TableCell align='right'>
-                    <Button
-                      variant='text'
-                      startIcon={<Icon>add</Icon>}
-                      onClick={() => setSelectedPatient(patient)}
-                      sx={{ minWidth: 'auto' }}
-                    >
-                      Add
-                    </Button>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-            {listPatients.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={selectedColumns.length + (selectedList.type === 'available' ? 1 : 0)}
-                  align='center'
-                  sx={{ py: 8 }}
-                >
-                  <Typography variant='body2' color='text.secondary'>
-                    No patients in this list
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <DataGrid
+          rows={listPatients}
+          columns={columns}
+          onRowClick={handlePatientClick}
+          disableRowSelectionOnClick
+          hideFooter
+          getRowHeight={() => 'auto'}
+          sx={{
+            border: 0,
+            '& .MuiDataGrid-cell': {
+              py: 1,
+            }
+          }}
+        />
+      </Paper>
 
       {selectedPatient && (
         <AddToListModal
@@ -220,4 +222,3 @@ export const PatientsTable = () => {
     </>
   );
 };
-
