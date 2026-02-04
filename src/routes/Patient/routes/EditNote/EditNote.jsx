@@ -36,7 +36,7 @@ const EditNote = () => {
                 editorState: "",
                 summary: '',
                 date: (() => { const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); return n.toISOString().slice(0, 16); })(),
-                noteType: null,
+                type: null,
                 service: null
             });
         }
@@ -50,11 +50,12 @@ const EditNote = () => {
     const handleAccept = () => {
         setNotes(prev => [...prev, {
             id: crypto.randomUUID(),
+            serviceDate: activeNote.date.toString(),
             date: activeNote.date.toString(),
             summary: activeNote.summary,
-            author: "CurrentUser",
+            author: "12",
             status: "Signed",
-            noteType: activeNote.noteType,
+            type: activeNote.type,
             content: activeNote.editorState
         }])
         setActiveNote(null);
@@ -107,8 +108,8 @@ const EditNote = () => {
                             <Label variant="body2" color="text.secondary">Type:</Label>
                             <Autocomplete
                                 options={NOTE_TYPES}
-                                value={activeNote?.noteType ?? null}
-                                onChange={(_, newValue) => setActiveNote({ ...activeNote, noteType: newValue })}
+                                value={activeNote?.type ?? null}
+                                onChange={(_, newValue) => setActiveNote({ ...activeNote, type: newValue })}
                                 fullWidth
                                 size="small"
                                 renderInput={(params) => <TextField {...params} variant="standard" placeholder="Note Type" />}

@@ -9,15 +9,20 @@ import { NewImagingResultDialog } from './NewImagingResultDialog';
 
 const tabLabels = [
   "Encounters",
-  "Note",
+  "Notes",
   "Imaging",
   "Lab",
   "Cardiac",
-  "Specialty Test",
+  "Specialty Tests",
   "Other",
   "Meds",
-  "Letter",
-  "Referrals"
+  "Letters",
+  "Referrals",
+  "Scan Doc",
+  "Med Photos",
+  "Episodes",
+  "LDAs",
+  "Consents"
 ];
 
 const CARDIAC_ORDERS = [
@@ -28,44 +33,192 @@ const CARDIAC_ORDERS = [
   "CT CORONARY ANGIOGRAM (POST-PCI)"
 ];
 
+const COLUMN_DEFS = {
+  "Encounters": [
+    { field: 'date', headerName: 'When', width: 140 },
+    { field: 'type', headerName: 'Type', width: 140 },
+    { field: 'encClosed', headerName: 'Enc Closed', width: 100 },
+    { field: 'with', headerName: 'With', width: 200 },
+    { field: 'visitType', headerName: 'Visit Type', width: 140 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'endDate', headerName: 'Disch Date', width: 140 }
+  ],
+  "Notes": [
+    { field: 'summary', headerName: 'Summary', width: 150 },
+    { field: 'serviceDate', headerName: 'Service Date', width: 140 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120 },
+    { field: 'encDept', headerName: 'Enc Dept', width: 150 },
+    { field: 'authorSpecialty', headerName: 'Auth Specialty', width: 150 },
+    { field: 'authorName', headerName: 'Author', width: 150 },
+    { field: 'encType', headerName: 'Enc Type', width: 140 },
+    { field: 'type', headerName: 'Category', width: 140 },
+    { field: 'status', headerName: 'Status', width: 100 },
+    { field: 'encounterProvider', headerName: 'Enc Provider', width: 150 }
+  ],
+  "Imaging": [
+    { field: 'date', headerName: 'Ordered', width: 140 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'statusDate', headerName: 'Status Date', width: 140 },
+    { field: 'test', headerName: 'Exam', flex: 1 },
+    { field: 'abnormal', headerName: 'Abnormal?', width: 90 },
+    { field: 'acuity', headerName: 'Acuity', width: 90 },
+    { field: 'encType', headerName: 'Encounter', width: 140 },
+    { field: 'provider', headerName: 'Provider', width: 150 }
+  ],
+  "Lab": [
+    { field: 'date', headerName: 'Order Date/Time', width: 150 },
+    { field: 'test', headerName: 'Test', width: 250 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'abnormal', headerName: 'Abnormal?', width: 90 },
+    { field: 'resulted', headerName: 'Result Date/Time', width: 150 },
+    { field: 'expectedDate', headerName: 'Expected Date', width: 140 },
+    { field: 'expirationDate', headerName: 'Expiration', width: 120 },
+    { field: 'encType', headerName: 'Encounter Type', width: 140 },
+    { field: 'provider', headerName: 'Provider', width: 150 }
+  ],
+  "Cardiac": [
+    { field: 'date', headerName: 'Ordered', width: 140 },
+    { field: 'statusDate', headerName: 'Performed', width: 140 },
+    { field: 'test', headerName: 'Exam', flex: 1 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'encType', headerName: 'Encounter', width: 140 },
+    { field: 'provider', headerName: 'Auth Provider', width: 150 },
+    { field: 'performedBy', headerName: 'Perf Provider', width: 150 }
+  ],
+  "Specialty Tests": [
+    { field: 'date', headerName: 'Ordered', width: 140 },
+    { field: 'statusDate', headerName: 'Performed', width: 140 },
+    { field: 'test', headerName: 'Test', flex: 1 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'encType', headerName: 'Encounter Type', width: 140 },
+    { field: 'provider', headerName: 'Auth Provider', width: 150 },
+    { field: 'performedBy', headerName: 'Perf Provider', width: 150 }
+  ],
+  "Other": [
+    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'encDept', headerName: 'Enc Dept', width: 150 },
+    { field: 'provider', headerName: 'Provider', width: 150 }
+  ],
+  "Meds": [
+    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'ambIp', headerName: 'AMB/IP', width: 90 },
+    { field: 'name', headerName: 'Medication', flex: 1 },
+    { field: 'orderDetail', headerName: 'Order Detail', width: 200 },
+    { field: 'longTerm', headerName: 'Long-term?', width: 100 },
+    { field: 'endDate', headerName: 'End Date', width: 140 },
+    { field: 'discontinue', headerName: 'Discontinue', width: 120 },
+    { field: 'discontinueReason', headerName: 'Discontinue Reason', width: 160 },
+    { field: 'provider', headerName: 'Provider', width: 150 },
+    { field: 'notCoveredReason', headerName: 'Not Covered Reason', width: 160 },
+    { field: 'class', headerName: 'Class', width: 120 }
+  ],
+  "Letters": [
+    { field: 'date', headerName: 'Letter Date', width: 140 },
+    { field: 'from', headerName: 'Letter From', width: 150 },
+    { field: 'reason', headerName: 'Reason', flex: 1 },
+    { field: 'comments', headerName: 'Comments', width: 200 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'viewedDate', headerName: 'Viewed Date', width: 140 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120 }
+  ],
+  "Referrals": [
+    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'specialty', headerName: 'To Specialty', width: 150 },
+    { field: 'toProvider', headerName: 'To Provider', width: 150 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'diagnosis', headerName: 'Diagnosis', flex: 1 },
+    { field: 'order', headerName: 'Order', width: 150 },
+    { field: 'procedure', headerName: 'Procedure', width: 150 },
+    { field: 'fromProvider', headerName: 'From Provider', width: 150 }
+  ],
+  "Scan Doc": [
+    { field: 'type', headerName: 'Document Type', width: 150 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120 },
+    { field: 'scanDate', headerName: 'Scan Date', width: 140 },
+    { field: 'expirationDate', headerName: 'Expiration Date', width: 140 },
+    { field: 'attachedTo', headerName: 'File Attached To', width: 160 }
+  ],
+  "Med Photos": [
+    { field: 'type', headerName: 'Document Type', width: 150 },
+    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120 },
+    { field: 'scanDate', headerName: 'Scan Date', width: 140 },
+    { field: 'expirationDate', headerName: 'Expiration Date', width: 140 },
+    { field: 'attachedTo', headerName: 'File Attached To', width: 160 }
+  ],
+  "Episodes": [
+    { field: 'dateNoted', headerName: 'Date Noted', width: 140 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'dateResolved', headerName: 'Date Resolved', width: 140 },
+    { field: 'type', headerName: 'Type', width: 140 },
+    { field: 'episode', headerName: 'Episode', flex: 1 },
+    { field: 'comments', headerName: 'Comments', width: 200 }
+  ],
+  "LDAs": [
+    { field: 'name', headerName: 'LDA Name', width: 160 },
+    { field: 'placementDate', headerName: 'Placement Date', width: 140 },
+    { field: 'site', headerName: 'Site', width: 140 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { field: 'removalDate', headerName: 'Removal Date', width: 140 },
+    { field: 'daysActive', headerName: 'Days Active', width: 100 },
+    { field: 'description', headerName: 'Description', flex: 1 }
+  ],
+  "Consents": [
+    { field: 'createdDate', headerName: 'Created Date', width: 140 },
+    { field: 'type', headerName: 'Consent Type', width: 150 },
+    { field: 'consentFor', headerName: 'Consent For', flex: 1 },
+    { field: 'lastSigned', headerName: 'Last Signed', width: 140 },
+    { field: 'signatureStatus', headerName: 'Signature Status', width: 140 },
+    { field: 'linkedTo', headerName: 'Linked To', width: 160 },
+    { field: 'provider', headerName: 'Provider', width: 150 },
+    { field: 'department', headerName: 'Department', width: 150 }
+  ]
+};
+
+const SORT_KEYS = {
+  "Encounters": "date",
+  "Notes": "serviceDate",
+  "Imaging": "orderedDate",
+  "Lab": "orderedDate",
+  "Cardiac": "orderedDate",
+  "Specialty Tests": "orderedDate",
+  "Other": "date",
+  "Meds": "date",
+  "Letters": "date",
+  "Referrals": "date",
+  "Scan Doc": "scanDate",
+  "Med Photos": "scanDate",
+  "Episodes": "dateNoted",
+  "LDAs": "placementDate",
+  "Consents": "createdDate"
+};
+
 export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
   const [tableWidth, setTableWidth] = useState('100%');
   const { openTab } = useSplitView()
 
+  const getRowData = (row) => row.data || row;
+
   const filteredData = selectedTabLabel ? data.filter(item => {
-    const isCardiac = CARDIAC_ORDERS.some(t => (item.Test || item.exam || "").includes(t))
+    const isCardiac = CARDIAC_ORDERS.some(t => (item.test ?? "").includes(t))
     if (selectedTabLabel === 'Cardiac') return isCardiac;
     if (item.kind !== selectedTabLabel) return false;
     return !isCardiac;
   }) : [];
 
-  const getRowData = (row) => row.data || row;
-
-  const getAllKeys = (data) => {
-    const keys = new Set();
-    data.forEach(row => {
-      Object.keys(getRowData(row)).forEach(key => keys.add(key));
-    });
-    return Array.from(keys);
-  };
-
-  const columns = filteredData.length > 0 ? getAllKeys(filteredData).filter(column => column !== 'id' && column !== 'content' && column !== 'image' && column !== 'kind' && column !== 'enc') : [];
-
-  const visibleColumns = columns.filter(column =>
-    filteredData.some(row => {
-      const d = getRowData(row);
-      return d[column] !== undefined && d[column] !== null && d[column] !== ''
-    })
-  );
+  const columns = COLUMN_DEFS[selectedTabLabel] || [];
 
   const handleRowClick = (row) => {
     const rowData = getRowData(row);
     if (selectedTabLabel === 'Lab') {
       openTab("Lab Report", { labReport: rowData }, "main", false)
     } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
-    } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Test') {
+    } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Tests') {
       const isPathologySlide = rowData.accessionNumber?.startsWith("PATH") || rowData.id?.startsWith("PATH")
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
       openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false)
@@ -73,7 +226,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       // EKG special case
       const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
       openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: false }, "main", false)
-    } else if (selectedTabLabel === 'Note') {
+    } else if (selectedTabLabel === 'Notes') {
       openTab("Note", { selectedRow: rowData }, "side", false)
     } else {
       // TODO: handle other tabs somehow?
@@ -90,8 +243,14 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
       <div style={{ display: 'flex', overflowX: 'auto' }}>
         <div style={{ flex: '1', maxWidth: tableWidth, transition: 'max-width 0.5s', overflow: 'auto' }}>
           <DataGrid
+            key={selectedTabLabel}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: SORT_KEYS[selectedTabLabel] || 'date', sort: 'desc' }],
+              },
+            }}
             showToolbar
-            columns={visibleColumns.map(x => ({ field: x, headerName: x, flex: 1, minWidth: 100 }))}
+            columns={columns}
             rows={filteredData.map(x => {
               const d = getRowData(x);
               return { ...d, id: JSON.stringify(d), _obj: x }
@@ -125,6 +284,7 @@ export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => 
 
 export const ChartReview = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
+  const [schedules] = useDatabase().schedules()
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
 
@@ -140,14 +300,21 @@ export const ChartReview = ({ ...props }) => {
   const [isNewResultOpen, setIsNewResultOpen] = useState(false);
   const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
 
-  const enrichDocs = (docs, kind, enc) => (docs || []).map(d => ({
-    ...d,
-    kind,
-    encDate: enc?.startDate?.split(" ")[0], // Assuming StartDate is "YYYY-MM-DD HH:MM"
-    encDept: departments.find(dep => dep.id === enc?.department)?.name,
-    encType: enc?.type,
-    encounterProvider: providers.find(p => p.id === enc?.provider)?.name
-  }))
+  const enrichDocs = (docs, kind, enc) => (docs || []).map(d => {
+    const authorProv = d.author ? providers.find(p => p.id === d.author) : null;
+    return {
+      ...d,
+      kind,
+      authorName: authorProv?.name || d.author,
+      authorSpecialty: authorProv?.specialty,
+      provider: d.provider ? providers.find(p => p.id === d.provider)?.name || d.provider : d.provider,
+      performedBy: d.performedBy ? providers.find(p => p.id === d.performedBy)?.name || d.performedBy : d.performedBy,
+      encDate: enc?.startDate?.split(" ")[0], // Assuming StartDate is "YYYY-MM-DD HH:MM"
+      encDept: departments.find(dep => dep.id === enc?.department)?.name,
+      encType: enc?.type,
+      encounterProvider: providers.find(p => p.id === enc?.provider)?.name
+    }
+  })
 
   const handleNewNote = () => {
     // Open Edit Note (side tab) - select if exists
@@ -165,9 +332,9 @@ export const ChartReview = ({ ...props }) => {
     .toSorted((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
     .filter(x => (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
     .flatMap(x => [
-      ...enrichDocs(x.notes, 'Note', x),
+      ...enrichDocs(x.notes, 'Notes', x),
       ...enrichDocs(x.labs, 'Lab', x),
-      ...enrichDocs(x.imaging, 'Imaging', x)
+      ...enrichDocs(x.imaging, 'Imaging', x),
     ])
 
   const documents = filterDocuments(documents2, conditionals, orders)
@@ -176,11 +343,18 @@ export const ChartReview = ({ ...props }) => {
     const dept = departments.find(d => d.id === x.department)
     const prov = providers.find(p => p.id === x.provider)
 
+    const appt = schedules.flatMap(s => s.appointments).find(a => a.patient?.enc == x.id && a.patient?.mrn == chart.id);
+
     return {
       kind: 'Encounters',
       data: {
         date: x.startDate,
         type: x.type,
+        encClosed: x.status === "Signed" ? "Yes" : "No",
+        with: `${dept ? dept.name : x.department} - ${prov ? prov.name : x.provider}`,
+        visitType: appt ? appt.type : (x.type || ""),
+        description: (x.diagnoses || []).join(", "),
+        endDate: x.endDate,
         department: dept ? dept.name : x.department,
         specialty: prov ? prov.specialty : '',
         provider: prov ? prov.name : x.provider
