@@ -119,7 +119,7 @@ export default function PapTracking() {
                   </Label>
                   <br />
                   <Label variant="body2">
-                    {isLab ? papTest.collected?.split(' ')[0] || testData['Date/Time']?.split(' ')[0] : testData.encDate}
+                    {isLab ? papTest.collected?.split(' ')[0] || testData['date']?.split(' ')[0] : testData.encDate}
                   </Label>
                 </Box>
 

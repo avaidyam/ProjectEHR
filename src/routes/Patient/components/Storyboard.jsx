@@ -397,7 +397,7 @@ export const SidebarSepsisAlert = () => {
   const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
-  const _t2 = (x) => DateHelpers.convertToDateTime(x["Date/Time"]).toMillis()
+  const _t2 = (x) => DateHelpers.convertToDateTime(x["date"]).toMillis()
   const wbcLabs = labsFiltered
     .toSorted((a, b) => _t2(b) - _t2(a))
     .flatMap(d => d.labResults)

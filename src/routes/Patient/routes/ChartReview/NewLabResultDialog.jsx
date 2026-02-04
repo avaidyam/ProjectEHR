@@ -48,13 +48,12 @@ export const NewLabResultDialog = ({ open, onClose, onSave }) => {
         const newDoc = {
             kind: "Lab",
             data: {
-                "Date/Time": new Date(testDate).toLocaleString(),
+                "date": new Date(testDate).toLocaleString(),
                 "Test": selectedTest.label,
                 "Status": "Completed",
                 "Abnormal?": "No", // logic could be added here
                 "Expected Date": "",
-                "Expiration": "N/A",
-                "Encounter Provider": ""
+                "Expiration": "N/A"
             },
             labResults: results.map(r => ({
                 name: r.component ? r.component.label : '',

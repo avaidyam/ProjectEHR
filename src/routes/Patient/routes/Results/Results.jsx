@@ -83,7 +83,7 @@ function useNormalizedLabs() {
 
     for (const doc of (labs || [])) {
       const panelName = doc.Test || "Unknown Panel";
-      const time = doc["Date/Time"] || doc.collected;
+      const time = doc["date"] || doc.collected;
       if (!panels[panelName]) panels[panelName] = {};
 
       for (const r of doc.labResults || []) {
