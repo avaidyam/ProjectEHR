@@ -401,8 +401,8 @@ export const SidebarSepsisAlert = () => {
   const wbcLabs = labsFiltered
     .toSorted((a, b) => _t2(b) - _t2(a))
     .flatMap(d => d.labResults)
-    .filter(x => x.name === "WBC")
-    .map(x => x.value > x.high)
+    .filter(x => x?.name === "WBC")
+    .map(x => x?.value > x?.high)
     .filter(x => x)
 
   // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11

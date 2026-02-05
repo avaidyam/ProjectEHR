@@ -4,8 +4,6 @@ import { Box, Button, Label, DataGrid, Icon } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import { filterDocuments } from 'util/helpers'
-import { NewLabResultDialog } from './NewLabResultDialog';
-import { NewImagingResultDialog } from './NewImagingResultDialog';
 
 const tabLabels = [
   "Encounters",
@@ -287,18 +285,12 @@ export const ChartReview = ({ ...props }) => {
   const [schedules] = useDatabase().schedules()
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
-
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
-
   const [departments] = useDatabase().departments()
   const [providers] = useDatabase().providers()
-
   const { openTab } = useSplitView()
-
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [isNewResultOpen, setIsNewResultOpen] = useState(false);
-
 
   const enrichDocs = (docs, kind, enc) => (docs || []).map(d => {
     const authorProv = d.author ? providers.find(p => p.id === d.author) : null;
@@ -317,10 +309,7 @@ export const ChartReview = ({ ...props }) => {
   })
 
   const handleNewNote = () => {
-    // Open Edit Note (side tab) - select if exists
     openTab("Edit Note", {}, "side", true);
-
-    // Make NoteWriter available (main tab) but don't auto-select
     openTab("NoteWriter", {}, "main", false);
   };
 
@@ -342,9 +331,7 @@ export const ChartReview = ({ ...props }) => {
   const encountersData = Object.values(chart.encounters).map(x => {
     const dept = departments.find(d => d.id === x.department)
     const prov = providers.find(p => p.id === x.provider)
-
     const appt = schedules.flatMap(s => s.appointments).find(a => a.patient?.enc == x.id && a.patient?.mrn == chart.id);
-
     return {
       kind: 'Encounters',
       data: {
@@ -361,8 +348,6 @@ export const ChartReview = ({ ...props }) => {
       }
     }
   })
-
-
 
   return (
     <div>
@@ -415,7 +400,6 @@ export const ChartReview = ({ ...props }) => {
         )}
       </Box>
       <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
-
     </div>
   );
 };
