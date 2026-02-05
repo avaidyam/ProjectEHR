@@ -341,7 +341,7 @@ export const DataGrid = ({ children, ...props }) => {
  title={<><Icon>token</Icon> Title</>}
  ```
  */
-export const TitledCard = ({ emphasized, title, color, children, ...props }) => {
+export const TitledCard = ({ emphasized, title, color, sx, toolbar, toolbarProps, boxProps, children, ...props }) => {
   return (
     <MUIPaper sx={{
       borderLeftWidth: 8,
@@ -354,7 +354,8 @@ export const TitledCard = ({ emphasized, title, color, children, ...props }) => 
       marginBottom: '8px',
       borderRadius: '8px',
       overflow: 'hidden',
-      position: 'relative'
+      position: 'relative',
+      ...sx
     }} {...props}>
       <Label
         bold={500}
@@ -364,12 +365,13 @@ export const TitledCard = ({ emphasized, title, color, children, ...props }) => 
           bgcolor: emphasized ? MUIalpha(color, 0.25) : "background.paper",
           color: emphasized ? color : "color.inherit",
           borderRadius: emphasized ? '0px 100em 100em 0px' : 0,
-          p: 0.5, pr: 2.5,
+          p: 0.5, pr: 2.5, mr: 1
         }}
       >
         {title}
       </Label>
-      <Box sx={{ p: 1 }}>{children}</Box>
+      <Box component="span" {...toolbarProps}>{toolbar}</Box>
+      <Box {...boxProps} sx={{ p: 1, ...(boxProps?.sx ?? {}) }}>{children}</Box>
     </MUIPaper>
   )
 }

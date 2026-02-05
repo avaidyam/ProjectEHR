@@ -1,44 +1,436 @@
 import React from 'react';
-import { Button, TextField, Label, Stack, Window, useLazyEffect } from 'components/ui/Core.jsx';
+import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core.jsx';
 import { useDatabase } from 'components/contexts/PatientContext'
 
-const search_orders = (orderables, value = "", limit = null) => {
-  const all_orders = [...orderables.rxnorm, ...Object.values(orderables.procedures).map(x => ({ name: x })), ...orderables.misc]
-  const out = all_orders.filter(x => x.name.toLocaleLowerCase().includes(value?.toLocaleLowerCase() ?? ""))
-  return out.slice(0, limit).toSorted()
+const BROWSE_CATEGORIES = {
+  "Hematology": ["CBC", "ESR", "PTTP", "APTTP"],
+  "Drug Levels": ["ACMA", "ALC", "CARTA", "DIG", "PBR", "PNYA", "SALCA", "THEO", "VALPA"],
+  "Microbiology": ["ANAES", "BLOODCUL7", "CSFME"],
+  "Urine (Lab)": ["URINEPRE", "ADULT", "URINECUL", "DSS"],
+  "Cardiac": ["ECG12LEA", "CARDIACM", "ISCHEMIC"],
+  "Chemistry": ["NH3V", "AMS", "BHCG", "BHYD", "BMAMA", "CA", "CAI", "CMAMA", "CK", "CRP", "CRBF", "GLURA", "LIVPR", "LACS1", "LPS", "UOSMS", "MG_S", "PHOS", "KS", "PBNP1", "HSTNI"],
+  "Pelvic Exam": ["MCTGC", "CHLAMYDI1", "CVRNA"],
+  "Point of Care": ["URINEPRE", "BEDSIDEU1", "BLOODGLU", "ISTAT8PL", "LACTICAC", "OCCULTBL1", "FOBT"],
+  "Blood Bank": ["ABORH", "731383", "TYPEANDS"],
+  "Radiology: XR": ["XRCH1V", "XRCH4+V", "XRKUB"],
+  "Radiology: CT": ["CTAPU", "CTAPE", "CTCAPU3D", "CTCHE", "CTCHCA", "CTHDU", "CTCSU", "CTTSU", "CTLSU"],
+  "Misc Orders": ["ADMIT"],
+  "Medications": ["198466", "1723740", "2629337", "2474269", "897756", "897757", "727619", "998212", "998213", "104894", "312085", "1314133", "992460"]
+}
+
+const COLUMN_DEFS = {
+  ORDER_SET: [
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'type', headerName: 'Type', width: 150, valueGetter: () => "Order Set" }
+  ],
+  MEDICATION: [
+    { field: 'code', headerName: 'Code', width: 100 },
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'dose', headerName: 'Dose', width: 100 },
+    { field: 'route', headerName: 'Route', width: 100 },
+    { field: 'frequency', headerName: 'Frequency', width: 100 },
+    { field: 'pref_list', headerName: 'Pref List', width: 100, valueGetter: () => "DEFAULT" }
+  ],
+  PROCEDURE: [
+    { field: 'code', headerName: 'Code', width: 100 },
+    { field: 'name', headerName: 'Name', flex: 1 },
+    { field: 'type', headerName: 'Type', width: 100 },
+    { field: 'pref_list', headerName: 'Pref List', width: 100, valueGetter: () => "DEFAULT" }
+  ]
+}
+
+const search_orders = (orderables, value = "", limit = null, category = null) => {
+  const query = value?.toLocaleLowerCase()?.trim() ?? ""
+  if (!query && !category) return []
+
+  // Helper getters
+  const getOrderSets = () => (orderables.order_sets || [])
+    .map((x, i) => ({ ...x, id: `os_${i}`, type: 'order_set' }))
+    .filter(x => x.name.toLocaleLowerCase().includes(query))
+
+  const getMeds = () => orderables.rxnorm
+    .map((x, i) => ({ ...x, _idx: i, type: 'medication' })) // moved map before filter to ensure consistent object shape if filtering later by code
+
+  const getProcs = () => Object.entries(orderables.procedures || {})
+    .map(([k, v], i) => {
+      const isImaging = ["CT", "MRI", "XR"].some(t => v.toUpperCase().includes(t))
+      return { id: `proc_${k}`, code: k, name: v, type: isImaging ? 'Imaging' : 'Lab' }
+    })
+
+  const getMisc = () => Object.entries(orderables.misc || {})
+    .map(([k, v], i) => ({ id: `misc_${k}`, code: k, name: v, type: 'other' }))
+
+  let source = []
+  if (category === "medications") {
+    source = getMeds().filter(x => x.name.toLocaleLowerCase().includes(query))
+  } else if (category === "procedures") {
+    source = getProcs().filter(x => x.name.toLocaleLowerCase().includes(query))
+  } else if (category === "other") {
+    source = getMisc().filter(x => x.name.toLocaleLowerCase().includes(query))
+  } else if (category === "order_sets") {
+    source = getOrderSets() // already filtered by query
+  } else {
+    source = [
+      ...getOrderSets(),
+      ...getMeds().filter(x => x.name.toLocaleLowerCase().includes(query)),
+      ...getProcs().filter(x => x.name.toLocaleLowerCase().includes(query)),
+      ...getMisc().filter(x => x.name.toLocaleLowerCase().includes(query))
+    ]
+  }
+
+  // Apply limit to parent items
+  const sliced = limit ? source.slice(0, limit) : source
+
+  // Expand medications
+  const expanded = sliced.flatMap(item => {
+    if (item.type === 'medication') {
+      if (!item.route) return []
+      return Object.entries(item.route).flatMap(([routeType, forms]) => {
+        return Object.entries(forms).map(([code, desc]) => ({
+          id: `med_${code}`,
+          type: 'medication',
+          code: code,
+          name: `${item.name} ${desc}`,
+          originalName: item.name,
+          dose: desc,
+          route: routeType,
+          routesMap: item.route, // Pass the full map for the composer
+          frequency: "ONE TIME"
+        }))
+      })
+    }
+    return item
+  })
+  return expanded
+}
+
+const OrderQueue = ({ orders, onRemove }) => {
+  return (
+    <Box paper variant="outlined" sx={{ width: 250, flexShrink: 0, overflowY: 'auto', height: '100%', p: 1 }}>
+      {orders.length === 0 ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#666', fontStyle: 'italic' }}>No orders</div>
+      ) : (
+        <TreeView expandedItems={["new_meds", "new_procs"]}>
+          {orders.some(x => x.type === 'medication') && (
+            <TreeItem itemId="new_meds" label="Medications">
+              {orders.filter(x => x.type === 'medication').map(x => (
+                <TreeItem key={x.id} itemId={x.id} label={
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
+                    {x.name}
+                    <Icon
+                      sx={{ fontSize: 16, cursor: 'pointer', ml: 1 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(x.id)
+                      }}
+                    >close</Icon>
+                  </Stack>
+                } />
+              ))}
+            </TreeItem>
+          )}
+          {orders.some(x => ['procedure', 'Imaging', 'Lab'].includes(x.type)) && (
+            <TreeItem itemId="new_procs" label="Procedures">
+              {orders.filter(x => ['procedure', 'Imaging', 'Lab'].includes(x.type)).map(x => (
+                <TreeItem key={x.id} itemId={x.id} label={
+                  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%' }}>
+                    {x.name}
+                    <Icon
+                      sx={{ fontSize: 16, cursor: 'pointer', ml: 1 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemove(x.id)
+                      }}
+                    >close</Icon>
+                  </Stack>
+                } />
+              ))}
+            </TreeItem>
+          )}
+        </TreeView>
+      )}
+    </Box>
+  )
+}
+
+const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrders, setQueuedOrders, tab, setTab, ...props }) => {
+  return (
+    <Stack direction="column" sx={{ flex: 1, minWidth: 0 }} {...props}>
+      <TitledCard
+        emphasized
+        color="#74c9cc"
+        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Order Sets</>}
+        sx={{ minHeight: 48 }}
+        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+      >
+      </TitledCard>
+      <TitledCard
+        emphasized
+        color="#9F3494"
+        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>}
+        sx={{ minHeight: 48 }}
+        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+      >
+        <DataGrid
+          rows={data.filter(x => x.type === 'medication')}
+          columns={COLUMN_DEFS.MEDICATION}
+          hideFooter
+          disableColumnMenu
+          density="compact"
+          rowSelectionModel={selection ? [selection] : []}
+          onRowSelectionModelChange={(ids) => {
+            if (ids.length > 0) setSelection(ids[0])
+            else if (data.filter(x => x.type === 'medication').some(x => x.id === selection)) setSelection(null)
+          }}
+          onRowDoubleClick={(params) => {
+            if (queuedOrders.length > 0) {
+              if (!queuedOrders.some(x => x.id === params.row.id)) {
+                setQueuedOrders(prev => [...prev, params.row])
+              }
+            } else {
+              onSelect(params.row)
+            }
+          }}
+          disableMultipleRowSelection
+          autoHeight={data.filter(x => x.type === 'medication').length > 0}
+          sx={{ border: 'none', pb: "28px" }}
+        />
+      </TitledCard>
+      <TitledCard
+        emphasized
+        color="#5EA1F8"
+        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Procedures</>}
+        sx={{ minHeight: 48 }}
+        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+      >
+        <DataGrid
+          rows={data.filter(x => ['procedure', 'Imaging', 'Lab'].includes(x.type))}
+          columns={COLUMN_DEFS.PROCEDURE}
+          hideFooter
+          disableColumnMenu
+          density="compact"
+          rowSelectionModel={selection ? [selection] : []}
+          onRowSelectionModelChange={(ids) => {
+            if (ids.length > 0) setSelection(ids[0])
+            else if (data.filter(x => ['procedure', 'Imaging', 'Lab'].includes(x.type)).some(x => x.id === selection)) setSelection(null)
+          }}
+          onRowDoubleClick={(params) => {
+            if (queuedOrders.length > 0) {
+              if (!queuedOrders.some(x => x.id === params.row.id)) {
+                setQueuedOrders(prev => [...prev, params.row])
+              }
+            } else {
+              onSelect(params.row)
+            }
+          }}
+          disableMultipleRowSelection
+          autoHeight={data.filter(x => ['procedure', 'Imaging', 'Lab'].includes(x.type)).length > 0}
+          sx={{ border: 'none', pb: "28px" }}
+        />
+      </TitledCard>
+      {tab === "preference" && (
+        <Button variant="outlined" onClick={() => setTab("facility")}>Broaden my search</Button>
+      )}
+    </Stack>
+  )
+}
+
+export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrders, ...props }) => {
+  const [category, setCategory] = React.useState(null)
+  const categoryRefs = React.useRef({})
+
+  const scrollToCategory = (cat) => {
+    if (categoryRefs.current[cat]) {
+      categoryRefs.current[cat].scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  // Helper to resolve code to name and type
+  const resolveItem = (code) => {
+    // Check Meds
+    const med = orderables.rxnorm?.find(x => x.code === code || (x.route && Object.values(x.route).some(r => Object.keys(r).includes(code))))
+    if (med) return { name: med.name, type: 'medication', ...med } // Note: specific dose lookup might be needed if code is specific form
+
+    // Check Procedures
+    if (orderables.procedures && orderables.procedures[code]) {
+      return { name: orderables.procedures[code], type: 'procedure', code }
+    }
+
+    // Check Misc
+    if (orderables.misc && orderables.misc[code]) {
+      return { name: orderables.misc[code], type: 'other', code }
+    }
+
+    // Check Order Sets (by ID? usually not codes but lets see)
+    // BROWSE_CATEGORIES has codes.
+
+    return null
+  }
+
+  return (
+    <Stack direction="row" spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+      {/* Sidebar */}
+      <Box paper variant="outlined" sx={{ width: 250, flexShrink: 0, overflowY: 'auto', height: '100%', p: 1 }}>
+        <Label bold sx={{ mb: 1, display: 'block' }}>Preference Lists</Label>
+        <TreeView onSelectedItemsChange={(e, ids) => {
+          setCategory(ids)
+          scrollToCategory(ids)
+        }}>
+          {Object.keys(BROWSE_CATEGORIES).map(cat => (
+            <TreeItem key={cat} itemId={cat} label={cat} />
+          ))}
+        </TreeView>
+      </Box>
+
+      {/* Content */}
+      <Stack direction="column" spacing={2} sx={{ flex: 1, minWidth: 0, overflowY: 'auto', p: 1 }} {...props}>
+        {Object.entries(BROWSE_CATEGORIES).map(([cat, codes]) => (
+          <Box
+            key={cat}
+            ref={el => categoryRefs.current[cat] = el}
+            sx={{ flexShrink: 0 }}
+          >
+            <TitledCard
+              emphasized
+              title={cat}
+              color="#5EA1F8"
+              sx={{ mb: 0 }}
+            >
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1 }}>
+                {codes.map(code => {
+                  const item = resolveItem(code)
+                  if (!item) return null
+                  // For display, clean up name or use as is?
+                  return (
+                    <Button
+                      key={code}
+                      variant="outlined"
+                      size="small"
+                      color="inherit"
+                      sx={{ justifyContent: 'flex-start', textAlign: 'left', height: 'auto', py: 1 }}
+                      onClick={() => {
+                        // Mock item structure compliant with OrderQueue/DataGrid
+                        const queueItem = {
+                          id: `browse_${code}`,
+                          code: code,
+                          name: item.name,
+                          type: item.type,
+                          // Add default props for meds if needed
+                          ...(item.type === 'medication' ? { frequency: 'ONE TIME', route: 'Oral' } : {})
+                        }
+
+                        if (!queuedOrders.some(x => x.code === code)) { // Check by code or ID?
+                          setQueuedOrders(prev => [...prev, queueItem])
+                        }
+                      }}
+                    >
+                      <Icon sx={{ mr: 1, color: 'text.secondary' }}>add</Icon>
+                      {item.name}
+                    </Button>
+                  )
+                })}
+              </Box>
+            </TitledCard>
+          </Box>
+        ))}
+      </Stack>
+    </Stack>
+  )
 }
 
 export const OrderPicker = ({ searchTerm, open, onSelect, ...props }) => {
   const [orderables] = useDatabase().orderables()
   const [value, setValue] = React.useState(searchTerm)
+  const inputRef = React.useRef(null)
+  const [tab, setTab] = React.useState("browse")
+  const [category, setCategory] = React.useState(null)
   const [data, setData] = React.useState([])
+  const [selection, setSelection] = React.useState(null)
+  const [queuedOrders, setQueuedOrders] = React.useState([])
 
-  useLazyEffect(() => { 
-    setData(search_orders(orderables, value, 100))
-  }, [value])
+  const selectedItem = React.useMemo(() => data.find(x => x.id === selection), [data, selection])
+
+  useLazyEffect(() => {
+    setData(search_orders(orderables, value, 100, null))
+  }, [value, category])
 
   return (
-    <Window 
-      fullWidth 
-      maxWidth="md" 
+    <Window
+      fullWidth
+      maxWidth="lg"
       open={!!open}
-      onClose={() => onSelect(null)} 
+      title="Orders Search"
+      onClose={() => onSelect(null)}
       header={
-        <TextField
-          label="Add orders or order sets"
-          size="small"
-          sx={{ minWidth: 300 }}
-          variant="outlined"
-          value={value}
-          onChange={(x) => setValue(x.target.value)}
-        />
+        <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: 'center', mt: 1, mb: -2 }}>
+          <TextField
+            label="Search"
+            size="small"
+            sx={{ flex: 1 }}
+            variant="outlined"
+            defaultValue={searchTerm}
+            inputRef={inputRef}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setValue(inputRef.current.value)
+                if (tab === 'browse') setTab('preference')
+              }
+            }}
+            InputProps={{
+              endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
+                setValue(inputRef.current.value)
+                if (tab === 'browse') setTab('preference')
+              }}>search</Icon>
+            }}
+          />
+          <TabView value={tab}>
+            <TabList onChange={(e, v) => setTab(v)} variant="standard">
+              <Tab label="Browse" value="browse" />
+              <Tab label="Preference List" value="preference" />
+              <Tab label="Facility List" value="facility" />
+            </TabList>
+          </TabView>
+        </Stack>
+      }
+      footer={
+        <>
+          <Button variant="outlined" onClick={() => {
+            if (selectedItem && !queuedOrders.some(x => x.id === selectedItem.id)) {
+              setQueuedOrders(prev => [...prev, selectedItem])
+            }
+          }}>Select and Stay</Button>
+          <Button variant="outlined" onClick={() => onSelect(null)}>Cancel</Button>
+          <Button variant="contained" onClick={() => onSelect(queuedOrders.length > 0 ? queuedOrders : selectedItem)}>Accept</Button>
+        </>
       }
     >
-      <Stack direction="column" {...props}>
-        {data.map((m) => (
-          <Button fullWidth key={m.name} onClick={() => onSelect(m)} sx={{ justifyContent: "space-between", alignItems: "center" }}>{m.name}</Button>
-        ))}
-        {data?.length === 0 ? <Label>No Results. Try again.</Label> : <></>}
+      <Stack direction="row" spacing={2} sx={{ height: "50vh" }}>
+        {tab === "browse" ? (
+          <OrderBrowse
+            orderables={orderables}
+            onSelect={onSelect}
+            queuedOrders={queuedOrders}
+            setQueuedOrders={setQueuedOrders}
+          />
+        ) : (
+          <OrderSearchResults
+            data={data}
+            selection={selection}
+            setSelection={setSelection}
+            onSelect={onSelect}
+            queuedOrders={queuedOrders}
+            setQueuedOrders={setQueuedOrders}
+            tab={tab}
+            setTab={setTab}
+            {...props}
+          />
+        )}
+        {(queuedOrders.length > 0 || tab === 'browse') &&
+          <OrderQueue
+            orders={queuedOrders}
+            onRemove={(id) => setQueuedOrders(prev => prev.filter(q => q.id !== id))}
+          />
+        }
       </Stack>
     </Window>
   )

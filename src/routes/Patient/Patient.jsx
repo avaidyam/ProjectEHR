@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Drawer, IconButton, useTheme, useMediaQuery } from '@mui/material'
+import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
 import { Icon } from 'components/ui/Core.jsx';
 import { SplitView } from 'components/ui/SplitView.jsx';
 import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext.jsx';
@@ -12,6 +12,7 @@ import SnapshotTabContent from './routes/Snapshot/Snapshot.jsx'
 import NotesTabContent from './routes/NoteWriter/NoteWriter.jsx'
 import HistoryTabContent from './routes/History/History.jsx'
 import { OrderCart } from './routes/OrderCart/OrderCart.jsx';
+import { OrderPicker } from './routes/OrderCart/components/OrderPicker.jsx';
 import OrdersMgmt from './routes/OrdersManagement/OrdersManagement.jsx';
 import Medications from './routes/Medications/Medications.jsx';
 import ResultsReview from "./routes/Results/Results.jsx";
@@ -25,7 +26,6 @@ import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 import Handoff from './routes/Handoff/Handoff.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
-import BottomBar from './components/BottomBar.jsx';
 import { EncounterAlert } from './components/EncounterAlert.jsx'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
 import EditNote from './routes/EditNote/EditNote.jsx';
@@ -80,6 +80,7 @@ export const Patient = ({ ...props }) => {
   const drawerWidth = 250
   const [storyboardOpen, setStoryboardOpen] = useState(true)
   const [isDxModalOpen, setIsDxModalOpen] = useState(false)
+  const [isOrderPickerOpen, setIsOrderPickerOpen] = useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
@@ -126,11 +127,50 @@ export const Patient = ({ ...props }) => {
                 </IconButton>
               } />
           </Box>
-          <BottomBar
-            onAddOrder={() => console.log('Add order clicked')}
-            onAddDx={() => setIsDxModalOpen(true)}
-            onSignEncounter={() => console.log('Sign encounter clicked')}
-          />
+          <Box
+            sx={{
+              borderTop: 1,
+              borderColor: 'divider'
+            }}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              px={2}
+              py={1}
+            >
+              <Box display="flex" gap={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon>add</Icon>}
+                  onClick={() => setIsOrderPickerOpen(true)}
+                >
+                  Add order
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon>add</Icon>}
+                  onClick={() => setIsDxModalOpen(true)}
+                >
+                  Add Dx
+                </Button>
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<Icon>check_circle</Icon>}
+                  disabled
+                  onClick={() => console.log('Sign encounter clicked')}
+                >
+                  Sign encounter
+                </Button>
+              </Box>
+            </Box>
+          </Box>
           <EncounterAlert />
         </Box>
       </Box>
@@ -139,6 +179,10 @@ export const Patient = ({ ...props }) => {
       <DiagnosesSearchModal
         open={isDxModalOpen}
         onClose={() => setIsDxModalOpen(false)}
+      />
+      <OrderPicker
+        open={isOrderPickerOpen}
+        onSelect={() => setIsOrderPickerOpen(false)}
       />
     </PatientProvider>
   )
