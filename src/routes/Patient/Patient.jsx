@@ -30,6 +30,7 @@ import { EncounterAlert } from './components/EncounterAlert.jsx'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
 import EditNote from './routes/EditNote/EditNote.jsx';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk.jsx';
+import { EditResult } from './routes/EditResult/EditResult.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -54,6 +55,7 @@ const ALL_TABS = {
   "Flowsheet": (props) => <Flowsheet {...props} />,
   "Edit Note": (props) => <EditNote {...props} />,
   "Appointment Desk": (props) => <AppointmentDesk {...props} />,
+  "Edit Result": (props) => <EditResult {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [

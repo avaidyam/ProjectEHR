@@ -298,7 +298,7 @@ export const ChartReview = ({ ...props }) => {
 
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
   const [isNewResultOpen, setIsNewResultOpen] = useState(false);
-  const [isNewImagingOpen, setIsNewImagingOpen] = useState(false);
+
 
   const enrichDocs = (docs, kind, enc) => (docs || []).map(d => {
     const authorProv = d.author ? providers.find(p => p.id === d.author) : null;
@@ -362,37 +362,7 @@ export const ChartReview = ({ ...props }) => {
     }
   })
 
-  const handleSaveNewLabResult = (newDoc) => {
-    const encounterId = encounter.id;
-    const newEncounters = { ...chart.encounters };
 
-    if (newEncounters[encounterId]) {
-      newEncounters[encounterId] = {
-        ...newEncounters[encounterId],
-        labs: [...(newEncounters[encounterId].labs || []), newDoc]
-      };
-
-      const newChart = { ...chart, encounters: newEncounters };
-      setChart(newChart);
-      setEncounter(newEncounters[encounterId]);
-    }
-  };
-
-  const handleSaveNewImaging = (newDoc) => {
-    const encounterId = encounter.id;
-    const newEncounters = { ...chart.encounters };
-
-    if (newEncounters[encounterId]) {
-      newEncounters[encounterId] = {
-        ...newEncounters[encounterId],
-        imaging: [...(newEncounters[encounterId].imaging || []), newDoc]
-      };
-
-      const newChart = { ...chart, encounters: newEncounters };
-      setChart(newChart);
-      setEncounter(newEncounters[encounterId]);
-    }
-  };
 
   return (
     <div>
@@ -418,7 +388,7 @@ export const ChartReview = ({ ...props }) => {
             variant="contained"
             size="small"
             startIcon={<Icon>add</Icon>}
-            onClick={() => setIsNewResultOpen(true)}
+            onClick={() => openTab("Edit Result", {}, "main", true)}
           >
             New Result
           </Button>
@@ -428,12 +398,12 @@ export const ChartReview = ({ ...props }) => {
             variant="contained"
             size="small"
             startIcon={<Icon>add</Icon>}
-            onClick={() => setIsNewImagingOpen(true)}
+            onClick={() => openTab("Edit Result", {}, "main", true)}
           >
             New Result
           </Button>
         )}
-        {selectedTabLabel === 'Note' && (
+        {selectedTabLabel === 'Notes' && (
           <Button
             variant="contained"
             size="small"
@@ -445,16 +415,7 @@ export const ChartReview = ({ ...props }) => {
         )}
       </Box>
       <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
-      <NewLabResultDialog
-        open={isNewResultOpen}
-        onClose={() => setIsNewResultOpen(false)}
-        onSave={handleSaveNewLabResult}
-      />
-      <NewImagingResultDialog
-        open={isNewImagingOpen}
-        onClose={() => setIsNewImagingOpen(false)}
-        onSave={handleSaveNewImaging}
-      />
+
     </div>
   );
 };
