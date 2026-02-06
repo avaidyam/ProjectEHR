@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
+import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { Box, Button, Label, DataGrid, Icon } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
@@ -194,92 +195,6 @@ const SORT_KEYS = {
   "Consents": "createdDate"
 };
 
-export const ChartReviewDataContent = ({ selectedTabLabel, data, ...props }) => {
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [isWindowOpen, setIsWindowOpen] = useState(false);
-  const [tableWidth, setTableWidth] = useState('100%');
-  const { openTab } = useSplitView()
-
-  const getRowData = (row) => row.data || row;
-
-  const filteredData = selectedTabLabel ? data.filter(item => {
-    const isCardiac = CARDIAC_ORDERS.some(t => (item.test ?? "").includes(t))
-    if (selectedTabLabel === 'Cardiac') return isCardiac;
-    if (item.kind !== selectedTabLabel) return false;
-    return !isCardiac;
-  }) : [];
-
-  const columns = COLUMN_DEFS[selectedTabLabel] || [];
-
-  const handleRowClick = (row) => {
-    const rowData = getRowData(row);
-    if (selectedTabLabel === 'Lab') {
-      openTab("Lab Report", { labReport: rowData }, "main", false)
-    } else if (selectedTabLabel === 'Cardiac' && !!row.labResults) {
-    } else if (selectedTabLabel === 'Imaging' || selectedTabLabel === 'Specialty Tests') {
-      const isPathologySlide = rowData.accessionNumber?.startsWith("PATH") || rowData.id?.startsWith("PATH")
-      const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false)
-    } else if (selectedTabLabel === 'Cardiac' && !!rowData.image) {
-      // EKG special case
-      const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-      openTab("Imaging Viewer", { selectedRow: rowData, viewerId: viewerId, convertMonochrome: false }, "main", false)
-    } else if (selectedTabLabel === 'Notes') {
-      openTab("Note", { selectedRow: rowData }, "side", false)
-    } else {
-      // TODO: handle other tabs somehow?
-    }
-  };
-
-  const handleCloseWindow = () => {
-    setIsWindowOpen(false);
-    setTableWidth('100%');
-  };
-
-  return (
-    <Box position="relative">
-      <div style={{ display: 'flex', overflowX: 'auto' }}>
-        <div style={{ flex: '1', maxWidth: tableWidth, transition: 'max-width 0.5s', overflow: 'auto' }}>
-          <DataGrid
-            key={selectedTabLabel}
-            initialState={{
-              sorting: {
-                sortModel: [{ field: SORT_KEYS[selectedTabLabel] || 'date', sort: 'desc' }],
-              },
-            }}
-            showToolbar
-            columns={columns}
-            rows={filteredData.map(x => {
-              const d = getRowData(x);
-              return { ...d, id: JSON.stringify(d), _obj: x }
-            })}
-            onCellDoubleClick={(params) => handleRowClick(params.row._obj)}
-            pageSizeOptions={[25, 50, 100]}
-            localeText={{
-              footerTotalRows: "Total items: "
-            }}
-          />
-        </div>
-        {isWindowOpen && (
-          <div style={{
-            flex: '1', maxWidth: '50%', background: '#ffffff', borderLeft: '1px solid #ccc',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', transition: 'max-width 0.5s'
-          }}>
-            <div style={{ padding: '16px' }}>
-              {selectedRow && (
-                <div>
-                  <Button onClick={handleCloseWindow}>Close</Button>
-                  {/* TODO: The old preview code has been deleted. Please rewrite it! */}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </Box>
-  );
-};
-
 export const ChartReview = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [schedules] = useDatabase().schedules()
@@ -308,11 +223,6 @@ export const ChartReview = ({ ...props }) => {
     }
   })
 
-  const handleNewNote = () => {
-    openTab("Edit Note", {}, "side", true);
-    openTab("NoteWriter", {}, "main", false);
-  };
-
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   // TODO: this is where modifications should be made for order-conditional documents being shown
   // or logic to advance from one encounter to the next
@@ -334,20 +244,35 @@ export const ChartReview = ({ ...props }) => {
     const appt = schedules.flatMap(s => s.appointments).find(a => a.patient?.enc == x.id && a.patient?.mrn == chart.id);
     return {
       kind: 'Encounters',
-      data: {
-        date: x.startDate,
-        type: x.type,
-        encClosed: x.status === "Signed" ? "Yes" : "No",
-        with: `${dept ? dept.name : x.department} - ${prov ? prov.name : x.provider}`,
-        visitType: appt ? appt.type : (x.type || ""),
-        description: (x.diagnoses || []).join(", "),
-        endDate: x.endDate,
-        department: dept ? dept.name : x.department,
-        specialty: prov ? prov.specialty : '',
-        provider: prov ? prov.name : x.provider
-      }
+      date: x.startDate,
+      type: x.type,
+      encClosed: x.status === "Signed" ? "Yes" : "No",
+      with: `${dept ? dept.name : x.department} - ${prov ? prov.name : x.provider}`,
+      visitType: appt ? appt.type : (x.type || ""),
+      description: (x.diagnoses || []).join(", "),
+      endDate: x.endDate,
+      department: dept ? dept.name : x.department,
+      specialty: prov ? prov.specialty : '',
+      provider: prov ? prov.name : x.provider
     }
   })
+
+  const filteredData = selectedTabLabel ? [...encountersData, ...documents].filter(item => {
+    const isCardiac = CARDIAC_ORDERS.some(t => (item.test ?? "").includes(t))
+    if (selectedTabLabel === 'Cardiac') return isCardiac;
+    if (item.kind !== selectedTabLabel) return false;
+    return !isCardiac;
+  }) : [];
+
+  const columns = COLUMN_DEFS[selectedTabLabel] || [];
+
+  const handleRowClick = (row) => {
+    if (["Lab", "Cardiac", "Imaging", "Specialty Tests"].includes(selectedTabLabel)) {
+      openTab("Lab Report", { labReport: row }, "main", false)
+    } else if (["Notes"].includes(selectedTabLabel)) {
+      openTab("Note", { selectedRow: row }, "side", false)
+    }
+  }
 
   return (
     <div>
@@ -368,38 +293,73 @@ export const ChartReview = ({ ...props }) => {
             />
           ))}
         </Tabs>
-        {selectedTabLabel === 'Lab' && (
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<Icon>add</Icon>}
-            onClick={() => openTab("Edit Result", {}, "main", true)}
-          >
-            New Result
-          </Button>
-        )}
-        {selectedTabLabel === 'Imaging' && (
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<Icon>add</Icon>}
-            onClick={() => openTab("Edit Result", {}, "main", true)}
-          >
-            New Result
-          </Button>
-        )}
-        {selectedTabLabel === 'Notes' && (
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<Icon>add</Icon>}
-            onClick={handleNewNote}
-          >
-            New Note
-          </Button>
-        )}
       </Box>
-      <ChartReviewDataContent selectedTabLabel={selectedTabLabel} data={[...encountersData, ...documents]} />
+      <Box position="relative">
+        <div style={{ display: 'flex', overflowX: 'auto' }}>
+          <div style={{ flex: '1', maxWidth: "100%", transition: 'max-width 0.5s', overflow: 'auto' }}>
+            <DataGrid
+              key={selectedTabLabel}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: SORT_KEYS[selectedTabLabel] || 'date', sort: 'desc' }],
+                },
+              }}
+              slots={{
+                toolbar: () => (
+                  <GridToolbarContainer sx={{ justifyContent: 'flex-start' }}>
+                    <GridToolbarFilterButton />
+                    <GridToolbarColumnsButton />
+                    <Box sx={{ flex: '1' }} />
+                    {selectedTabLabel === 'Lab' && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<Icon>add</Icon>}
+                        onClick={() => openTab("Edit Result", {}, "main", true)}
+                      >
+                        New Result
+                      </Button>
+                    )}
+                    {selectedTabLabel === 'Imaging' && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<Icon>add</Icon>}
+                        onClick={() => openTab("Edit Result", {}, "main", true)}
+                      >
+                        New Result
+                      </Button>
+                    )}
+                    {selectedTabLabel === 'Notes' && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<Icon>add</Icon>}
+                        onClick={() => {
+                          openTab("Edit Note", {}, "side", true);
+                          openTab("NoteWriter", {}, "main", false);
+                        }}
+                      >
+                        New Note
+                      </Button>
+                    )}
+                  </GridToolbarContainer>
+                )
+              }}
+              columns={columns}
+              rows={filteredData.map(x => {
+                return { ...x, id: JSON.stringify(x), _obj: x }
+              })}
+              onCellDoubleClick={(params) => handleRowClick(params.row._obj)}
+              pageSizeOptions={[25, 50, 100]}
+              localeText={{
+                footerTotalRows: "Total items: "
+              }}
+            />
+          </div>
+          {/* TODO: The old preview code has been deleted. Please rewrite it! */}
+        </div>
+      </Box>
     </div>
   );
 };
