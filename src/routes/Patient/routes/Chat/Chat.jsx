@@ -69,6 +69,9 @@ export default function Chat() {
   const rosNote = (notes || []).find(
     (doc) => doc?.summary === 'Review of Systems'
   );
+  const physicalExamNote = (documents || []).find(
+    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Physical Exam'
+  );
 
   // Histories
   const medicalHistory = history?.medical || [];
@@ -193,12 +196,22 @@ export default function Chat() {
     } else {
       text += "No allergies found.\n";
     }
+    text += "\n";
+
+    // Physical Exam (formatted similarly to ROS)
+    text += "### Physical Examination\n";
+    text += physicalExamNote?.data?.content
+      ?.replace(/(<\/p\s*>|<br\s*\/?>)/gi, '\n')
+      ?.replace(/<[^>]+>/g, '')
+      ?.replace(/\n{2,}/g, '\n')
+      ?.trim() || "No Physical Exam note found.";
+    text += "\n";
 
     text += "\n'''";
     return text.trimEnd();
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
-    hpiNote, rosNote, medicalHistory, surgicalHistory, familyHistory,
+    hpiNote, rosNote, physicalExamNote, medicalHistory, surgicalHistory, familyHistory,
     socialDocumentation, medications, immunizations, allergies
   ]);
 
