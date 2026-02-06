@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Tabs, Tab } from '@mui/material'; // FIXME: REMOVE!
+import { useNavigate } from 'react-router-dom';
+import { Tabs, Tab, Tooltip } from '@mui/material'; // FIXME: REMOVE!
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { Box, Button, Label, DataGrid, Icon } from 'components/ui/Core'
+import { Box, Button, Label, DataGrid, Icon, IconButton } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import { filterDocuments } from 'util/helpers'
@@ -43,12 +44,23 @@ const COLUMN_DEFS = {
     { field: 'endDate', headerName: 'Disch Date', width: 140 }
   ],
   "Notes": [
-    { field: 'summary', headerName: 'Summary', width: 150 },
-    { field: 'serviceDate', headerName: 'Service Date', width: 140 },
-    { field: 'encDate', headerName: 'Enc Date', width: 120 },
+    {
+      field: 'summary',
+      headerName: 'Summary',
+      width: 50,
+      renderCell: ({ value }) => (
+        <Tooltip title={value} placement="right">
+          <IconButton size="small">
+            <Icon fontSize="small">content_paste</Icon>
+          </IconButton>
+        </Tooltip>
+      )
+    },
+    { field: 'serviceDate', headerName: 'Service Date', width: 100 },
+    { field: 'encDate', headerName: 'Enc Date', width: 100 },
     { field: 'encDept', headerName: 'Enc Dept', width: 150 },
     { field: 'authorSpecialty', headerName: 'Auth Specialty', width: 150 },
-    { field: 'authorName', headerName: 'Author', width: 150 },
+    { field: 'authorName', headerName: 'Author', width: 250 },
     { field: 'encType', headerName: 'Enc Type', width: 140 },
     { field: 'type', headerName: 'Category', width: 140 },
     { field: 'status', headerName: 'Status', width: 100 },
@@ -177,6 +189,35 @@ const COLUMN_DEFS = {
   ]
 };
 
+const STAR_COLUMN = {
+  field: 'starred',
+  headerName: '',
+  renderHeader: () => <Icon>bookmark_border</Icon>,
+  width: 50,
+  sortable: false,
+  filterable: false,
+  disableColumnMenu: true,
+  renderCell: () => (
+    <IconButton
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        color: 'text.secondary',
+        opacity: 0.0,
+        '&:hover': {
+          opacity: 1.0
+        }
+      }}
+    >
+      <Icon>bookmark_border</Icon>
+    </IconButton>
+  )
+};
+
 const SORT_KEYS = {
   "Encounters": "date",
   "Notes": "serviceDate",
@@ -196,6 +237,7 @@ const SORT_KEYS = {
 };
 
 export const ChartReview = ({ ...props }) => {
+  const navigate = useNavigate();
   const { useChart, useEncounter } = usePatient()
   const [schedules] = useDatabase().schedules()
   const [chart, setChart] = useChart()()
@@ -206,13 +248,14 @@ export const ChartReview = ({ ...props }) => {
   const [providers] = useDatabase().providers()
   const { openTab } = useSplitView()
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
+  const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
   const enrichDocs = (docs, kind, enc) => (docs || []).map(d => {
     const authorProv = d.author ? providers.find(p => p.id === d.author) : null;
     return {
       ...d,
       kind,
-      authorName: authorProv?.name || d.author,
+      authorName: authorProv ? [authorProv.name, authorProv.role, authorProv.specialty].filter(Boolean).join(" - ") : d.author,
       authorSpecialty: authorProv?.specialty,
       provider: d.provider ? providers.find(p => p.id === d.provider)?.name || d.provider : d.provider,
       performedBy: d.performedBy ? providers.find(p => p.id === d.performedBy)?.name || d.performedBy : d.performedBy,
@@ -244,6 +287,7 @@ export const ChartReview = ({ ...props }) => {
     const appt = schedules.flatMap(s => s.appointments).find(a => a.patient?.enc == x.id && a.patient?.mrn == chart.id);
     return {
       kind: 'Encounters',
+      id: x.id,
       date: x.startDate,
       type: x.type,
       encClosed: x.status === "Signed" ? "Yes" : "No",
@@ -264,7 +308,7 @@ export const ChartReview = ({ ...props }) => {
     return !isCardiac;
   }) : [];
 
-  const columns = COLUMN_DEFS[selectedTabLabel] || [];
+  const columns = [STAR_COLUMN, ...(COLUMN_DEFS[selectedTabLabel] || [])];
 
   const handleRowClick = (row) => {
     if (["Lab", "Cardiac", "Imaging", "Specialty Tests"].includes(selectedTabLabel)) {
@@ -310,6 +354,23 @@ export const ChartReview = ({ ...props }) => {
                     <GridToolbarFilterButton />
                     <GridToolbarColumnsButton />
                     <Box sx={{ flex: '1' }} />
+                    {selectedTabLabel === 'Encounters' && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<Icon>medical_services</Icon>}
+                        disabled={rowSelectionModel.length === 0}
+                        onClick={() => {
+                          const selectedRow = filteredData.find(x => JSON.stringify(x) === rowSelectionModel[0]);
+                          if (selectedRow) {
+                            console.dir(selectedRow)
+                            navigate(`/patient/${chart.id}/encounter/${selectedRow.id}`);
+                          }
+                        }}
+                      >
+                        Open Encounter
+                      </Button>
+                    )}
                     {selectedTabLabel === 'Lab' && (
                       <Button
                         variant="contained"
@@ -351,10 +412,12 @@ export const ChartReview = ({ ...props }) => {
                 return { ...x, id: JSON.stringify(x), _obj: x }
               })}
               onCellDoubleClick={(params) => handleRowClick(params.row._obj)}
-              pageSizeOptions={[25, 50, 100]}
-              localeText={{
-                footerTotalRows: "Total items: "
+              onRowSelectionModelChange={(newRowSelectionModel) => {
+                setRowSelectionModel(newRowSelectionModel);
               }}
+              rowSelectionModel={rowSelectionModel}
+              pageSizeOptions={[25, 50, 100]}
+              hideFooter
             />
           </div>
           {/* TODO: The old preview code has been deleted. Please rewrite it! */}
