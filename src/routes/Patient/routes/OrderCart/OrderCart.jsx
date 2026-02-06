@@ -56,9 +56,16 @@ export const OrderCart = () => {
   const [orderList, setOrderList] = useEncounter().orders([])
   const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
 
-  const [value, setValue] = useState('')
+  const inputRef = React.useRef(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)
   const [openOrder, setOpenOrder] = useState(null)
+
+  const startSearch = () => {
+    setSearchTerm(inputRef.current.value)
+    inputRef.current.value = ''
+    setOpenSearchList(true)
+  }
 
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -87,14 +94,13 @@ export const OrderCart = () => {
                 size="small"
                 sx={{ minWidth: 300 }}
                 variant="outlined"
-                value={value}
-                onChange={(x) => setValue(x.target.value)}
+                inputRef={inputRef}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter')
-                    setOpenSearchList(true)
+                    startSearch()
                 }}
               />
-              <Button variant="outlined" onClick={() => { setOpenSearchList(true) }}>
+              <Button variant="outlined" onClick={startSearch}>
                 <Icon color="success">add</Icon> New
               </Button>
             </Box>
@@ -167,9 +173,8 @@ export const OrderCart = () => {
         </Box>
       </Box>
       {!!openSearchList &&
-        <OrderPicker open={openSearchList} searchTerm={value} onSelect={(item) => {
+        <OrderPicker open={openSearchList} searchTerm={searchTerm} onSelect={(item) => {
           setOpenSearchList(null)
-          setValue(null)
           if (item !== null) {
             if (Array.isArray(item)) {
               const newItems = item.map(x => ({ ...x, id: x.id || crypto.randomUUID(), name: x.originalName || x.name, Dose: x.dose || x.Dose, Route: x.route || x.Route, Frequency: x.frequency || x.Frequency }))

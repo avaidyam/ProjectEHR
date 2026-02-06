@@ -44,12 +44,8 @@ const search_orders = (orderables, value = "", limit = null, category = null) =>
   if (!query && !category) return []
 
   // Helper getters
-  const getOrderSets = () => (orderables.order_sets || [])
-    .map((x, i) => ({ ...x, id: `os_${i}`, type: 'order_set' }))
-    .filter(x => x.name.toLocaleLowerCase().includes(query))
-
   const getMeds = () => orderables.rxnorm
-    .map((x, i) => ({ ...x, _idx: i, type: 'medication' })) // moved map before filter to ensure consistent object shape if filtering later by code
+    .map((x, i) => ({ ...x, _idx: i, type: 'medication' }))
 
   const getProcs = () => Object.entries(orderables.procedures || {})
     .map(([k, v], i) => {
@@ -57,24 +53,15 @@ const search_orders = (orderables, value = "", limit = null, category = null) =>
       return { id: `proc_${k}`, code: k, name: v, type: isImaging ? 'Imaging' : 'Lab' }
     })
 
-  const getMisc = () => Object.entries(orderables.misc || {})
-    .map(([k, v], i) => ({ id: `misc_${k}`, code: k, name: v, type: 'other' }))
-
   let source = []
   if (category === "medications") {
     source = getMeds().filter(x => x.name.toLocaleLowerCase().includes(query))
   } else if (category === "procedures") {
     source = getProcs().filter(x => x.name.toLocaleLowerCase().includes(query))
-  } else if (category === "other") {
-    source = getMisc().filter(x => x.name.toLocaleLowerCase().includes(query))
-  } else if (category === "order_sets") {
-    source = getOrderSets() // already filtered by query
   } else {
     source = [
-      ...getOrderSets(),
       ...getMeds().filter(x => x.name.toLocaleLowerCase().includes(query)),
-      ...getProcs().filter(x => x.name.toLocaleLowerCase().includes(query)),
-      ...getMisc().filter(x => x.name.toLocaleLowerCase().includes(query))
+      ...getProcs().filter(x => x.name.toLocaleLowerCase().includes(query))
     ]
   }
 
@@ -245,25 +232,23 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
     }
   }
 
-  // Helper to resolve code to name and type
   const resolveItem = (code) => {
-    // Check Meds
     const med = orderables.rxnorm?.find(x => x.code === code || (x.route && Object.values(x.route).some(r => Object.keys(r).includes(code))))
-    if (med) return { name: med.name, type: 'medication', ...med } // Note: specific dose lookup might be needed if code is specific form
-
-    // Check Procedures
+    if (med) {
+      let name = med.name
+      if (med.route) {
+        for (const [route, forms] of Object.entries(med.route)) {
+          if (forms[code]) {
+            name = `${med.name} ${forms[code]}`
+            break
+          }
+        }
+      }
+      return { ...med, type: 'medication', name }
+    }
     if (orderables.procedures && orderables.procedures[code]) {
       return { name: orderables.procedures[code], type: 'procedure', code }
     }
-
-    // Check Misc
-    if (orderables.misc && orderables.misc[code]) {
-      return { name: orderables.misc[code], type: 'other', code }
-    }
-
-    // Check Order Sets (by ID? usually not codes but lets see)
-    // BROWSE_CATEGORIES has codes.
-
     return null
   }
 
@@ -300,7 +285,6 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                 {codes.map(code => {
                   const item = resolveItem(code)
                   if (!item) return null
-                  // For display, clean up name or use as is?
                   return (
                     <Button
                       key={code}
@@ -309,17 +293,14 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                       color="inherit"
                       sx={{ justifyContent: 'flex-start', textAlign: 'left', height: 'auto', py: 1 }}
                       onClick={() => {
-                        // Mock item structure compliant with OrderQueue/DataGrid
                         const queueItem = {
                           id: `browse_${code}`,
                           code: code,
                           name: item.name,
                           type: item.type,
-                          // Add default props for meds if needed
                           ...(item.type === 'medication' ? { frequency: 'ONE TIME', route: 'Oral' } : {})
                         }
-
-                        if (!queuedOrders.some(x => x.code === code)) { // Check by code or ID?
+                        if (!queuedOrders.some(x => x.code === code)) {
                           setQueuedOrders(prev => [...prev, queueItem])
                         }
                       }}
@@ -342,7 +323,7 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }) => {
   const [orderables] = useDatabase().orderables()
   const [value, setValue] = React.useState(searchTerm)
   const inputRef = React.useRef(null)
-  const [tab, setTab] = React.useState("browse")
+  const [tab, setTab] = React.useState(searchTerm ? "preference" : "browse")
   const [category, setCategory] = React.useState(null)
   const [data, setData] = React.useState([])
   const [selection, setSelection] = React.useState(null)
