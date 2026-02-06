@@ -20,7 +20,7 @@ import Pdmp from './routes/PDMP/PDMP.jsx';
 import Immunizations from './routes/Immunizations/Immunizations.jsx';
 import { Allergies } from './routes/Allergies/Allergies.jsx';
 import Chat from "./routes/Chat/Chat.jsx";
-import LabReport from './routes/LabReport/LabReport.jsx';
+import ReportViewer from './routes/ReportViewer/ReportViewer.jsx';
 import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
@@ -49,7 +49,7 @@ const ALL_TABS = {
   "Allergies": (props) => <Allergies {...props} />,
   "Demographics": (props) => <Demographics {...props} />,
   "Chat": (props) => <Chat {...props} />,
-  "Lab Report": (props) => <LabReport {...props} />,
+  "Report": (props) => <ReportViewer {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
   "Flowsheet": (props) => <Flowsheet {...props} />,

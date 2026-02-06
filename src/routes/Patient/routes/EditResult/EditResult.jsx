@@ -99,7 +99,7 @@ export const EditResult = ({ ...props }) => {
                 "abnormal": false,
                 "expectedDate": null,
                 "expirationDate": null,
-                labResults: results.map(r => {
+                "components": results.map(r => {
                     const comp = componentList.find(c => c.id === r.component);
                     return {
                         name: comp ? comp.label : '',
@@ -112,7 +112,7 @@ export const EditResult = ({ ...props }) => {
                 }).filter(r => r.name !== ''),
                 "collected": null,
                 "resulted": null,
-                "labReportComment": null,
+                "comment": null,
                 "resultingAgency": null
             }]])
         }

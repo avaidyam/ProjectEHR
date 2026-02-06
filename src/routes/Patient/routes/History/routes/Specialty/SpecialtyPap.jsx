@@ -180,10 +180,10 @@ export default function PapTracking() {
               </Box>
 
               {/* Lab report comment if available */}
-              {isLab && papTest.labReportComment && (
+              {isLab && papTest.comment && (
                 <Box sx={{ mt: 2, p: 1, backgroundColor: '#f0f7ff', borderRadius: 1, fontStyle: 'italic' }}>
                   <Label variant="body2">
-                    {papTest.labReportComment}
+                    {papTest.comment}
                   </Label>
                 </Box>
               )}

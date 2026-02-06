@@ -86,7 +86,7 @@ function useNormalizedLabs() {
       const time = doc["date"] || doc.collected;
       if (!panels[panelName]) panels[panelName] = {};
 
-      for (const r of doc.labResults || []) {
+      for (const r of doc.components || []) {
         if (!panels[panelName][r.name]) {
           panels[panelName][r.name] = {
             name: r.name,

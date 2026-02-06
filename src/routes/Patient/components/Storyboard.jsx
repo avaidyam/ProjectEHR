@@ -400,7 +400,7 @@ export const SidebarSepsisAlert = () => {
   const _t2 = (x) => DateHelpers.convertToDateTime(x["date"]).toMillis()
   const wbcLabs = labsFiltered
     .toSorted((a, b) => _t2(b) - _t2(a))
-    .flatMap(d => d.labResults)
+    .flatMap(d => d.components)
     .filter(x => x?.name === "WBC")
     .map(x => x?.value > x?.high)
     .filter(x => x)
