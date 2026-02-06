@@ -73,12 +73,19 @@ function brightHSLFromName(name) {
   return `hsl(${h} ${s}% ${l}%)`;
 }
 
-/** 🔑 Hook to normalize Lab results into Epic-style panels */
+import { filterDocuments } from "util/helpers";
+
+/** 🔑 Hook to normalize Lab documents into Epic-style panels */
 function useNormalizedLabs() {
   const { useEncounter } = usePatient();
-  const [labs] = useEncounter().labs();
+  const [documents] = useEncounter().labs();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
+
+  const visibleSym = filterDocuments(documents, conditionals, orders);
 
   return useMemo(() => {
+    const labs = (visibleSym || []);
     const panels = {};
 
     for (const doc of (labs || [])) {
@@ -121,7 +128,7 @@ function useNormalizedLabs() {
         results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
       })),
     }));
-  }, [labs]);
+  }, [visibleSym]);
 }
 
 export default function ResultsReviewEpic() {
