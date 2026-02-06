@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Icon, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, ListItem, ListItemText } from '@mui/material';
+import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker.jsx';
 
@@ -69,12 +69,10 @@ const ClinicalImpressions = () => {
   };
 
   return (
-    <Box sx={{ padding: 2, textAlign: 'left' }}>
-      {/* Inline Add Box + Button */}
-      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-
+    <Stack direction="column" spacing={2} sx={{ padding: 2, textAlign: 'left' }}>
+      <Label variant="h6" sx={{ mb: 1, display: 'block' }}>Clinical Impressions</Label>
+      <Stack direction="row">
         <TextField
-          variant="outlined"
           placeholder="Add a new impression"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -83,59 +81,69 @@ const ClinicalImpressions = () => {
               handleOpenModal(searchTerm);
             }
           }}
-          sx={{ width: '300px', marginRight: 0, borderRadius: 0, height: '56px' }}
+          InputProps={{
+            endAdornment:
+              <Button
+                variant="text"
+                onClick={() => handleOpenModal(searchTerm)}
+                sx={{ height: '56px' }}
+              >
+                <Icon color="success">add_task</Icon> Add
+              </Button>
+          }}
         />
-        <Button
-          variant="outlined"
-          onClick={() => handleOpenModal(searchTerm)}
-          sx={{ borderRadius: 0, height: '56px' }}
-        >
-          <Icon color="success">add_task</Icon> Add
-        </Button>
-      </Box>
+      </Stack>
 
-      {/* Clinical Impressions Table */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Clinical Impressions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {clinicalImpressions.map((imp, index) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', marginRight: 1 }}>
-                      <Button onClick={() => moveUp(index)} disabled={index === 0}>
-                        <Icon>arrow_upward</Icon>
-                      </Button>
-                      <Button onClick={() => moveDown(index)} disabled={index === clinicalImpressions.length - 1}>
-                        <Icon>arrow_downward</Icon>
-                      </Button>
-                    </Box>
-                    <ListItem sx={{ padding: 0 }}>
-                      <ListItemText primary={`${index + 1}. ${imp.name ?? ''}`} />
-                    </ListItem>
-                    <Button onClick={() => handleDelete(index)}>
+      <Box paper sx={{ p: 2 }}>
+        {clinicalImpressions.length === 0 &&
+          <Label sx={{ color: 'text.secondary', fontStyle: 'italic' }}>No clinical impressions recorded.</Label>
+        }
+        <TreeView>
+          {clinicalImpressions.map((imp, index) => (
+            <TreeItem
+              key={index}
+              itemId={`impression-${index}`}
+              label={
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
+                  <Label>{index + 1}. {imp.name}</Label>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      sx={{ minWidth: 'auto', p: 0.5 }}
+                      onClick={(e) => { e.stopPropagation(); moveUp(index); }}
+                      disabled={index === 0}
+                    >
+                      <Icon>arrow_upward</Icon>
+                    </Button>
+                    <Button
+                      size="small"
+                      sx={{ minWidth: 'auto', p: 0.5 }}
+                      onClick={(e) => { e.stopPropagation(); moveDown(index); }}
+                      disabled={index === clinicalImpressions.length - 1}
+                    >
+                      <Icon>arrow_downward</Icon>
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      sx={{ minWidth: 'auto', p: 0.5 }}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(index); }}
+                    >
                       <Icon>close</Icon>
                     </Button>
                   </Box>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-
-        </Table>
-      </TableContainer>
-
+                </Stack>
+              }
+            />
+          ))}
+        </TreeView>
+      </Box>
       <DiagnosisPicker
         open={isModalOpen}
         searchTerm={searchTerm}
         onSelect={handleSelect}
       />
-    </Box>
+    </Stack>
   );
 };
 
