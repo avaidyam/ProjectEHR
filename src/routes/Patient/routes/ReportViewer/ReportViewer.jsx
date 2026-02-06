@@ -31,14 +31,14 @@ const isValueOutsideRange = (value, low, high) => {
   return false;
 };
 
-const ReportViewer = ({ report, ...props }) => {
+const ReportViewer = ({ data, ...props }) => {
   const { openTab } = useSplitView();
-  const isAbnormal = hasLowOrHighValues(report?.components ?? [])
+  const isAbnormal = hasLowOrHighValues(data?.components ?? [])
 
   const handleOpenImaging = () => {
-    const isPathologySlide = report?.accessionNumber?.startsWith("PATH") || report?.id?.startsWith("PATH");
+    const isPathologySlide = data?.accessionNumber?.startsWith("PATH") || data?.id?.startsWith("PATH");
     const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    openTab("Imaging Viewer", { selectedRow: report, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false);
+    openTab("Imaging Viewer", { data: data, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false);
   };
 
   return (
@@ -66,17 +66,17 @@ const ReportViewer = ({ report, ...props }) => {
                   textTransform: 'uppercase'
                 }}
               >
-                {report?.test ?? "Unknown Result"}
+                {data?.test ?? "Unknown Result"}
               </Label>
             </Stack>
             <Label sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
-              Order: {report?.id ?? "0"}
+              Order: {data?.id ?? "0"}
             </Label>
           </Stack>
           <Stack direction="row" spacing={1} sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>
-            <span>Status: <strong>{(report?.resulted ?? false) ? "Final result" : "Pending"}</strong></span>
+            <span>Status: <strong>{(data?.resulted ?? false) ? "Final result" : "Pending"}</strong></span>
           </Stack>
-          {(report?.image) && (
+          {(data?.image) && (
             <Button
               variant="contained"
               startIcon={<Icon>image</Icon>}
@@ -87,7 +87,7 @@ const ReportViewer = ({ report, ...props }) => {
             </Button>
           )}
         </Box>
-        {(report?.components?.length > 0) && (
+        {(data?.components?.length > 0) && (
           <TableContainer component={Box}>
             <Table size="small">
               <TableHead>
@@ -97,12 +97,12 @@ const ReportViewer = ({ report, ...props }) => {
                     <Label variant="caption" color="textSecondary">Ref Range & Units</Label>
                   </TableCell>
                   <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 0.5 }}>
-                    <Label variant="body2" bold>{report?.collected ?? "Date Unknown"}</Label>
+                    <Label variant="body2" bold>{data?.collected ?? "Date Unknown"}</Label>
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(report?.components ?? []).map((item, index) => {
+                {(data?.components ?? []).map((item, index) => {
                   if (item.value === null || item.name === null) return null;
 
                   const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
@@ -170,27 +170,27 @@ const ReportViewer = ({ report, ...props }) => {
           </TableContainer>
         )}
 
-        {report?.image && (
+        {data?.image && (
           <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
             <Label variant="body2" bold sx={{ mb: 0.5 }}>Narrative</Label>
-            <Label variant="body2" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>{report?.narrative ?? "No narrative available."}</Label>
+            <Label variant="body2" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>{data?.narrative ?? "No narrative available."}</Label>
 
             <Label variant="body2" bold sx={{ mb: 0.5 }}>Impression</Label>
-            <Label variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{report?.impression ?? "No impression available."}</Label>
+            <Label variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{data?.impression ?? "No impression available."}</Label>
           </Box>
         )}
 
         <Box sx={{ p: 2, pt: 2 }}>
-          <Label sx={{ color: 'text.secondary' }}>{report?.comment ?? ""}</Label>
+          <Label sx={{ color: 'text.secondary' }}>{data?.comment ?? ""}</Label>
           <Label variant="caption" color="textSecondary">
-            Resulting Agency: {report?.resultingAgency ?? ""}
+            Resulting Agency: {data?.resultingAgency ?? ""}
           </Label>
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
             <Label variant="body2" color="textSecondary">
-              <strong>Specimen Collected:</strong> {report?.collected ?? "Unknown"}
+              <strong>Specimen Collected:</strong> {data?.collected ?? "Unknown"}
             </Label>
             <Label variant="body2" color="textSecondary">
-              <strong>Last Resulted:</strong> {report?.resulted ?? "Unknown"}
+              <strong>Last Resulted:</strong> {data?.resulted ?? "Unknown"}
             </Label>
           </Stack>
           <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">

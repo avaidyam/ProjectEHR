@@ -268,9 +268,9 @@ export const ChartReview = ({ ...props }) => {
 
   const handleRowClick = (row) => {
     if (["Lab", "Cardiac", "Imaging", "Specialty Tests"].includes(selectedTabLabel)) {
-      openTab("Report", { report: row }, "main", false)
+      openTab("Report", { data: row }, "main", false)
     } else if (["Notes"].includes(selectedTabLabel)) {
-      openTab("Note", { selectedRow: row }, "side", false)
+      openTab("Note", { data: row }, "side", false)
     }
   }
 

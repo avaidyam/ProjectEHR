@@ -1,12 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import {
-    Menu,
-    MenuItem,
-    LinearProgress
-} from '@mui/material';
+import { Box, LinearProgress } from '@mui/material';
 import { App } from 'dwv';
-import { Box } from '../../../../../components/ui/Core.jsx';
-
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
 import dcmjs from "dcmjs";
@@ -17,7 +11,7 @@ const { DicomDict, DicomMetaDictionary, datasetToDict } = dcmjs.data
 function convertImageBuffer(source, width, height, inChannels = 3, outChannels = 1) {
     if (outChannels === 2 || inChannels === 2)
         return source // error! 
-    if (outChannels >= inChannels) 
+    if (outChannels >= inChannels)
         return source // error! 
     const buf = Buffer.alloc(width * height * outChannels)
     for (let i = 0, j = 0; i < source.length; i += inChannels) {
@@ -67,11 +61,11 @@ async function image2DICOM(input, monochrome = true, compression = false) {
 }
 
 function blob2b64(blob) {
-  return new Promise((resolve, _) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+    return new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+    });
 }
 
 export function b64ToFile(str) {
@@ -86,16 +80,15 @@ export function b64ToFile(str) {
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
 
-const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
+export const DWVViewer = ({ images, convertMonochrome, viewerId, tool }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
-    const [contextMenu, setContextMenu] = useState(null);
     const viewerRef = React.useRef(null);
 
     useEffect(() => {
         console.log(`DWVViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
-        
+
         const app = new App();
         setDwvApp(app);
 
@@ -116,11 +109,11 @@ const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
                 console.log(`DWVViewer(${viewerId}): Load start event triggered.`);
                 setLoadProgress(0);
                 setDataLoaded(false);
-            }, 
+            },
             'loadprogress': (event) => {
                 console.log(`DWVViewer(${viewerId}): Load progress: ${event.loaded}%`);
                 setLoadProgress(event.loaded);
-            }, 
+            },
             'load': (event) => {
                 console.log(`DWVViewer(${viewerId}): Load finished successfully.`);
                 // get a handle on the data, not strictly needed but good practice
@@ -163,7 +156,7 @@ const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
             }
         }
 
-        app.setTool('Scroll');
+        app.setTool(tool || 'Scroll');
 
         return () => {
             console.log(`DWVViewer(${viewerId}): Component unmounting. Cleaning up...`);
@@ -177,27 +170,17 @@ const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
         };
     }, [viewerRef, viewerId, images]);
 
-    const handleContextMenu = useCallback((event) => {
-        event.preventDefault();
-        setContextMenu(
-            contextMenu === null
-                ? { mouseX: event.clientX - 2, mouseY: event.clientY - 4 }
-                : null,
-        );
-    }, [contextMenu]);
-
-    const handleToolChange = (tool) => {
-        if (dwvApp) {
+    useEffect(() => {
+        if (dwvApp && tool) {
             dwvApp.setTool(tool);
             if (tool === 'Draw') {
-                dwvApp.setToolFeatures({shapeName: 'Ruler'});
+                dwvApp.setToolFeatures({ shapeName: 'Ruler' });
             }
         }
-        setContextMenu(null);
-    };
+    }, [dwvApp, tool]);
 
     return (
-        <Box 
+        <Box
             sx={{
                 position: 'relative',
                 width: '100%',
@@ -208,13 +191,12 @@ const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
                 alignItems: 'center',
             }}
         >
-            {loadProgress < 100 && 
+            {loadProgress < 100 &&
                 <LinearProgress variant="determinate" value={loadProgress} sx={{ position: 'absolute', top: "50%", width: '100%' }} />
             }
-            <Box 
-                id={viewerId} 
+            <Box
+                id={viewerId}
                 ref={viewerRef}
-                onContextMenu={handleContextMenu} 
                 sx={{
                     width: '100%',
                     height: '100%',
@@ -224,32 +206,8 @@ const DWVViewer = ({ images, convertMonochrome, viewerId }) => {
                     "& .drawLayer": {
                         position: 'absolute',
                     }
-                }} 
+                }}
             />
-            <Menu
-                open={contextMenu !== null}
-                onClose={() => setContextMenu(null)}
-                anchorReference="anchorPosition"
-                anchorPosition={
-                    contextMenu !== null
-                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                        : undefined
-                }>
-                <MenuItem onClick={() => handleToolChange('Scroll')} disabled={!dataLoaded}>
-                    Scroll
-                </MenuItem>
-                <MenuItem onClick={() => handleToolChange('ZoomAndPan')} disabled={!dataLoaded}>
-                    Zoom and Pan
-                </MenuItem>
-                <MenuItem onClick={() => handleToolChange('WindowLevel')} disabled={!dataLoaded}>
-                    Window Level
-                </MenuItem>
-                <MenuItem onClick={() => handleToolChange('Draw')} disabled={!dataLoaded}>
-                    Draw
-                </MenuItem>
-            </Menu>
         </Box>
     );
 };
-
-export default DWVViewer;
