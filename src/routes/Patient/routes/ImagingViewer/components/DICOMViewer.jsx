@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Box, LinearProgress } from '@mui/material';
 import { App, WindowLevel, Scalar3D } from 'dwv';
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
@@ -80,7 +79,7 @@ export function b64ToFile(str) {
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
 
-export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }) => {
+export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -92,7 +91,7 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
     }, [onUpdate]);
 
     useEffect(() => {
-        console.log(`DWVViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
+        console.log(`DICOMViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
 
         const app = new App();
         setDwvApp(app);
@@ -123,16 +122,16 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
 
         const listeners = {
             'loadstart': () => {
-                console.log(`DWVViewer(${viewerId}): Load start event triggered.`);
+                console.log(`DICOMViewer(${viewerId}): Load start event triggered.`);
                 setLoadProgress(0);
                 setDataLoaded(false);
             },
             'loadprogress': (event) => {
-                console.log(`DWVViewer(${viewerId}): Load progress: ${event.loaded}%`);
+                console.log(`DICOMViewer(${viewerId}): Load progress: ${event.loaded}%`);
                 setLoadProgress(event.loaded);
             },
             'load': (event) => {
-                console.log(`DWVViewer(${viewerId}): Load finished successfully.`);
+                console.log(`DICOMViewer(${viewerId}): Load finished successfully.`);
                 // get a handle on the data, not strictly needed but good practice
                 // const data = app.getData(event.dataId);
                 setDataLoaded(true);
@@ -154,13 +153,13 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
                 }
             },
             'error': (event) => {
-                console.error(`DWVViewer(${viewerId}): An error occurred during loading.`, event);
+                console.error(`DICOMViewer(${viewerId}): An error occurred during loading.`, event);
             },
             'abort': () => {
-                console.log(`DWVViewer(${viewerId}): Load aborted.`);
+                console.log(`DICOMViewer(${viewerId}): Load aborted.`);
             },
             'renderend': () => {
-                console.log(`DWVViewer(${viewerId}): Render finished.`);
+                console.log(`DICOMViewer(${viewerId}): Render finished.`);
             },
             'zoomchange': handleUpdate,
             'wlchange': handleUpdate,
@@ -178,7 +177,7 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
 
         // Load images
         if (images && images.length > 0) {
-            console.log(`DWVViewer(${viewerId}): Attempting to load ${images.length} images.`);
+            console.log(`DICOMViewer(${viewerId}): Attempting to load ${images.length} images.`);
             if (images[0]?.startsWith?.("data:image/")) {
                 // FIXME: RGB mode doesn't work if compression=false for some reason?
                 image2DICOM(images[0], convertMonochrome ?? true, !(convertMonochrome ?? true)).then(image => {
@@ -193,7 +192,7 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
         app.setTool(tool || 'Scroll');
 
         return () => {
-            console.log(`DWVViewer(${viewerId}): Component unmounting. Cleaning up...`);
+            console.log(`DICOMViewer(${viewerId}): Component unmounting. Cleaning up...`);
             app?.abortAllLoads();
             app?.removeDataViewConfig("*", viewerId);
             app?.reset();
@@ -214,8 +213,8 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
     }, [dwvApp, tool]);
 
     return (
-        <Box
-            sx={{
+        <div
+            style={{
                 position: 'relative',
                 width: '100%',
                 height: '100%',
@@ -226,12 +225,28 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
             }}
         >
             {loadProgress < 100 &&
-                <LinearProgress variant="determinate" value={loadProgress} sx={{ position: 'absolute', top: "50%", width: '100%' }} />
+                <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '10%',
+                    width: '80%',
+                    height: '4px',
+                    backgroundColor: '#333',
+                    borderRadius: '2px',
+                    overflow: 'hidden'
+                }}>
+                    <div style={{
+                        width: `${loadProgress}%`,
+                        height: '100%',
+                        backgroundColor: '#1976d2',
+                        transition: 'width 0.2s ease-in-out'
+                    }} />
+                </div>
             }
-            <Box
+            <div
                 id={viewerId}
                 ref={viewerRef}
-                sx={{
+                style={{
                     width: '100%',
                     height: '100%',
                     "& .viewLayer": {
@@ -242,6 +257,6 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSe
                     }
                 }}
             />
-        </Box>
+        </div>
     );
 };

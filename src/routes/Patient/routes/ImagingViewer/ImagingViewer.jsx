@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { Popover, Switch } from '@mui/material';
+import { Popover, Switch, Slider } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Box, Label, Button, Icon, Stack, IconButton, Menu, MenuItem, Divider, Grid } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
-import { DWVViewer } from './components/DWVViewer.jsx';
+import { DICOMViewer } from './components/DICOMViewer.jsx';
 
 const dicomTheme = createTheme({
   palette: {
@@ -27,6 +27,12 @@ const ImagingToolbar = ({
   const [showHideAnchorEl, setShowHideAnchorEl] = useState(null);
   const [presetsAnchorEl, setPresetsAnchorEl] = useState(null);
   const [viewModeAnchorEl, setViewModeAnchorEl] = useState(null);
+
+  const [fps, setFps] = useState(20);
+  const [fpsAnchorEl, setFpsAnchorEl] = useState(null);
+  const handleFpsClick = (event) => setFpsAnchorEl(event.currentTarget);
+  const handleFpsClose = () => setFpsAnchorEl(null);
+  const handleFpsChange = (event, newValue) => setFps(newValue);
 
   const viewModes = ['2D', 'MPR', '3D 4:1', '3D 6:1', 'Curved MPR'];
 
@@ -78,10 +84,11 @@ const ImagingToolbar = ({
         padding: '8px 16px',
         backgroundColor: 'background.paper',
         borderBottom: '1px solid',
-        borderColor: 'divider'
+        borderColor: 'divider',
+        overflowX: 'auto'
       }}
     >
-      <Stack spacing={0}>
+      <Stack spacing={0} sx={{ flexShrink: 0 }}>
         <Label variant="subtitle2" bold sx={{ color: 'text.primary', lineHeight: 1.2 }}>{data?.date}</Label>
         <Label variant="body2" sx={{ textTransform: 'uppercase', fontSize: '0.75rem' }}>{data?.test}</Label>
       </Stack>
@@ -175,6 +182,35 @@ const ImagingToolbar = ({
         <IconButton disabled><Icon>skip_previous</Icon></IconButton>
         <IconButton disabled><Icon>play_arrow</Icon></IconButton>
         <IconButton disabled><Icon>skip_next</Icon></IconButton>
+        <IconButton onClick={handleFpsClick} title={`${fps} FPS`}>
+          <Icon>speed</Icon>
+        </IconButton>
+        <Popover
+          open={Boolean(fpsAnchorEl)}
+          anchorEl={fpsAnchorEl}
+          onClose={handleFpsClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <Box sx={{ p: 2, height: 200, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Label variant="caption" sx={{ mb: 1, whiteSpace: 'pre-line', textAlign: 'center', fontWeight: 'bold' }}>
+              {`FPS\n${fps}`}
+            </Label>
+            <Slider
+              orientation="vertical"
+              value={fps}
+              onChange={handleFpsChange}
+              min={1}
+              max={60}
+            />
+          </Box>
+        </Popover>
       </Stack>
       <Divider orientation="vertical" flexItem />
       <Button
@@ -182,6 +218,7 @@ const ImagingToolbar = ({
         size="small"
         disabled
         endIcon={<Icon>arrow_drop_down</Icon>}
+        sx={{ flexShrink: 0 }}
       >
         Study Actions
       </Button>
@@ -226,6 +263,11 @@ const ImagingToolbar = ({
 
 const ImagingThumbnail = ({ index, isSelected, onClick }) => (
   <Box
+    draggable
+    onDragStart={(e) => {
+      e.dataTransfer.setData('application/json', JSON.stringify({ index }));
+      e.dataTransfer.effectAllowed = 'copy';
+    }}
     onClick={onClick}
     sx={{
       minWidth: 100,
@@ -233,12 +275,13 @@ const ImagingThumbnail = ({ index, isSelected, onClick }) => (
       position: 'relative',
       border: isSelected ? '2px solid' : '1px solid',
       borderColor: isSelected ? 'primary.main' : 'divider',
-      cursor: 'pointer',
+      cursor: 'grab',
       backgroundColor: 'background.paper',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      '&:hover': { borderColor: 'text.primary' }
+      '&:hover': { borderColor: 'text.primary' },
+      '&:active': { cursor: 'grabbing' }
     }}
   >
     {/* Simulate Image Content */}
@@ -332,6 +375,7 @@ const ImageView = ({
   images,
   convertMonochrome,
   viewOptions,
+  onDrop,
   data,
 }) => {
   const { useChart } = usePatient();
@@ -374,9 +418,28 @@ const ImageView = ({
     setContextMenu(null);
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('application/json'));
+      if (onDrop) {
+        onDrop(data);
+      }
+    } catch (error) {
+      console.error('Failed to parse dropped data', error);
+    }
+  };
+
   return (
     <Box
       onContextMenu={handleContextMenu}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       sx={{
         position: 'relative',
         display: 'flex',
@@ -387,7 +450,7 @@ const ImageView = ({
         overflow: 'hidden'
       }}
     >
-      <DWVViewer
+      <DICOMViewer
         images={images}
         viewerId={viewerId}
         convertMonochrome={convertMonochrome}
@@ -430,11 +493,117 @@ const ImageView = ({
           </Stack>
         </>
       )}
+
+      {/* Stack Slider (Vertical) */}
+      {viewOptions.showStackSlider && (
+        <Stack
+          alignItems="center"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: 16,
+            transform: 'translateY(-50%)',
+            height: '50%',
+            zIndex: 1,
+            opacity: 0.5,
+            '&:hover': {
+              opacity: 1.0
+            }
+          }}
+        >
+          <Label variant="caption" sx={{ mb: 1, fontWeight: 'bold' }}>10</Label>
+          <Box
+            sx={{
+              flexGrow: 1,
+              width: 6,
+              bgcolor: 'rgba(255, 255, 255, 0.2)',
+              borderRadius: 1,
+              position: 'relative',
+              display: 'flex',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            {/* Custom Thumb/Handle */}
+            <Slider
+              orientation="vertical"
+              valueLabelDisplay="auto"
+              defaultValue={1}
+              min={1}
+              max={10}
+              sx={{
+                padding: 0,
+                color: 'transparent',
+                '& .MuiSlider-thumb': {
+                  width: 8,
+                  height: 24,
+                  bgcolor: 'text.primary',
+                  borderRadius: 0,
+                  boxShadow: 'none',
+                  '&:before': { display: 'none' },
+                  '&:hover': {
+                    boxShadow: 'none',
+                    bgcolor: 'text.secondary'
+                  }
+                },
+                '& .MuiSlider-track': { display: 'none' },
+                '& .MuiSlider-rail': { display: 'none' },
+                '& .MuiSlider-valueLabel': {
+                  left: 'auto',
+                  right: -10,
+                  top: 10,
+                  '&:before': { display: 'none' }
+                }
+              }}
+            />
+          </Box>
+          <Label variant="caption" sx={{ mt: 1, fontWeight: 'bold' }}>1</Label>
+        </Stack>
+      )}
+
+      {/* Scale Overlay */}
+      {viewOptions.showAnnotationOverlays && (
+        <Stack
+          alignItems="center"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            right: 16,
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            zIndex: 1,
+            height: '50%'
+          }}
+        >
+          <Label variant="caption" sx={{ mb: 0.5 }}>1 cm</Label>
+          <Box
+            sx={{
+              width: 10,
+              flexGrow: 1,
+              borderRight: '1px solid white',
+              borderTop: '1px solid white',
+              borderBottom: '1px solid white',
+              position: 'relative',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: '50%',
+                right: 0,
+                width: 6,
+                height: "1px",
+                backgroundColor: 'white',
+                transform: 'translateY(-50%)'
+              }
+            }}
+          />
+        </Stack>
+      )
+      }
       <ToolSelectMenu
         anchorEl={contextMenu}
         onToolChange={handleToolChange}
       />
-    </Box>
+    </Box >
   );
 };
 
@@ -445,7 +614,22 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }) => {
 
   const [currentLayout, setCurrentLayout] = useState('1x1'); // "rows x cols"
   const [currentRows, currentCols] = (currentLayout || '1x1').split('x').map(Number);
-  const [currentImageSet, setCurrentImageSet] = useState(images);
+
+  // Refactored state to track images per viewer index
+  const [viewerImages, setViewerImages] = useState({ 0: images });
+
+  const handleSeriesSelect = (seriesFiles) => {
+    // For now, clicking a thumbnail updates the first viewer (or active if we had one)
+    setViewerImages(prev => ({ ...prev, 0: seriesFiles }));
+  };
+
+  const handleDrop = (viewerIndex, { index: sourceIndex }) => {
+    const selectedItem = images[sourceIndex];
+    if (selectedItem) {
+      const seriesFiles = images.length === 1 ? [selectedItem] : selectedItem;
+      setViewerImages(prev => ({ ...prev, [viewerIndex]: seriesFiles }));
+    }
+  };
   const [selectedViewMode, setSelectedViewMode] = useState('2D');
   const [viewOptions, setViewOptions] = useState({
     showImageText: true,
@@ -471,7 +655,7 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }) => {
           {viewOptions.showThumbnails && (
             <ImagingThumbnailGrid
               images={images}
-              onSeriesSelect={(seriesFiles) => setCurrentImageSet(seriesFiles)}
+              onSeriesSelect={handleSeriesSelect}
             />
           )}
         </Box>
@@ -489,9 +673,10 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }) => {
             <ImageView
               key={index}
               viewerId={`${viewerId}-${index}`}
-              images={currentImageSet}
+              images={viewerImages[index] || []}
               convertMonochrome={convertMonochrome}
               viewOptions={viewOptions}
+              onDrop={(data) => handleDrop(index, data)}
               data={data}
             />
           ))}
