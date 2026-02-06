@@ -3,7 +3,6 @@ import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/m
 import { Icon } from 'components/ui/Core.jsx';
 import { SplitView } from 'components/ui/SplitView.jsx';
 import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext.jsx';
-import DiagnosesSearchModal from 'components/ui/diagnosis-modal/Modal.jsx';
 
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
@@ -13,6 +12,7 @@ import NotesTabContent from './routes/NoteWriter/NoteWriter.jsx'
 import HistoryTabContent from './routes/History/History.jsx'
 import { OrderCart } from './routes/OrderCart/OrderCart.jsx';
 import { OrderPicker } from './routes/OrderCart/components/OrderPicker.jsx';
+import { DiagnosisPicker } from './routes/ProblemList/components/DiagnosisPicker.jsx';
 import OrdersMgmt from './routes/OrdersManagement/OrdersManagement.jsx';
 import Medications from './routes/Medications/Medications.jsx';
 import ResultsReview from "./routes/Results/Results.jsx";
@@ -79,8 +79,8 @@ export const Patient = ({ ...props }) => {
 
   const drawerWidth = 250
   const [storyboardOpen, setStoryboardOpen] = useState(true)
-  const [isDxModalOpen, setIsDxModalOpen] = useState(false)
   const [isOrderPickerOpen, setIsOrderPickerOpen] = useState(false)
+  const [isDiagnosisPickerOpen, setIsDiagnosisPickerOpen] = useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
@@ -153,7 +153,7 @@ export const Patient = ({ ...props }) => {
                   variant="outlined"
                   color="primary"
                   startIcon={<Icon>add</Icon>}
-                  onClick={() => setIsDxModalOpen(true)}
+                  onClick={() => setIsDiagnosisPickerOpen(true)}
                 >
                   Add Dx
                 </Button>
@@ -174,15 +174,13 @@ export const Patient = ({ ...props }) => {
           <EncounterAlert />
         </Box>
       </Box>
-
-      {/* Diagnosis Search Modal */}
-      <DiagnosesSearchModal
-        open={isDxModalOpen}
-        onClose={() => setIsDxModalOpen(false)}
-      />
       <OrderPicker
         open={isOrderPickerOpen}
         onSelect={() => setIsOrderPickerOpen(false)}
+      />
+      <DiagnosisPicker
+        open={isDiagnosisPickerOpen}
+        onSelect={() => setIsDiagnosisPickerOpen(false)}
       />
     </PatientProvider>
   )
