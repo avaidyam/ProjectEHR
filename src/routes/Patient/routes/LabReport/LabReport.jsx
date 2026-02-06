@@ -1,165 +1,193 @@
 import React from 'react';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography, Box } from '@mui/material';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Box, Label, Icon, Stack, Button } from 'components/ui/Core';
 
-const LabReport = ({ labReport, ...props }) => {
-  const { data } = labReport; // access data if it exists
-  const labResults = labReport.labResults || data?.labResults || [];
-  const collected = labReport.collected || data?.collected;
-  const resulted = labReport.resulted || data?.resulted;
-  const resultingAgency = labReport.resultingAgency || data?.resultingAgency;
-  const labReportComment = labReport.labReportComment || data?.labReportComment;
-
-  // Extract the test name
-  const testName = data?.Test || labReport.Test;
-
-  // Format the reference interval
-  const formatReferenceInterval = (low, high, units) => {
-    let interval = '';
-
-    if (low !== null && high !== null) {
-      interval = `${low} — ${high}`;
-    } else if (low !== null) {
-      interval = `< ${low}`;
-    } else if (high !== null) {
-      interval = `> ${high}`;
-    }
-
-    return interval ? `${interval} ${units ? units : ''}` : null;
-  };
-
-  // Function to check if there are any low or high values
-  const hasLowOrHighValues = (labResults) => {
-    return labResults.some(item => {
-      const numericValue = parseFloat(item.value);
-      if (!isNaN(numericValue)) {
-        return (item.low !== null && numericValue < item.low) || (item.high !== null && numericValue > item.high);
-      }
-      return false;
-    });
-  };
-
-  // Function to check if a value is outside the reference range
-  const isValueOutsideRange = (value, low, high) => {
-    const numericValue = parseFloat(value);
+const formatReferenceInterval = (low, high, units) => {
+  let interval = '';
+  if (low !== null && high !== null) {
+    interval = `${low} — ${high}`;
+  } else if (low !== null) {
+    interval = `< ${low}`;
+  } else if (high !== null) {
+    interval = `> ${high}`;
+  }
+  return interval ? `${interval} ${units ? units : ''}` : null;
+};
+const hasLowOrHighValues = (labResults) => {
+  return labResults.some(item => {
+    const numericValue = parseFloat(item.value);
     if (!isNaN(numericValue)) {
-      return (low !== null && numericValue < low) || (high !== null && numericValue > high);
+      return (item.low !== null && numericValue < item.low) || (item.high !== null && numericValue > item.high);
     }
     return false;
-  };
-
-  // Check if there are any values outside the reference range
-  const shouldHighlightBorder = hasLowOrHighValues(labResults);
-
-  // Determine final result subtitle
-  let finalResultSubtitle = null;
-  if (resulted !== null) {
-    finalResultSubtitle = <Typography variant="subtitle1" gutterBottom>Final Result: Yes</Typography>;
-  } else {
-    finalResultSubtitle = <Typography variant="subtitle1" gutterBottom>Final Result: No</Typography>;
+  });
+};
+const isValueOutsideRange = (value, low, high) => {
+  const numericValue = parseFloat(value);
+  if (!isNaN(numericValue)) {
+    return (low !== null && numericValue < low) || (high !== null && numericValue > high);
   }
+  return false;
+};
 
-  // Determine Result Notes section
-  let resultNotes = labReportComment ? `Result Notes: ${labReportComment}` : '0 Result Notes';
-
+const LabReport = ({ labReport, ...props }) => {
+  const isAbnormal = hasLowOrHighValues(labReport?.labResults ?? [])
   return (
-    <div>
-      {testName && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="h6" component="div" gutterBottom>
-            {testName}
-          </Typography>
-          {finalResultSubtitle}
-          <Typography variant="subtitle1" gutterBottom>
-            {resultNotes}
-          </Typography>
+    <Stack direction="column" spacing={2} sx={{ p: 2 }}>
+      <Label variant="h6">Results</Label>
+      <Box paper sx={{
+        borderLeft: isAbnormal ? '4px solid #fbc02d' : '1px solid #e0e0e0',
+        borderTop: '1px solid #e0e0e0',
+        borderRight: '1px solid #e0e0e0',
+        borderBottom: '1px solid #e0e0e0',
+        borderRadius: 1,
+        overflow: 'hidden'
+      }}>
+        <Box sx={{ p: 2, pb: 1 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              {isAbnormal && (
+                <Icon sx={{ color: '#d32f2f' }}>error_outline</Icon>
+              )}
+              <Label
+                variant="h6"
+                sx={{
+                  color: isAbnormal ? '#d32f2f' : 'text.primary',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {labReport?.test ?? "Unknown Result"}
+              </Label>
+            </Stack>
+            <Label sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+              Order: {labReport?.id ?? "0"}
+            </Label>
+          </Stack>
+
+          <Stack direction="row" spacing={1} sx={{ fontSize: '0.9rem', color: 'text.secondary' }}>
+            <span>Status: <strong>{(labReport?.resulted ?? false) ? "Final result" : "Pending"}</strong></span>
+          </Stack>
         </Box>
-      )}
-      <TableContainer component={Paper}>
-        <Table
-          aria-label="lab results table"
-          style={{ borderLeft: shouldHighlightBorder ? '3px solid yellow' : 'none' }}
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <div>Component</div>
-                <div style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>Ref Range & Units</div>
-              </TableCell>
-              <TableCell align="right">Result</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {labResults.map((item, index) => {
-              if (item.value === null || item.name === null) {
-                return null; // Skip this item if value or name is null
-              }
 
-              const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
-              const isOutOfRange = isValueOutsideRange(item.value, item.low, item.high);
+        <TableContainer component={Box}>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ borderBottom: '1px solid #e0e0e0', width: '60%', py: 0.5 }}>
+                  <Label variant="body2" bold>Component</Label>
+                  <Label variant="caption" color="textSecondary">Ref Range & Units</Label>
+                </TableCell>
+                <TableCell align="left" sx={{ borderBottom: '1px solid #e0e0e0', py: 0.5 }}>
+                  <Label variant="body2" bold>{labReport?.collected ?? "Date Unknown"}</Label>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {(labReport?.labResults ?? []).map((item, index) => {
+                if (item.value === null || item.name === null) return null;
 
-              // Determine symbol and color based on value compared to reference range
-              let symbol = '';
-              let symbolStyle = { color: 'inherit' };
-              let valueStyle = { fontWeight: 'normal' }; // Default style for value
+                const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
+                const isOutOfRange = isValueOutsideRange(item.value, item.low, item.high);
 
-              if (isOutOfRange) {
-                const numericValue = parseFloat(item.value);
-                if (!isNaN(numericValue)) {
-                  symbol = numericValue > item.high ? '⌃' : '⌄';
-                  symbolStyle = { color: 'red' };
-                  valueStyle = { fontWeight: 'bold', color: 'red' }; // Bold and red if outside range
+                // Determine symbol and color based on value compared to reference range
+                let symbol = '';
+                let valueColor = 'text.primary';
+                let highlightBg = 'transparent';
+
+                if (isOutOfRange) {
+                  const numericValue = parseFloat(item.value);
+                  if (!isNaN(numericValue)) {
+                    symbol = numericValue > item.high ? '▲' : '▼'; // Geometric shapes matching style better than caret
+                    valueColor = '#d32f2f'; // Red
+                    highlightBg = '#fff9c4'; // Light yellow
+                  }
                 }
-              }
 
-              return (
-                <TableRow key={index} style={{ borderLeft: isOutOfRange ? '3px solid yellow' : 'none' }}>
-                  <TableCell component="th" scope="row">
-                    <div>
-                      {item.name}
+                return (
+                  <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell component="th" scope="row" sx={{ py: 0.5 }}>
+                      <Label variant="body2" bold sx={{ color: 'text.primary' }}>
+                        {item.name}
+                      </Label>
                       {referenceInterval && (
-                        <div style={{ fontSize: '12px', marginBottom: '8px' }}>{referenceInterval}</div>
+                        <Label variant="caption" display="block" color="textSecondary">
+                          {referenceInterval}
+                        </Label>
                       )}
                       {item.comment && (
-                        <div style={{ fontSize: '12px', color: 'gray' }}>{item.comment}</div>
+                        <Label variant="caption" display="block" color="textSecondary">
+                          {item.comment}
+                        </Label>
                       )}
-                    </div>
-                  </TableCell>
-                  <TableCell align="right">
-                    <span style={{ backgroundColor: isOutOfRange ? 'yellow' : 'inherit', padding: '2px 5px', borderRadius: '3px' }}>
-                      <span style={valueStyle}>{item.value}</span>
-                      <span style={{ ...symbolStyle, marginLeft: '5px' }}>{symbol}</span>
-                    </span>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-            <TableRow>
-              <TableCell style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
-                Resulting Agency
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
-                {resultingAgency}
-              </TableCell>
-            </TableRow>
-            <TableRow style={{ borderTop: 'none' }}>
-              <TableCell style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
-                Specimen Collected: {collected}
-              </TableCell>
-              <TableCell align="right" style={{ fontSize: '12px', fontWeight: 'normal', color: 'gray' }}>
-                Last Resulted: {resulted}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {Object.keys(data || labReport).map((key, index) => (
-        (key !== 'content' && key !== 'image' && key !== 'labResults' && key !== 'kind' && key !== 'id' && key !== '_obj' && key !== 'collected' && key !== 'resulted' && key !== 'resultingAgency' && key !== 'labReportComment') && (
-          <Box key={index}>
-            <strong>{key}:</strong> {(data || labReport)[key]}
-          </Box>
-        )
-      ))}
-    </div>
+                    </TableCell>
+                    <TableCell align="left" sx={{ py: 0.5, verticalAlign: 'top' }}>
+                      <Box
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          backgroundColor: highlightBg,
+                          color: valueColor,
+                          border: isOutOfRange ? '1px solid #fbc02d' : 'none',
+                          borderRadius: 1,
+                          px: isOutOfRange ? 1 : 0,
+                          py: isOutOfRange ? 0.5 : 0
+                        }}
+                      >
+                        <Label variant="body2" fontWeight={isOutOfRange ? 'bold' : 'normal'}>
+                          {item.value}
+                        </Label>
+                        {isOutOfRange && (
+                          <Label variant="body2" component="span" sx={{ ml: 0.5, fontWeight: 'bold' }}>
+                            {symbol}
+                          </Label>
+                        )}
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              <TableRow>
+                <TableCell colSpan={2} sx={{ pt: 2, pb: 2, borderTop: 'none', borderBottom: 'none' }}>
+                  <Label sx={{ color: 'text.secondary' }}>{labReport?.labReportComment ?? ""}</Label>
+                  <Label variant="caption" color="textSecondary">
+                    Resulting Agency: {labReport?.resultingAgency ?? ""}
+                  </Label>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                    <Label variant="body2" color="textSecondary">
+                      <strong>Specimen Collected:</strong> {labReport?.collected ?? "Unknown"}
+                    </Label>
+                    <Label variant="body2" color="textSecondary">
+                      <strong>Last Resulted:</strong> {labReport?.resulted ?? "Unknown"}
+                    </Label>
+                  </Stack>
+                  <Stack direction="row" spacing={1} justifyContent="flex-end" alignItems="center">
+                    <Button variant="text" startIcon={<Icon>table_chart</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      Lab Flowsheet
+                    </Button>
+                    <Button variant="text" startIcon={<Icon>search</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      Order Details
+                    </Button>
+                    <Button variant="text" startIcon={<Icon>hub</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      View Encounter
+                    </Button>
+                    <Button variant="text" startIcon={<Icon>attach_file</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      Lab and Collection Details
+                    </Button>
+                    <Button variant="text" startIcon={<Icon>forward_to_inbox</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      Routing
+                    </Button>
+                    <Button variant="text" startIcon={<Icon>history</Icon>} sx={{ textTransform: 'none', fontWeight: 500 }}>
+                      Result History
+                    </Button>
+                  </Stack>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Stack>
   );
 };
 
