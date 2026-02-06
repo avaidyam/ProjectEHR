@@ -1,6 +1,6 @@
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
-import { Avatar, Icon } from '@mui/material';
+import { Avatar, Icon, Select, MenuItem, FormControl, InputLabel, Box, LinearProgress, Typography } from '@mui/material';
 import { keyframes, styled } from '@mui/material/styles';
 import { ReactNode, memo, useEffect, useRef, useState } from 'react';
 import { usePatient } from "components/contexts/PatientContext.jsx";
@@ -182,6 +182,21 @@ const ActionsNav = styled('nav')(({ theme }) => ({
   },
 }));
 
+const AudioSettingsBar = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'stretch',
+  padding: '12px 16px',
+  background: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: 12,
+  marginBottom: 16,
+  gap: 12,
+  maxWidth: 600,
+  margin: '0 auto 16px',
+}));
+
 /* ---------------- Instruction box (bottom) ---------------- */
 const InstructionBox = styled('div')(({ theme }) => {
   const isDark = theme.palette.mode === 'dark';
@@ -231,8 +246,8 @@ const CallProfileCard = styled('div', {
     state === 'enter'
       ? `${profileEnter} 300ms ease-out`
       : state === 'exit'
-      ? `${profileExit} 500ms ease-in`
-      : undefined,
+        ? `${profileExit} 500ms ease-in`
+        : undefined,
 }));
 
 const CallProfileCenter = styled('div')(() => ({
@@ -302,10 +317,10 @@ export function AudioPulse({
     const update = () => {
       lines.current.forEach(
         (line, i) =>
-          (line.style.height = `${Math.min(
-            24,
-            4 + volume * (i === 1 ? 400 : 60)
-          )}px`)
+        (line.style.height = `${Math.min(
+          24,
+          4 + volume * (i === 1 ? 400 : 60)
+        )}px`)
       );
       timeout = window.setTimeout(update, 100);
     };
@@ -346,10 +361,38 @@ function VoicePanel({ children }: { children?: ReactNode }) {
 
   const fullName =
     [firstName, lastName].filter(Boolean).join(' ') || 'Patient';
+
   const initials =
     `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.trim() ||
     fullName.charAt(0) ||
     'P';
+
+  // Audio Device Management
+  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState('');
+
+  useEffect(() => {
+    audioRecorder.getDevices().then((devices) => {
+      setAudioDevices(devices);
+      // Select default if available and nothing selected
+      if (devices.length > 0 && !selectedDeviceId) {
+        // Prefer "default" or the first one
+        const defaultDevice = devices.find(d => d.deviceId === 'default');
+        setSelectedDeviceId(defaultDevice ? defaultDevice.deviceId : devices[0].deviceId);
+      }
+    });
+
+    // Handle device change updates
+    const handleDeviceChange = async () => {
+      const devices = await audioRecorder.getDevices();
+      setAudioDevices(devices);
+    }
+
+    navigator.mediaDevices?.addEventListener('devicechange', handleDeviceChange);
+    return () => {
+      navigator.mediaDevices?.removeEventListener('devicechange', handleDeviceChange);
+    }
+  }, [audioRecorder]);
 
   // New: manage enter/exit animation state for the profile tile
   const [renderProfile, setRenderProfile] = useState(false);
@@ -386,7 +429,7 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     };
 
     if (connected && !muted && audioRecorder) {
-      audioRecorder.on('data', onData).on('volume', setInVolume).start();
+      audioRecorder.on('data', onData).on('volume', setInVolume).start(selectedDeviceId);
     } else {
       audioRecorder.stop();
     }
@@ -394,33 +437,71 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     return () => {
       audioRecorder.off('data', onData).off('volume', setInVolume);
     };
-  }, [connected, client, muted, audioRecorder]);
+  }, [connected, client, muted, audioRecorder, selectedDeviceId]);
 
   return (
     <>
-      {/* Animated big square call tile at the top when connected */}
-      {renderProfile && (
-        <CallProfileCard state={profileState}>
-          <CallStatusPill>In call</CallStatusPill>
-
-          <CallProfileCenter>
-            <Avatar
-              src={avatarUrl || undefined}
-              alt={fullName}
-              sx={{ width: 96, height: 96, fontSize: 32 }}
+      {/* Audio Settings Bar */}
+      <AudioSettingsBar>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+          <Icon color="action">mic</Icon>
+          <FormControl variant="standard" sx={{ minWidth: 200, flex: 1 }}>
+            <Select
+              value={selectedDeviceId}
+              onChange={(e) => setSelectedDeviceId(e.target.value)}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Select Audio Input' }}
+              sx={{ fontSize: '0.9rem' }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                  },
+                },
+              }}
             >
-              {initials}
-            </Avatar>
+              {audioDevices.length === 0 && <MenuItem value="">Default Default</MenuItem>}
+              {audioDevices.map((device) => (
+                <MenuItem key={device.deviceId} value={device.deviceId}>
+                  {device.label || `Microphone ${device.deviceId.slice(0, 5)}...`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-            <CallProfileName>{initials}</CallProfileName>
 
-            <CallProfileMeta>
-              {fullName}
-              {mrn ? ` · MRN: ${mrn}` : ''}
-            </CallProfileMeta>
-          </CallProfileCenter>
-        </CallProfileCard>
-      )}
+        </Box>
+        <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', textAlign: 'center' }}>
+          If the patient can't hear you, please verify your selected input device.
+        </Typography>
+
+      </AudioSettingsBar >
+
+      {/* Animated big square call tile at the top when connected */}
+      {
+        renderProfile && (
+          <CallProfileCard state={profileState}>
+            <CallStatusPill>In call</CallStatusPill>
+
+            <CallProfileCenter>
+              <Avatar
+                src={avatarUrl || undefined}
+                alt={fullName}
+                sx={{ width: 96, height: 96, fontSize: 32 }}
+              >
+                {initials}
+              </Avatar>
+
+              <CallProfileName>{initials}</CallProfileName>
+
+              <CallProfileMeta>
+                {fullName}
+                {mrn ? ` · MRN: ${mrn}` : ''}
+              </CallProfileMeta>
+            </CallProfileCenter>
+          </CallProfileCard>
+        )
+      }
 
       {/* Buttons near the bottom */}
       <ControlTray>
