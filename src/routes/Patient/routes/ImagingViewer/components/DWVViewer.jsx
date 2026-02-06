@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Box, LinearProgress } from '@mui/material';
-import { App } from 'dwv';
+import { App, WindowLevel, Scalar3D } from 'dwv';
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
 import dcmjs from "dcmjs";
@@ -80,11 +80,16 @@ export function b64ToFile(str) {
     return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
 
-export const DWVViewer = ({ images, convertMonochrome, viewerId, tool }) => {
+export const DWVViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }) => {
     const [dwvApp, setDwvApp] = useState(null);
     const [loadProgress, setLoadProgress] = useState(0);
     const [dataLoaded, setDataLoaded] = useState(false);
     const viewerRef = React.useRef(null);
+    const onUpdateRef = useRef(onUpdate);
+
+    useEffect(() => {
+        onUpdateRef.current = onUpdate;
+    }, [onUpdate]);
 
     useEffect(() => {
         console.log(`DWVViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
@@ -104,6 +109,18 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool }) => {
             }
         });
 
+        const handleUpdate = () => {
+            if (onUpdateRef.current) {
+                const layer = app.getViewLayers()[0];
+                if (layer) {
+                    const vc = layer.getViewController();
+                    const wl = vc.getWindowLevel();
+                    const zoom = layer.getScale();
+                    onUpdateRef.current({ ww: wl.width, wl: wl.center, zoom: zoom.x });
+                }
+            }
+        };
+
         const listeners = {
             'loadstart': () => {
                 console.log(`DWVViewer(${viewerId}): Load start event triggered.`);
@@ -120,6 +137,21 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool }) => {
                 // const data = app.getData(event.dataId);
                 setDataLoaded(true);
                 app.fitToContainer();
+
+                if (initialSettings) {
+                    const layer = app.getViewLayers()[0];
+                    const vc = layer ? layer.getViewController() : null;
+                    if (vc && layer) {
+                        if (initialSettings.ww !== undefined && initialSettings.wl !== undefined) {
+                            vc.setWindowLevel(new WindowLevel(initialSettings.wl, initialSettings.ww));
+                        }
+                        if (initialSettings.zoom !== undefined) {
+                            layer.setScale(new Scalar3D(initialSettings.zoom, initialSettings.zoom, 1));
+                        }
+                        // Trigger update to sync parent
+                        handleUpdate();
+                    }
+                }
             },
             'error': (event) => {
                 console.error(`DWVViewer(${viewerId}): An error occurred during loading.`, event);
@@ -129,7 +161,9 @@ export const DWVViewer = ({ images, convertMonochrome, viewerId, tool }) => {
             },
             'renderend': () => {
                 console.log(`DWVViewer(${viewerId}): Render finished.`);
-            }
+            },
+            'zoomchange': handleUpdate,
+            'wlchange': handleUpdate,
         };
 
         for (const [key, value] of Object.entries(listeners)) {

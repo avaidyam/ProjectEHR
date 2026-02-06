@@ -21,7 +21,7 @@ import Immunizations from './routes/Immunizations/Immunizations.jsx';
 import { Allergies } from './routes/Allergies/Allergies.jsx';
 import Chat from "./routes/Chat/Chat.jsx";
 import ReportViewer from './routes/ReportViewer/ReportViewer.jsx';
-import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
+import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 import Handoff from './routes/Handoff/Handoff.jsx';
