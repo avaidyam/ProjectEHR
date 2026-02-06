@@ -31,6 +31,7 @@ import { Flowsheet } from './routes/Flowsheet/Flowsheet';
 import EditNote from './routes/EditNote/EditNote.jsx';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk.jsx';
 import { EditResult } from './routes/EditResult/EditResult.jsx';
+import { EventLog } from './routes/EventLog/EventLog.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -56,6 +57,7 @@ const ALL_TABS = {
   "Edit Note": (props) => <EditNote {...props} />,
   "Appointment Desk": (props) => <AppointmentDesk {...props} />,
   "Edit Result": (props) => <EditResult {...props} />,
+  "Event Log": (props) => <EventLog {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
@@ -66,7 +68,8 @@ const DEFAULT_MAIN_TABS = [
 
 const OVERFLOW_MENU_TABS = [
   { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
-  { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} }
+  { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
+  { "Event Log": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
