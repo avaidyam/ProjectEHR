@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { Typography, TextField, Checkbox, Paper, IconButton } from '@mui/material';
-import { DataGrid, Button, Icon, Box } from 'components/ui/Core.jsx';
+import { TextField, Checkbox, IconButton } from '@mui/material';
+import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid';
+import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
+import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import ProblemListEditor from './components/ProblemListEditor.jsx';
 import { DiagnosisPicker } from './components/DiagnosisPicker.jsx';
+
+const CustomToolbar = () => {
+  return (
+    <GridToolbarContainer sx={{ justifyContent: 'flex-end' }}>
+      <GridToolbarFilterButton />
+      <GridToolbarColumnsButton />
+    </GridToolbarContainer>
+  );
+};
 
 const ProblemListTabContent = ({ children, ...other }) => {
   const { useEncounter } = usePatient()
@@ -55,10 +66,6 @@ const ProblemListTabContent = ({ children, ...other }) => {
         display: item.name,
         // Add other properties as needed for the new problem row
       }));
-
-      // Calculate new IDs (indexes) based on current length
-      // Note: In a real app we should use stable IDs. Here we rely on index.
-      // We need to auto-expand the new rows.
       const startIdx = problems.length;
       const newIds = newProblems.map((_, i) => startIdx + i);
 
@@ -71,28 +78,64 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const handleDeleteProblem = (index) => {
     const updatedProblems = problems.filter((_, i) => i !== index);
     setProblems(updatedProblems);
-    // Remove the deleted index from expanded rows, and shift indices greater than it
-    // This is tricky with index-based IDs. 
-    // Ideally we just clear expansion or try to keep it sane.
     setExpandedRowIds(prev => prev.filter(id => id !== index).map(id => id > index ? id - 1 : id));
   };
 
   const columns = [
     {
+      field: 'isChronicCondition',
+      headerName: 'Chronic',
+      width: 70,
+      initialHidden: true,
+      renderCell: (params) => (
+        params.value ? <Icon>push_pin</Icon> : null
+      )
+    },
+    {
       field: 'diagnosis',
       headerName: 'Diagnosis',
+      hideable: false,
       flex: 1,
       valueGetter: (value, row) => {
         if (row) return row.display || row.diagnosis;
-        // Fallback for older versions if row is in the first arg
         return value.row?.display || value.row?.diagnosis;
       }
     },
     {
-      field: 'notes',
-      headerName: 'Notes',
-      width: 150,
-      renderCell: () => <Button size="small">Create Overview</Button>
+      field: 'code',
+      headerName: 'Code',
+      initialHidden: true,
+      width: 100
+    },
+    {
+      field: 'priority',
+      headerName: 'Priority',
+      initialHidden: true,
+      width: 100
+    },
+    {
+      field: 'class',
+      headerName: 'Class',
+      initialHidden: true,
+      width: 100
+    },
+    {
+      field: 'notedDate',
+      headerName: 'Noted',
+      initialHidden: true,
+      width: 120,
+    },
+    {
+      field: 'diagnosedDate',
+      headerName: 'Diagnosed',
+      initialHidden: true,
+      width: 120
+    },
+    {
+      field: 'updatedDate',
+      headerName: 'Updated',
+      initialHidden: true,
+      width: 120
     },
     {
       field: 'hospital',
@@ -127,9 +170,8 @@ const ProblemListTabContent = ({ children, ...other }) => {
       )
     },
     {
-      field: 'expand',
-      headerName: '',
-      width: 60,
+      ...GRID_DETAIL_PANEL_TOGGLE_COL_DEF,
+      hideable: false,
       renderCell: (params) => (
         <IconButton size="small" onClick={() => handleExpandRow(params.row.id)}>
           <Icon>{expandedRowIds.includes(params.row.id) ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down'}</Icon>
@@ -138,11 +180,19 @@ const ProblemListTabContent = ({ children, ...other }) => {
     }
   ];
 
+  const columnVisibilityModel = columns.reduce((acc, col) => {
+    if (col.initialHidden) {
+      acc[col.field] = false;
+    }
+    return acc;
+  }, {});
+
   return (
-    <div className="tab-content-container">
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '1em' }}>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1em', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ height: '100%' }}>
+      <Stack direction="column" sx={{ height: '100%', p: 2 }}>
+        <Label variant="h6" sx={{ pb: 1 }}>Problem List</Label>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+          <Stack direction="row" alignItems="center">
             <TextField
               label="Search for problem"
               variant="outlined"
@@ -163,19 +213,24 @@ const ProblemListTabContent = ({ children, ...other }) => {
             >
               <Icon color="success">add_task</Icon>Add
             </Button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: '1em' }}>
-            <Typography>Show:</Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" ml={2}>
+            <Label>Show:</Label>
             <Checkbox name="showPastProblems" />
-            <Typography>Past Problems</Typography>
+            <Label>Past Problems</Label>
             <Button variant="outlined" style={{ marginLeft: '1em' }}>
               View Drug-Disease Interactions
             </Button>
-          </div>
-        </div>
+          </Stack>
+        </Stack>
 
-        <Box sx={{ flexGrow: 1, height: 500 }}>
+        <Box sx={{ flexGrow: 1, minHeight: 0 }}>
           <DataGrid
+            initialState={{
+              columns: {
+                columnVisibilityModel,
+              },
+            }}
             rows={(problems ?? []).map((p, i) => ({ id: i, ...p }))}
             columns={columns}
             detailPanelExpandedRowIds={expandedRowIds}
@@ -192,18 +247,18 @@ const ProblemListTabContent = ({ children, ...other }) => {
               </Box>
             )}
             getDetailPanelHeight={() => 'auto'}
+            slots={{ toolbar: CustomToolbar }}
             hideFooter
             disableColumnMenu
           />
         </Box>
-      </div>
-
+      </Stack>
       <DiagnosisPicker
         open={isModalOpen}
         searchTerm={searchTerm}
         onSelect={handleSelect}
       />
-    </div>
+    </Box>
   );
 };
 
