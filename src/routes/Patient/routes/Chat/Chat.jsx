@@ -69,8 +69,8 @@ export default function Chat() {
   const rosNote = (notes || []).find(
     (doc) => doc?.summary === 'Review of Systems'
   );
-  const physicalExamNote = (documents || []).find(
-    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Physical Exam'
+  const physicalExamNote = (notes || []).find(
+    (doc) => doc?.summary === 'Physical Exam'
   );
 
   // Histories
