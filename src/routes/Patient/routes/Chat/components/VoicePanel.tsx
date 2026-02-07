@@ -1,6 +1,7 @@
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
-import { Avatar, Icon, Select, MenuItem, FormControl, InputLabel, Box, LinearProgress, Typography } from '@mui/material';
+import { Avatar, Select, MenuItem, FormControl, Menu } from '@mui/material';
+import { Icon, Box, Label, IconButton } from 'components/ui/Core';
 import { keyframes, styled } from '@mui/material/styles';
 import { ReactNode, memo, useEffect, useRef, useState } from 'react';
 import { usePatient } from "components/contexts/PatientContext.jsx";
@@ -43,53 +44,38 @@ const profileExit = keyframes`
 /* ---------------- Styled Buttons ---------------- */
 const ActionButton = styled('button', {
   shouldForwardProp: (prop) =>
-    !['disabled', 'outlined', 'connected'].includes(prop.toString()),
+    !['disabled', 'outlined', 'connected', 'red'].includes(prop.toString()),
 })<{
   disabled?: boolean;
   outlined?: boolean;
   connected?: boolean;
-}>(({ theme, outlined, connected }) => {
+  red?: boolean;
+}>(({ theme, outlined, connected, red }) => {
   const isDark = theme.palette.mode === 'dark';
 
   return {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: isDark ? theme.palette.grey[900] : theme.palette.grey[100],
-    color: isDark ? theme.palette.text.secondary : theme.palette.text.primary,
+    background: red ? '#ea4335' : (isDark ? '#3c4043' : theme.palette.grey[100]),
+    color: 'white',
     fontSize: '1.25rem',
     cursor: 'pointer',
-    animation: `${opacityPulseAnimation} 3s ease-in infinite`,
     transition: 'all 0.2s ease-in-out',
-    width: 48,
-    height: 48,
-    borderRadius: 18,
-    border: `1px solid transparent`,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    border: 'none',
     userSelect: 'none',
 
-    '&:focus': {
-      border: `2px solid ${theme.palette.divider}`,
-      outline: `2px solid ${theme.palette.primary.light}`,
+    '&:hover': {
+      background: red ? '#d93025' : (isDark ? '#4a4e52' : theme.palette.grey[200]),
     },
 
     ...(outlined && {
-      background: theme.palette.background.paper,
+      background: 'transparent',
       border: `1px solid ${theme.palette.divider}`,
-    }),
-
-    '&:hover': {
-      background: isDark
-        ? theme.palette.grey[800]
-        : theme.palette.grey[200],
-      border: `1px solid ${theme.palette.divider}`,
-    },
-
-    ...(connected && {
-      background: theme.palette.primary.dark,
-      color: theme.palette.getContrastText(theme.palette.primary.dark),
-      '&:hover': {
-        border: `1px solid ${theme.palette.primary.main}`,
-      },
+      color: theme.palette.text.primary,
     }),
   };
 });
@@ -99,186 +85,81 @@ const MicButton = styled(ActionButton, {
 })<{ unmuted?: boolean }>(({ unmuted }) => ({
   position: 'relative',
   zIndex: 1,
-  color: 'black',
-  backgroundColor: unmuted ? '#22c55e' : '#ff4600',
-  transition: 'all 0.2s ease-in',
-
-  '&:focus': {
-    border: '2px solid transparent',
-    outline: `2px solid ${unmuted ? '#22c55e' : '#ff4600'}`,
-  },
+  color: unmuted ? 'black' : 'white',
+  backgroundColor: unmuted ? '#f8d7da' : '#3c4043',
+  width: 44,
+  height: 44,
+  borderRadius: '22px 0 0 22px',
 
   '&:hover': {
-    backgroundColor: unmuted ? '#6ee7b7' : '#ff9c7a',
-  },
-
-  '&:before': {
-    position: 'absolute',
-    zIndex: -1,
-    top: 'calc(var(--volume) * -1)',
-    left: 'calc(var(--volume) * -1)',
-    display: 'block',
-    content: '""',
-    opacity: 0.35,
-    backgroundColor: unmuted ? '#22c55e' : '#ff4600',
-    width: 'calc(100% + var(--volume) * 2)',
-    height: 'calc(100% + var(--volume) * 2)',
-    borderRadius: 24,
-    transition: 'all 0.02s ease-in-out',
+    backgroundColor: unmuted ? '#f1c1c6' : '#4a4e52',
   },
 }));
 
-const ConnectToggle = styled(ActionButton, {
-  shouldForwardProp: (prop) => prop.toString() !== 'connected',
-})<{ connected?: boolean }>(({ connected, theme }) => ({
-  '&:focus': {
-    border: `2px solid ${theme.palette.divider}`,
-    outline: `2px solid ${theme.palette.primary.light}`,
+const MicDropdownButton = styled(ActionButton, {
+  shouldForwardProp: (prop) => prop.toString() !== 'unmuted',
+})<{ unmuted?: boolean }>(({ unmuted }) => ({
+  width: 24,
+  height: 44,
+  borderRadius: '0 22px 22px 0',
+  marginLeft: '1px',
+  backgroundColor: unmuted ? '#f8d7da' : '#3c4043',
+  color: unmuted ? 'black' : 'white',
+  fontSize: '0.8rem',
+
+  '&:hover': {
+    backgroundColor: unmuted ? '#f1c1c6' : '#4a4e52',
   },
-  ...(!connected && {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-  }),
 }));
 
 /* ---------------- Layout Containers ---------------- */
-const ControlTray = styled('section')(() => ({
+const VoiceContainer = styled('div')(() => ({
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  position: 'relative',
+  overflow: 'hidden',
+}));
+
+const MainArea = styled('main')(() => ({
+  flexGrow: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 24,
+}));
+
+const ControlTray = styled('section')(({ theme }) => ({
+  height: 80,
   width: '100%',
-  display: 'inline-flex',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
-  gap: 8,
-  paddingBottom: 12,
-  paddingTop: 20,
-}));
-
-const ConnectionContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  flexDirection: 'column',
+  justifyContent: 'space-between',
   alignItems: 'center',
-  gap: 4,
-
-  '& .connection-button-container': {
-    borderRadius: 27,
-    border: `1px solid ${theme.palette.divider}`,
-    background: theme.palette.background.paper,
-    padding: 10,
-  },
+  padding: '0 24px',
 }));
 
-const ActionsNav = styled('nav')(({ theme }) => ({
-  background: theme.palette.background.paper,
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 27,
-  display: 'inline-flex',
-  gap: 12,
-  alignItems: 'center',
-  padding: 10,
-
-  '& > *': {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-}));
-
-const AudioSettingsBar = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'stretch',
-  padding: '12px 16px',
-  background: theme.palette.background.paper,
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 12,
-  marginBottom: 16,
-  gap: 12,
-  maxWidth: 600,
-  margin: '0 auto 16px',
-}));
-
-/* ---------------- Instruction box (bottom) ---------------- */
-const InstructionBox = styled('div')(({ theme }) => {
-  const isDark = theme.palette.mode === 'dark';
-  return {
-    width: '100%',
-    maxWidth: 520,
-    margin: '12px auto 0',
-    border: `1px solid ${theme.palette.divider}`,
-    background: isDark
-      ? theme.palette.grey[900]
-      : theme.palette.background.paper,
-    color: theme.palette.text.primary,
-    borderRadius: 8,
-    padding: '10px 12px',
-    fontSize: 14,
-    textAlign: 'center',
-    lineHeight: 1.4,
-  };
-});
-
-/* ---------------- Big square Zoom-style profile tile ---------------- */
+/* ---------------- Call Profile ---------------- */
 const CallProfileCard = styled('div', {
   shouldForwardProp: (prop) => prop !== 'state',
 })<{
   state?: 'enter' | 'exit';
 }>(({ theme, state }) => ({
   position: 'relative',
-  width: 'calc(100% - 24px)',          // inset slightly from the edges
-  maxWidth: 520,
-  margin: '16px auto 0',               // spacing from top/content
-  borderRadius: 16,                    // roundness back
-  border: `1px solid ${theme.palette.divider}`,
-  background: theme.palette.background.default,
-  color: theme.palette.text.primary,
+  width: '100%',
+  height: '100%',
+  maxWidth: 1200,
+  borderRadius: 16,
+  backgroundColor: '#3c4043',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '32px 24px',
-  minHeight: 260,
-
-  boxShadow:
-    theme.palette.mode === 'dark'
-      ? '0 12px 25px rgba(0,0,0,0.5)'
-      : '0 8px 18px rgba(0,0,0,0.12)',
-
+  boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
   animation:
     state === 'enter'
       ? `${profileEnter} 300ms ease-out`
       : state === 'exit'
         ? `${profileExit} 500ms ease-in`
         : undefined,
-}));
-
-const CallProfileCenter = styled('div')(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: 6,
-}));
-
-const CallProfileName = styled('div')(() => ({
-  fontSize: 24,
-  fontWeight: 600,
-  letterSpacing: 2,
-}));
-
-const CallProfileMeta = styled('div')(({ theme }) => ({
-  fontSize: 13,
-  color: theme.palette.text.secondary,
-}));
-
-const CallStatusPill = styled('span')(({ theme }) => ({
-  position: 'absolute',
-  top: 12,
-  left: 12,
-  fontSize: 11,
-  padding: '3px 10px',
-  borderRadius: 999,
-  background: theme.palette.primary.dark,
-  color: theme.palette.getContrastText(theme.palette.primary.dark),
-  textTransform: 'uppercase',
-  letterSpacing: 0.08,
 }));
 
 /* ---------------- Audio Pulse ---------------- */
@@ -291,8 +172,8 @@ const AudioPulseDiv = styled('div')<{ active?: boolean }>(({ active, theme }) =>
 
   '& > div': {
     backgroundColor: active
-      ? theme.palette.text.primary
-      : theme.palette.text.disabled,
+      ? 'white'
+      : '#9aa0a6',
     borderRadius: 1000,
     width: 4,
     minHeight: 4,
@@ -316,11 +197,14 @@ export function AudioPulse({
 
     const update = () => {
       lines.current.forEach(
-        (line, i) =>
-        (line.style.height = `${Math.min(
-          24,
-          4 + volume * (i === 1 ? 400 : 60)
-        )}px`)
+        (line, i) => {
+          if (line) {
+            line.style.height = `${Math.min(
+              24,
+              4 + volume * (i === 1 ? 400 : 60)
+            )}px`;
+          }
+        }
       );
       timeout = window.setTimeout(update, 100);
     };
@@ -349,15 +233,17 @@ function VoicePanel({ children }: { children?: ReactNode }) {
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
-  const connectButtonRef = useRef<HTMLButtonElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
 
   const { client, connected, connect, disconnect, volume } = useGeminiAPIContext();
 
   const { useChart } = usePatient();
-  const [firstName] = useChart().firstName();
-  const [lastName] = useChart().lastName();
-  const [avatarUrl] = useChart().avatarUrl();
-  const [mrn] = useChart().id();
+  const chart = useChart()(); // Access the data object
+  const firstName = chart?.[0]?.firstName;
+  const lastName = chart?.[0]?.lastName;
+  const avatarUrl = chart?.[0]?.avatarUrl;
+  const mrn = chart?.[0]?.id;
 
   const fullName =
     [firstName, lastName].filter(Boolean).join(' ') || 'Patient';
@@ -374,15 +260,12 @@ function VoicePanel({ children }: { children?: ReactNode }) {
   useEffect(() => {
     audioRecorder.getDevices().then((devices) => {
       setAudioDevices(devices);
-      // Select default if available and nothing selected
       if (devices.length > 0 && !selectedDeviceId) {
-        // Prefer "default" or the first one
         const defaultDevice = devices.find(d => d.deviceId === 'default');
         setSelectedDeviceId(defaultDevice ? defaultDevice.deviceId : devices[0].deviceId);
       }
     });
 
-    // Handle device change updates
     const handleDeviceChange = async () => {
       const devices = await audioRecorder.getDevices();
       setAudioDevices(devices);
@@ -392,9 +275,16 @@ function VoicePanel({ children }: { children?: ReactNode }) {
     return () => {
       navigator.mediaDevices?.removeEventListener('devicechange', handleDeviceChange);
     }
-  }, [audioRecorder]);
+  }, [audioRecorder, selectedDeviceId]);
 
-  // New: manage enter/exit animation state for the profile tile
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }));
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Profile animation state
   const [renderProfile, setRenderProfile] = useState(false);
   const [profileState, setProfileState] = useState<'enter' | 'exit' | undefined>();
 
@@ -413,17 +303,6 @@ function VoicePanel({ children }: { children?: ReactNode }) {
   }, [connected, renderProfile]);
 
   useEffect(() => {
-    if (!connected && connectButtonRef.current) connectButtonRef.current.focus();
-  }, [connected]);
-
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      '--volume',
-      `${Math.max(5, Math.min(inVolume * 200, 8))}px`
-    );
-  }, [inVolume]);
-
-  useEffect(() => {
     const onData = (base64: string) => {
       client.sendRealtimeInput([{ mimeType: 'audio/pcm;rate=16000', data: base64 }]);
     };
@@ -440,27 +319,131 @@ function VoicePanel({ children }: { children?: ReactNode }) {
   }, [connected, client, muted, audioRecorder, selectedDeviceId]);
 
   return (
-    <>
-      {/* Audio Settings Bar */}
-      <AudioSettingsBar>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
-          <Icon color="action">mic</Icon>
-          <FormControl variant="standard" sx={{ minWidth: 200, flex: 1 }}>
+    <VoiceContainer>
+      <MainArea>
+        {renderProfile ? (
+          <CallProfileCard state={profileState}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <Avatar
+                src={avatarUrl || undefined}
+                alt={fullName}
+                sx={{ width: 120, height: 120, fontSize: 40, border: '4px solid #8ab4f8' }}
+              >
+                {initials}
+              </Avatar>
+              <Label variant="h4" sx={{ color: 'white' }}>{fullName}</Label>
+              {mrn && <Label variant="body2" sx={{ color: '#9aa0a6' }}>MRN: {mrn}</Label>}
+            </Box>
+            <Box sx={{ position: 'absolute', bottom: 16, left: 16 }}>
+              <Label variant="caption" sx={{ color: 'white', bgcolor: 'rgba(0,0,0,0.5)', px: 1, borderRadius: 1 }}>{fullName}</Label>
+            </Box>
+            <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+              <Icon sx={{ color: muted ? '#f28b82' : '#8ab4f8' }}>{muted ? 'mic_off' : 'mic'}</Icon>
+            </Box>
+          </CallProfileCard>
+        ) : (
+          <Label>No one's in this call</Label>
+        )}
+      </MainArea>
+
+      <ControlTray>
+        {/* Time and Info */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'white', minWidth: 120 }}>
+          <Label variant="body1">{currentTime}</Label>
+          <Label variant="body1" sx={{ color: '#5f6368', mx: 0.5 }}>|</Label>
+          <Label variant="body1">BICEP</Label>
+        </Box>
+
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <MicButton
+              unmuted={!muted}
+              disabled={!connected}
+              onClick={() => setMuted((prev) => !prev)}
+            >
+              <Icon>{!muted ? 'mic' : 'mic_off'}</Icon>
+            </MicButton>
+            <MicDropdownButton
+              unmuted={!muted}
+              disabled={!connected}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(e.currentTarget)}
+            >
+              <Icon sx={{ fontSize: '1rem' }}>keyboard_arrow_up</Icon>
+            </MicDropdownButton>
+          </Box>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>videocam_off</Icon>
+          </ActionButton>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>present_to_all</Icon>
+          </ActionButton>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>sentiment_satisfied</Icon>
+          </ActionButton>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>closed_caption</Icon>
+          </ActionButton>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>front_hand</Icon>
+          </ActionButton>
+
+          <ActionButton outlined sx={{ width: 44 }}>
+            <Icon>more_vert</Icon>
+          </ActionButton>
+
+          <ActionButton
+            red
+            onClick={connected ? disconnect : connect}
+            sx={{ width: 64, borderRadius: 24 }}
+          >
+            <Icon>{connected ? 'call_end' : 'call'}</Icon>
+          </ActionButton>
+        </Box>
+
+        {/* Right Info Section */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, color: 'white', minWidth: 120, justifyContent: 'flex-end' }}>
+          <Icon>info</Icon>
+          <Icon>group</Icon>
+          <Icon>chat</Icon>
+          <Icon>apps</Icon>
+          <Icon>security</Icon>
+        </Box>
+      </ControlTray>
+
+      {/* Mic Settings Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{
+          '& .MuiPaper-root': {
+            bgcolor: '#3c4043',
+            color: 'white',
+            minWidth: 250,
+            borderRadius: 2,
+            mb: 1
+          }
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Label variant="overline" sx={{ color: '#9aa0a6', display: 'block', mb: 1 }}>Microphone</Label>
+          <FormControl variant="standard" fullWidth>
             <Select
               value={selectedDeviceId}
-              onChange={(e) => setSelectedDeviceId(e.target.value)}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Select Audio Input' }}
-              sx={{ fontSize: '0.9rem' }}
-              MenuProps={{
-                PaperProps: {
-                  style: {
-                    maxHeight: 200,
-                  },
-                },
+              onChange={(e: any) => {
+                setSelectedDeviceId(e.target.value);
+                setAnchorEl(null);
               }}
+              sx={{ color: 'white', '&:before': { borderColor: 'gray' }, '&:after': { borderColor: 'white' } }}
             >
-              {audioDevices.length === 0 && <MenuItem value="">Default Default</MenuItem>}
               {audioDevices.map((device) => (
                 <MenuItem key={device.deviceId} value={device.deviceId}>
                   {device.label || `Microphone ${device.deviceId.slice(0, 5)}...`}
@@ -468,89 +451,12 @@ function VoicePanel({ children }: { children?: ReactNode }) {
               ))}
             </Select>
           </FormControl>
-
-
+          <Label variant="caption" sx={{ color: '#9aa0a6', display: 'block', mt: 2, fontStyle: 'italic' }}>
+            Verify your selected input device if needed.
+          </Label>
         </Box>
-        <Typography variant="caption" color="text.secondary" sx={{ fontStyle: 'italic', textAlign: 'center' }}>
-          If the patient can't hear you, please verify your selected input device.
-        </Typography>
-
-      </AudioSettingsBar >
-
-      {/* Animated big square call tile at the top when connected */}
-      {
-        renderProfile && (
-          <CallProfileCard state={profileState}>
-            <CallStatusPill>In call</CallStatusPill>
-
-            <CallProfileCenter>
-              <Avatar
-                src={avatarUrl || undefined}
-                alt={fullName}
-                sx={{ width: 96, height: 96, fontSize: 32 }}
-              >
-                {initials}
-              </Avatar>
-
-              <CallProfileName>{initials}</CallProfileName>
-
-              <CallProfileMeta>
-                {fullName}
-                {mrn ? ` · MRN: ${mrn}` : ''}
-              </CallProfileMeta>
-            </CallProfileCenter>
-          </CallProfileCard>
-        )
-      }
-
-      {/* Buttons near the bottom */}
-      <ControlTray>
-        <ActionsNav>
-          {connected && (
-            <MicButton
-              unmuted={!muted}
-              onClick={() => setMuted((prev) => !prev)}
-            >
-              {!muted ? <Icon>mic</Icon> : <Icon>mic_off</Icon>}
-            </MicButton>
-          )}
-
-          <ActionButton className="outlined no-action">
-            <AudioPulse volume={volume} active={connected && !muted} />
-          </ActionButton>
-
-          {children}
-        </ActionsNav>
-
-        <ConnectionContainer>
-          <div className="connection-button-container">
-            <ConnectToggle
-              ref={connectButtonRef}
-              connected={connected}
-              onClick={connected ? disconnect : connect}
-            >
-              <Icon>{connected ? 'call_end' : 'call'}</Icon>
-            </ConnectToggle>
-          </div>
-        </ConnectionContainer>
-      </ControlTray>
-
-      {/* Instructions at the bottom */}
-      <InstructionBox aria-live="polite" role="status">
-        {connected ? (
-          <>
-            💡 Tip: <b>You can ❗mute❗ the call to go into discussion!</b>
-            <br />
-            <br />
-            Click the microphone to toggle mute/unmute
-            <br />
-            or hold space bar for push-to-talk
-          </>
-        ) : (
-          'Click the phone to start the call'
-        )}
-      </InstructionBox>
-    </>
+      </Menu>
+    </VoiceContainer>
   );
 }
 

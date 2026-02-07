@@ -69,13 +69,14 @@ export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
 // Re-export dayjs from the library
 export const dayjs = dayjs2
 
-// This component doubles as Box and Paper.
+/** @type {React.ForwardRefExoticComponent<import('@mui/material').BoxProps & { paper?: boolean } & React.RefAttributes<HTMLDivElement>>} */
 export const Box = React.forwardRef(({ paper, children, ...props }, ref) => {
   if (paper === true)
     return (<MUIPaper ref={ref} {...props}>{children}</MUIPaper>)
   return (<MUIBox ref={ref} {...props}>{children}</MUIBox>)
 })
 
+/** @type {React.FC<import('@mui/material').StackProps>} */
 export const Stack = ({ direction = "column", spacing = 0, children, ...props }) => (
   <MUIStack direction={direction} spacing={spacing} {...props}>
     {children}
@@ -88,6 +89,7 @@ export const Grid = ({ masonry = false, children, ...props }) => {
   return <MUIGrid {...props}>{children}</MUIGrid>
 }
 
+/** @type {React.FC<import('@mui/material').TypographyProps & { inline?: boolean, bold?: boolean | number, italic?: boolean }>} */
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
   <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
     {children}
@@ -162,6 +164,7 @@ export const ButtonGroup = ({ exclusive = false, variant, value, onChange, child
   return <MUIButtonGroup {...props}>{childrenWithProps}</MUIButtonGroup>
 }
 
+/** @type {React.FC<import('@mui/material').IconButtonProps & { iconProps?: any }>} */
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
   <MUIIconButton size={size} color={color} {...props}>
     <MUIIcon fontSize={size} {...iconProps}>{children}</MUIIcon>
@@ -175,6 +178,7 @@ export const Chip = ({ children, ...props }) => (
 // FIXME: Set default verticalAlign=text-top for Icon?
 
 // To see a complete list of icons, visit: https://fonts.google.com/icons
+/** @type {React.FC<import('@mui/material').IconProps & { avatar?: boolean, size?: number, avatarProps?: any }>} */
 export const Icon = ({ avatar = false, size = undefined, children, avatarProps, ...props }) => avatar ? (
   <MUIAvatar {...avatarProps} sx={{ width: size, height: size, ...avatarProps?.sx }}>
     <MUIIcon color="inherit" {...props}>{children}</MUIIcon>
