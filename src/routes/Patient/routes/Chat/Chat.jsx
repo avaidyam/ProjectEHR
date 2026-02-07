@@ -1,8 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Label, Box, Tab, TabView, TabList, TabPanel } from "components/ui/Core.jsx";
-// LLM chat UI removed
-// import ChatPanel from "./components/ChatPanel.jsx";
-// import PatientInfoPanel from "./components/PatientInfoPanel.jsx";
+import { Box, IconButton, Icon, Window } from "components/ui/Core";
 import { GeminiAPIProvider } from "./utils/GeminiAPI";
 import VoicePanel from "./components/VoicePanel";
 import ModelConfig from "./components/ModelConfig";
@@ -18,6 +15,7 @@ export default function Chat() {
   const [tab, setTab] = useState("voice");
   const [configUnlocked, setConfigUnlocked] = useState(false);
   const [voiceName, setVoiceName] = useState("Charon");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
@@ -69,8 +67,8 @@ export default function Chat() {
   const rosNote = (notes || []).find(
     (doc) => doc?.summary === 'Review of Systems'
   );
-  const physicalExamNote = (documents || []).find(
-    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Physical Exam'
+  const physicalExamNote = (notes || []).find(
+    (doc) => doc?.summary === 'Physical Exam'
   );
 
   // Histories
@@ -291,60 +289,24 @@ export default function Chat() {
         },
       }}
     >
-      <TabView value={tab}>
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <Label variant="h6" sx={{ fontWeight: "bold", color: "secondary.main", px: 2 }}>
-            BICEP CHAT
-          </Label>
-
-          <TabList onChange={handleTabChange}>
-            {/* LLM Chat disabled */}
-            {/* <Tab value="chat" label="LLM Chat" /> */}
-            <Tab value="voice" label="Speech Mode" />
-            <Tab value="modelConfig" label="Model Config" />
-          </TabList>
-
-          <Box sx={{ flexGrow: 1, minHeight: 0 }}>
-            {/* ⛔ Entire LLM Chat panel removed */}
-            {/*
-          <TabPanel sx={{ p: 0 }} value="chat">
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <ChatPanel />
-              </Box>
-              <Box sx={{ width: "300px", flexShrink: 0 }}>
-                <PatientInfoPanel />
-              </Box>
-            </Box>
-          </TabPanel>
-          */}
-
-            <TabPanel sx={{ p: 0, height: '100%', overflowY: 'auto' }} value="voice">
-              <VoicePanel />
-            </TabPanel>
-
-            <TabPanel sx={{ p: 0, height: '100%' }} value="modelConfig">
-              {configUnlocked ? (
-                <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
-              ) : (
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "gray",
-                    fontStyle: "italic",
-                    p: 4,
-                  }}
-                >
-                  🔒 Model Config is locked.
-                </Box>
-              )}
-            </TabPanel>
-          </Box>
+      <Box sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
+          <VoicePanel onSettings={() => setSettingsOpen(true)} />
         </Box>
-      </TabView>
+      </Box>
+      <Window
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="Model Configuration"
+        maxWidth="md"
+        fullWidth
+      >
+        <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
+      </Window>
     </GeminiAPIProvider>
   );
 }
