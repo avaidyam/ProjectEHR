@@ -32,6 +32,7 @@ import EditNote from './routes/EditNote/EditNote.jsx';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk.jsx';
 import { EditResult } from './routes/EditResult/EditResult.jsx';
 import { EventLog } from './routes/EventLog/EventLog.jsx';
+import MAR from './routes/MAR/MAR.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -58,6 +59,7 @@ const ALL_TABS = {
   "Appointment Desk": (props) => <AppointmentDesk {...props} />,
   "Edit Result": (props) => <EditResult {...props} />,
   "Event Log": (props) => <EventLog {...props} />,
+  "MAR": (props) => <MAR {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
@@ -69,7 +71,7 @@ const DEFAULT_MAIN_TABS = [
 const OVERFLOW_MENU_TABS = [
   { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
   { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
-  { "Event Log": {} }
+  { "Event Log": {} }, { "MAR": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [

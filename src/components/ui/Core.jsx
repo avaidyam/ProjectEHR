@@ -92,7 +92,7 @@ export const Grid = ({ masonry = false, children, ...props }) => {
 
 /** @type {React.FC<import('@mui/material').TypographyProps & { inline?: boolean, bold?: boolean | number, italic?: boolean }>} */
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
-  <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
+  <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color={props.color ?? "inherit"} sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
     {children}
   </MUITypography>
 )
