@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { List, Popover, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { List } from '@mui/material';
 import { Box, Stack, Icon, Label, Button } from 'components/ui/Core';
+import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 
 // Helper to get color by category
 const getCategoryColor = (category) => {
@@ -25,7 +26,7 @@ const getCategoryIcon = (category) => {
     'mar_prn': 'vaccines',
     'narrator': 'location_on',
     'notes': 'description',
-    'notes_staff_progress': 'description',
+    'notes_staff': 'description',
     'patient_movement': 'swap_horiz',
     'results': 'science',
     'results_cardiac': 'science',
@@ -38,12 +39,24 @@ const getCategoryIcon = (category) => {
 };
 
 const EventItem = ({ event }) => {
+  const { openTab } = useSplitView();
   const color = getCategoryColor(event.category);
   const icon = getCategoryIcon(event.category);
   const dateObj = new Date(event.timestamp);
   const timeString = isNaN(dateObj.getTime())
     ? event.timestamp
     : `${dateObj.getHours().toString().padStart(2, '0')}${dateObj.getMinutes().toString().padStart(2, '0')}`;
+
+  const handleClick = () => {
+    const category = event.category?.toLowerCase();
+    if (category === 'notes' || category === 'notes_staff') {
+      openTab("Note", { data: event.data }, "side", false);
+    } else if (category === 'results_lab' || category === 'results_imaging' || category === 'results_cardiac') {
+      openTab("Report", { data: event.data }, "side", false);
+    } else if (category === 'flowsheets') {
+      openTab("Flowsheet", {}, "main", true);
+    }
+  };
 
   return (
     <Stack direction="row" sx={{ overflow: "none" }}>
@@ -62,6 +75,7 @@ const EventItem = ({ event }) => {
           <Button
             variant="text"
             size="small"
+            onClick={handleClick}
             endIcon={<Icon sx={{ color: '#777' }}>description</Icon>}
             sx={{
               flexShrink: 0,

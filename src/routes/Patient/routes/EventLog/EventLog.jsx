@@ -27,8 +27,8 @@ export const EventLog = () => {
 
   const [selectedFilters, setSelectedFilters] = useState([
     'flowsheets', 'ldas', 'mar', 'mar_scheduled', 'mar_continuous', 'mar_prn',
-    'narrator', 'notes', 'notes_staff_progress', 'patient_movement',
-    'results', 'results_ekg', 'results_imaging', 'results_lab', 'transfusions'
+    'narrator', 'notes', 'notes_staff', 'patient_movement',
+    'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
 
@@ -46,6 +46,7 @@ export const EventLog = () => {
         details: `${item.status}`,
         tag: item.abnormal ? 'Abnormal' : undefined,
         author: getProviderName(item.provider) ?? "Unknown",
+        data: item,
         subItems: []
       });
     });
@@ -60,6 +61,7 @@ export const EventLog = () => {
         details: `${item.status} | ${item.acuity ?? 'Normal'} `,
         tag: item.abnormal ? 'Abnormal' : undefined,
         author: getProviderName(item.provider) ?? "Unknown",
+        data: item,
         subItems: []
       });
     });
@@ -73,6 +75,7 @@ export const EventLog = () => {
         timestamp: item.serviceDate,
         details: `${item.status}`,
         author: getProviderName(item.authorName) ?? "Unknown",
+        data: item,
         subItems: []
       });
     });
@@ -94,6 +97,7 @@ export const EventLog = () => {
           timestamp: item.date,
           details: '',
           author: 'Nurse, RN',
+          data: item,
           subItems: []
         };
       }
@@ -118,7 +122,7 @@ export const EventLog = () => {
     });
 
     return allEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  }, [notes, labs, imaging, flowsheets, flowsheetDefs]);
+  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers]);
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = useMemo(() => {
@@ -145,7 +149,12 @@ export const EventLog = () => {
     }).sort((a, b) => a.time - b.time);
   }, [flowsheets]);
 
-  const filteredEvents = events.filter(e => selectedFilters.includes(e.category.toLowerCase()));
+  const filteredEvents = events.filter(e => {
+    const category = e.category.toLowerCase();
+    return selectedFilters.some(filter =>
+      category === filter || category.startsWith(filter + '_')
+    );
+  });
 
   // Get available date keys from events for date picker
   const availableDateKeys = useMemo(() => {

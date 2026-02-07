@@ -14,7 +14,7 @@ const FILTERS = [
   { id: 'narrator', label: 'Narrator Events', icon: 'location_on', color: '#25584e' },
   {
     id: 'notes', label: 'Notes', icon: 'description', color: '#b42563', children: [
-      { id: 'notes_staff_progress', label: 'Staff Progress', color: '#b42563' },
+      { id: 'notes_staff', label: 'Staff Progress', color: '#b42563' },
     ]
   },
   { id: 'patient_movement', label: 'Patient Movement', icon: 'swap_horiz', color: '#2150c8' },
