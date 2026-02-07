@@ -11,282 +11,75 @@ let globalTopZ = 1200;
 
 export const StickyNote = () => {
   const [departmentsDB] = useDatabase().departments()
-  const { useChart, useEncounter } = usePatient();
-  const encounterAccessor = useEncounter();
+  const { useChart } = usePatient();
+  const [stickyNotes, setStickyNotes] = useChart().smartData.stickyNotes({});
+  // Our data is located @ patient.smartData.stickyNotes.["__PRIVATE__"]
+  // NOT patient.currentEncounter.* - this is very important to note!
 
-  // Access encounter directly and manage stickyNotes property to avoid double nesting
-  let stickyNoteData = {};
-  let setStickyNoteData = () => { };
+  // Generic state management for both window types
+  const privateWindow = useStickyWindow('private', stickyNotes?.["__PRIVATE__"], 360, 200, -140, 0);
+  const deptWindow = useStickyWindow('department', (stickyNotes?.selectedDepartment && stickyNotes?.[stickyNotes.selectedDepartment]), 360, 200, 240, -30);
 
-  try {
-    if (encounterAccessor && typeof encounterAccessor === 'function') {
-      const [encounterData, setEncounterData] = encounterAccessor();
-      stickyNoteData = encounterData?.stickyNotes ?? {};
-      setStickyNoteData = (updater) => {
-        setEncounterData(prev => ({
-          ...prev,
-          stickyNotes: typeof updater === 'function'
-            ? updater(prev?.stickyNotes ?? {})
-            : updater
-        }));
-      };
-    }
-  } catch (err) {
-    console.warn('Failed to access stickyNotes:', err);
-  }
+  // Department specific state
+  const [selectedDepartment, setSelectedDepartment] = useState(stickyNotes?.selectedDepartment || '');
 
-  // separate state for private note and department note so both can be open
-  const [privateOpen, setPrivateOpen] = useState(false);
-  const [privateContent, setPrivateContent] = useState('');
-
-  const [deptOpen, setDeptOpen] = useState(false);
-  const [deptContent, setDeptContent] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [currentDept, setCurrentDept] = useState('');
-  const saveTimeoutRef = useRef(null);
-  const lastOpenedRef = useRef({ popupOpen: false, popupType: null, currentDept: '' });
-  const privateContentRef = useRef(privateContent);
-  const deptContentRef = useRef(deptContent);
-  const currentDeptRef = useRef(currentDept);
-  // Refs for Draggable to avoid findDOMNode in StrictMode
-  const privateNodeRef = useRef(null);
-  const deptNodeRef = useRef(null);
-
-  // z-index state so clicked note sits on top
-  const [privateZ, setPrivateZ] = useState(globalTopZ);
-  const [deptZ, setDeptZ] = useState(globalTopZ - 1);
-
-  // size state for resizable windows (smaller defaults so content and title are closer)
-  const [privateSize, setPrivateSize] = useState({ width: 360, height: 200 });
-  const [deptSize, setDeptSize] = useState({ width: 360, height: 200 });
-
-  // position state for windows (so we can center on open and remember after drag)
-  const [privatePos, setPrivatePos] = useState({ left: null, top: null });
-  const [deptPos, setDeptPos] = useState({ left: null, top: null });
-
-  // resizing refs and flags
-  const resizingRef = useRef({ type: null, startX: 0, startY: 0, startW: 0, startH: 0 });
-
-  // Use useEncounter for persistent data.
-  // We probe the accessor once and store results in refs so we don't re-evaluate
-  // on every render (which would create new objects and trigger effects that
-  // overwrite local editing state). This keeps the sticky-note local state
-  // stable while still using the encounter-backed accessor when available.
-  const stickyNoteDataRef = useRef({});
-  const setStickyNoteDataRef = useRef(() => { });
-
-  // Ensure stickyNoteData is always an object
-  const safeStickyNoteData = stickyNoteData && typeof stickyNoteData === 'object' ? stickyNoteData : {};
-
-  // Load note content when private or dept windows open or department changes
-  useEffect(() => {
-    const data = safeStickyNoteData;
-    if (privateOpen) {
-      const content = data?.private;
-      setPrivateContent(content ? String(content) : '');
-      privateContentRef.current = content ? String(content) : '';
-    } else {
-      // clear local when closed
-      // (keep persisted content in store)
-    }
-
-    if (deptOpen) {
-      const depts = data.departments || {};
-      const content = (currentDept && depts[currentDept]) || '';
-      setDeptContent(content ? String(content) : '');
-      deptContentRef.current = content ? String(content) : '';
-    }
-  }, [privateOpen, deptOpen, currentDept, safeStickyNoteData]);
-
-  // Persist helper - ensures immediate save when closing or switching
   const persistNow = (type, dept, content) => {
-    if (!setStickyNoteData) return;
     if (type === 'private') {
-      setStickyNoteData(prev => ({ ...(prev || {}), private: content }));
+      setStickyNotes(prev => ({ ...(prev || {}), ["__PRIVATE__"]: content }));
     } else if (type === 'department' && dept) {
-      setStickyNoteData(prev => ({
-        ...(prev || {}),
-        departments: {
-          ...((prev && prev.departments) || {}),
-          [dept]: content
-        }
-      }));
+      setStickyNotes(prev => ({ ...(prev || {}), [dept]: content }));
     } else if (type === 'selectedDepartment') {
-      // persist which department option is selected (not whether dropdown is open)
-      setStickyNoteData(prev => ({ ...(prev || {}), selectedDepartment: dept }));
+      setStickyNotes(prev => ({ ...(prev || {}), selectedDepartment: dept }));
     }
   };
 
-  // Auto-save when privateContent or deptContent changes (debounced)
+  // Sync content when stickyNotes or selectedDepartment update
   useEffect(() => {
-    if (!setStickyNoteData) return;
-    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => {
-      if (privateOpen) {
-        persistNow('private', '', privateContentRef.current);
-      }
-      if (deptOpen) {
-        persistNow('department', currentDeptRef.current, deptContentRef.current);
-      }
+    if (privateWindow.isOpen) {
+      const dbContent = stickyNotes?.["__PRIVATE__"] || '';
+      privateWindow.syncContent(dbContent);
+    }
+    if (deptWindow.isOpen) {
+      const dbContent = (selectedDepartment && stickyNotes?.[selectedDepartment]) || '';
+      deptWindow.syncContent(dbContent);
+    }
+  }, [stickyNotes, selectedDepartment, privateWindow.isOpen, deptWindow.isOpen]);
+
+  // Persist on close or timeout
+  useEffect(() => {
+    // Debounced save
+    const timeout = setTimeout(() => {
+      if (privateWindow.isOpen) persistNow('private', '', privateWindow.content);
+      if (deptWindow.isOpen) persistNow('department', selectedDepartment, deptWindow.content);
     }, 1000);
+    return () => clearTimeout(timeout);
+  }, [privateWindow.content, deptWindow.content, privateWindow.isOpen, deptWindow.isOpen, selectedDepartment]);
 
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-        saveTimeoutRef.current = null;
-      }
-    };
-  }, [privateContent, deptContent, privateOpen, deptOpen, currentDept, setStickyNoteData]);
-
-  const handleOpenPrivate = () => {
-    // compute and set default centered position synchronously to avoid teleport
-    setPrivatePos(pos => {
-      if (pos.left !== null && pos.top !== null) return pos;
-      const w = privateSize.width;
-      const h = privateSize.height;
-      // default private note more to the left
-      const left = Math.max(8, Math.round((window.innerWidth - w) / 2) - 140);
-      const top = Math.max(8, Math.round((window.innerHeight - h) / 2));
-      return { left, top };
-    });
-    setPrivateOpen(true);
+  const handleOpenDept = () => {
+    const dept = stickyNotes?.selectedDepartment || '';
+    setSelectedDepartment(dept);
+    deptWindow.open();
   };
 
-  const handleOpenDept = (dept = '') => {
-    // If no explicit dept passed, prefer the previously saved selection
-    const persistedDept = (safeStickyNoteData && safeStickyNoteData.selectedDepartment) || dept || '';
-    setSelectedDepartment(persistedDept);
-    setCurrentDept(persistedDept);
-    currentDeptRef.current = persistedDept;
-    // compute and set default position synchronously before opening to avoid teleport
-    setDeptPos(pos => {
-      if (pos.left !== null && pos.top !== null) return pos;
-      const w = deptSize.width;
-      const h = deptSize.height;
-      // default department note further to the right
-      const left = Math.max(8, Math.round((window.innerWidth - w) / 2) + 240);
-      const top = Math.max(8, Math.round((window.innerHeight - h) / 2) - 30);
-      return { left, top };
-    });
-    setDeptOpen(true);
+  const handleDeptClose = () => {
+    persistNow('department', selectedDepartment, deptWindow.content);
+    deptWindow.close();
   };
 
-  const handleClosePrivate = () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = null;
+  const handlePrivateClose = () => {
+    persistNow('private', '', privateWindow.content);
+    privateWindow.close();
+  };
+
+  const handleDepartmentChange = (newDept) => {
+    if (deptWindow.isOpen && selectedDepartment) {
+      persistNow('department', selectedDepartment, deptWindow.content);
     }
-    persistNow('private', '', privateContentRef.current);
-    setPrivateOpen(false);
-    setPrivateContent('');
-  };
-
-  const handleCloseDept = () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = null;
-    }
-    persistNow('department', currentDeptRef.current, deptContentRef.current);
-    setDeptOpen(false);
-    // Clear local editing buffer but keep the selected department saved so
-    // reopening restores the same selected option (we do not persist dropdown open state)
-    setDeptContent('');
-  };
-
-  const handleDepartmentChange = (newDepartment) => {
-    // save current dept content before switching
-    if (deptOpen && currentDept) {
-      persistNow('department', currentDeptRef.current, deptContentRef.current);
-    }
-    setCurrentDept(newDepartment);
-    setSelectedDepartment(newDepartment);
-    currentDeptRef.current = newDepartment;
-    // load the content for the newly selected department from persisted data
-    const depts = safeStickyNoteData.departments || {};
-    const content = depts[newDepartment] || '';
-    setDeptContent(content);
-    deptContentRef.current = content;
-    // persist the selected department option so it remains selected across close/open
-    persistNow('selectedDepartment', newDepartment, '');
-  };
-
-  const handlePrivateContentChange = (e) => {
-    setPrivateContent(e.target.value);
-    privateContentRef.current = e.target.value;
-  };
-
-  const handleDeptContentChange = (e) => {
-    setDeptContent(e.target.value);
-    deptContentRef.current = e.target.value;
-  };
-
-  // Persist any pending content on unmount (or when component is removed)
-  useEffect(() => {
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-        saveTimeoutRef.current = null;
-      }
-      // persist latest values from refs
-      if (privateContentRef.current) {
-        persistNow('private', '', privateContentRef.current);
-      }
-      if (deptContentRef.current && currentDeptRef.current) {
-        persistNow('department', currentDeptRef.current, deptContentRef.current);
-      }
-    };
-  }, []);
-
-  // Bring a window to front by bumping its z-index
-  const bringToFront = (type) => {
-    globalTopZ = Math.min(globalTopZ + 1, 9000); // Cap at 9000
-    if (type === 'private') {
-      setPrivateZ(globalTopZ);
-    } else if (type === 'department') {
-      setDeptZ(globalTopZ);
-    }
-  };
-
-  // Resizing handlers
-  const startResizing = (type, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const r = resizingRef.current;
-    r.type = type;
-    r.startX = e.clientX;
-    r.startY = e.clientY;
-    if (type === 'private') {
-      r.startW = privateSize.width;
-      r.startH = privateSize.height;
-      bringToFront('private');
-    } else {
-      r.startW = deptSize.width;
-      r.startH = deptSize.height;
-      bringToFront('department');
-    }
-    window.addEventListener('mousemove', handleResizing);
-    window.addEventListener('mouseup', stopResizing);
-  };
-
-  const handleResizing = (ev) => {
-    const r = resizingRef.current;
-    if (!r.type) return;
-    ev.preventDefault();
-    const dx = ev.clientX - r.startX;
-    const dy = ev.clientY - r.startY;
-    const minW = 240;
-    const minH = 120;
-    if (r.type === 'private') {
-      setPrivateSize({ width: Math.max(minW, Math.round(r.startW + dx)), height: Math.max(minH, Math.round(r.startH + dy)) });
-    } else if (r.type === 'department') {
-      setDeptSize({ width: Math.max(minW, Math.round(r.startW + dx)), height: Math.max(minH, Math.round(r.startH + dy)) });
-    }
-  };
-
-  const stopResizing = () => {
-    resizingRef.current.type = null;
-    window.removeEventListener('mousemove', handleResizing);
-    window.removeEventListener('mouseup', stopResizing);
+    setSelectedDepartment(newDept);
+    // Load new content immediately
+    const newContent = stickyNotes?.[newDept] || '';
+    deptWindow.setContent(newContent);
+    persistNow('selectedDepartment', newDept, '');
   };
 
   return (
@@ -294,13 +87,9 @@ export const StickyNote = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, alignItems: 'center' }}>
         <Tooltip title="My Sticky Note" arrow>
           <IconButton
-            onClick={handleOpenPrivate}
+            onClick={privateWindow.open}
             size="small"
-            sx={{
-              color: '#fbc02d',
-              backgroundColor: '#fff9c4',
-              '&:hover': { backgroundColor: '#fff59d' },
-            }}
+            sx={{ color: '#fbc02d', backgroundColor: '#fff9c4', '&:hover': { backgroundColor: '#fff59d' } }}
           >
             <Icon>sticky_note_2</Icon>
           </IconButton>
@@ -308,217 +97,193 @@ export const StickyNote = () => {
 
         <Tooltip title="Department Comments" arrow>
           <IconButton
-            onClick={() => handleOpenDept()}
+            onClick={handleOpenDept}
             size="small"
-            sx={{
-              color: '#2196f3',
-              backgroundColor: '#e3f2fd',
-              '&:hover': { backgroundColor: '#bbdefb' },
-            }}
+            sx={{ color: '#2196f3', backgroundColor: '#e3f2fd', '&:hover': { backgroundColor: '#bbdefb' } }}
           >
             <Icon>sticky_note_2</Icon>
           </IconButton>
         </Tooltip>
       </Box>
 
-      {/* Private sticky note window */}
-      {privateOpen && (
-        createPortal(
-          <Draggable nodeRef={privateNodeRef} handle=".drag-handle-private" onStart={() => bringToFront('private')}>
-            <Paper
-              ref={privateNodeRef}
-              elevation={8}
-              onMouseDown={() => bringToFront('private')}
-              sx={{
-                position: 'fixed',
-                left: privatePos.left !== null ? `${privatePos.left}px` : `calc(50% - ${privateSize.width / 2}px)`,
-                top: privatePos.top !== null ? `${privatePos.top}px` : `calc(50% - ${privateSize.height / 2}px)`,
-                backgroundColor: '#fff9c4',
-                border: `2px solid #fbc02d`,
-                borderRadius: 2,
-                minHeight: 120,
-                minWidth: 300,
-                width: privateSize.width,
-                height: privateSize.height,
-                zIndex: privateZ,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-              }}
-            >
-              <Box
-                className="drag-handle-private"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
-                  p: 0,
-                  pb: 0,
-                  cursor: 'move',
-                  userSelect: 'none',
-                }}
-              >
-                <Icon sx={{ color: '#fbc02d', fontSize: '1rem' }}>sticky_note_2</Icon>
-                <Box component="span" sx={{ fontWeight: 'bold', color: '#fbc02d', flexGrow: 1, fontSize: '1rem' }}>
-                  My Sticky Note
-                </Box>
-                <IconButton
-                  onClick={handleClosePrivate}
-                  size="small"
-                  sx={{ color: '#fbc02d', padding: 0, minWidth: 'auto' }}
-                >
-                  <Icon sx={{ fontSize: '1rem' }}>close</Icon>
-                </IconButton>
-              </Box>
-              <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <TextareaAutosize
-                  minRows={2}
-                  value={privateContent}
-                  onChange={handlePrivateContentChange}
-                  placeholder={"Enter your private notes..."}
-                  style={{
-                    flex: 1,
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    border: '1px solid #fbc02d',
-                    borderRadius: 6,
-                    padding: 4,
-                    backgroundColor: 'transparent',
-                    color: 'rgba(0,0,0,0.87)',
-                    resize: 'none',
-                    height: '100%',
-                    fontSize: '1rem',
-                    lineHeight: 1.4
-                  }}
-                />
-              </Box>
-              {/* Resize handle bottom-right */}
-              <Box
-                onMouseDown={(e) => startResizing('private', e)}
-                sx={{ position: 'absolute', right: 8, bottom: 8, width: 16, height: 16, cursor: 'nwse-resize', zIndex: 2 }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16">
-                  <path d="M0 12 L4 12 L12 4 L12 0" stroke="#fbc02d" strokeWidth="1.5" fill="none" strokeLinecap="square" />
-                </svg>
-              </Box>
-            </Paper>
-          </Draggable>,
-          document.body
-        )
-      )}
+      <StickyNoteWindow
+        windowState={privateWindow}
+        title="My Sticky Note"
+        color="#fbc02d"
+        bgColor="#fff9c4"
+        onClose={handlePrivateClose}
+      >
+        <TextareaAutosize
+          minRows={2}
+          value={privateWindow.content}
+          onChange={(e) => privateWindow.setContent(e.target.value)}
+          placeholder="Enter your private notes..."
+          style={{
+            flex: 1, width: '100%', boxSizing: 'border-box', border: '1px solid #fbc02d',
+            borderRadius: 6, padding: 4, backgroundColor: 'transparent', color: 'rgba(0,0,0,0.87)',
+            resize: 'none', height: '100%', fontSize: '1rem', lineHeight: 1.4
+          }}
+        />
+      </StickyNoteWindow>
 
-      {/* Department sticky note window */}
-      {deptOpen && (
-        createPortal(
-          <Draggable nodeRef={deptNodeRef} handle=".drag-handle-dept" onStart={() => bringToFront('department')}>
-            <Paper
-              ref={deptNodeRef}
-              elevation={8}
-              onMouseDown={() => bringToFront('department')}
-              sx={{
-                position: 'fixed',
-                left: deptPos.left !== null ? `${deptPos.left}px` : `calc(50% - ${deptSize.width / 2}px + 120px)`,
-                top: deptPos.top !== null ? `${deptPos.top}px` : `calc(50% - ${deptSize.height / 2}px - 30px)`,
-                backgroundColor: '#e3f2fd',
-                border: `2px solid #2196f3`,
-                borderRadius: 2,
-                minHeight: 120,
-                minWidth: 300,
-                width: deptSize.width,
-                height: deptSize.height,
-                zIndex: deptZ,
-                display: 'flex',
-                flexDirection: 'column',
-                overflow: 'hidden',
-              }}
+      <StickyNoteWindow
+        windowState={deptWindow}
+        title={(selectedDepartment ? (departmentsDB.find(d => d.id === selectedDepartment)?.name || 'Department') : 'Department') + ' Comments'}
+        color="#2196f3"
+        bgColor="#e3f2fd"
+        onClose={handleDeptClose}
+      >
+        <Box sx={{ mb: 1 }}>
+          <FormControl fullWidth size="small">
+            <Select
+              value={selectedDepartment}
+              onChange={(e) => handleDepartmentChange(e.target.value)}
+              displayEmpty
+              MenuProps={{ PaperProps: { style: { zIndex: 10000 } } }}
+              sx={{ backgroundColor: 'background.paper', fontSize: '0.95rem', '& .MuiSelect-select': { padding: '6px 8px' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' } }}
             >
-              <Box
-                className="drag-handle-dept"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.75,
-                  p: 0,
-                  pb: 0,
-                  cursor: 'move',
-                  userSelect: 'none',
-                }}
-              >
-                <Icon sx={{ color: '#2196f3', fontSize: '1rem' }}>sticky_note_2</Icon>
-                <Box component="span" sx={{ fontWeight: 'bold', color: '#2196f3', flexGrow: 1, fontSize: '1rem' }}>
-                  {currentDept ? (departmentsDB.find(d => d.id === currentDept)?.name || 'Department') : 'Department'} Comments
-                </Box>
-                <IconButton
-                  onClick={handleCloseDept}
-                  size="small"
-                  sx={{ color: '#2196f3', padding: 0, minWidth: 'auto' }}
-                >
-                  <Icon sx={{ fontSize: '1rem' }}>close</Icon>
-                </IconButton>
-              </Box>
-              <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ mb: 1 }}>
-                  <FormControl fullWidth size="small">
-                    <Select
-                      value={currentDept}
-                      onChange={(e) => handleDepartmentChange(e.target.value)}
-                      displayEmpty
-                      MenuProps={{
-                        PaperProps: {
-                          style: { zIndex: 10000 }
-                        }
-                      }}
-                      sx={{
-                        backgroundColor: 'background.paper',
-                        fontSize: '0.95rem',
-                        '& .MuiSelect-select': { padding: '6px 8px' },
-                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' },
-                      }}
-                    >
-                      <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
-                      {departmentsDB.map(x => (<MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
-                    </Select>
-                  </FormControl>
-                </Box>
-
-                <Box sx={{ p: 0, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                  <TextareaAutosize
-                    minRows={2}
-                    value={deptContent}
-                    onChange={handleDeptContentChange}
-                    placeholder={currentDept ? `Enter notes for ${departmentsDB.find(d => d.id === currentDept)?.name || 'Department'}...` : "Please select a department first"}
-                    disabled={!currentDept}
-                    style={{
-                      flex: 1,
-                      width: '100%',
-                      boxSizing: 'border-box',
-                      border: `1px solid ${currentDept ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,
-                      borderRadius: 6,
-                      padding: 4,
-                      backgroundColor: 'transparent',
-                      color: currentDept ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.6)',
-                      resize: 'none',
-                      height: '100%',
-                      fontSize: '1rem',
-                      lineHeight: 1.4
-                    }}
-                  />
-                </Box>
-              </Box>
-              {/* Resize handle bottom-right for department window */}
-              <Box
-                onMouseDown={(e) => startResizing('department', e)}
-                sx={{ position: 'absolute', right: 8, bottom: 8, width: 16, height: 16, cursor: 'nwse-resize', zIndex: 2 }}
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16">
-                  <path d="M0 12 L4 12 L12 4 L12 0" stroke="#2196f3" strokeWidth="1.5" fill="none" strokeLinecap="square" />
-                </svg>
-              </Box>
-            </Paper>
-          </Draggable>,
-          document.body
-        )
-      )}
+              <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
+              {departmentsDB.map(x => (<MenuItem key={x.id} sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
+            </Select>
+          </FormControl>
+        </Box>
+        <TextareaAutosize
+          minRows={2}
+          value={deptWindow.content}
+          onChange={(e) => deptWindow.setContent(e.target.value)}
+          placeholder={selectedDepartment ? `Enter notes for ${departmentsDB.find(d => d.id === selectedDepartment)?.name || 'Department'}...` : "Please select a department first"}
+          disabled={!selectedDepartment}
+          style={{
+            flex: 1, width: '100%', boxSizing: 'border-box', border: `1px solid ${selectedDepartment ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,
+            borderRadius: 6, padding: 4, backgroundColor: 'transparent', color: selectedDepartment ? 'rgba(0,0,0,0.87)' : 'rgba(0,0,0,0.6)',
+            resize: 'none', height: '100%', fontSize: '1rem', lineHeight: 1.4
+          }}
+        />
+      </StickyNoteWindow>
     </>
+  );
+};
+
+// Custom hook for managing window state
+const useStickyWindow = (type, initialContent, defaultW, defaultH, offsetX, offsetY) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [content, setContent] = useState(initialContent || '');
+  const [pos, setPos] = useState({ left: null, top: null });
+  const [size, setSize] = useState({ width: defaultW, height: defaultH });
+  const [zIndex, setZIndex] = useState(globalTopZ);
+  const nodeRef = useRef(null);
+  const resizingRef = useRef({ type: null, startX: 0, startY: 0, startW: 0, startH: 0 });
+
+  const open = () => {
+    // Set position if not set
+    setPos(prev => {
+      if (prev.left !== null && prev.top !== null) return prev;
+      const left = Math.max(8, Math.round((window.innerWidth - defaultW) / 2) + offsetX);
+      const top = Math.max(8, Math.round((window.innerHeight - defaultH) / 2) + offsetY);
+      return { left, top };
+    });
+    setIsOpen(true);
+    bringToFront();
+  };
+
+  const close = () => {
+    setIsOpen(false);
+    setContent(''); // Clear local content buffer
+  };
+
+  const syncContent = (newContent) => {
+    setContent(newContent ? String(newContent) : '');
+  };
+
+  const bringToFront = () => {
+    globalTopZ = Math.min(globalTopZ + 1, 9000);
+    setZIndex(globalTopZ);
+  };
+
+  const startResizing = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const r = resizingRef.current;
+    r.startX = e.clientX;
+    r.startY = e.clientY;
+    r.startW = size.width;
+    r.startH = size.height;
+    bringToFront();
+    window.addEventListener('mousemove', handleResizing);
+    window.addEventListener('mouseup', stopResizing);
+  };
+
+  const handleResizing = (ev) => {
+    ev.preventDefault();
+    const dx = ev.clientX - resizingRef.current.startX;
+    const dy = ev.clientY - resizingRef.current.startY;
+    const minW = 240, minH = 120;
+    setSize({
+      width: Math.max(minW, Math.round(resizingRef.current.startW + dx)),
+      height: Math.max(minH, Math.round(resizingRef.current.startH + dy))
+    });
+  };
+
+  const stopResizing = () => {
+    window.removeEventListener('mousemove', handleResizing);
+    window.removeEventListener('mouseup', stopResizing);
+  };
+
+  return {
+    isOpen, open, close, content, setContent, syncContent,
+    pos, size, zIndex, nodeRef, bringToFront, startResizing
+  };
+};
+
+const StickyNoteWindow = ({ windowState, title, color, bgColor, onClose, children }) => {
+  if (!windowState.isOpen) return null;
+
+  return createPortal(
+    <Draggable nodeRef={windowState.nodeRef} handle=".drag-handle" onStart={windowState.bringToFront}>
+      <Paper
+        ref={windowState.nodeRef}
+        elevation={8}
+        onMouseDown={windowState.bringToFront}
+        sx={{
+          position: 'fixed',
+          left: windowState.pos.left !== null ? `${windowState.pos.left}px` : `calc(50% - ${windowState.size.width / 2}px)`,
+          top: windowState.pos.top !== null ? `${windowState.pos.top}px` : `calc(50% - ${windowState.size.height / 2}px)`,
+          backgroundColor: bgColor,
+          border: `2px solid ${color}`,
+          borderRadius: 2,
+          minHeight: 120,
+          minWidth: 300,
+          width: windowState.size.width,
+          height: windowState.size.height,
+          zIndex: windowState.zIndex,
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}
+      >
+        <Box
+          className="drag-handle"
+          sx={{ display: 'flex', alignItems: 'center', gap: 0.75, p: 0, pb: 0, cursor: 'move', userSelect: 'none' }}
+        >
+          <Icon sx={{ color: color, fontSize: '1rem' }}>sticky_note_2</Icon>
+          <Box component="span" sx={{ fontWeight: 'bold', color: color, flexGrow: 1, fontSize: '1rem' }}>
+            {title}
+          </Box>
+          <IconButton onClick={onClose} size="small" sx={{ color: color, padding: 0, minWidth: 'auto' }}>
+            <Icon sx={{ fontSize: '1rem' }}>close</Icon>
+          </IconButton>
+        </Box>
+        <Box sx={{ p: 1, pt: 0.5, flexGrow: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          {children}
+        </Box>
+        <Box
+          onMouseDown={windowState.startResizing}
+          sx={{ position: 'absolute', right: 8, bottom: 8, width: 16, height: 16, cursor: 'nwse-resize', zIndex: 2 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16">
+            <path d="M0 12 L4 12 L12 4 L12 0" stroke={color} strokeWidth="1.5" fill="none" strokeLinecap="square" />
+          </svg>
+        </Box>
+      </Paper>
+    </Draggable>,
+    document.body
   );
 };

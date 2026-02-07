@@ -5,6 +5,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext.jsx";
 import { Tooltip } from "@mui/material";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
+import { filterDocuments } from "util/helpers";
 
 const df = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -73,27 +74,24 @@ function brightHSLFromName(name) {
   return `hsl(${h} ${s}% ${l}%)`;
 }
 
-import { filterDocuments } from "util/helpers";
-
 /** 🔑 Hook to normalize Lab documents into Epic-style panels */
 function useNormalizedLabs() {
   const { useEncounter } = usePatient();
-  const [documents] = useEncounter().documents();
+  const [documents] = useEncounter().labs();
   const [conditionals] = useEncounter().conditionals();
   const [orders] = useEncounter().orders();
 
   const visibleSym = filterDocuments(documents, conditionals, orders);
-
   return useMemo(() => {
-    const labs = (visibleSym || []).filter((d) => d.kind === "Lab");
+    const labs = (visibleSym || []);
     const panels = {};
 
-    for (const doc of labs) {
-      const panelName = doc.data?.Test || "Unknown Panel";
-      const time = doc.data?.["Date/Time"] || doc.collected;
+    for (const doc of (labs || [])) {
+      const panelName = doc.Test || "Unknown Panel";
+      const time = doc["date"] || doc.collected;
       if (!panels[panelName]) panels[panelName] = {};
 
-      for (const r of doc.labResults || []) {
+      for (const r of doc.components || []) {
         if (!panels[panelName][r.name]) {
           panels[panelName][r.name] = {
             name: r.name,

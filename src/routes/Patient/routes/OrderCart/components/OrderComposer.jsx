@@ -15,104 +15,104 @@ import { Typography } from '@mui/material';
  */
 const parseDoseString = (doseStr) => {
   if (!doseStr) return null;
-  
+
   // Normalize unit abbreviations and formatting
   let normalizedStr = doseStr
     .replace(/\bunt\b/gi, 'units')  // "unt" -> "units"
     .replace(/\bunit\b/gi, 'units') // ensure plural
     .replace(/,/g, '');             // remove commas from numbers like "1,500"
-  
+
   // Skip percentage-based formulations (creams, gels, etc.) - can't calculate pills
   if (/%/.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip cell-based and viral particle formulations
   if (/cells?\//i.test(normalizedStr) || /viral-particles/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip complex multi-component formulations (more than 2 components)
   // Matches patterns like "X-X-X" where X can be decimals
   if (/[\d.]+\s*-\s*[\d.]+\s*-\s*[\d.]+/.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip variable units (can't calculate)
   if (/var\s*units/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip radioactive doses (mci = millicuries)
   if (/mci\//i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip size-based formulations (implants, patches by area)
   if (/\d+\s*(cm|sqcm|sq)\s+(Drug Implant|Medicated)/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip special units that can't be calculated
   if (/sq-hdm|var\s/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip gene therapy doses (vector-genomes)
   if (/vector-genomes/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip inverted ratios (units/mg instead of mg/unit)
   if (/unt\/mg|units\/mg/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip volume-only doses with no strength (e.g., "0.3 ml Inhalant")
   if (/^[\d.]+\s*(ml|l)\s+\w/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip dose per area (e.g., "0.004 mg/sqcm Medicated Tape")
   if (/\/sqcm/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip German units (ein = Einheit)
   if (/ein\/ml/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Skip unusual concentrations (ml/ml) and allergen units (BAU)
   if (/ml\/ml|bau\s/i.test(normalizedStr)) {
     return null;
   }
-  
+
   // Pattern 1: Combo medication - "400-5 mg Tab" or "25-20 mg Tab" or "12.5-10 mg Tab"
   const comboMatch = normalizedStr.match(/^([\d.]+)-([\d.]+)\s*(mg|mcg|g|mEq|units?)\s+(.+)$/i);
-  
+
   // Pattern 2: Combo liquid - "0.12-0.12 mg/ml Injection"
   const comboLiquidMatch = normalizedStr.match(/^([\d.]+)-([\d.]+)\s*(mg|mcg|g|mEq|units?)\/([\d.]*)(ml|l)\s+(.+)$/i);
-  
+
   // Pattern 3: Simple - "500 mg Tab"
   const simpleMatch = normalizedStr.match(/^([\d.]+)\s*(mg|mcg|g|mEq|units?)\s+(.+)$/i);
-  
+
   // Pattern 4: Concentration - "100 mg/5ml Susp" or "4 mg/ml Injection"
   const concMatch = normalizedStr.match(/^([\d.]+)\s*(mg|mcg|g|mEq|units?)\/([\d.]*)(ml|l)\s+(.+)$/i);
-  
+
   // Pattern 5: Per-puff/spray/injection - "10 mg/puff DPI 1 puff" or "20 mcg/injection Pen Injector"
   const puffMatch = normalizedStr.match(/^([\d.]+)\s*(mg|mcg)\/(puff|actuation|spray|injection)\s+(.+)$/i);
   const comboPuffMatch = normalizedStr.match(/^([\d.]+)-([\d.]+)\s*(mg|mcg)\/(puff|actuation|spray|injection)\s+(.+)$/i);
-  
+
   // Pattern 6: Per-hour patch - "0.208 mg/hr 168 HR Patch"
   const patchMatch = normalizedStr.match(/^([\d.]+)\s*(mg|mcg)\/hr\s+(.+)$/i);
-  
+
   // Pattern 7: Combo patch - "0.000542-0.00625 mg/hr System"
   const comboPatchMatch = normalizedStr.match(/^([\d.]+)-([\d.]+)\s*(mg|mcg)\/hr\s+(.+)$/i);
-  
+
   // Pattern 8: Prefilled syringe with dose/volume - "30 mg/0.3 ml Prefilled Syringe"
   const prefilledMatch = normalizedStr.match(/^([\d.]+)\s*(mg|mcg|g|mEq|units?)\/([\d.]+)\s*(ml)\s+(Prefilled Syringe.*)$/i);
-  
+
   // Helper to determine form label
   const getFormLabel = (form) => {
     const formLower = form.toLowerCase();
@@ -130,7 +130,7 @@ const parseDoseString = (doseStr) => {
     if (formLower.includes('injection') || formLower.includes('inj')) return 'injection';
     return 'unit';
   };
-  
+
   // Handle combo puff (inhaler) - e.g., "100-50 mcg/puff MDI 60 puff"
   if (comboPuffMatch) {
     const [, primaryStrength, secondaryStrength, strengthUnit, , form] = comboPuffMatch;
@@ -147,7 +147,7 @@ const parseDoseString = (doseStr) => {
       isPuff: true
     };
   }
-  
+
   // Handle simple puff (inhaler) - e.g., "10 mg/puff DPI 1 puff"
   if (puffMatch) {
     const [, strengthValue, strengthUnit, , form] = puffMatch;
@@ -164,7 +164,7 @@ const parseDoseString = (doseStr) => {
       isPuff: true
     };
   }
-  
+
   // Handle prefilled syringe - e.g., "30 mg/0.3 ml Prefilled Syringe 0.3 ml"
   if (prefilledMatch) {
     const [, strengthValue, strengthUnit, volume, volumeUnit, form] = prefilledMatch;
@@ -181,7 +181,7 @@ const parseDoseString = (doseStr) => {
       isPrefilled: true
     };
   }
-  
+
   // Handle combo patch - e.g., "0.000542-0.00625 mg/hr System"
   if (comboPatchMatch) {
     const [, primaryStrength, secondaryStrength, strengthUnit, form] = comboPatchMatch;
@@ -198,7 +198,7 @@ const parseDoseString = (doseStr) => {
       isPatch: true
     };
   }
-  
+
   // Handle per-hour patch - e.g., "0.208 mg/hr 168 HR Patch"
   if (patchMatch) {
     const [, strengthValue, strengthUnit, form] = patchMatch;
@@ -215,7 +215,7 @@ const parseDoseString = (doseStr) => {
       isPatch: true
     };
   }
-  
+
   // Handle combo liquid (e.g., "0.12-0.12 mg/ml Injection 0.5 ml")
   if (comboLiquidMatch) {
     const [, primaryStrength, secondaryStrength, strengthUnit, perVolume, perVolumeUnit, form] = comboLiquidMatch;
@@ -232,7 +232,7 @@ const parseDoseString = (doseStr) => {
       isCombo: true
     };
   }
-  
+
   // Handle combo medications (e.g., "400-5 mg Tab")
   if (comboMatch) {
     const [, primaryStrength, secondaryStrength, strengthUnit, form] = comboMatch;
@@ -248,7 +248,7 @@ const parseDoseString = (doseStr) => {
       isCombo: true
     };
   }
-  
+
   // Handle simple liquid concentration
   if (concMatch) {
     const [, strengthValue, strengthUnit, perVolume, perVolumeUnit, form] = concMatch;
@@ -265,7 +265,7 @@ const parseDoseString = (doseStr) => {
       isCombo: false
     };
   }
-  
+
   // Handle simple solid dose
   if (simpleMatch) {
     const [, strengthValue, strengthUnit, form] = simpleMatch;
@@ -281,7 +281,7 @@ const parseDoseString = (doseStr) => {
       isCombo: false
     };
   }
-  
+
   return null;
 };
 
@@ -292,7 +292,7 @@ const parseDoseString = (doseStr) => {
  */
 const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
   if (!parsedDose || !desiredDose || desiredDose <= 0) return null;
-  
+
   // Normalize units for comparison
   const normalizeUnit = (unit) => {
     const u = unit?.toLowerCase() || '';
@@ -303,7 +303,7 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
     if (u === 'unit' || u === 'units' || u === 'unt') return 'units';
     return u;
   };
-  
+
   // Convert to base unit (mg) for calculation
   const toMg = (value, unit) => {
     const normalizedUnit = normalizeUnit(unit);
@@ -311,21 +311,21 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
     if (normalizedUnit === 'mcg') return value / 1000;
     return value; // assume mg or other unit
   };
-  
+
   const desiredMg = toMg(desiredDose, desiredUnit);
   const strengthMg = toMg(parsedDose.strengthValue, parsedDose.strengthUnit);
-  
+
   // Handle puff-based doses (inhalers)
   if (parsedDose.isPuff) {
     // For puffs: calculate number of puffs needed
     // e.g., 100 mcg/puff -> to get 200 mcg, need 2 puffs
     const puffsNeeded = desiredMg / strengthMg;
-    
+
     let secondaryAmount = null;
     if (parsedDose.isCombo && parsedDose.secondaryStrength) {
       secondaryAmount = puffsNeeded * parsedDose.secondaryStrength;
     }
-    
+
     return {
       quantity: puffsNeeded,
       label: 'puff',
@@ -338,13 +338,13 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
       secondaryStrength: parsedDose.secondaryStrength
     };
   }
-  
+
   // Handle patch doses (transdermal)
   if (parsedDose.isPatch) {
     // For patches: the dose is per hour, so calculate based on rate
     // This is more informational - patches are typically whole units
     const rateRatio = desiredMg / strengthMg;
-    
+
     return {
       quantity: rateRatio,
       label: 'patch',
@@ -357,20 +357,20 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
       note: rateRatio === 1 ? null : `(${rateRatio.toFixed(2)}x the patch rate)`
     };
   }
-  
+
   if (parsedDose.isLiquid) {
     // For liquids: calculate mL needed
     // e.g., 160 mg/5ml -> to get 320 mg, need (320/160)*5 = 10 ml
     const mlPerMgRatio = parsedDose.perVolume / strengthMg;
     const mlNeeded = desiredMg * mlPerMgRatio;
-    
+
     // For combo liquids, calculate the secondary component
     let secondaryAmount = null;
     if (parsedDose.isCombo && parsedDose.secondaryStrength) {
       // Secondary amount is proportional: (mlNeeded / perVolume) * secondaryStrength
       secondaryAmount = (mlNeeded / parsedDose.perVolume) * parsedDose.secondaryStrength;
     }
-    
+
     return {
       quantity: mlNeeded,
       label: parsedDose.formLabel,
@@ -382,14 +382,14 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
   } else {
     // For solid doses: calculate number of units
     const unitsNeeded = desiredMg / strengthMg;
-    
+
     // For combo medications, calculate the secondary component amount
     let secondaryAmount = null;
     if (parsedDose.isCombo && parsedDose.secondaryStrength) {
       // Secondary amount = unitsNeeded * secondaryStrength per unit
       secondaryAmount = unitsNeeded * parsedDose.secondaryStrength;
     }
-    
+
     return {
       quantity: unitsNeeded,
       label: parsedDose.formLabel,
@@ -408,9 +408,9 @@ const calculateDose = (desiredDose, desiredUnit, parsedDose) => {
  */
 const formatCalculatedDose = (calc) => {
   if (!calc) return null;
-  
+
   const { quantity, label, isLiquid, isCombo, secondaryAmount, secondaryUnit, primaryStrength, secondaryStrength } = calc;
-  
+
   // Round to reasonable precision
   const roundQuantity = (qty, liquid) => {
     if (liquid) {
@@ -431,20 +431,20 @@ const formatCalculatedDose = (calc) => {
       }
     }
   };
-  
+
   const displayQty = roundQuantity(quantity, isLiquid);
-  
+
   // Pluralize label
   const pluralLabel = displayQty === 1 ? label : (label + 's').replace('capsules', 'capsules').replace('tablets', 'tablets');
-  
+
   let result = `${displayQty} ${pluralLabel}`;
-  
+
   // For combo medications, add info about the secondary component
   if (isCombo && secondaryAmount != null && secondaryStrength != null) {
     const displaySecondary = Math.round(secondaryAmount * 100) / 100;
     result += ` (includes ${displaySecondary} ${secondaryUnit} of secondary)`;
   }
-  
+
   return result;
 };
 
@@ -607,10 +607,17 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
   const [doseUnit, setDoseUnit] = useState('mg') // The unit for the dose amount
   const [selectedFormulation, setSelectedFormulation] = useState('') // The selected package/formulation (e.g., "800 mg Tab")
 
+  // Handle both standard medication objects and "unpacked" ones with routesMap
+  const effectiveRoutes = useMemo(() => {
+    return tempMed?.routesMap || tempMed?.route || {}
+  }, [tempMed])
+
+  const effectiveName = tempMed?.originalName || tempMed?.name || ''
+
   // Get available formulations for the selected route
   const availableFormulations = useMemo(() => {
-    return Object.values(tempMed?.route?.[params["Route"]] ?? {})
-  }, [tempMed, params["Route"]])
+    return Object.values(effectiveRoutes?.[params["Route"]] ?? {})
+  }, [effectiveRoutes, params["Route"]])
 
   // Check if dose calculation makes sense for this medication/route
   const isDoseCalculable = useMemo(() => {
@@ -619,50 +626,59 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
 
   // set the default route when medication changes
   useEffect(() => {
-    setParams(prev => ({ ...prev, ['Route']: Object.keys(tempMed?.route ?? {})?.[0] ?? '' }))
+    const initialRoute = (typeof tempMed?.route === 'string' && effectiveRoutes[tempMed.route])
+      ? tempMed.route
+      : (Object.keys(effectiveRoutes)?.[0] ?? '')
+
+    setParams(prev => ({ ...prev, ['Route']: initialRoute }))
     setDoseAmount('')
     setSelectedFormulation('')
-  }, [tempMed])
+  }, [tempMed, effectiveRoutes])
 
   // set the default formulation when route changes
   useEffect(() => {
-    const formulations = Object.values(tempMed?.route?.[params["Route"]] ?? {})
-    setSelectedFormulation(formulations[0] ?? '')
+    const formulations = Object.values(effectiveRoutes?.[params["Route"]] ?? {})
+    if (tempMed?.dose && formulations.includes(tempMed.dose) && params["Route"] === tempMed.route) {
+      setSelectedFormulation(tempMed.dose)
+    } else {
+      setSelectedFormulation(formulations[0] ?? '')
+    }
+
     setDoseAmount('')
-  }, [tempMed, params["Route"]])
+  }, [tempMed, effectiveRoutes, params["Route"]])
 
   // Parse the selected formulation and calculate units needed
   const parsedFormulation = useMemo(() => {
     return parseDoseString(selectedFormulation);
   }, [selectedFormulation])
-  
+
   const calculatedDose = useMemo(() => {
     if (!doseAmount || !parsedFormulation) return null;
     return calculateDose(parseFloat(doseAmount), doseUnit, parsedFormulation);
   }, [doseAmount, doseUnit, parsedFormulation])
-  
+
   const calculatedDoseDisplay = useMemo(() => formatCalculatedDose(calculatedDose), [calculatedDose])
 
   // if this is an Rx then substitute the Route and Dose options
   // Push a default Comments field that exists for ALL orders.
-  let displayParams = [...(!!tempMed?.route ? rxParams : consultParams), ...alwaysParams]
-  if (!!tempMed?.route) {
-    displayParams[0].options = Object.keys(tempMed?.route ?? {}) 
+  let displayParams = [...(Object.keys(effectiveRoutes).length > 0 ? rxParams : consultParams), ...alwaysParams]
+  if (Object.keys(effectiveRoutes).length > 0) {
+    displayParams[0].options = Object.keys(effectiveRoutes)
     // Remove the Dose options since we're handling it specially
     displayParams[1].options = []
   }
 
   return (
-    <Window 
-      fullWidth 
-      maxWidth="md" 
-      title={tempMed?.name ?? ''}
+    <Window
+      fullWidth
+      maxWidth="md"
+      title={effectiveName}
       open={!!open}
-      onClose={() => onSelect(null)} 
+      onClose={() => onSelect(null)}
       ContentProps={{ sx: { p: 0 } }}
       footer={<>
-        <Button color="success.light" onClick={() => onSelect({ 
-          name: tempMed?.name ?? '', 
+        <Button color="success.light" onClick={() => onSelect({
+          name: effectiveName,
           ...params,
           // Include dose information (only for calculable medications)
           Dose: isDoseCalculable && doseAmount && doseUnit ? `${doseAmount} ${doseUnit}` : (selectedFormulation || ''),
@@ -673,7 +689,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       </>}
     >
       <Grid container spacing={1} sx={{ m: 0, p: 1 }}>
-        {displayParams.filter(x => 
+        {displayParams.filter(x =>
           Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
         ).map(x => (
           <React.Fragment key={x.name}>
@@ -684,7 +700,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                 isDoseCalculable ? (
                   // Calculable medications: show dose input + formulation buttons
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                    <TextField 
+                    <TextField
                       fullWidth={false}
                       size="small"
                       type="number"
@@ -712,12 +728,12 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       sx={{ ml: 1 }}
                     >
                       {availableFormulations.slice(0, 4).map((form) => (
-                        <Button 
-                          key={form} 
+                        <Button
+                          key={form}
                           value={form}
                           variant={selectedFormulation === form ? 'contained' : 'outlined'}
                           onClick={() => setSelectedFormulation(form)}
-                          sx={{ 
+                          sx={{
                             fontSize: '0.75rem',
                             py: 0.5,
                             px: 1,
@@ -740,12 +756,12 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       }}
                     >
                       {availableFormulations.slice(0, 4).map((form) => (
-                        <Button 
-                          key={form} 
+                        <Button
+                          key={form}
                           value={form}
                           variant={selectedFormulation === form ? 'contained' : 'outlined'}
                           onClick={() => setSelectedFormulation(form)}
-                          sx={{ 
+                          sx={{
                             fontSize: '0.75rem',
                             py: 0.5,
                             px: 1,
@@ -763,8 +779,8 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                 )
               ) : (
                 <>
-                  {x.type === "string" && x.options?.length > 0 && 
-                    <Autocomplete 
+                  {x.type === "string" && x.options?.length > 0 &&
+                    <Autocomplete
                       fullWidth={false}
                       size="small"
                       options={x.options ?? []}
@@ -773,8 +789,8 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
-                  {x.type === "string" && (x.options?.length ?? 0) === 0 && 
-                    <TextField 
+                  {x.type === "string" && (x.options?.length ?? 0) === 0 &&
+                    <TextField
                       fullWidth={false}
                       size="small"
                       value={params[x.name]}
@@ -782,7 +798,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
-                  {x.type === "date" && 
+                  {x.type === "date" &&
                     <DatePicker
                       value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
                       onChange={(event, value) => setParams(prev => ({ ...prev, [x.name]: value }))}
@@ -790,7 +806,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
-                  {x.options?.length > 0 && 
+                  {x.options?.length > 0 &&
                     <ButtonGroup
                       exclusive
                       value={params[x.name]}
@@ -799,22 +815,22 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       {x.options?.slice(0, 3).map((m) => (<Button key={m} value={m}>{m}</Button>))}
                     </ButtonGroup>
                   }
-                  {x.type === "html" && 
+                  {x.type === "html" &&
                     <Box sx={{ width: "98%" }}><RichTextEditor disableStickyFooter /></Box>
                   }
                 </>
               )}
             </Grid>
-            
+
             {/* Calculated Dose Display - only shown for calculable medications */}
             {x.name === "Dose" && tempMed?.route && isDoseCalculable && (
               <>
                 <Grid item xs={3}></Grid>
                 <Grid item xs={9}>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: 1, 
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
                     mt: 0.5,
                     mb: 1,
                     py: 0.75,
@@ -827,12 +843,12 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
                       Calculated dose:
                     </Typography>
                     {calculatedDoseDisplay ? (
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          fontWeight: 600, 
-                          color: calculatedDose?.quantity < 1 || (calculatedDose?.quantity % 1 !== 0 && !calculatedDose?.isLiquid) 
-                            ? 'warning.dark' 
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 600,
+                          color: calculatedDose?.quantity < 1 || (calculatedDose?.quantity % 1 !== 0 && !calculatedDose?.isLiquid)
+                            ? 'warning.dark'
                             : 'success.dark'
                         }}
                       >

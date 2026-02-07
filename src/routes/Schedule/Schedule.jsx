@@ -7,11 +7,9 @@ import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-
 import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
-import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
+
 
 import { useDatabase } from 'components/contexts/PatientContext'
-
-
 
 // filter bar
 function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selectedDept, setSelectedDept, schedulesDB, departments, open, setOpen, preview, setPreview, hide, setHide }) {
@@ -202,10 +200,6 @@ export function Schedule() {
     }
   }, [department, date]);
 
-  const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
-  const [editingAppointment, setEditingAppointment] = React.useState(null);
-  const [deleteConfirmation, setDeleteConfirmation] = React.useState(null);
-
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
     return deptSchedule.filter(appt => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
@@ -215,95 +209,6 @@ export function Schedule() {
     setPatient(params.row);
   };
 
-  const handleEditAppointment = (appointment) => {
-    setEditingAppointment(appointment);
-    setIsScheduleModalOpen(true);
-  };
-
-  const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes, id }) => {
-    const targetDeptId = parseInt(department);
-
-    // If editing (id exists)
-    if (id) {
-      setSchedulesDB(prev => prev.map(s => {
-        if (s.department === targetDeptId) {
-          return {
-            ...s,
-            appointments: s.appointments.map(appt => {
-              if (appt.id === id) {
-                return {
-                  ...appt,
-                  apptTime: date,
-                  type: type || appt.type,
-                  notes: notes,
-                  cc: cc
-                };
-              }
-              return appt;
-            })
-          };
-        }
-        return s;
-      }));
-      showNotification("Appointment updated successfully", "success");
-    } else {
-      const newAppointment = {
-        id: Math.floor(Math.random() * 100000), // Generate random ID
-        apptTime: date, // ISO format from modal
-        status: "Scheduled",
-        patient: { mrn: patientId, enc: encounterId },
-        officeStatus: "Scheduled",
-        checkinTime: "",
-        checkoutTime: "",
-        location: null,
-        type: type || "Office Visit",
-        notes: notes || "",
-        cc: cc || ""
-      };
-
-      setSchedulesDB(prev => {
-        const index = prev.findIndex(s => s.department === targetDeptId);
-        if (index >= 0) {
-          // Update existing
-          const newSchedules = [...prev];
-          newSchedules[index] = {
-            ...newSchedules[index],
-            appointments: [...newSchedules[index].appointments, newAppointment]
-          };
-          return newSchedules;
-        } else {
-          // Create new entry
-          return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
-        }
-      });
-
-      // Auto-switch to the scheduled department
-      handleSetSelectedDept(targetDeptId);
-      showNotification("Patient scheduled successfully", "success");
-    }
-    setEditingAppointment(null);
-  };
-
-  const handleDeleteClick = (appointment) => {
-    setDeleteConfirmation(appointment);
-  };
-
-  const handleConfirmDelete = () => {
-    if (deleteConfirmation) {
-      const targetDeptId = deleteConfirmation.department; // Ensure appointment has department info attached
-      setSchedulesDB(prev => prev.map(s => {
-        if (s.department === targetDeptId) {
-          return {
-            ...s,
-            appointments: s.appointments.filter(appt => appt.id !== deleteConfirmation.id)
-          };
-        }
-        return s;
-      }));
-      showNotification("Appointment deleted successfully", "success");
-      setDeleteConfirmation(null);
-    }
-  };
 
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
 
@@ -315,7 +220,6 @@ export function Schedule() {
     <Box sx={{ position: 'relative' }}>
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" gutterBottom>Schedule</Typography>
-        <Button variant="contained" onClick={() => { setEditingAppointment(null); setIsScheduleModalOpen(true); }}>Schedule Patient</Button>
       </Box>
 
       <Notification
@@ -324,33 +228,6 @@ export function Schedule() {
         message={notification.message}
         severity={notification.severity}
       />
-      <SchedulePatientModal
-        open={isScheduleModalOpen}
-        onClose={() => { setIsScheduleModalOpen(false); setEditingAppointment(null); }}
-        onSubmit={handleSchedulePatient}
-        patientsDB={patientsDB}
-        departments={departments}
-        appointment={editingAppointment}
-      />
-
-      <Window
-        open={!!deleteConfirmation}
-        onClose={() => setDeleteConfirmation(null)}
-        title="Confirm Delete"
-        footer={
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, width: '100%' }}>
-            <Button onClick={() => setDeleteConfirmation(null)}>Cancel</Button>
-            <Button onClick={handleConfirmDelete} color="error" variant="contained">Delete</Button>
-          </Box>
-        }
-        maxWidth="sm"
-      >
-        <Label>
-          Are you sure you want to delete the appointment for {deleteConfirmation ?
-            `${patientsDB[deleteConfirmation.patient.mrn].firstName} ${patientsDB[deleteConfirmation.patient.mrn].lastName}`
-            : 'this patient'}?
-        </Label>
-      </Window>
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
         <div>
@@ -515,44 +392,6 @@ export function Schedule() {
                   const data = patientsDB[row.patient.mrn]
                   return `${data.insurance.carrierName}`;
                 },
-              },
-              {
-                field: 'edit',
-                headerName: 'Actions',
-                width: 120, // Reduced width since icons are smaller
-                renderCell: (params) => (
-                  <Box sx={{ display: 'flex' }}>
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent row selection
-                        // Need to construct the appointment object with department info since it's flattened
-                        const appt = {
-                          ...params.row,
-                          department: selectedDept
-                        };
-                        handleEditAppointment(appt);
-                      }}
-                    >
-                      edit
-                    </IconButton>
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent row selection
-                        // Need to construct the appointment object with department info since it's flattened
-                        const appt = {
-                          ...params.row,
-                          department: selectedDept
-                        };
-                        handleDeleteClick(appt);
-                      }}
-                    >
-                      delete
-                    </IconButton>
-                  </Box>
-                ),
               },
             ]}
             onRowClick={patientScheduleClick}

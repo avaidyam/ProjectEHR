@@ -42,13 +42,13 @@ export const VitalsPopup = ({ vitals, definition, ...props }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: "column" }} onMouseEnter={handleMenuOpen} onMouseLeave={handleMenuClose}>
-      <span>Temp: {vitals[0]?.Temp}</span>
+      <span>Temp: {vitals[0]?.temp}</span>
       <span
-        style={_isBPProblematic({ systolic: vitals[0]?.bloodPressureSystolic, diastolic: vitals[0]?.bloodPressureDiastolic }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
+        style={_isBPProblematic({ systolic: vitals[0]?.sbp, diastolic: vitals[0]?.dbp }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BP: {vitals[0]?.bloodPressureSystolic}/{vitals[0]?.bloodPressureDiastolic}
+        BP: {vitals[0]?.sbp}/{vitals[0]?.dbp}
       </span>
-      <span>HR: {vitals[0]?.heartRate}</span>
+      <span>HR: {vitals[0]?.hr}</span>
       <span
         style={_isBMIProblematic({ bmi: vitals[0]?.bmi }) ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
@@ -80,7 +80,7 @@ export const VitalsPopup = ({ vitals, definition, ...props }) => {
                     <span>{DateHelpers.convertToDateTime(entry.date).toFormat('MM/dd/yy')}</span>
                     {processedRows.map(row => {
                       if (row.name === 'bp') {
-                        const { bloodPressureSystolic: sys, bloodPressureDiastolic: dia } = entry;
+                        const { sbp: sys, dbp: dia } = entry;
                         if (sys == null && dia == null) return <br key={row.name} />;
                         return <span key={row.name}>{sys ?? 'x'} / {dia ?? 'x'}</span>;
                       }
@@ -100,7 +100,7 @@ export const VitalsPopup = ({ vitals, definition, ...props }) => {
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
   const [flowsheets] = useEncounter().flowsheets()
-  const [documents] = useEncounter().documents()
+
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
   const [flowsheetDefs] = useDatabase().flowsheets()
@@ -385,29 +385,28 @@ export const SidebarClinicalImpressions = () => {
 export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
   const [flowsheets] = useEncounter().flowsheets();
-  const [documents] = useEncounter().documents();
+  const [labs] = useEncounter().labs();
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
   const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
-  const documents2 = filterDocuments(documents, conditionals, orders)
+  const labsFiltered = filterDocuments(labs, conditionals, orders)
 
   /** sort most recent to older */
   const _t = (x) => DateHelpers.convertToDateTime(x.date).toMillis()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
-  const _t2 = (x) => DateHelpers.convertToDateTime(x.data["Date/Time"]).toMillis()
-  const labs = documents2
-    .filter(d => d.kind === "Lab")
+  const _t2 = (x) => DateHelpers.convertToDateTime(x["date"]).toMillis()
+  const wbcLabs = labsFiltered
     .toSorted((a, b) => _t2(b) - _t2(a))
-    .flatMap(d => d.labResults)
-    .filter(x => x.name === "WBC")
-    .map(x => x.value > x.high)
+    .flatMap(d => d.components)
+    .filter(x => x?.name === "WBC")
+    .map(x => x?.value > x?.high)
     .filter(x => x)
 
   // SIRS criteria (4/4): T > 38, HR > 100, RR > 22, WBC > 11
-  const isSepsis = (allVitals[0]?.respiratoryRate > 22) && (allVitals[0]?.heartRate > 100) && (allVitals[0]?.temperature > 38) && (labs.length > 0)
+  const isSepsis = (allVitals[0]?.rr > 22) && (allVitals[0]?.hr > 100) && (allVitals[0]?.temp > 38) && (wbcLabs.length > 0)
 
   return isSepsis ?
     <Alert

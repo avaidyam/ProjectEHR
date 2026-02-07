@@ -31,30 +31,26 @@ export default function PapTracking() {
   const [encounter] = useEncounter()();
   const [reviewed, setReviewed] = useState(false);
 
-  // Search for Pap tests in the encounter documents
+  // Search for Pap tests in the encounter labs
   const papTests = useMemo(() => {
-    if (!encounter?.documents) return [];
-    
-    return encounter.documents.filter(doc => {
-      // Check if it's a Lab document with Pap test
-      if (doc.kind === 'Lab' && doc.data?.Test) {
-        return doc.data.Test.toLowerCase().includes('pap');
+    // Collect potential labs from relevant categories
+    const labs = (encounter?.labs || []);
+
+    if (labs.length === 0) return [];
+
+    return labs.filter(doc => {
+      // Check if it's a Lab result with Pap test
+      if (doc.Test) {
+        return doc.Test.toLowerCase().includes('pap');
       }
-      
-      // Check for Pap mentions in other document types
-      if (doc.data?.content) {
-        return doc.data.content.toLowerCase().includes('pap smear') || 
-               doc.data.content.toLowerCase().includes('pap test');
-      }
-      
       return false;
     });
-  }, [encounter?.documents]);
+  }, [encounter?.labs, encounter?.notes, encounter?.scanDocs, encounter?.others]);
 
   // Calculate next Pap due date (typically 3 years from last normal Pap)
   const getNextPapDue = (lastPapDate) => {
     if (!lastPapDate) return null;
-    
+
     try {
       const lastDate = new Date(lastPapDate);
       const nextDate = new Date(lastDate);
@@ -76,10 +72,10 @@ export default function PapTracking() {
         <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
           Pap Tracking
         </Label>
-        
+
         <SectionPaper>
           <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
-            <Label variant="body1">No Pap test results found in documents.</Label>
+            <Label variant="body1">No Pap test results found in results.</Label>
           </Box>
         </SectionPaper>
 
@@ -108,11 +104,11 @@ export default function PapTracking() {
         <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#1976d2' }}>
           Cervical Cancer Screening History - Results and Follow-ups
         </Label>
-        
+
         {papTests.map((papTest, index) => {
           const isLab = papTest.kind === 'Lab';
-          const testData = papTest.data;
-          
+          const testData = papTest;
+
           return (
             <ResultItem key={index}>
               {/* Exam Date and All Results */}
@@ -123,10 +119,10 @@ export default function PapTracking() {
                   </Label>
                   <br />
                   <Label variant="body2">
-                    {isLab ? papTest.collected?.split(' ')[0] || testData['Date/Time']?.split(' ')[0] : testData.encDate}
+                    {isLab ? papTest.collected?.split(' ')[0] || testData['date']?.split(' ')[0] : testData.encDate}
                   </Label>
                 </Box>
-                
+
                 <Box sx={{ textAlign: 'right' }}>
                   <Label variant="subtitle2" sx={{ fontWeight: 'bold' }}>
                     All results:
@@ -144,15 +140,15 @@ export default function PapTracking() {
                   Test and Procedures:
                 </Label>
                 <br />
-                
+
                 <Box sx={{ ml: 2, mt: 1 }}>
                   {isLab ? (
-                    // For Lab documents, show simple summary
+                    // For Lab results, show simple summary
                     <Label variant="body2">
                       {testData.summary || 'Annual Pap smear and mammogram both normal.'}
                     </Label>
                   ) : (
-                    // For other documents, extract summary from content
+                    // For other results, extract summary from content
                     <Label variant="body2">
                       {testData.summary || 'Pap test performed'}
                     </Label>
@@ -171,7 +167,7 @@ export default function PapTracking() {
                     Pap in 3 years due {getNextPapDue(isLab ? papTest.collected : testData.encDate) || '4/2/2027'}
                   </Label>
                 </Box>
-                
+
                 <Box sx={{ textAlign: 'right' }}>
                   <Label variant="subtitle2" sx={{ fontWeight: 'bold' }}>
                     Provider Responsible for Follow-ups:
@@ -184,10 +180,10 @@ export default function PapTracking() {
               </Box>
 
               {/* Lab report comment if available */}
-              {isLab && papTest.labReportComment && (
+              {isLab && papTest.comment && (
                 <Box sx={{ mt: 2, p: 1, backgroundColor: '#f0f7ff', borderRadius: 1, fontStyle: 'italic' }}>
                   <Label variant="body2">
-                    {papTest.labReportComment}
+                    {papTest.comment}
                   </Label>
                 </Box>
               )}

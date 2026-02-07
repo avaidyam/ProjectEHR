@@ -11,25 +11,25 @@ const categories = {
     title: "New Order",
     color: '#19852F',
     status: 'signed'
-  }, 
+  },
   "Modify": {
     icon: "edit_document",
     title: "Orders to Modify",
     color: '#E0A830',
     status: 'signed'
-  }, 
+  },
   "Hold": {
     icon: "edit_document",
     title: "Orders to Hold",
     color: '#7e57c2',
     status: 'held'
-  }, 
+  },
   "Discontinue": {
     icon: "content_paste_off",
     title: "Orders to Discontinue",
     color: '#CF3935',
     status: 'discontinued'
-  }, 
+  },
   "Pend": { // previously "Orders To Be Signed"
     icon: "content_paste",
     title: "Signed This Visit",
@@ -55,17 +55,24 @@ export const OrderCart = () => {
   // eslint-disable-next-line dot-notation
   const [orderList, setOrderList] = useEncounter().orders([])
   const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
-  
-  const [value, setValue] = useState('')
+
+  const inputRef = React.useRef(null)
+  const [searchTerm, setSearchTerm] = useState('')
   const [openSearchList, setOpenSearchList] = useState(null)
   const [openOrder, setOpenOrder] = useState(null)
-  
+
+  const startSearch = () => {
+    setSearchTerm(inputRef.current.value)
+    inputRef.current.value = ''
+    setOpenSearchList(true)
+  }
+
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
         <Card sx={{ m: 1, p: 1 }}>
           <Box>
-            <ButtonGroup sx={{ whiteSpace: 'nowrap'}} size="small">
+            <ButtonGroup sx={{ whiteSpace: 'nowrap' }} size="small">
               <Button>Manage Orders</Button>
               <Button>Order Sets</Button>
             </ButtonGroup>
@@ -87,14 +94,13 @@ export const OrderCart = () => {
                 size="small"
                 sx={{ minWidth: 300 }}
                 variant="outlined"
-                value={value}
-                onChange={(x) => setValue(x.target.value)}
+                inputRef={inputRef}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter')
-                    setOpenSearchList(true)
+                    startSearch()
                 }}
               />
-              <Button variant="outlined" onClick={() => { setOpenSearchList(true) }}>
+              <Button variant="outlined" onClick={startSearch}>
                 <Icon color="success">add</Icon> New
               </Button>
             </Box>
@@ -113,7 +119,7 @@ export const OrderCart = () => {
         {Object.keys(categories).filter(category => orderCart.filter((x) => getCategoryForOrder(x) === category).length > 0).map(category => (
           <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
             {orderCart.filter((x) => getCategoryForOrder(x) === category).map((order) => (
-              <Box key={order.name} sx={{ marginLeft:3, marginBottom:2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
+              <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
                 <Typography variant="body1">{order.name}</Typography>
                 <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
                   {order['Dose']}
@@ -122,20 +128,20 @@ export const OrderCart = () => {
                   {order['Route']}, {order['Frequency']}, {order['Refills']} refills
                 </Typography>
                 <Button
-                  sx={{ 
+                  sx={{
                     display: 'flex',
                     justifyContent: 'right',
                     padding: 0,
                     minWidth: 'auto',
                     border: '1px solid',
                     borderColor: 'black'
-                  }}  
+                  }}
                   onClick={() => setOrderCart(prev => prev.filter(x => x !== order))}
-                > 
-                  <Icon 
-                    sx={{ 
-                      fontSize: '10pt', 
-                      color: 'black' 
+                >
+                  <Icon
+                    sx={{
+                      fontSize: '10pt',
+                      color: 'black'
                     }}
                   >
                     close
@@ -145,7 +151,7 @@ export const OrderCart = () => {
             ))}
           </TitledCard>
         ))}
-        <Box sx={{p: 1}}>
+        <Box sx={{ p: 1 }}>
           <Button variant="outlined" color="error" onClick={() => {
             setOrderCart([])
           }}>
@@ -167,11 +173,16 @@ export const OrderCart = () => {
         </Box>
       </Box>
       {!!openSearchList &&
-        <OrderPicker open={openSearchList} searchTerm={value} onSelect={(item) => {
+        <OrderPicker open={openSearchList} searchTerm={searchTerm} onSelect={(item) => {
           setOpenSearchList(null)
-          setValue(null)
-          if (item !== null)
-            setOpenOrder(item)
+          if (item !== null) {
+            if (Array.isArray(item)) {
+              const newItems = item.map(x => ({ ...x, id: x.id || crypto.randomUUID(), name: x.originalName || x.name, Dose: x.dose || x.Dose, Route: x.route || x.Route, Frequency: x.frequency || x.Frequency }))
+              setOrderCart(prev => prev.upsert(newItems, "id"))
+            } else {
+              setOpenOrder(item)
+            }
+          }
         }} />
       }
       {!!openOrder &&
