@@ -227,17 +227,15 @@ export default function Chat() {
       const pass = window.prompt("Enter password to unlock Model Config:");
       if (pass === "config") {
         setConfigUnlocked(true);
-        setTab("modelConfig");
+        setSettingsOpen(true);
       } else {
         alert("Incorrect password.");
         return;
       }
     } else {
-      setTab(newValue);
+      setSettingsOpen(true);
     }
   };
-
-  // console.dir(fullPrompt)
 
   return (
     <GeminiAPIProvider
@@ -295,7 +293,7 @@ export default function Chat() {
         flexDirection: "column",
       }}>
         <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
-          <VoicePanel onSettings={() => setSettingsOpen(true)} />
+          <VoicePanel onSettings={() => handleTabChange(null, "modelConfig")} />
         </Box>
       </Box>
       <Window
