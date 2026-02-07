@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Box, IconButton, Icon } from "components/ui/Core";
+import { Box, IconButton, Icon, Window } from "components/ui/Core";
 import { GeminiAPIProvider } from "./utils/GeminiAPI";
 import VoicePanel from "./components/VoicePanel";
 import ModelConfig from "./components/ModelConfig";
@@ -15,6 +15,7 @@ export default function Chat() {
   const [tab, setTab] = useState("voice");
   const [configUnlocked, setConfigUnlocked] = useState(false);
   const [voiceName, setVoiceName] = useState("Charon");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
@@ -293,48 +294,19 @@ export default function Chat() {
         display: "flex",
         flexDirection: "column",
       }}>
-        <Box sx={{
-          height: 48,
-          flexShrink: 0,
-          display: "flex",
-          alignItems: "center",
-          px: 2,
-          justifyContent: "flex-end"
-        }}>
-          <IconButton
-            onClick={() => handleTabChange(null, tab === "modelConfig" ? "voice" : "modelConfig")}
-          >
-            <Icon>settings</Icon>
-          </IconButton>
-        </Box>
-
-        {/* Content Area */}
         <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
-          {tab === "voice" ? (
-            <VoicePanel />
-          ) : (
-            <Box sx={{ height: '100%', overflow: 'hidden' }}>
-              {configUnlocked ? (
-                <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
-              ) : (
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "gray",
-                    fontStyle: "italic",
-                    p: 4,
-                  }}
-                >
-                  🔒 Model Config is locked.
-                </Box>
-              )}
-            </Box>
-          )}
+          <VoicePanel onSettings={() => setSettingsOpen(true)} />
         </Box>
       </Box>
+      <Window
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="Model Configuration"
+        maxWidth="md"
+        fullWidth
+      >
+        <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
+      </Window>
     </GeminiAPIProvider>
   );
 }

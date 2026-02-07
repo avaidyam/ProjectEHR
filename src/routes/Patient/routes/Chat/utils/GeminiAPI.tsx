@@ -24,10 +24,10 @@ const difference = (arrayA: any[], arrayB: any[]) => arrayA.filter((x) => !array
 
 const GeminiAPIContext = createContext<UseGeminiAPIResults | undefined>(undefined);
 
-export type LiveClientOptions = GoogleGenAIOptions & { 
-  apiKey: string, 
+export type LiveClientOptions = GoogleGenAIOptions & {
+  apiKey: string,
   model: string,
-  config: LiveConnectConfig 
+  config: LiveConnectConfig
 };
 
 export type UseMediaStreamResult = {
@@ -44,10 +44,10 @@ export type StreamingLog = {
   type: string;
   count?: number;
   message:
-    | string
-    | ClientContentLog
-    | Omit<LiveServerMessage, "text" | "data">
-    | LiveClientToolResponse;
+  | string
+  | ClientContentLog
+  | Omit<LiveServerMessage, "text" | "data">
+  | LiveClientToolResponse;
 };
 
 export type ClientContentLog = {
@@ -72,6 +72,7 @@ export type UseGeminiAPIResults = {
   volume: number;
   sendMessage: (message: string) => Promise<string>;
   getHistory: () => any[];
+  setSpeakerDevice: (deviceId: string) => Promise<void>;
 };
 
 export const GeminiAPIProvider: FC<GeminiAPIProviderProps> = ({
@@ -177,6 +178,10 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     return client?.history ?? []
   }, [client, config, model])
 
+  const setSpeakerDevice = useCallback(async (deviceId: string) => {
+    await audioStreamerRef.current?.setSinkId(deviceId);
+  }, []);
+
   return {
     client,
     config,
@@ -188,7 +193,8 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     disconnect,
     volume,
     sendMessage,
-    getHistory
+    getHistory,
+    setSpeakerDevice
   };
 }
 
@@ -426,10 +432,10 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
       hasAudio && hasVideo
         ? "audio + video"
         : hasAudio
-        ? "audio"
-        : hasVideo
-        ? "video"
-        : "unknown";
+          ? "audio"
+          : hasVideo
+            ? "video"
+            : "unknown";
     this.log(`client.realtimeInput`, message);
   }
 
