@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { Paper, Box, TextField, Button, Typography, Stack } from "@mui/material";
 import { useGeminiAPIContext } from "../utils/GeminiAPI";
 
-
 export default function ChatPanel() {
-  const { sendMessage, getHistory } =
-    useGeminiAPIContext();
-
+  const { sendMessage, getHistory } = useGeminiAPIContext();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -16,11 +13,11 @@ export default function ChatPanel() {
     setMessages([...messages, { role: "user", parts: [{ text: input }] }]);
     setLoading(true);
     try {
-      const response = await sendMessage(input)
+      await sendMessage(input)
       setMessages(getHistory())
     } catch (error) {
       console.error("LLM error:", error);
-      setMessages([...updatedMessages, {
+      setMessages(prev => [...prev, {
         role: "assistant",
         parts: [{ text: "(Error fetching response)" }],
       }]);
@@ -31,67 +28,53 @@ export default function ChatPanel() {
   };
 
   return (
-    <Box>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 2,
-          mb: 2,
-          height: 400,
-          overflowY: "auto",
-          bgcolor: "background.paper",
-        }}
-      >
-        <Stack spacing={1}>
-          {messages.map((msg, i) => {
-            const isUser = msg.role === "user";
-            return (
-              <Box
-                key={i}
-                display="flex"
-                justifyContent={isUser ? "flex-end" : "flex-start"}
+    <Stack spacing={2} sx={{ height: '100%' }}>
+      <Paper variant="outlined" sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+        <Stack spacing={1.5}>
+          {messages.map((msg, i) => (
+            <Box key={i} display="flex" justifyContent={msg.role === "user" ? "flex-end" : "flex-start"}>
+              <Typography
+                sx={{
+                  bgcolor: msg.role === "user" ? "primary.main" : "secondary.main",
+                  color: "white",
+                  px: 2,
+                  py: 1,
+                  borderRadius: 2,
+                  maxWidth: "85%",
+                  wordBreak: "break-word",
+                  fontSize: '0.9rem'
+                }}
               >
-                <Typography
-                  sx={{
-                    bgcolor: isUser ? "primary.main" : "secondary.main",
-                    color: isUser
-                      ? "primary.contrastText"
-                      : "secondary.contrastText",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 2,
-                    maxWidth: "75%",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {msg.parts.map(x => x.text).join("\n")}
-                </Typography>
-              </Box>
-            );
-          })}
+                {msg.parts.map(x => x.text).join("\n")}
+              </Typography>
+            </Box>
+          ))}
         </Stack>
       </Paper>
-
-      <Box display="flex" gap={1}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Ask the patient..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage2()}
-          disabled={loading}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={sendMessage2}
-          disabled={loading}
-        >
-          {loading ? "..." : "Send"}
-        </Button>
-      </Box>
-    </Box>
+      <TextField
+        fullWidth
+        size="small"
+        variant="outlined"
+        placeholder="Ask the patient..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && sendMessage2()}
+        disabled={loading}
+        slotProps={{
+          input: {
+            endAdornment: (
+              <Button
+                color="primary"
+                onClick={sendMessage2}
+                disabled={loading}
+              >
+                {loading ? "..." : "Send"}
+              </Button>
+            )
+          }
+        }}
+      />
+    </Stack>
   );
 }
 

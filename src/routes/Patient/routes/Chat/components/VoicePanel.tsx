@@ -4,9 +4,11 @@ import { Icon, Box, Label, Button, Divider } from 'components/ui/Core';
 import { usePatient } from "components/contexts/PatientContext.jsx";
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
+import ChatPanel from './ChatPanel';
 
 function VoicePanel({ onSettings }: { onSettings: () => void }) {
   const [inVolume, setInVolume] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -19,7 +21,6 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
   const firstName = chart?.[0]?.firstName;
   const lastName = chart?.[0]?.lastName;
   const avatarUrl = chart?.[0]?.avatarUrl;
-  const mrn = chart?.[0]?.id;
 
   const fullName =
     [firstName, lastName].filter(Boolean).join(' ') || 'Patient';
@@ -36,18 +37,18 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
   const [selectedSpeakerId, setSelectedSpeakerId] = useState('');
 
   useEffect(() => {
-    audioRecorder.getDevices('audioinput').then((devices) => {
+    audioRecorder.getDevices('audioinput').then((devices: MediaDeviceInfo[]) => {
       setAudioDevices(devices);
       if (devices.length > 0 && !selectedDeviceId) {
-        const defaultDevice = devices.find(d => d.deviceId === 'default');
+        const defaultDevice = devices.find((d: MediaDeviceInfo) => d.deviceId === 'default');
         setSelectedDeviceId(defaultDevice ? defaultDevice.deviceId : devices[0].deviceId);
       }
     });
 
-    audioRecorder.getDevices('audiooutput').then((devices) => {
+    audioRecorder.getDevices('audiooutput').then((devices: MediaDeviceInfo[]) => {
       setSpeakerDevices(devices);
       if (devices.length > 0 && !selectedSpeakerId) {
-        const defaultDevice = devices.find(d => d.deviceId === 'default');
+        const defaultDevice = devices.find((d: MediaDeviceInfo) => d.deviceId === 'default');
         setSelectedSpeakerId(defaultDevice ? defaultDevice.deviceId : devices[0].deviceId);
       }
     });
@@ -97,13 +98,14 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', overflow: 'hidden' }}>
-      <Box component="main" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 3, gap: 2 }}>
         <Grow in={connected} timeout={connected ? 300 : 500} unmountOnExit>
           <Box
             sx={{
               position: 'relative',
               width: '100%',
-              height: '100%',
+              minHeight: 160,
+              height: chatOpen ? '20%' : '100%',
               maxWidth: 1200,
               borderRadius: 4, // 16px
               bgcolor: 'primary.dark',
@@ -112,31 +114,47 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-              visibility: renderProfile ? 'visible' : 'hidden'
+              transition: 'all 0.3s ease-out',
+              visibility: renderProfile ? 'visible' : 'hidden',
+              flexShrink: 0
             }}
           >
-            <Avatar
-              src={avatarUrl || undefined}
-              alt={fullName}
-              sx={{
-                width: 120,
-                height: 120,
-                fontSize: 40,
-                outlineOffset: '4px',
-                transition: 'outline 0.1s ease-out, box-shadow 0.1s ease-out',
-                outline: volume > 0.01 ? `10px solid rgba(255, 255, 255, ${0.4 + volume})` : '0px solid transparent',
-                boxShadow: volume > 0.01 ? `0 0 ${15 + volume * 80}px rgba(255, 255, 255, ${0.2 + volume * 30})` : 'none',
-              }}
-            >
-              {initials}
-            </Avatar>
-            <Label variant="overline" sx={{ position: 'absolute', bottom: 16, left: 16, px: 1, borderRadius: 1 }}>{fullName}</Label>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+              <Avatar
+                src={avatarUrl || undefined}
+                alt={fullName}
+                sx={{
+                  width: 120,
+                  height: 120,
+                  fontSize: 40,
+                  outlineOffset: '4px',
+                  transition: 'all 0.3s ease-out',
+                  outline: volume > 0.01 ? `10px solid rgba(255, 255, 255, ${0.4 + volume})` : '0px solid transparent',
+                  boxShadow: volume > 0.01 ? `0 0 ${15 + volume * 80}px rgba(255, 255, 255, ${0.2 + volume * 30})` : 'none',
+                }}
+              >
+                {initials}
+              </Avatar>
+              <Label variant="overline" sx={{
+                color: 'white',
+                position: 'absolute',
+                bottom: 16,
+                left: 16,
+                px: 1,
+                borderRadius: 1
+              }}>{fullName}</Label>
+            </Box>
             <Icon avatar avatarProps={{ sx: { position: 'absolute', top: 16, right: 16, bgcolor: '#ffffff15' } }}>mic</Icon>
           </Box>
         </Grow>
         {!renderProfile && (
           <Label variant="overline">Press the call button to start a call</Label>
         )}
+        <Grow in={chatOpen} unmountOnExit>
+          <Box sx={{ flex: 1, width: '100%', maxWidth: 1200, minHeight: 0 }}>
+            <ChatPanel />
+          </Box>
+        </Grow>
       </Box>
       <Box component="section" sx={{ height: 80, width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 3 }}>
         <Box sx={{ flexGrow: 1 }} />
@@ -164,9 +182,9 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
             </Button>
           </ButtonGroup>
           <Button
-            variant="outlined"
+            variant={chatOpen ? "contained" : "outlined"}
             size="large"
-            disabled
+            onClick={() => setChatOpen(!chatOpen)}
             sx={{ borderRadius: "999px" }}
           >
             <Icon>chat</Icon>
