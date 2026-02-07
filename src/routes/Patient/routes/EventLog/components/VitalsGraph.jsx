@@ -3,10 +3,11 @@ import { Box, Stack, Button } from '@mui/material';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 const VITALS_CONFIG = [
-  { key: 'hr', label: 'HR', color: '#ff5722' },
-  { key: 'sbp', label: 'SBP', color: '#e91e63' },
-  { key: 'dbp', label: 'DBP', color: '#9c27b0' },
-  { key: 'temp', label: 'Temp', color: '#2196f3' },
+  { key: 'temp', label: 'Temp', color: '#ff5722' },
+  { key: 'hr', label: 'HR', color: '#f822ffff' },
+  { key: 'sbp', label: 'SBP', color: '#2196f3' },
+  { key: 'dbp', label: 'DBP', color: '#2196f3' },
+  { key: 'rr', label: 'RR', color: '#4caf50' },
   { key: 'spo2', label: 'SpO2', color: '#4caf50' },
 ];
 

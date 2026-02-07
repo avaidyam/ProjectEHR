@@ -126,27 +126,15 @@ export const EventLog = () => {
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = useMemo(() => {
-    // Expected: [{ time: Date, hr: number, bpSys: number, bpDia: number, temp: number, spo2: number }]
-    // flowsheets data: [{ date: string, bp: "120/80", hr: 72, temp: 37, spo2: 98 }]
-
-    return (flowsheets || []).map(entry => {
-      let bpSys = null;
-      let bpDia = null;
-      if (entry.bp && entry.bp.includes('/')) {
-        const parts = entry.bp.split('/');
-        bpSys = parseInt(parts[0], 10);
-        bpDia = parseInt(parts[1], 10);
-      }
-
-      return {
-        time: new Date(entry.date),
-        hr: entry.hr ? parseFloat(entry.hr) : null,
-        temp: entry.temp ? parseFloat(entry.temp) : null,
-        spo2: entry.spo2 ? parseFloat(entry.spo2) : null,
-        bpSys,
-        bpDia
-      };
-    }).sort((a, b) => a.time - b.time);
+    return (flowsheets || []).map(entry => ({
+      time: new Date(entry.date),
+      temp: entry.temp,
+      hr: entry.hr,
+      sbp: entry.sbp,
+      dbp: entry.dbp,
+      rr: entry.rr,
+      spo2: entry.spo2,
+    })).sort((a, b) => a.time - b.time);
   }, [flowsheets]);
 
   const filteredEvents = events.filter(e => {
