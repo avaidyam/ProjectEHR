@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { Box, Drawer, IconButton, useTheme, useMediaQuery } from '@mui/material'
+import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
 import { Icon } from 'components/ui/Core.jsx';
 import { SplitView } from 'components/ui/SplitView.jsx';
 import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext.jsx';
-import DiagnosesSearchModal from 'components/ui/diagnosis-modal/Modal.jsx';
 
 import { Storyboard } from './components/Storyboard.jsx'
 import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
@@ -12,6 +11,8 @@ import SnapshotTabContent from './routes/Snapshot/Snapshot.jsx'
 import NotesTabContent from './routes/NoteWriter/NoteWriter.jsx'
 import HistoryTabContent from './routes/History/History.jsx'
 import { OrderCart } from './routes/OrderCart/OrderCart.jsx';
+import { OrderPicker } from './routes/OrderCart/components/OrderPicker.jsx';
+import { DiagnosisPicker } from './routes/ProblemList/components/DiagnosisPicker.jsx';
 import OrdersMgmt from './routes/OrdersManagement/OrdersManagement.jsx';
 import Medications from './routes/Medications/Medications.jsx';
 import ResultsReview from "./routes/Results/Results.jsx";
@@ -19,15 +20,18 @@ import Pdmp from './routes/PDMP/PDMP.jsx';
 import Immunizations from './routes/Immunizations/Immunizations.jsx';
 import { Allergies } from './routes/Allergies/Allergies.jsx';
 import Chat from "./routes/Chat/Chat.jsx";
-import LabReport from './routes/LabReport/LabReport.jsx';
-import ImagingViewer from './routes/ImagingViewer/ImagingViewer.jsx';
+import ReportViewer from './routes/ReportViewer/ReportViewer.jsx';
+import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 import Handoff from './routes/Handoff/Handoff.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
-import BottomBar from './components/BottomBar.jsx';
 import { EncounterAlert } from './components/EncounterAlert.jsx'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
+import EditNote from './routes/EditNote/EditNote.jsx';
+import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk.jsx';
+import { EditResult } from './routes/EditResult/EditResult.jsx';
+import { EventLog } from './routes/EventLog/EventLog.jsx';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -46,18 +50,26 @@ const ALL_TABS = {
   "Allergies": (props) => <Allergies {...props} />,
   "Demographics": (props) => <Demographics {...props} />,
   "Chat": (props) => <Chat {...props} />,
-  "Lab Report": (props) => <LabReport {...props} />,
+  "Report": (props) => <ReportViewer {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
   "Flowsheet": (props) => <Flowsheet {...props} />,
+  "Edit Note": (props) => <EditNote {...props} />,
+  "Appointment Desk": (props) => <AppointmentDesk {...props} />,
+  "Edit Result": (props) => <EditResult {...props} />,
+  "Event Log": (props) => <EventLog {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
   { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
-  { "NoteWriter": {} }, { "Results Review": {} }, { "Immunizations": {} },
-  { "Allergies": {} }, { "Demographics": {} }, { "PDMP": {} },
-  { "Flowsheet": {} }
+  { "Results Review": {} },
+]
+
+const OVERFLOW_MENU_TABS = [
+  { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
+  { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
+  { "Event Log": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
@@ -70,7 +82,8 @@ export const Patient = ({ ...props }) => {
 
   const drawerWidth = 250
   const [storyboardOpen, setStoryboardOpen] = useState(true)
-  const [isDxModalOpen, setIsDxModalOpen] = useState(false)
+  const [isOrderPickerOpen, setIsOrderPickerOpen] = useState(false)
+  const [isDiagnosisPickerOpen, setIsDiagnosisPickerOpen] = useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
@@ -104,6 +117,7 @@ export const Patient = ({ ...props }) => {
             <SplitView
               defaultMainTabs={DEFAULT_MAIN_TABS}
               defaultSideTabs={DEFAULT_SIDE_TABS}
+              overflowMenuTabs={OVERFLOW_MENU_TABS}
               tabsDirectory={ALL_TABS}
               accessories={
                 <IconButton
@@ -116,19 +130,60 @@ export const Patient = ({ ...props }) => {
                 </IconButton>
               } />
           </Box>
-          <BottomBar
-            onAddOrder={() => console.log('Add order clicked')}
-            onAddDx={() => setIsDxModalOpen(true)}
-            onSignEncounter={() => console.log('Sign encounter clicked')}
-          />
+          <Box
+            sx={{
+              borderTop: 1,
+              borderColor: 'divider'
+            }}
+          >
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              px={2}
+              py={1}
+            >
+              <Box display="flex" gap={1}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<Icon>add</Icon>}
+                  onClick={() => setIsOrderPickerOpen(true)}
+                >
+                  Add order
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Icon>add</Icon>}
+                  onClick={() => setIsDiagnosisPickerOpen(true)}
+                >
+                  Add Dx
+                </Button>
+              </Box>
+              <Box>
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<Icon>check_circle</Icon>}
+                  disabled
+                  onClick={() => console.log('Sign encounter clicked')}
+                >
+                  Sign encounter
+                </Button>
+              </Box>
+            </Box>
+          </Box>
           <EncounterAlert />
         </Box>
       </Box>
-
-      {/* Diagnosis Search Modal */}
-      <DiagnosesSearchModal
-        open={isDxModalOpen}
-        onClose={() => setIsDxModalOpen(false)}
+      <OrderPicker
+        open={isOrderPickerOpen}
+        onSelect={() => setIsOrderPickerOpen(false)}
+      />
+      <DiagnosisPicker
+        open={isDiagnosisPickerOpen}
+        onSelect={() => setIsDiagnosisPickerOpen(false)}
       />
     </PatientProvider>
   )

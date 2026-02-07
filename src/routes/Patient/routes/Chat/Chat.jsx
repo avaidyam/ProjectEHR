@@ -42,7 +42,7 @@ export default function Chat() {
 
   // Other encounter-sourced data
   const {
-    documents,
+    notes,
     history,
     medications,
     allergies,
@@ -62,13 +62,12 @@ export default function Chat() {
     console.log("🎤 Active voice:", voiceName);
   }, [voiceName]);
 
-
   // Notes
-  const hpiNote = (documents || []).find(
-    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'History of Present Illness'
+  const hpiNote = (notes || []).find(
+    (doc) => doc?.summary === 'History of Present Illness'
   );
-  const rosNote = (documents || []).find(
-    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Review of Systems'
+  const rosNote = (notes || []).find(
+    (doc) => doc?.summary === 'Review of Systems'
   );
 
   // Histories
@@ -91,7 +90,7 @@ export default function Chat() {
 
     // HPI
     text += "### History of Present Illness\n";
-    text += hpiNote?.data?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
+    text += hpiNote?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
     text += "\n\n";
 
     // Add patient perspective + custom prompt (from smartData)
@@ -110,7 +109,7 @@ export default function Chat() {
 
     // ROS (</p> & <br> → newline, strip rest)
     text += "### Review of Systems\n";
-    text += rosNote?.data?.content
+    text += rosNote?.content
       ?.replace(/(<\/p\s*>|<br\s*\/?>)/gi, '\n')
       ?.replace(/<[^>]+>/g, '')
       ?.replace(/\n{2,}/g, '\n')

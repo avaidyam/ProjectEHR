@@ -29,7 +29,9 @@ import {
   DialogContent as MUIDialogContent,
   DialogContentText as MUIDialogContentText,
   DialogTitle as MUIDialogTitle,
-  Tab as MUITab
+  Tab as MUITab,
+  Menu as MUIMenu,
+  MenuItem as MUIMenuItem
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -41,7 +43,9 @@ import {
   DatePicker as MUIDatePicker
 } from '@mui/x-date-pickers-pro'
 import {
-  DataGridPremium as MUIDataGrid
+  DataGridPremium as MUIDataGrid,
+  useGridApiRef as MUIuseGridApiRef,
+  useKeepGroupedColumnsHidden as MUIuseKeepGroupedColumnsHidden
 } from '@mui/x-data-grid-premium'
 import {
   RichTreeViewPro as MUIRichTreeView,
@@ -337,7 +341,7 @@ export const DataGrid = ({ children, ...props }) => {
  title={<><Icon>token</Icon> Title</>}
  ```
  */
-export const TitledCard = ({ emphasized, title, color, children, ...props }) => {
+export const TitledCard = ({ emphasized, title, color, sx, toolbar, toolbarProps, boxProps, children, ...props }) => {
   return (
     <MUIPaper sx={{
       borderLeftWidth: 8,
@@ -350,7 +354,8 @@ export const TitledCard = ({ emphasized, title, color, children, ...props }) => 
       marginBottom: '8px',
       borderRadius: '8px',
       overflow: 'hidden',
-      position: 'relative'
+      position: 'relative',
+      ...sx
     }} {...props}>
       <Label
         bold={500}
@@ -360,12 +365,13 @@ export const TitledCard = ({ emphasized, title, color, children, ...props }) => 
           bgcolor: emphasized ? MUIalpha(color, 0.25) : "background.paper",
           color: emphasized ? color : "color.inherit",
           borderRadius: emphasized ? '0px 100em 100em 0px' : 0,
-          p: 0.5, pr: 2.5,
+          p: 0.5, pr: 2.5, mr: 1
         }}
       >
         {title}
       </Label>
-      <Box sx={{ p: 1 }}>{children}</Box>
+      <Box component="span" {...toolbarProps}>{toolbar}</Box>
+      <Box {...boxProps} sx={{ p: 1, ...(boxProps?.sx ?? {}) }}>{children}</Box>
     </MUIPaper>
   )
 }
@@ -436,3 +442,19 @@ export function useLazyEffect(effect, deps = [], wait = 250) {
       cleanUp.current instanceof Function ? cleanUp.current() : undefined
   }, [])
 }
+
+
+export const useGridApiRef = MUIuseGridApiRef
+export const useKeepGroupedColumnsHidden = MUIuseKeepGroupedColumnsHidden
+
+export const Menu = ({ children, ...props }) => (
+  <MUIMenu {...props}>
+    {children}
+  </MUIMenu>
+)
+
+export const MenuItem = ({ children, ...props }) => (
+  <MUIMenuItem {...props}>
+    {children}
+  </MUIMenuItem>
+)

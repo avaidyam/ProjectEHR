@@ -124,8 +124,6 @@ export const Flowsheet = () => {
         const flattenedEntries: FlowsheetEntry[] = [];
 
         groupData.forEach((d: any) => {
-            // d is { id, date, flowsheet, bp: 120, ... }
-            // activeGroup.rows has names like 'bloodPressureSystolic'
             activeGroup.rows.forEach((row: any) => {
                 const key = row.name;
                 if (d[key] !== undefined && d[key] !== null) {

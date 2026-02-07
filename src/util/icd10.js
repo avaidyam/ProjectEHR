@@ -1,11 +1,5 @@
 import icd10Data from '../util/data/icd10cm.json';
 
-console.log('ICD10 data loaded:', {
-    dataSize: Object.keys(icd10Data).length,
-    sampleKeys: Object.keys(icd10Data).slice(0, 5),
-    sampleValues: Object.values(icd10Data).slice(0, 5)
-});
-
 // ICD-10 Chapter structure based on standard classification
 export const ICD10_CHAPTERS = [
     {
@@ -153,17 +147,13 @@ const chapterCache = new Map();
 
 // Get a random sample of codes for a specific chapter (15-30 codes)
 export const getCodesForChapter = (chapterId) => {
-    console.log(`Getting codes for chapter: ${chapterId}`);
-
     // Return cached data if available
     if (chapterCache.has(chapterId)) {
-        console.log(`Returning cached data for ${chapterId}:`, chapterCache.get(chapterId).length, 'items');
         return chapterCache.get(chapterId);
     }
 
     const chapter = ICD10_CHAPTERS.find(c => c.id === chapterId);
     if (!chapter) {
-        console.log(`Chapter not found for ID: ${chapterId}`);
         return [];
     }
 
@@ -176,9 +166,6 @@ export const getCodesForChapter = (chapterId) => {
             term: name,
             source: 'ICD10'
         }));
-
-    console.log(`Found ${allCodes.length} codes for chapter ${chapterId} (${chapter.startCode}-${chapter.endCode})`);
-    console.log('Sample codes:', allCodes.slice(0, 3));
 
     // Randomly select 15-30 codes (more efficient random selection)
     const minCount = 15;
@@ -196,8 +183,6 @@ export const getCodesForChapter = (chapterId) => {
     }
 
     const result = shuffled.slice(0, targetCount);
-
-    console.log(`Returning ${result.length} random codes for chapter ${chapterId}`);
 
     // Cache the result
     chapterCache.set(chapterId, result);

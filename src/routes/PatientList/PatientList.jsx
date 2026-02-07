@@ -135,7 +135,7 @@ function PatientLists() {
 
         <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
           <ListsSidebar />
-          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: "80vh" }}>
             <PatientsTable />
           </Box>
         </Box>
