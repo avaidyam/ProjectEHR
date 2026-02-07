@@ -1,92 +1,191 @@
-import React, { useState } from 'react';
-import { Box, Stack, Button, Typography, Divider, ToggleButton, ToggleButtonGroup, TextField } from '@mui/material';
+import React, { useState, useMemo, useRef } from 'react';
+import { Box, Stack, Button, Typography, Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 import { Icon } from 'components/ui/Core';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
 import { CollapsiblePane } from './components/CollapsiblePane';
 
-// Mock Data Generation
-const generateMockEvents = () => {
-  const now = new Date();
+export const EventLog = () => {
+  const eventListRef = useRef(null);
+  const { useEncounter } = usePatient();
+  const [notes] = useEncounter().notes();
+  const [labs] = useEncounter().labs();
+  const [imaging] = useEncounter().imaging();
+  const [flowsheets] = useEncounter().flowsheets();
+  const [flowsheetDefs] = useDatabase().flowsheets();
+  const [providers] = useDatabase().providers();
 
-  const getRelativeDate = (hoursAgo = 0) => {
-    const d = new Date(now);
-    d.setHours(d.getHours() - hoursAgo);
-    return d.toISOString();
+  // Helper to look up provider name by ID
+  const getProviderName = (providerId) => {
+    const provider = (providers || []).find(p => p.id === providerId);
+    return provider ? provider.name : providerId;
   };
 
-  return [
-    {
-      id: 1,
-      category: 'results_lab',
-      title: 'CBC w/diff',
-      timestamp: getRelativeDate(0.5), // 30 mins ago
-      details: 'Final | Collected: ' + getRelativeDate(1.25),
-      tag: 'Abnormal',
-      subItems: [
-        { name: 'WBC', value: '6.08', unit: 'K/uL', history: [{ date: 'Yesterday', value: '5.9' }, { date: '2 days ago', value: '6.1' }] },
-        { name: 'RBC', value: '4.08', unit: 'M/uL', history: [{ date: 'Yesterday', value: '4.1' }, { date: '2 days ago', value: '4.0' }] },
-        { name: 'HGB', value: '11.6', unit: 'g/dL', history: [{ date: 'Yesterday', value: '11.8' }, { date: '2 days ago', value: '12.0' }] },
-      ]
-    },
-    {
-      id: 2,
-      category: 'flowsheets',
-      title: 'Vitals',
-      timestamp: getRelativeDate(1), // 1 hour ago
-      details: '',
-      subItems: [
-        { label: 'BP', value: '120/80' },
-        { label: 'HR', value: '72' },
-        { label: 'Temp', value: '37.0°C' },
-      ]
-    },
-    {
-      id: 3,
-      category: 'mar_scheduled',
-      title: 'Aspirin 81mg',
-      timestamp: getRelativeDate(2), // 2 hours ago
-      details: 'Given | Dose 81mg Oral',
-    },
-    {
-      id: 4,
-      category: 'notes',
-      title: 'Progress Note',
-      timestamp: getRelativeDate(2.5), // 2.5 hours ago
-      details: 'Signed | Service: Cardiology',
-    },
-    {
-      id: 5,
-      category: 'results_lab',
-      title: 'BMP',
-      timestamp: getRelativeDate(24), // Yesterday
-      details: 'Final | Collected: ' + getRelativeDate(25),
-      subItems: [
-        { name: 'Sodium', value: '138', unit: 'mmol/L', history: [{ date: '2 days ago', value: '139' }] },
-        { name: 'Potassium', value: '4.2', unit: 'mmol/L', history: [{ date: '2 days ago', value: '4.1' }] },
-      ]
-    }
-  ];
-};
-
-const MOCK_VITALS_DATA = [
-  { time: new Date('2024-04-21T08:00:00'), hr: 72, bpSys: 120, bpDia: 80, temp: 37.0, spo2: 98 },
-  { time: new Date('2024-04-21T09:00:00'), hr: 75, bpSys: 122, bpDia: 82, temp: 37.1, spo2: 97 },
-  { time: new Date('2024-04-21T10:00:00'), hr: 70, bpSys: 118, bpDia: 78, temp: 36.9, spo2: 99 },
-  { time: new Date('2024-04-21T11:00:00'), hr: 78, bpSys: 125, bpDia: 85, temp: 37.2, spo2: 96 },
-  { time: new Date('2024-04-21T12:00:00'), hr: 74, bpSys: 121, bpDia: 81, temp: 37.0, spo2: 98 },
-];
-
-export const EventLog = () => {
   const [selectedFilters, setSelectedFilters] = useState([
     'flowsheets', 'ldas', 'mar', 'mar_scheduled', 'mar_continuous', 'mar_prn',
     'narrator', 'notes', 'notes_staff_progress', 'patient_movement',
     'results', 'results_ekg', 'results_imaging', 'results_lab', 'transfusions'
   ]);
-  const [events] = useState(generateMockEvents());
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+
+  // Normalize Data
+  const events = useMemo(() => {
+    const allEvents = [];
+
+    // Process Labs
+    (labs || []).forEach(item => {
+      allEvents.push({
+        id: item.id || `lab - ${Math.random()} `,
+        category: 'results_lab',
+        title: item.test,
+        timestamp: item.date, // ISO string expected
+        details: `${item.status}`,
+        tag: item.abnormal ? 'Abnormal' : undefined,
+        author: getProviderName(item.provider) ?? "Unknown",
+        subItems: []
+      });
+    });
+
+    // Process Imaging
+    (imaging || []).forEach(item => {
+      allEvents.push({
+        id: item.id || `img - ${Math.random()} `,
+        category: 'results_imaging',
+        title: item.test,
+        timestamp: item.date,
+        details: `${item.status} | ${item.acuity ?? 'Normal'} `,
+        tag: item.abnormal ? 'Abnormal' : undefined,
+        author: getProviderName(item.provider) ?? "Unknown",
+        subItems: []
+      });
+    });
+
+    // Process Notes
+    (notes || []).forEach(item => {
+      allEvents.push({
+        id: item.id || `note - ${Math.random()} `,
+        category: 'notes',
+        title: item.summary,
+        timestamp: item.serviceDate,
+        details: `${item.status}`,
+        author: getProviderName(item.authorName) ?? "Unknown",
+        subItems: []
+      });
+    });
+
+    // Process Flowsheets (Vitals)
+    const flowsheetGroups = {};
+    (flowsheets || []).forEach(item => {
+      const timeKey = item.date;
+
+      // Look up group definition
+      const groupDef = (flowsheetDefs || []).find(g => g.id === item.flowsheet);
+      const groupName = groupDef ? groupDef.name : item.flowsheet;
+
+      if (!flowsheetGroups[timeKey]) {
+        flowsheetGroups[timeKey] = {
+          id: item.id,
+          category: 'flowsheets',
+          title: groupName,
+          timestamp: item.date,
+          details: '',
+          author: 'Nurse, RN',
+          subItems: []
+        };
+      }
+      Object.keys(item).forEach(key => {
+        if (['id', 'date', 'flowsheet'].includes(key)) return;
+        let rowLabel = key;
+        if (groupDef && groupDef.rows) {
+          const rowDef = groupDef.rows.find(r => r.name === key);
+          if (rowDef) rowLabel = rowDef.label;
+        }
+        flowsheetGroups[timeKey].subItems.push({
+          label: rowLabel,
+          value: item[key]
+        });
+      });
+    });
+
+    Object.values(flowsheetGroups).forEach(group => {
+      if (group.subItems.length > 0) {
+        allEvents.push(group);
+      }
+    });
+
+    return allEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }, [notes, labs, imaging, flowsheets, flowsheetDefs]);
+
+  // Transform Flowsheets for VitalsGraph
+  const vitalsGraphData = useMemo(() => {
+    // Expected: [{ time: Date, hr: number, bpSys: number, bpDia: number, temp: number, spo2: number }]
+    // flowsheets data: [{ date: string, bp: "120/80", hr: 72, temp: 37, spo2: 98 }]
+
+    return (flowsheets || []).map(entry => {
+      let bpSys = null;
+      let bpDia = null;
+      if (entry.bp && entry.bp.includes('/')) {
+        const parts = entry.bp.split('/');
+        bpSys = parseInt(parts[0], 10);
+        bpDia = parseInt(parts[1], 10);
+      }
+
+      return {
+        time: new Date(entry.date),
+        hr: entry.hr ? parseFloat(entry.hr) : null,
+        temp: entry.temp ? parseFloat(entry.temp) : null,
+        spo2: entry.spo2 ? parseFloat(entry.spo2) : null,
+        bpSys,
+        bpDia
+      };
+    }).sort((a, b) => a.time - b.time);
+  }, [flowsheets]);
 
   const filteredEvents = events.filter(e => selectedFilters.includes(e.category.toLowerCase()));
+
+  // Get available date keys from events for date picker
+  const availableDateKeys = useMemo(() => {
+    const dateSet = new Set();
+    filteredEvents.forEach(event => {
+      const date = new Date(event.timestamp);
+      if (!isNaN(date.getTime())) {
+        dateSet.add(date.toISOString().split('T')[0]);
+      }
+    });
+    return Array.from(dateSet).sort((a, b) => new Date(b) - new Date(a));
+  }, [filteredEvents]);
+
+  // Find closest available date and scroll to it
+  const handleDateChange = (newDate) => {
+    if (!newDate || !availableDateKeys.length) return;
+
+    // Convert dayjs to native Date if needed
+    const targetDate = newDate.toDate ? newDate.toDate() : new Date(newDate);
+    const targetTime = targetDate.getTime();
+    let closestDate = availableDateKeys[0];
+    let closestDiff = Math.abs(new Date(availableDateKeys[0]).getTime() - targetTime);
+
+    for (const dateKey of availableDateKeys) {
+      const diff = Math.abs(new Date(dateKey).getTime() - targetTime);
+      if (diff < closestDiff) {
+        closestDiff = diff;
+        closestDate = dateKey;
+      }
+    }
+
+    // Find and scroll to the date header element
+    const container = eventListRef.current;
+    if (container) {
+      const dateHeader = container.querySelector(`[data-date="${closestDate}"]`);
+      if (dateHeader) {
+        dateHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <Stack sx={{ height: '100%', bgcolor: 'background.default', overflow: 'hidden' }}>
@@ -112,21 +211,24 @@ export const EventLog = () => {
         <Divider orientation="vertical" flexItem variant="middle" />
         <Stack direction="row" alignItems="center" spacing={1}>
           <Typography variant="body2">Event Data:</Typography>
-          <TextField
-            disabled
-            variant="outlined"
-            size="small"
-            value={new Date().toLocaleDateString()}
-            sx={{ width: 120 }}
-            InputProps={{
-              endAdornment: <Icon sx={{ fontSize: 16, ml: 1 }}>calendar_today</Icon>,
+          <DatePicker
+            value={selectedDate}
+            slotProps={{
+              textField: { size: 'small', sx: { width: 150 } },
+            }}
+            onChange={(newDate) => {
+              setSelectedDate(newDate);
+              handleDateChange(newDate);
             }}
           />
           <Button
-            disabled
             variant="outlined"
             size="small"
             startIcon={<Icon>vertical_align_top</Icon>}
+            onClick={() => {
+              setSelectedDate(dayjs());
+              eventListRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           >
             Go to Now
           </Button>
@@ -163,12 +265,12 @@ export const EventLog = () => {
           />
         </CollapsiblePane>
         <Stack sx={{ flex: 1, overflow: 'hidden', p: 1 }}>
-          <Box sx={{ height: '100%', width: '100%', overflowY: 'auto', pr: 1 }}>
+          <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto', pr: 1 }}>
             <EventList events={filteredEvents} />
           </Box>
         </Stack>
-        <CollapsiblePane width={350} side="right">
-          <VitalsGraph data={MOCK_VITALS_DATA} />
+        <CollapsiblePane width={400} side="right">
+          <VitalsGraph data={vitalsGraphData} />
         </CollapsiblePane>
       </Stack>
     </Stack>

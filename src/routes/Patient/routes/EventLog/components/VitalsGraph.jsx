@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Box, Typography, Stack, Button } from '@mui/material';
+import { Box, Stack, Button } from '@mui/material';
 import { LineChart } from '@mui/x-charts/LineChart';
 
 const VITALS_CONFIG = [
   { key: 'hr', label: 'HR', color: '#ff5722' },
-  { key: 'bpSys', label: 'BP Sys', color: '#e91e63' },
-  { key: 'bpDia', label: 'BP Dia', color: '#9c27b0' },
+  { key: 'sbp', label: 'SBP', color: '#e91e63' },
+  { key: 'dbp', label: 'DBP', color: '#9c27b0' },
   { key: 'temp', label: 'Temp', color: '#2196f3' },
   { key: 'spo2', label: 'SpO2', color: '#4caf50' },
 ];
