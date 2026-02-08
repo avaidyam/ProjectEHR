@@ -16,6 +16,7 @@ export const EventLog = () => {
   const [labs] = useEncounter().labs();
   const [imaging] = useEncounter().imaging();
   const [flowsheets] = useEncounter().flowsheets();
+  const [orders] = useEncounter().orders();
   const [flowsheetDefs] = useDatabase().flowsheets();
   const [providers] = useDatabase().providers();
 
@@ -27,7 +28,7 @@ export const EventLog = () => {
 
   const [selectedFilters, setSelectedFilters] = useState([
     'flowsheets', 'ldas', 'mar', 'mar_scheduled', 'mar_continuous', 'mar_prn',
-    'narrator', 'notes', 'notes_staff', 'patient_movement',
+    'narrator', 'notes', 'notes_staff', 'orders', 'patient_movement',
     'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -121,8 +122,22 @@ export const EventLog = () => {
       }
     });
 
+    // Process Orders
+    (orders || []).forEach(item => {
+      allEvents.push({
+        id: item.id || `order - ${Math.random()}`,
+        category: 'orders',
+        title: `${item.name} | ${item.dose}`,
+        timestamp: item.date,
+        details: item.priority ?? "New Order",
+        author: getProviderName(item.provider) ?? "Unknown",
+        data: item,
+        subItems: []
+      });
+    });
+
     return allEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers]);
+  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers, orders]);
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = useMemo(() => {
@@ -261,8 +276,8 @@ export const EventLog = () => {
             onFilterChange={setSelectedFilters}
           />
         </CollapsiblePane>
-        <Stack sx={{ flex: 1, overflow: 'hidden', p: 1 }}>
-          <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto', pr: 1 }}>
+        <Stack sx={{ flex: 1, overflow: 'hidden' }}>
+          <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
             <EventList events={filteredEvents} />
           </Box>
         </Stack>

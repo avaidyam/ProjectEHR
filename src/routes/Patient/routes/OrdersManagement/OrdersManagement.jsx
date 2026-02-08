@@ -17,9 +17,9 @@ export default function OrdersMgmt() {
 
   const addOrder = (med, changeType) => {
     const item = { ...med }
-    if(changeType === "Modify")
+    if (changeType === "Modify")
       item.signedDate = Date.now()
-    if(changeType === "Hold")
+    if (changeType === "Hold")
       item.holdDate = Date.now()
     if (changeType === "Unhold") {
       item.holdDate = undefined
@@ -53,11 +53,11 @@ export default function OrdersMgmt() {
                   <Grid item xs={12} sm={3} align="left">
                     <Label variant="body2">
                       {!!order.holdDate && <Chip size="small" color="primary" sx={{ mr: 1 }}>HELD</Chip>}
-                      {order.name} {order['Dose']}
+                      {order.name} {order.dose}
                     </Label>
                   </Grid>
                   <Grid item xs={12} sm={5} align="left">
-                    <Label variant="body2">{order['Dose']}, {order['Route']}, {order['Frequency']}, started on {!!order['Start Date'] ? formatter.format(new Date(order['Start Date'])): ""}</Label>
+                    <Label variant="body2">{order.dose}, {order.route}, {order.frequency}, started on {!!order.date ? formatter.format(new Date(order.date)) : ""}</Label>
                   </Grid>
                   <Grid item xs={12} sm={4} align="right">
                     <ButtonGroup size="small" variant="outlined" onChange={(_, mode) => addOrder(order, mode)}>

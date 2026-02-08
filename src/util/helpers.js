@@ -31,39 +31,39 @@ export const useRouter = ({ onAfterRoute = null, preserveQueryParams = true } = 
  * @returns {Array} The filtered list of documents.
  */
 export const filterDocuments = (documents, conditionals, orders) => {
-    
-    // 1. Pre-process available orders into a frequency map (Count of available items)
-    // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
-    const availableCounts = (orders ?? []).reduce((acc, order) => {
-        acc[order.name] = (acc[order.name] || 0) + 1;
-        return acc;
+
+  // 1. Pre-process available orders into a frequency map (Count of available items)
+  // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
+  const availableCounts = (orders ?? []).reduce((acc, order) => {
+    acc[order.name] = (acc[order.name] || 0) + 1;
+    return acc;
+  }, {});
+
+  // 2. Use the Array.filter method to check each document's validity
+  return (documents ?? []).filter(doc => {
+    const requiredOrders = conditionals?.[doc.id];
+
+    // If the document ID has no entry in the conditionals, it passes the filter by default.
+    if (!requiredOrders) {
+      return true;
+    }
+
+    // 3. For the current document, calculate the frequency map of *required* orders
+    const requiredCounts = requiredOrders.reduce((acc, name) => {
+      acc[name] = (acc[name] || 0) + 1;
+      return acc;
     }, {});
 
-    // 2. Use the Array.filter method to check each document's validity
-    return (documents ?? []).filter(doc => {
-        const requiredOrders = conditionals?.[doc.id];
-     
-        // If the document ID has no entry in the conditionals, it passes the filter by default.
-        if (!requiredOrders) {
-            return true;
-        }
+    // 4. Check if *all* required counts are met by the available counts
+    // Object.keys gets the names of required orders, and .every checks them all.
+    return Object.keys(requiredCounts).every(orderName => {
+      const required = requiredCounts[orderName];
+      const available = availableCounts[orderName] || 0; // Default to 0 if the order is not available
 
-        // 3. For the current document, calculate the frequency map of *required* orders
-        const requiredCounts = requiredOrders.reduce((acc, name) => {
-            acc[name] = (acc[name] || 0) + 1;
-            return acc;
-        }, {});
-
-        // 4. Check if *all* required counts are met by the available counts
-        // Object.keys gets the names of required orders, and .every checks them all.
-        return Object.keys(requiredCounts).every(orderName => {
-            const required = requiredCounts[orderName];
-            const available = availableCounts[orderName] || 0; // Default to 0 if the order is not available
-
-            // The condition is met only if the available count is greater than or equal to the required count
-            return available >= required;
-        });
+      // The condition is met only if the available count is greater than or equal to the required count
+      return available >= required;
     });
+  });
 };
 
 /**
@@ -89,7 +89,7 @@ export const XORcrypt = (text, key) =>
  * @returns A number in the range [min, max]
  * @type Number
  */
-Number.prototype.clamp = function(min, max) { // eslint-disable-line no-extend-native, func-names
+Number.prototype.clamp = function (min, max) { // eslint-disable-line no-extend-native, func-names
   return Math.min(Math.max(this, min), max)
 }
 
@@ -100,7 +100,7 @@ Number.prototype.clamp = function(min, max) { // eslint-disable-line no-extend-n
  * @returns Age, in years
  * @type Number
  */
-Date.prototype.age = function() { // eslint-disable-line no-extend-native, func-names
+Date.prototype.age = function () { // eslint-disable-line no-extend-native, func-names
   return Math.floor((Date.now() - this.getTime()) / (1000 * 60 * 60 * 24 * 365))
 }
 
@@ -108,22 +108,23 @@ Date.prototype.age = function() { // eslint-disable-line no-extend-native, func-
  * Update an element of the array if it exists, matching by `key`, or, if it 
  * does not exist, add it to the array, then return the array itself.
  */
-Array.prototype.upsert = function(element, key) {
+Array.prototype.upsert = function (element, key) {
+  const result = [...this];
   const _upsert = (obj) => {
-    const index = this.findIndex(item => item[key] === obj[key])
+    const index = result.findIndex(item => item[key] === obj[key]);
     if (index > -1) {
-      this[index] = obj
+      result[index] = obj;
     } else {
-      this.push(obj)
+      result.push(obj);
     }
-  }
+  };
   if (Array.isArray(element)) {
-    element.forEach(e => _upsert(e))
+    element.forEach(e => _upsert(e));
   } else {
-    _upsert(element)
+    _upsert(element);
   }
-  return this
-}
+  return result;
+};
 
 /**
  * Decimal adjustment of a number.

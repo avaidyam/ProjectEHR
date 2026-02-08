@@ -17,6 +17,7 @@ const FILTERS = [
       { id: 'notes_staff', label: 'Staff Progress', color: '#b42563' },
     ]
   },
+  { id: 'orders', label: 'Orders', icon: 'content_paste_go', color: '#1a73e8' },
   { id: 'patient_movement', label: 'Patient Movement', icon: 'swap_horiz', color: '#2150c8' },
   {
     id: 'results', label: 'Results', icon: 'science', color: '#5f3bc9', children: [

@@ -6,11 +6,12 @@ import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 // Helper to get color by category
 const getCategoryColor = (category) => {
   const colors = {
-    'flowsheets': '#4caf50',
-    'results_lab': '#2196f3',
-    'results_imaging': '#2196f3',
-    'mar_scheduled': '#e91e63',
-    'notes': '#ff9800',
+    'flowsheets': '#25584e',
+    'results_lab': '#5f3bc9',
+    'results_imaging': '#5f3bc9',
+    'mar_scheduled': '#891abd',
+    'notes': '#b42563',
+    'orders': '#1a73e8',
     'default': '#9e9e9e',
   };
   return colors[category] || colors['default'];
@@ -27,6 +28,7 @@ const getCategoryIcon = (category) => {
     'narrator': 'location_on',
     'notes': 'description',
     'notes_staff': 'description',
+    'orders': 'content_paste_go',
     'patient_movement': 'swap_horiz',
     'results': 'science',
     'results_cardiac': 'science',
@@ -70,7 +72,7 @@ const EventItem = ({ event }) => {
           {event.tag === 'Abnormal' ? "error_outline" : icon}
         </Icon>
       </Stack>
-      <Stack direction="column" sx={{ flex: 1, overflow: 'hidden', borderBottom: '1px solid #e0e0e0' }}>
+      <Stack direction="column" sx={{ flex: 1, overflow: 'hidden', borderBottom: '1px solid #e0e0e0', pr: 1 }}>
         <Stack direction="row" alignItems="center">
           <Button
             variant="text"
@@ -132,7 +134,7 @@ const DateHeader = ({ date, dateKey }) => (
       position: 'sticky',
       top: 0,
       zIndex: 1,
-      bgcolor: 'primary.main',
+      bgcolor: 'primary.dark',
       color: 'primary.contrastText',
       px: 1.5,
       py: 0.5,
@@ -161,7 +163,7 @@ export const EventList = ({ events }) => {
   const sortedDateKeys = Object.keys(groupedEvents).sort((a, b) => new Date(b) - new Date(a));
 
   return (
-    <List sx={{ width: '100%', bgcolor: 'background.paper', p: 0 }}>
+    <List sx={{ width: '100%', p: 0 }}>
       {sortedDateKeys.map((dateKey) => {
         const dateObj = new Date(dateKey);
         const dateLabel = isNaN(dateObj.getTime()) ? dateKey : formatDateHeader(dateObj);
