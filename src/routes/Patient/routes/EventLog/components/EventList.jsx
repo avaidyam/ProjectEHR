@@ -1,9 +1,129 @@
-import React from 'react';
-import { List } from '@mui/material';
-import { Box, Stack, Icon, Label, Button } from 'components/ui/Core';
+import React, { useState } from 'react';
+import { List, Popover, Typography } from '@mui/material';
+import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { formatComponentDate } from 'util/componentHistory';
 
-const EventItem = ({ event, categories }) => {
+const ComponentPopover = ({ item, historyData }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isAbnormal = item.flag === 'H' || item.flag === 'L';
+  const componentName = item.name || item.label;
+  const history = historyData?.[componentName] || { encounter: [], chart: [] };
+
+  return (
+    <>
+      <Label
+        variant="caption"
+        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+        onMouseLeave={() => setAnchorEl(null)}
+        sx={{
+          mr: 1,
+          color: isAbnormal ? 'error.main' : 'text.secondary',
+          fontFamily: 'monospace',
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
+          fontWeight: isAbnormal ? 'bold' : 'normal',
+        }}
+      >
+        {componentName}: <Box component="span" sx={{ color: isAbnormal ? 'error.main' : 'text.primary', fontWeight: 'bold' }}>{item.value}</Box> {item.unit}
+      </Label>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+        disableRestoreFocus
+        sx={{ pointerEvents: 'none', ml: 1 }}
+        slotProps={{
+          paper: {
+            sx: {
+              p: 0,
+              minWidth: 220,
+              maxHeight: 400,
+              boxShadow: '0px 2px 10px rgba(0,0,0,0.15)',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              overflow: 'visible',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                left: -8,
+                top: 20,
+                width: 0,
+                height: 0,
+                borderTop: '8px solid transparent',
+                borderBottom: '8px solid transparent',
+                borderRight: '8px solid white',
+                filter: 'drop-shadow(-2px 0px 1px rgba(0,0,0,0.1))',
+              },
+            },
+            onMouseEnter: (e) => setAnchorEl(e.currentTarget),
+            onMouseLeave: () => setAnchorEl(null),
+          }
+        }}
+      >
+        <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+          {/* Header */}
+          <Typography variant="subtitle2" fontWeight={700} sx={{ px: 1.5, py: 1 }}>
+            {componentName}
+          </Typography>
+
+          {/* This Encounter Section */}
+          {history.encounter.length > 0 && (
+            <Box sx={{ bgcolor: 'action.disabledBackground' }}>
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 600, display: 'block', px: 1.5, pt: 0.5 }}
+              >
+                This Encounter
+              </Typography>
+              {history.encounter.map((entry, idx) => (
+                <Stack
+                  key={`enc-${idx}`}
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ px: 1.5, py: 0.25 }}
+                >
+                  <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                    {entry.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {formatComponentDate(entry.date)}
+                  </Typography>
+                </Stack>
+              ))}
+            </Box>
+          )}
+
+          {/* Chart Section */}
+          {history.chart.length > 0 && (
+            <Box>
+              {history.chart.map((entry, idx) => (
+                <Stack
+                  key={`chart-${idx}`}
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ px: 1.5, py: 0.25 }}
+                >
+                  <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                    {entry.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {formatComponentDate(entry.date)}
+                  </Typography>
+                </Stack>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Popover>
+    </>
+  );
+};
+
+
+const EventItem = ({ event, categories, componentHistory, flowsheetHistory }) => {
   const { openTab } = useSplitView();
 
   const filter = categories.find(f => f.id === event.category);
@@ -67,11 +187,10 @@ const EventItem = ({ event, categories }) => {
           </Label>
         </Stack>
         <Stack direction="row" sx={{ pl: 2, flexWrap: 'wrap', overflowX: 'auto' }}>
-          {(event.subItems ?? []).map((item, index) => (
-            <Label key={index} variant="caption" sx={{ mr: 1, color: 'text.secondary', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
-              {item.name || item.label}: <Box component="span" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{item.value}</Box> {item.unit}
-            </Label>
-          ))}
+          {(event.subItems ?? []).map((item, index) => {
+            const historyData = event.category === 'flowsheets' ? flowsheetHistory : componentHistory;
+            return <ComponentPopover key={index} item={item} historyData={historyData} />;
+          })}
         </Stack>
       </Stack>
     </Stack>
@@ -99,8 +218,7 @@ const DateHeader = ({ date, dateKey }) => (
       position: 'sticky',
       top: 0,
       zIndex: 1,
-      bgcolor: 'primary.dark',
-      color: 'primary.contrastText',
+      bgcolor: 'action.disabledBackground',
       px: 1.5,
       py: 0.5,
       borderBottom: '1px solid',
@@ -113,7 +231,7 @@ const DateHeader = ({ date, dateKey }) => (
   </Box>
 );
 
-export const EventList = ({ events, categories }) => {
+export const EventList = ({ events, categories, componentHistory, flowsheetHistory }) => {
   const groupedEvents = events.reduce((groups, event) => {
     const dateKey = getDateKey(event.timestamp);
     if (!groups[dateKey]) {
@@ -138,6 +256,8 @@ export const EventList = ({ events, categories }) => {
                 key={event.id}
                 event={event}
                 categories={categories}
+                componentHistory={componentHistory}
+                flowsheetHistory={flowsheetHistory}
               />
             ))}
           </Box>

@@ -8,6 +8,7 @@ import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
 import { CollapsiblePane } from './components/CollapsiblePane';
+import { getComponentHistory, getFlowsheetHistory } from 'util/componentHistory';
 
 const CATEGORIES = [
   { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },
@@ -30,14 +31,26 @@ const CATEGORIES = [
 
 export const EventLog = () => {
   const eventListRef = useRef(null);
-  const { useEncounter } = usePatient();
+  const { useEncounter, useChart } = usePatient();
   const [notes] = useEncounter().notes();
   const [labs] = useEncounter().labs();
+  const [chartLabs] = useChart().labs();
   const [imaging] = useEncounter().imaging();
   const [flowsheets] = useEncounter().flowsheets();
+  const [chartFlowsheets] = useChart().flowsheets();
   const [orders] = useEncounter().orders();
   const [flowsheetDefs] = useDatabase().flowsheets();
   const [providers] = useDatabase().providers();
+
+  // Generate component history for popover display
+  const componentHistory = useMemo(() => {
+    return getComponentHistory(labs, chartLabs);
+  }, [labs, chartLabs]);
+
+  // Generate flowsheet history for popover display
+  const flowsheetHistory = useMemo(() => {
+    return getFlowsheetHistory(flowsheets, chartFlowsheets, flowsheetDefs);
+  }, [flowsheets, chartFlowsheets, flowsheetDefs]);
 
   // Helper to look up provider name by ID
   const getProviderName = (providerId) => {
@@ -67,7 +80,7 @@ export const EventLog = () => {
         tag: item.abnormal ? 'Abnormal' : undefined,
         author: getProviderName(item.provider) ?? "Unknown",
         data: item,
-        subItems: []
+        subItems: (item.components ?? []).map(x => ({ label: x.name, value: x.value }))
       });
     });
 
@@ -301,6 +314,8 @@ export const EventLog = () => {
             <EventList
               events={filteredEvents}
               categories={CATEGORIES}
+              componentHistory={componentHistory}
+              flowsheetHistory={flowsheetHistory}
             />
           </Box>
         </Stack>
