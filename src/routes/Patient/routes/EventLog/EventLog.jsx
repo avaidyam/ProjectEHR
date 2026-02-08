@@ -7,7 +7,7 @@ import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
-import { CollapsiblePane } from './components/CollapsiblePane';
+import { CollapsiblePane } from 'components/ui/CollapsiblePane';
 import { getComponentHistory, getFlowsheetHistory } from 'util/componentHistory';
 
 const CATEGORIES = [

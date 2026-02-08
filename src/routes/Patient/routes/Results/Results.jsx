@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from "@mui/x-data-grid";
-import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label, Spacer } from "components/ui/Core.jsx";
+import { Box, Stack, Divider, Label, Spacer } from "components/ui/Core.jsx";
+import { CollapsiblePane } from "components/ui/CollapsiblePane";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext.jsx";
 import { useSplitView } from "components/contexts/SplitViewContext.jsx";
@@ -505,196 +506,196 @@ export default function ResultsReviewEpic() {
   );
 
   return (
-    <Box sx={{ ml: 2, mt: 2 }}>
-      <TitledCard
-        emphasized
-        title="Results Review"
-        color="#5EA1F8"
-        toolbar={
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<Icon>add</Icon>}
-            onClick={() => openTab("Edit Result", {}, "main", true)}
-          >
-            New Result
-          </Button>
-        }
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Toolbar */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 2,
+          py: 1,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
       >
-        <CoreGrid container spacing={2}>
-          {/* LEFT: Navigator (TreeView) */}
-          <CoreGrid item xs={12} sm={4} md={3} lg={3}>
-            <Box
-              sx={{
-                border: "1px solid #e0e0e0",
-                borderRadius: 0,
-                padding: 0.5,
-                mr: 2,
-                height: "100%",
-              }}
-            >
-              <Stack direction="column" spacing={0}>
-                {/* Search */}
-                <div>
-                  <input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search tests..."
-                    style={{
-                      width: "100%",
-                      padding: "8px 10px",
-                      borderRadius: 0,
-                      border: "1px solid #e0e0e0",
-                      outline: "none",
-                    }}
-                  />
-                </div>
+        <Label variant="h6">Results Review</Label>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<Icon>add</Icon>}
+          onClick={() => openTab("Edit Result", {}, "main", true)}
+        >
+          New Result
+        </Button>
+      </Box>
 
-                {/* Panels-only TreeView */}
-                <div style={{ marginTop: 8 }}>
-                  <RichTreeView
-                    items={treeItems}
-                    checkboxSelection
-                    multiSelect
-                    selectionPropagation={selectionPropagation}
-                    selectedItems={treeSelection}
-                    onSelectedItemsChange={handleTreeSelect}
-                    expandedItems={treeExpanded}
-                    onExpandedItemsChange={(e, ids) => setTreeExpanded(ids)}
-                    defaultExpandedItems={["cat:Laboratory"]}
-                    onItemClick={handleTreeItemClick}
-                    sx={{
-                      height: 420,
-                      overflowY: "auto",
-                      "& .MuiTreeItem-content": { py: 0.25 },
-                    }}
-                  />
-                </div>
-              </Stack>
-            </Box>
-          </CoreGrid>
-
-          {/* RIGHT: Content */}
-          <CoreGrid item xs={12} sm={8} md={9} lg={9}>
-            {category === "Laboratory" && (
-              <>
-                <div
+      {/* Main Content */}
+      <Box sx={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* LEFT: Collapsible Navigator (TreeView) */}
+        <CollapsiblePane width={280} side="left">
+          <Box sx={{ p: 1.5 }}>
+            <Stack direction="column" spacing={0}>
+              {/* Search */}
+              <div>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search tests..."
                   style={{
-                    marginBottom: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
+                    width: "100%",
+                    padding: "8px 10px",
+                    borderRadius: 0,
+                    border: "1px solid #e0e0e0",
+                    outline: "none",
                   }}
-                >
-                  <div style={{ fontSize: 12, opacity: 0.8 }}>
-                    {panel} • {tableTests.length} tests • {timeKeysDescTable.length} time points
-                  </div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <ToggleButton active={viewMode === "table"} onClick={() => setViewMode("table")}>
-                      Lab
-                    </ToggleButton>
-                    <ToggleButton active={viewMode === "graph"} onClick={() => setViewMode("graph")}>
-                      Graph
-                    </ToggleButton>
-                  </div>
+                />
+              </div>
+
+              {/* Panels-only TreeView */}
+              <div style={{ marginTop: 8 }}>
+                <RichTreeView
+                  items={treeItems}
+                  checkboxSelection
+                  multiSelect
+                  selectionPropagation={selectionPropagation}
+                  selectedItems={treeSelection}
+                  onSelectedItemsChange={handleTreeSelect}
+                  expandedItems={treeExpanded}
+                  onExpandedItemsChange={(e, ids) => setTreeExpanded(ids)}
+                  defaultExpandedItems={["cat:Laboratory"]}
+                  onItemClick={handleTreeItemClick}
+                  sx={{
+                    flex: 1,
+                    overflowY: "auto",
+                    "& .MuiTreeItem-content": { py: 0.25 },
+                  }}
+                />
+              </div>
+            </Stack>
+          </Box>
+        </CollapsiblePane>
+
+        {/* RIGHT: Content */}
+        <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
+          {category === "Laboratory" && (
+            <>
+              <div
+                style={{
+                  marginBottom: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div style={{ fontSize: 12, opacity: 0.8 }}>
+                  {panel} • {tableTests.length} tests • {timeKeysDescTable.length} time points
                 </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <ToggleButton active={viewMode === "table"} onClick={() => setViewMode("table")}>
+                    Lab
+                  </ToggleButton>
+                  <ToggleButton active={viewMode === "graph"} onClick={() => setViewMode("graph")}>
+                    Graph
+                  </ToggleButton>
+                </div>
+              </div>
 
-                {viewMode === "table" && (
-                  <>
-                    <div style={{ width: "100%" }}>
-                      <DataGrid
-                        rows={rowsTable}
-                        columns={columnsTable}
-                        slots={{ toolbar: SimpleToolbar }}
-                        autoHeight
-                        disableRowSelectionOnClick
+              {viewMode === "table" && (
+                <>
+                  <div style={{ width: "100%" }}>
+                    <DataGrid
+                      rows={rowsTable}
+                      columns={columnsTable}
+                      slots={{ toolbar: SimpleToolbar }}
+                      autoHeight
+                      disableRowSelectionOnClick
 
-                        /* Compact look */
-                        density="compact"
-                        rowHeight={28}
-                        headerHeight={34}
-                        sx={{
-                          fontSize: 12,
-                          "& .MuiDataGrid-cell": { py: 0.25, px: 0.5, lineHeight: 1.1 },
-                          "& .MuiDataGrid-columnHeaders": { minHeight: 34 },
-                          "& .MuiDataGrid-columnHeader": { py: 0, px: 0.5 },
-                          "& .MuiDataGrid-columnHeaderTitle": {
-                            whiteSpace: "pre-line",
-                            textAlign: "left",
-                            lineHeight: 1.15,
+                      /* Compact look */
+                      density="compact"
+                      rowHeight={28}
+                      headerHeight={34}
+                      sx={{
+                        fontSize: 12,
+                        "& .MuiDataGrid-cell": { py: 0.25, px: 0.5, lineHeight: 1.1 },
+                        "& .MuiDataGrid-columnHeaders": { minHeight: 34 },
+                        "& .MuiDataGrid-columnHeader": { py: 0, px: 0.5 },
+                        "& .MuiDataGrid-columnHeaderTitle": {
+                          whiteSpace: "pre-line",
+                          textAlign: "left",
+                          lineHeight: 1.15,
+                        },
+                        "& .MuiDataGrid-virtualScrollerContent .MuiDataGrid-row": {
+                          borderTop: "1px solid #f1f1f1",
+                        },
+                        "& .MuiDataGrid-footerContainer": { minHeight: 32 },
+                      }}
+
+                      // Keep or remove pagination as you prefer:
+                      initialState={{
+                        pagination: { paginationModel: { pageSize: 100, page: 0 } },
+                      }}
+                      pageSizeOptions={[100, 200, 300]}
+                    />
+                  </div>
+                  <Divider sx={{ my: 1 }} />
+                  <div style={{ fontSize: 12, opacity: 0.8 }}>
+                    Flags: H = High, L = Low. Reference ranges are general and for demo only.
+                  </div>
+                </>
+              )}
+
+              {viewMode === "graph" && (
+                <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ flex: 1, minHeight: 320 }}>
+                    <div style={{ height: 360, width: "100%", border: "1px solid #e0e0e0" }}>
+                      <LineChart
+                        height={360}
+                        dataset={graphDataAsc}
+                        xAxis={[
+                          {
+                            dataKey: "time",
+                            scaleType: "band",
+                            valueFormatter: (iso) =>
+                              new Intl.DateTimeFormat("en-US", {
+                                month: "short",
+                                day: "2-digit",
+                              }).format(new Date(iso)),
                           },
-                          "& .MuiDataGrid-virtualScrollerContent .MuiDataGrid-row": {
-                            borderTop: "1px solid #f1f1f1",
-                          },
-                          "& .MuiDataGrid-footerContainer": { minHeight: 32 },
+                        ]}
+                        yAxis={[{}]}
+                        grid={{ vertical: true, horizontal: true }}
+                        slotProps={{
+                          xAxis: { tickLabelStyle: { fontSize: 12 } },
+                          yAxis: { tickLabelStyle: { fontSize: 12 } },
                         }}
-
-                        // Keep or remove pagination as you prefer:
-                        initialState={{
-                          pagination: { paginationModel: { pageSize: 100, page: 0 } },
-                        }}
-                        pageSizeOptions={[100, 200, 300]}
+                        series={visibleTestsForGraph
+                          .filter(Boolean)
+                          .map((t) => ({
+                            dataKey: t.name,
+                            color: brightHSLFromName(t.name),
+                            curve: "linear",
+                            showMark: true,
+                            connectNulls: true,
+                            strokeWidth: 3,
+                          }))}
+                        margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
                       />
                     </div>
-                    <Divider sx={{ my: 1 }} />
-                    <div style={{ fontSize: 12, opacity: 0.8 }}>
-                      Flags: H = High, L = Low. Reference ranges are general and for demo only.
+                    <div style={{ fontSize: 12, opacity: 0.8, marginTop: 6 }}>
+                      Tip: Use the checkboxes to include/exclude rows (tests). Colors are stable
+                      per test.
                     </div>
-                  </>
-                )}
-
-                {viewMode === "graph" && (
-                  <div style={{ display: "flex", gap: 12 }}>
-                    <div style={{ flex: 1, minHeight: 320 }}>
-                      <div style={{ height: 360, width: "100%", border: "1px solid #e0e0e0" }}>
-                        <LineChart
-                          height={360}
-                          dataset={graphDataAsc}
-                          xAxis={[
-                            {
-                              dataKey: "time",
-                              scaleType: "band",
-                              valueFormatter: (iso) =>
-                                new Intl.DateTimeFormat("en-US", {
-                                  month: "short",
-                                  day: "2-digit",
-                                }).format(new Date(iso)),
-                            },
-                          ]}
-                          yAxis={[{}]}
-                          grid={{ vertical: true, horizontal: true }}
-                          slotProps={{
-                            xAxis: { tickLabelStyle: { fontSize: 12 } },
-                            yAxis: { tickLabelStyle: { fontSize: 12 } },
-                          }}
-                          series={visibleTestsForGraph
-                            .filter(Boolean)
-                            .map((t) => ({
-                              dataKey: t.name,
-                              color: brightHSLFromName(t.name),
-                              curve: "linear",
-                              showMark: true,
-                              connectNulls: true,
-                              strokeWidth: 3,
-                            }))}
-                          margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
-                        />
-                      </div>
-                      <div style={{ fontSize: 12, opacity: 0.8, marginTop: 6 }}>
-                        Tip: Use the checkboxes to include/exclude rows (tests). Colors are stable
-                        per test.
-                      </div>
-                    </div>
-                    <RightSelector />
                   </div>
-                )}
-              </>
-            )}
-          </CoreGrid>
-        </CoreGrid>
-      </TitledCard>
+                  <RightSelector />
+                </div>
+              )}
+            </>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 }
