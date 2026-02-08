@@ -1,49 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { List } from '@mui/material';
 import { Box, Stack, Icon, Label, Button } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 
-// Helper to get color by category
-const getCategoryColor = (category) => {
-  const colors = {
-    'flowsheets': '#25584e',
-    'results_lab': '#5f3bc9',
-    'results_imaging': '#5f3bc9',
-    'mar_scheduled': '#891abd',
-    'notes': '#b42563',
-    'orders': '#1a73e8',
-    'default': '#9e9e9e',
-  };
-  return colors[category] || colors['default'];
-};
-
-const getCategoryIcon = (category) => {
-  const icons = {
-    'flowsheets': 'grid_on',
-    'ldas': 'search',
-    'mar': 'vaccines',
-    'mar_scheduled': 'vaccines',
-    'mar_continuous': 'vaccines',
-    'mar_prn': 'vaccines',
-    'narrator': 'location_on',
-    'notes': 'description',
-    'notes_staff': 'description',
-    'orders': 'content_paste_go',
-    'patient_movement': 'swap_horiz',
-    'results': 'science',
-    'results_cardiac': 'science',
-    'results_imaging': 'science',
-    'results_lab': 'science',
-    'transfusions': 'water_drop',
-    'default': 'help_outline',
-  };
-  return icons[category] || icons['default'];
-};
-
-const EventItem = ({ event }) => {
+const EventItem = ({ event, categories }) => {
   const { openTab } = useSplitView();
-  const color = getCategoryColor(event.category);
-  const icon = getCategoryIcon(event.category);
+
+  const filter = categories.find(f => f.id === event.category);
+  const color = filter?.color ?? '#9e9e9e';
+  const icon = filter?.icon ?? 'help_outline';
+
   const dateObj = new Date(event.timestamp);
   const timeString = isNaN(dateObj.getTime())
     ? event.timestamp
@@ -111,7 +77,7 @@ const EventItem = ({ event }) => {
     </Stack>
   );
 };
-// Helper to format date as "Mon DD" or "Mon DD, YYYY" if not current year
+
 const formatDateHeader = (date) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const currentYear = new Date().getFullYear();
@@ -120,7 +86,6 @@ const formatDateHeader = (date) => {
   return dateYear !== currentYear ? `${base}, ${dateYear}` : base;
 };
 
-// Helper to get date key for grouping (YYYY-MM-DD)
 const getDateKey = (timestamp) => {
   const date = new Date(timestamp);
   if (isNaN(date.getTime())) return 'Unknown';
@@ -148,8 +113,7 @@ const DateHeader = ({ date, dateKey }) => (
   </Box>
 );
 
-export const EventList = ({ events }) => {
-  // Group events by date
+export const EventList = ({ events, categories }) => {
   const groupedEvents = events.reduce((groups, event) => {
     const dateKey = getDateKey(event.timestamp);
     if (!groups[dateKey]) {
@@ -159,7 +123,6 @@ export const EventList = ({ events }) => {
     return groups;
   }, {});
 
-  // Sort date keys (most recent first)
   const sortedDateKeys = Object.keys(groupedEvents).sort((a, b) => new Date(b) - new Date(a));
 
   return (
@@ -171,7 +134,11 @@ export const EventList = ({ events }) => {
           <Box key={dateKey}>
             <DateHeader date={dateLabel} dateKey={dateKey} />
             {groupedEvents[dateKey].map((event) => (
-              <EventItem key={event.id} event={event} />
+              <EventItem
+                key={event.id}
+                event={event}
+                categories={categories}
+              />
             ))}
           </Box>
         );

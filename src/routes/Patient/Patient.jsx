@@ -23,6 +23,7 @@ import Chat from "./routes/Chat/Chat.jsx";
 import ReportViewer from './routes/ReportViewer/ReportViewer.jsx';
 import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer.jsx';
 import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
+import NotesList from './routes/NotesList/NotesList.jsx';
 import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
 import Handoff from './routes/Handoff/Handoff.jsx';
 import Demographics from './routes/Demographics/Demographics.jsx';
@@ -54,6 +55,7 @@ const ALL_TABS = {
   "Report": (props) => <ReportViewer {...props} />,
   "Imaging Viewer": (props) => <ImagingViewer {...props} />,
   "Note": (props) => <NoteViewer {...props} />,
+  "Notes": (props) => <NotesList {...props} />,
   "Flowsheet": (props) => <Flowsheet {...props} />,
   "Edit Note": (props) => <EditNote {...props} />,
   "Appointment Desk": (props) => <AppointmentDesk {...props} />,
@@ -71,7 +73,7 @@ const DEFAULT_MAIN_TABS = [
 const OVERFLOW_MENU_TABS = [
   { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
   { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
-  { "Event Log": {} }, { "MAR": {} }
+  { "Event Log": {} }, { "MAR": {} }, { "Notes": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [

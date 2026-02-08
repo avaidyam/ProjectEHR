@@ -9,6 +9,25 @@ import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
 import { CollapsiblePane } from './components/CollapsiblePane';
 
+const CATEGORIES = [
+  { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },
+  { id: 'ldas', label: 'LDAs', icon: 'search', color: '#25584e' },
+  { id: 'mar', label: 'MAR', icon: 'vaccines', color: '#891abd' },
+  { id: 'mar_scheduled', label: 'Scheduled', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'mar_continuous', label: 'Continuous', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'mar_prn', label: 'PRN', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'narrator', label: 'Narrator Events', icon: 'location_on', color: '#25584e' },
+  { id: 'notes', label: 'Notes', icon: 'description', color: '#b42563' },
+  { id: 'notes_staff', label: 'Staff Progress', icon: 'description', color: '#b42563', parent: 'notes' },
+  { id: 'orders', label: 'Orders', icon: 'content_paste_go', color: '#1a73e8' },
+  { id: 'patient_movement', label: 'Patient Movement', icon: 'swap_horiz', color: '#2150c8' },
+  { id: 'results', label: 'Results', icon: 'science', color: '#5f3bc9' },
+  { id: 'results_lab', label: 'Lab', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'results_imaging', label: 'Imaging', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'results_cardiac', label: 'Cardiac', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'transfusions', label: 'Transfusions', icon: 'water_drop', color: '#c62828' },
+];
+
 export const EventLog = () => {
   const eventListRef = useRef(null);
   const { useEncounter } = usePatient();
@@ -272,15 +291,20 @@ export const EventLog = () => {
       <Stack direction="row" sx={{ flexGrow: 1, overflow: 'hidden' }}>
         <CollapsiblePane width={280} side="left">
           <EventFilters
+            categories={CATEGORIES}
             selectedFilters={selectedFilters}
             onFilterChange={setSelectedFilters}
           />
         </CollapsiblePane>
         <Stack sx={{ flex: 1, overflow: 'hidden' }}>
           <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
-            <EventList events={filteredEvents} />
+            <EventList
+              events={filteredEvents}
+              categories={CATEGORIES}
+            />
           </Box>
         </Stack>
+
         <CollapsiblePane width={400} side="right">
           <VitalsGraph data={vitalsGraphData} />
         </CollapsiblePane>

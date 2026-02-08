@@ -1,87 +1,93 @@
 import React from 'react';
 import { Box, Stack, Icon, TreeView, TreeItem, Button, Label } from 'components/ui/Core';
 
-const FILTERS = [
-  { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },
-  { id: 'ldas', label: 'LDAs', icon: 'search', color: '#25584e' },
-  {
-    id: 'mar', label: 'MAR', icon: 'vaccines', color: '#891abd', children: [
-      { id: 'mar_scheduled', label: 'Scheduled', color: '#891abd' },
-      { id: 'mar_continuous', label: 'Continuous', color: '#891abd' },
-      { id: 'mar_prn', label: 'PRN', color: '#891abd' },
-    ]
-  },
-  { id: 'narrator', label: 'Narrator Events', icon: 'location_on', color: '#25584e' },
-  {
-    id: 'notes', label: 'Notes', icon: 'description', color: '#b42563', children: [
-      { id: 'notes_staff', label: 'Staff Progress', color: '#b42563' },
-    ]
-  },
-  { id: 'orders', label: 'Orders', icon: 'content_paste_go', color: '#1a73e8' },
-  { id: 'patient_movement', label: 'Patient Movement', icon: 'swap_horiz', color: '#2150c8' },
-  {
-    id: 'results', label: 'Results', icon: 'science', color: '#5f3bc9', children: [
-      { id: 'results_lab', label: 'Lab', color: '#5f3bc9' },
-      { id: 'results_imaging', label: 'Imaging', color: '#5f3bc9' },
-      { id: 'results_cardiac', label: 'Cardiac', color: '#5f3bc9' },
-    ]
-  },
-  { id: 'transfusions', label: 'Transfusions', icon: 'water_drop', color: '#c62828' },
-];
-
-const getAllFilterIds = (filters) => {
-  return filters.reduce((acc, filter) => {
-    acc.push(filter.id);
-    if (filter.children) {
-      acc = acc.concat(getAllFilterIds(filter.children));
+const buildFilterTree = (filters) => {
+  const tree = [];
+  const map = {};
+  filters.forEach(f => {
+    map[f.id] = { ...f, children: [] };
+  });
+  filters.forEach(f => {
+    if (f.parent) {
+      map[f.parent].children.push(map[f.id]);
+    } else {
+      tree.push(map[f.id]);
     }
-    return acc;
-  }, []);
+  });
+  return tree;
 };
 
-const ALL_FILTER_IDS = getAllFilterIds(FILTERS);
+const FilterItem = ({ filter, selectedFilters }) => {
+  const color = filter.color ?? '#9e9e9e';
+  const icon = filter.icon ?? 'help_outline';
 
-const FilterItem = ({ filter }) => {
+  // State calculation
+  const getSubFilterIds = (f) => {
+    const ids = [];
+    if (f.children) {
+      f.children.forEach(child => {
+        ids.push(child.id);
+        ids.push(...getSubFilterIds(child));
+      });
+    }
+    return ids;
+  };
+
+  const subFilterIds = React.useMemo(() => getSubFilterIds(filter), [filter]);
+  const selectedSubFilters = subFilterIds.filter(id => selectedFilters.includes(id));
+
+  const isSelected = selectedFilters.includes(filter.id) || (subFilterIds.length > 0 && selectedSubFilters.length === subFilterIds.length);
+  const isIndeterminate = subFilterIds.length > 0 && selectedSubFilters.length > 0 && selectedSubFilters.length < subFilterIds.length;
+
   return (
     <TreeItem
       itemId={filter.id}
       label={
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Icon sx={{ color: filter.color, fontSize: 18 }}>{filter.icon}</Icon>
+          <Icon sx={{ color, fontSize: 18 }}>{icon}</Icon>
           {filter.label}
         </span>
       }
+      slotProps={{
+        checkbox: {
+          indeterminate: isIndeterminate,
+          checked: isSelected,
+        }
+      }}
       sx={{
         '& > .MuiTreeItem-content': {
-          bgcolor: `${filter.color}15`,
+          bgcolor: `${color}15`,
           mb: 0.5,
           py: 0.25,
         },
         '& > .MuiTreeItem-content .MuiTreeItem-label': {
-          color: filter.color,
+          color: color,
           fontWeight: 500,
           flexGrow: 1,
         },
         '& > .MuiTreeItem-content .MuiTreeItem-checkbox': {
-          color: filter.color,
+          color: color,
           order: 1,
-          '&.Mui-checked': { color: filter.color },
+          '&.Mui-checked': { color: color },
         },
       }}
     >
       {filter.children?.map((child) => (
-        <FilterItem key={child.id} filter={child} />
+        <FilterItem key={child.id} filter={child} selectedFilters={selectedFilters} />
       ))}
     </TreeItem>
   );
 };
 
-export const EventFilters = ({ selectedFilters, onFilterChange }) => {
+export const EventFilters = ({ categories, selectedFilters, onFilterChange }) => {
+  const filterTree = React.useMemo(() => buildFilterTree(categories), [categories]);
+  const allFilterIds = React.useMemo(() => categories.map(f => f.id), [categories]);
+
   const handleToggleSelectAll = () => {
     if (selectedFilters.length > 0) {
       onFilterChange([]);
     } else {
-      onFilterChange(ALL_FILTER_IDS);
+      onFilterChange(allFilterIds);
     }
   };
 
@@ -101,11 +107,13 @@ export const EventFilters = ({ selectedFilters, onFilterChange }) => {
           selectedItems={selectedFilters}
           onSelectedItemsChange={(event, ids) => onFilterChange(ids)}
         >
-          {FILTERS.map((filter) => (
-            <FilterItem key={filter.id} filter={filter} />
+          {filterTree.map((filter) => (
+            <FilterItem key={filter.id} filter={filter} selectedFilters={selectedFilters} />
           ))}
         </TreeView>
       </Box>
     </Stack>
   );
 };
+
+

@@ -51,7 +51,7 @@ import {
 import {
   RichTreeViewPro as MUIRichTreeView,
   SimpleTreeView as MUISimpleTreeView,
-  TreeItem as MUITreeItem
+  TreeItem2 as MUITreeItem
 } from '@mui/x-tree-view-pro'
 import { LicenseInfo } from '@mui/x-license-pro'
 import {
@@ -363,7 +363,7 @@ export const DataGrid = ({ children, ...props }) => {
     }
   }, [proRef.current])
   return (
-    <MUIDataGrid ref={proRef} {...props}>
+    <MUIDataGrid ref={proRef} unstable_listView={props.listView} unstable_listColumn={props.listViewColumn} {...props}>
       {children}
     </MUIDataGrid>
   )
