@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { Box, Stack, Tabs, Tab, Typography, Toolbar } from '@mui/material';
+import { Box, Stack, Tabs, Tab, Typography, Toolbar, Button, Icon } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid } from 'components/ui/Core';
+import { DataGrid, Spacer } from 'components/ui/Core';
 import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
+import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
 import NoteViewer from '../NoteViewer/NoteViewer.jsx';
 
 export const NotesList = () => {
   const { useEncounter } = usePatient();
+  const { openTab } = useSplitView();
   const [notes] = useEncounter().notes();
   const [providers] = useDatabase().providers();
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -151,6 +153,18 @@ export const NotesList = () => {
         variant="dense"
       >
         <Typography variant="h6">Notes</Typography>
+        <Spacer />
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<Icon>add</Icon>}
+          onClick={() => {
+            openTab("Edit Note", {}, "side", true);
+            openTab("NoteWriter", {}, "main", false);
+          }}
+        >
+          New Note
+        </Button>
       </Toolbar>
 
       {/* Category Tabs */}

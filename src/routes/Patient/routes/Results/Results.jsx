@@ -1,9 +1,10 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { DataGrid, GridToolbarContainer, GridToolbarFilterButton } from "@mui/x-data-grid";
-import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label } from "components/ui/Core.jsx";
+import { Box, Grid as CoreGrid, Stack, TitledCard, Divider, Label, Spacer } from "components/ui/Core.jsx";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext.jsx";
-import { Tooltip } from "@mui/material";
+import { useSplitView } from "components/contexts/SplitViewContext.jsx";
+import { Tooltip, Button, Icon } from "@mui/material";
 import { RichTreeView } from "@mui/x-tree-view/RichTreeView";
 import { filterDocuments } from "util/helpers";
 
@@ -131,6 +132,7 @@ function useNormalizedLabs() {
 
 export default function ResultsReviewEpic() {
   const labPanelsData = useNormalizedLabs();
+  const { openTab } = useSplitView();
 
   const [category, setCategory] = useState("Laboratory");
   const [panel, setPanel] = useState(labPanelsData[0]?.name || "");
@@ -504,7 +506,21 @@ export default function ResultsReviewEpic() {
 
   return (
     <Box sx={{ ml: 2, mt: 2 }}>
-      <TitledCard emphasized title="Results Review" color="#5EA1F8">
+      <TitledCard
+        emphasized
+        title="Results Review"
+        color="#5EA1F8"
+        toolbar={
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => openTab("Edit Result", {}, "main", true)}
+          >
+            New Result
+          </Button>
+        }
+      >
         <CoreGrid container spacing={2}>
           {/* LEFT: Navigator (TreeView) */}
           <CoreGrid item xs={12} sm={4} md={3} lg={3}>

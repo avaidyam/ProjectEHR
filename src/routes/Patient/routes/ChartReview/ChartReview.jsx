@@ -371,39 +371,6 @@ export const ChartReview = ({ ...props }) => {
                         Open Encounter
                       </Button>
                     )}
-                    {selectedTabLabel === 'Lab' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => openTab("Edit Result", {}, "main", true)}
-                      >
-                        New Result
-                      </Button>
-                    )}
-                    {selectedTabLabel === 'Imaging' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => openTab("Edit Result", {}, "main", true)}
-                      >
-                        New Result
-                      </Button>
-                    )}
-                    {selectedTabLabel === 'Notes' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => {
-                          openTab("Edit Note", {}, "side", true);
-                          openTab("NoteWriter", {}, "main", false);
-                        }}
-                      >
-                        New Note
-                      </Button>
-                    )}
                   </GridToolbarContainer>
                 )
               }}
