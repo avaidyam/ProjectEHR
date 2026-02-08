@@ -1,38 +1,27 @@
 import React, { useState } from 'react';
 import { Tab, Tabs, IconButton, Toolbar, Paper, Chip, Collapse, InputAdornment } from '@mui/material';
 import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimePicker, Autocomplete, dayjs } from 'components/ui/Core.jsx';
+import { useDatabase } from 'components/contexts/PatientContext';
 
-const MOCK_MEDICATIONS = [
+const MOCK_ORDERS = [
   {
     id: '1',
-    name: 'cetirizine (ZyrTEC) tablet 10 mg',
+    medicationId: '1014678',
     priority: 'Routine',
-    pharmClass: 'Antihistamines',
     dose: '10 mg',
     route: 'Oral',
     frequency: 'Daily',
     status: 'Active',
     orderedAdminDose: '10 mg',
     orderedAmount: '1 tablet (1 x 10 mg tablet)',
-    adminWindow: '60 minutes',
-    adminInstructions: 'Take with full glass of water.',
-    productInstructions: 'Keep at room temperature.',
-    lastAdmin: 'Today 09/13/19 at 1130 (Given)',
     dispenseLocation: 'ED Omnicell Pod 1-2',
-    indications: 'Seasonal Allergies',
-    warnings: 'May cause drowsiness',
-    instructions: 'Take once daily with or without food',
-    orderStart: '09/13/19 08:00',
-    orderEnd: '09/15/19 08:00',
-    components: [
-      { name: 'cetirizine (ZyrTEC) 10 mg tablet', dose: '10 mg', amount: '1 tablet' }
-    ]
+    orderStart: '2026-02-07T08:00:00Z',
+    orderEnd: '2026-02-09T08:00:00Z'
   },
   {
     id: '2',
-    name: 'insulin glargine (Lantus) 100 UNIT/ML injection 15 Units',
+    medicationId: '847230',
     priority: 'STAT',
-    pharmClass: 'Insulins',
     dose: '15 Units',
     route: 'Subcutaneous',
     frequency: '4 times daily before meals and nightly',
@@ -40,138 +29,87 @@ const MOCK_MEDICATIONS = [
     orderedAdminDose: '15 Units',
     orderedAmount: '15 Units',
     adminWindow: '30 minutes',
-    adminInstructions: 'Double check dose with another RN.',
-    productInstructions: 'Keep refrigerated until use.',
-    lastAdmin: 'Today 09/13/19 at 1130 (Given)',
     dispenseLocation: 'ED Omnicell Pod 3-4',
-    indications: 'Diabetes Mellitus',
-    warnings: 'Hypoglycemia risk',
-    instructions: 'Inject subcutaneously as directed. Rotate sites.',
-    orderStart: '09/13/19 11:30',
-    orderEnd: 'Ongoing',
-    components: [
-      { name: 'insulin glargine (Lantus) 100 UNIT/ML injection', dose: '15 Units', amount: '0.15 mL' }
-    ]
+    orderStart: '2026-02-07T11:30:00Z',
+    orderEnd: null
   },
   {
     id: '3',
-    name: 'insulin regular (HumuLIN R, NovoLIN R) 100 UNIT/ML injection 2-10 Units',
+    medicationId: '2206090',
     priority: 'Routine',
-    pharmClass: 'Insulins',
     dose: '2-10 Units',
     route: 'Subcutaneous',
     frequency: '4 times daily with meals and nightly',
     status: 'Active',
     orderedAdminDose: '2-10 Units',
     orderedAmount: '2-10 Units',
-    adminWindow: '15 minutes',
-    adminInstructions: 'Administer with tray.',
-    productInstructions: 'In-use vial stable for 28 days at room temp.',
-    lastAdmin: 'Yesterday 09/12/19 at 2100 (Given)',
     dispenseLocation: 'EMH Central Pharmacy',
-    indications: 'Diabetes Mellitus (Prandial)',
-    warnings: 'Check blood glucose before admin',
-    instructions: 'Administer 30 minutes before meals.',
-    orderStart: '09/12/19 12:00',
-    orderEnd: 'Ongoing',
-    components: [
-      { name: 'insulin regular 100 UNIT/ML injection', dose: '2-10 Units', amount: 'Variable' }
-    ]
+    orderStart: '2026-02-06T12:00:00Z',
+    orderEnd: null
   },
   {
     id: '4',
-    name: 'cefOXitin (Mefoxin) 900 mg in dextrose 5 % IV syringe',
+    medicationId: '1739890',
     priority: 'Routine',
-    pharmClass: 'Cephalosporins',
     dose: '900 mg',
     route: 'Intravenous',
     frequency: 'Every 6 hours',
     status: 'Active',
     orderedAdminDose: '80 mg/kg/day',
     orderedAmount: '900 mg = 22.5 mL',
-    adminWindow: '60 minutes',
-    adminInstructions: 'Give as slow IV push over 5 minutes.',
-    productInstructions: 'Protect from light.',
-    lastAdmin: 'Today 09/13/19 at 0415 (New Bag)',
     dispenseLocation: 'ED Omnicell Pod 1-2',
-    indications: 'Prophylaxis/Infection',
-    warnings: 'Monitor for allergic reaction',
-    instructions: 'Infuse over 30 minutes.',
-    orderStart: '09/13/19 04:00',
-    orderEnd: '09/14/19 04:00',
-    components: [
-      { name: 'cefOXitin (Mefoxin) 900 mg', dose: '900 mg', amount: 'N/A' },
-      { name: 'dextrose 5 % IV syringe', dose: 'N/A', amount: '22.5 mL' }
-    ]
+    orderStart: '2026-02-07T04:00:00Z',
+    orderEnd: '2026-02-08T04:00:00Z'
   },
   {
     id: '5',
-    name: 'methylprednisolone (SOLU-Medrol) in 0.9% NaCl 125 mg/50 mL',
+    medicationId: '1743704',
     priority: 'STAT',
-    pharmClass: 'Glucocorticoids',
     dose: '125 mg',
     route: 'Intravenous',
     frequency: 'Once',
     status: 'Held',
     orderedAdminDose: '125 mg',
     orderedAmount: '125 mg',
-    adminWindow: '0 minutes (ASAP)',
-    adminInstructions: 'IV push over 1-3 minutes.',
-    productInstructions: 'Use immediately after reconstitution.',
-    lastAdmin: 'Never',
     dispenseLocation: 'ED Omnicell Pod 1-2',
-    indications: 'Acute Inflammation',
-    orderStart: 'Today 16:40',
-    orderEnd: 'Ongoing',
-    components: [
-      { name: 'methylprednisolone (SOLU-Medrol) injection', dose: '125 mg', amount: 'N/A' },
-      { name: 'sodium chloride 0.9 % IV bag', dose: 'N/A', amount: '50 mL' }
-    ]
+    orderStart: '2026-02-07T16:40:00Z',
+    orderEnd: null
   },
   {
     id: '6',
-    name: 'Dextrose 50% syringe 25 g',
+    medicationId: '1116927',
     priority: 'STAT',
-    pharmClass: 'Glucose',
     dose: '25 g',
     route: 'Intravenous',
     frequency: 'Once PRN',
     status: 'Completed',
     orderedAdminDose: '25 g',
     orderedAmount: '50 mL',
-    adminWindow: '0 minutes (ASAP)',
-    adminInstructions: 'Administer through large vein.',
-    productInstructions: 'Hypertonic solution.',
-    lastAdmin: 'Today 1245 (Given)',
     dispenseLocation: 'ED Omnicell Pod 3-4',
-    orderStart: 'Today 12:45',
-    orderEnd: 'Ongoing',
-    components: [
-      { name: 'Dextrose 50 % syringe', dose: '25 g', amount: '50 mL' }
-    ]
+    orderStart: '2026-02-07T12:45:00Z',
+    orderEnd: null
   }
 ];
 
 const MOCK_MAR_ENTRIES = [
-  { id: '101', medicationId: '1', hour: '1200', time: '1230', date: '2026-02-07', status: 'Given', amount: '10 mg' },
-  { id: '102', medicationId: '1', hour: '1200', time: '1240', date: '2026-02-07', status: 'Given', amount: '10 mg' },
-  { id: '103', medicationId: '1', hour: '1200', time: '1250', date: '2026-02-07', status: 'Given', amount: '10 mg' },
-  { id: '201', medicationId: '2', hour: '1100', time: '1130', date: '2026-02-07', status: 'Given', amount: '15 Units' },
-  { id: '301', medicationId: '3', hour: '0800', time: '0800', date: '2026-02-07', status: 'Refused', amount: '' },
-  { id: '302', medicationId: '3', hour: '1200', time: '1200', date: '2026-02-07', status: 'Due', amount: '' },
-  { id: '401', medicationId: '4', hour: '1000', time: '1015', date: '2026-02-07', status: 'Overdue', amount: '' }
+  { id: '101', orderId: '1', timestamp: dayjs().subtract(2, 'hour').minute(30).toISOString(), status: 'Given', amount: '10 mg' },
+  { id: '102', orderId: '1', timestamp: dayjs().subtract(2, 'hour').minute(45).toISOString(), status: 'Given', amount: '10 mg' },
+  { id: '201', orderId: '2', timestamp: dayjs().subtract(3, 'hour').minute(0).toISOString(), status: 'Given', amount: '15 Units' },
+  { id: '301', orderId: '3', timestamp: dayjs().subtract(4, 'hour').minute(0).toISOString(), status: 'Refused', amount: '' },
+  { id: '302', orderId: '3', timestamp: dayjs().add(1, 'hour').minute(0).toISOString(), status: 'Due', amount: '' },
+  { id: '401', orderId: '4', timestamp: dayjs().subtract(1, 'hour').minute(15).toISOString(), status: 'Overdue', amount: '' }
 ];
 
-const AdminFormPanel = ({ medication, hour, admin, onSave, onCancel }) => {
+const AdminFormPanel = ({ order, hour, admin, onSave, onCancel }) => {
   const [status, setStatus] = useState(admin?.status || 'Given');
   const [dateTime, setDateTime] = useState(() => {
-    if (admin?.date && admin?.time) {
-      return dayjs(`${admin.date} ${admin.time}`, 'YYYY-MM-DD HHmm');
+    if (admin?.timestamp) {
+      return dayjs(admin.timestamp);
     }
-    return dayjs().hour(parseInt(hour.substring(0, 2))).minute(0).second(0);
+    return hour.time.minute(0).second(0);
   });
-  const [dose, setDose] = useState(admin ? admin.amount.split(' ')[0] : medication.dose.split(' ')[0]);
-  const [unit] = useState(admin ? admin.amount.split(' ')[1] : medication.dose.split(' ')[1] || 'mg');
+  const [dose, setDose] = useState(admin ? admin.amount.split(' ')[0] : (order.dose || '').split(' ')[0] || '');
+  const [unit] = useState(admin ? admin.amount.split(' ')[1] : (order.dose || '').split(' ')[1] || 'mg');
   const [site, setSite] = useState(admin?.site || '');
   const [comment, setComment] = useState(admin?.comment || '');
 
@@ -214,7 +152,7 @@ const AdminFormPanel = ({ medication, hour, admin, onSave, onCancel }) => {
           label="Route"
           freeSolo
           options={['Oral', 'IV', 'Subcutaneous', 'Intramuscular', 'Transdermal']}
-          value={medication.route}
+          value={order.route || 'No route specified'}
           disabled
           sx={{ minWidth: 160 }}
           fullWidth={false}
@@ -266,28 +204,37 @@ const AdminFormPanel = ({ medication, hour, admin, onSave, onCancel }) => {
   );
 };
 
-const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin }) => {
+const DrugBox = ({ order, hours, administrations, onAddAdmin, onUpdateAdmin }) => {
   const [expanded, setExpanded] = useState(false);
   const [activeFormContext, setActiveFormContext] = useState(null);
-  const isStat = medication.priority === 'STAT';
+  const isStat = order.priority === 'STAT';
+
+  // Compute lastAdmin dynamically
+  const lastAdminRecord = administrations
+    .filter(a => ['Given', 'Not Given', 'Refused', 'Held', 'Missed'].includes(a.status))
+    .sort((a, b) => dayjs(b.timestamp).diff(dayjs(a.timestamp)))[0];
+
+  const lastAdminValue = lastAdminRecord
+    ? `${dayjs(lastAdminRecord.timestamp).format('MMM D [at] HHmm')} (${lastAdminRecord.status})`
+    : 'Never';
 
   return (
     <Paper variant="outlined" sx={{ mb: 1.5, p: 0, overflow: 'hidden' }}>
       {/* Header */}
       <Stack direction="row" alignItems="center" spacing={2} sx={{ px: 2, py: 1.25, borderBottom: 1, borderColor: 'divider' }}>
         <Label variant="subtitle2" color="primary" fontWeight="bold">
-          {medication.name}
+          {order.name}
         </Label>
         <Label variant="caption" color="text.secondary">
-          {[medication.dose, medication.rate, medication.route, medication.frequency].filter(Boolean).join(" • ")}
+          {[order.dose, order.rate, order.route, order.frequency].filter(Boolean).join(" • ")}
         </Label>
         <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
         <Label variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', bgcolor: 'action.selected', px: 1, py: 0.25, borderRadius: 1 }}>
-          {medication.pharmClass}
+          {order.medication?.pharmClass ?? "No class"}
         </Label>
         <Spacer />
         <Chip
-          label={medication.priority}
+          label={order.priority}
           size="small"
           color={isStat ? 'error' : 'default'}
           sx={{ fontWeight: 'bold', height: 20, fontSize: '0.65rem' }}
@@ -298,14 +245,14 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
       {/* Grid or Admin Form */}
       {activeFormContext ? (
         <AdminFormPanel
-          medication={medication}
+          order={order}
           hour={activeFormContext.hour}
           admin={activeFormContext.admin}
           onSave={(data) => {
             if (activeFormContext.admin) {
               onUpdateAdmin(activeFormContext.admin.id, data);
             } else {
-              onAddAdmin(medication.id, data);
+              onAddAdmin(order.id, data);
             }
             setActiveFormContext(null);
           }}
@@ -314,11 +261,11 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
       ) : (
         <Box sx={{ display: 'flex' }}>
           {hours.map((hour) => {
-            const admins = administrations.filter(a => a.hour === hour.label);
+            const admins = administrations.filter(a => dayjs(a.timestamp).isSame(hour.time, 'hour'));
             return (
               <Box
                 key={hour.label}
-                onClick={() => setActiveFormContext({ hour: hour.label, admin: null })}
+                onClick={() => setActiveFormContext({ hour, admin: null })}
                 sx={{
                   flex: 1,
                   minWidth: 120,
@@ -346,11 +293,11 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
                     size="small"
                     variant="filled"
                     sx={{ fontWeight: 500, flexShrink: 0 }}
-                    label={`${admin.time} ${admin.status}`}
+                    label={`${dayjs(admin.timestamp).format('HHmm')} ${admin.status}`}
                     color={admin.status === 'Given' ? 'success' : admin.status === 'Due' ? 'primary' : 'error'}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setActiveFormContext({ hour: hour.label, admin: admin });
+                      setActiveFormContext({ hour, admin: admin });
                     }}
                   />
                 ))}
@@ -369,11 +316,11 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
             <Stack spacing={2} sx={{ flex: 1, minWidth: 0 }}>
               <Stack spacing={0.5}>
                 <Label variant="caption" color="text.secondary" fontWeight="bold">Admin Instructions</Label>
-                <Label variant="body2">{medication.adminInstructions || 'None listed'}</Label>
+                <Label variant="body2">{order.medication?.adminInstructions ?? 'None listed'}</Label>
               </Stack>
               <Stack spacing={0.5}>
                 <Label variant="caption" color="text.secondary" fontWeight="bold">Product Instructions</Label>
-                <Label variant="body2">{medication.productInstructions || 'None listed'}</Label>
+                <Label variant="body2">{order.medication?.productInstructions ?? 'None listed'}</Label>
               </Stack>
             </Stack>
 
@@ -381,26 +328,26 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
             <Stack spacing={2} sx={{ flex: 1, flexShrink: 0 }}>
               <Stack spacing={0.5}>
                 <Label variant="caption" color="text.secondary">Order Start</Label>
-                <Label variant="body2" fontWeight="medium">{medication.orderStart}</Label>
+                <Label variant="body2" fontWeight="medium">{order.orderStart}</Label>
                 <Label variant="caption" color="text.secondary">Order End</Label>
-                <Label variant="body2" fontWeight="medium">{medication.orderEnd}</Label>
+                <Label variant="body2" fontWeight="medium">{order.orderEnd || 'Ongoing'}</Label>
                 <Label variant="caption" color="text.secondary">Last Admin</Label>
-                <Label variant="body2" fontWeight="medium">{medication.lastAdmin}</Label>
+                <Label variant="body2" fontWeight="medium">{lastAdminValue}</Label>
               </Stack>
             </Stack>
 
             {/* Mixture Components */}
             <Stack spacing={1} sx={{ flex: 1.5, minWidth: 0 }}>
               <Label variant="caption" color="text.secondary" fontWeight="bold">Mixture Components</Label>
-              {medication.components && medication.components.length > 0 ? (
+              {order.components && order.components.length > 0 ? (
                 <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
                   <Stack direction="row" sx={{ bgcolor: 'action.disabledBackground', px: 1.5, py: 0.5, borderBottom: 1, borderColor: 'divider' }}>
                     <Label variant="caption" fontWeight="bold" sx={{ flex: 1 }}>Product</Label>
                     <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Dose</Label>
                     <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Amount</Label>
                   </Stack>
-                  {medication.components.map((comp, idx) => (
-                    <Stack key={idx} direction="row" sx={{ px: 1.5, py: 0.75, borderBottom: idx < medication.components.length - 1 ? 1 : 0, borderColor: 'divider' }}>
+                  {order.components.map((comp, idx) => (
+                    <Stack key={idx} direction="row" sx={{ px: 1.5, py: 0.75, borderBottom: idx < order.components.length - 1 ? 1 : 0, borderColor: 'divider' }}>
                       <Label variant="body2" sx={{ flex: 1 }} noWrap>{comp.name}</Label>
                       <Label variant="body2" sx={{ width: 80 }}>{comp.dose}</Label>
                       <Label variant="body2" sx={{ width: 80 }}>{comp.amount}</Label>
@@ -418,9 +365,9 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
 
       {/* Footer */}
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 0.75 }}>
-        <Label variant="caption" sx={{ flex: 1 }}>Dose: <strong>{medication.orderedAdminDose}</strong></Label>
-        <Label variant="caption" sx={{ flex: 1 }}>Window: <strong>{medication.adminWindow}</strong></Label>
-        <Label variant="caption" sx={{ flex: 1 }}>Location: <strong>{medication.dispenseLocation}</strong></Label>
+        <Label variant="caption" sx={{ flex: 1 }}>Dose: <strong>{order.orderedAdminDose}</strong></Label>
+        <Label variant="caption" sx={{ flex: 1 }}>Window: <strong>{order.medication?.adminWindow ?? "N/A"}</strong></Label>
+        <Label variant="caption" sx={{ flex: 1 }}>Location: <strong>{order.dispenseLocation}</strong></Label>
         <IconButton
           size="small"
           onClick={() => setExpanded(!expanded)}
@@ -434,18 +381,57 @@ const DrugBox = ({ medication, hours, administrations, onAddAdmin, onUpdateAdmin
 };
 
 const MAR = () => {
+  const [rxnorm] = useDatabase().orderables.rxnorm();
+
+  const resolveMedication = (code, db) => {
+    if (!code || !db) return null;
+    const med = db.find(x => x.code === code || (x.route && Object.values(x.route).some(r => Object.keys(r).includes(code))));
+    if (!med) return null;
+
+    let fullName = med.name;
+    let formDescription = '';
+
+    if (med.route) {
+      for (const [routeType, forms] of Object.entries(med.route)) {
+        if (forms[code]) {
+          formDescription = forms[code];
+          fullName = `${med.name} ${formDescription}`;
+          break;
+        }
+      }
+    }
+
+    return { ...med, fullName, formDescription };
+  };
+
   const [activeTab, setActiveTab] = useState('All');
-  const [startTime, setStartTime] = useState(dayjs().hour(8).minute(0).second(0));
-  const [medications] = useState(MOCK_MEDICATIONS);
+  const [startTime, setStartTime] = useState(dayjs().startOf('hour').subtract(4, 'hour'));
+  const [orders] = useState(MOCK_ORDERS);
   const [entries, setEntries] = useState(MOCK_MAR_ENTRIES);
 
-  const handleAddAdministration = (medicationId, adminData) => {
+  const medicationOrders = orders.map(order => {
+    const medInfo = resolveMedication(order.medicationId, rxnorm) || {};
+    const components = (order.components || []).map(comp => {
+      const compInfo = resolveMedication(comp.code, rxnorm);
+      return compInfo ? { ...comp, name: compInfo.fullName } : comp;
+    });
+
+    return {
+      ...order,
+      name: medInfo.fullName || order.name,
+      medication: medInfo,
+      // If no components explicitly defined in the order, show the primary medication as the sole component
+      components: components.length > 0 ? components : [
+        { name: medInfo.fullName || order.name, dose: order.orderedAdminDose, amount: order.orderedAmount }
+      ]
+    };
+  });
+
+  const handleAddAdministration = (orderId, adminData) => {
     const newEntry = {
       id: Math.random().toString(36).substr(2, 9),
-      medicationId,
-      hour: adminData.dateTime.format('HH00'),
-      time: adminData.dateTime.format('HHmm'),
-      date: adminData.dateTime.format('YYYY-MM-DD'),
+      orderId,
+      timestamp: adminData.dateTime.toISOString(),
       status: adminData.status,
       amount: adminData.dose,
       site: adminData.site,
@@ -460,9 +446,7 @@ const MAR = () => {
       if (entry.id === entryId) {
         return {
           ...entry,
-          hour: adminData.dateTime.format('HH00'),
-          time: adminData.dateTime.format('HHmm'),
-          date: adminData.dateTime.format('YYYY-MM-DD'),
+          timestamp: adminData.dateTime.toISOString(),
           status: adminData.status,
           amount: adminData.dose,
           site: adminData.site,
@@ -478,6 +462,7 @@ const MAR = () => {
   const HOURS = Array.from({ length: 9 }).map((_, i) => {
     const hourTime = startTime.add(i, 'hour');
     return {
+      time: hourTime,
       label: hourTime.format('HH00'),
       isPast: hourTime.isBefore(now)
     };
@@ -500,9 +485,9 @@ const MAR = () => {
   }
   daySegments.push({ date: currentDay, count: currentCount });
 
-  const filteredMedications = medications.filter(med => {
+  const filteredMedications = medicationOrders.filter(med => {
     const frequency = med.frequency.toLowerCase();
-    const medEntries = entries.filter(e => e.medicationId === med.id);
+    const medEntries = entries.filter(e => e.orderId === med.id);
     if (activeTab === 'All') return true;
     if (activeTab === 'Due') return medEntries.some(a => a.status === 'Due');
     if (activeTab === 'Scheduled') return !frequency.includes('prn');
@@ -619,7 +604,7 @@ const MAR = () => {
         {/* Hour Header Row */}
         <Stack direction="row">
           {HOURS.map((hour) => {
-            const hasEntry = entries.some(admin => admin.hour === hour.label);
+            const hasEntry = entries.some(admin => dayjs(admin.timestamp).isSame(hour.time, 'hour'));
             return (
               <Stack
                 key={hour.label}
@@ -656,9 +641,9 @@ const MAR = () => {
         {filteredMedications.map((med) => (
           <DrugBox
             key={med.id}
-            medication={med}
+            order={med}
             hours={HOURS}
-            administrations={entries.filter(e => e.medicationId === med.id)}
+            administrations={entries.filter(e => e.orderId === med.id)}
             onAddAdmin={handleAddAdministration}
             onUpdateAdmin={handleUpdateAdministration}
           />
