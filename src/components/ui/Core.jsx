@@ -40,7 +40,8 @@ import {
   TabPanel as MUITabPanel
 } from '@mui/lab'
 import {
-  DatePicker as MUIDatePicker
+  DatePicker as MUIDatePicker,
+  DateTimePicker as MUIDateTimePicker
 } from '@mui/x-date-pickers-pro'
 import {
   DataGridPremium as MUIDataGrid,
@@ -309,6 +310,13 @@ export const DatePicker = ({ children, ...props }) => (
   <MUIDatePicker {...props}>
     {children}
   </MUIDatePicker>
+)
+
+/** @type {React.FC<import('@mui/x-date-pickers-pro').DateTimePickerProps<any>>} */
+export const DateTimePicker = ({ children, ...props }) => (
+  <MUIDateTimePicker {...props}>
+    {children}
+  </MUIDateTimePicker>
 )
 
 /** @type {React.FC<import('@mui/material').TabProps>} */
