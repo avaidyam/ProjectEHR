@@ -31,7 +31,7 @@ const procedures = [
   "Appendectomy",
   "Cholecystectomy",
   "Hernia Repair - Inguinal",
-  "Hernia Repair - Umbilical", 
+  "Hernia Repair - Umbilical",
   "Hernia Repair - Ventral",
   "Tonsillectomy",
   "Adenoidectomy",
@@ -156,7 +156,7 @@ export default function SurgicalHistory() {
       updatedHistory = [...surgicalHx, { ...newEntry, id: newId }];
     }
     setSurgicalHx(updatedHistory);
-    
+
     setEditingEntry(null);
     setIsAddingNew(false);
     setNewEntry({
@@ -201,11 +201,9 @@ export default function SurgicalHistory() {
           Add
         </Button>
       </Box>
-
       <Label variant="subtitle1" sx={{ mb: 2, color: '#1976d2', fontWeight: 'bold' }}>
         Past Surgical History
       </Label>
-
       <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
         <Table sx={{ minWidth: 650 }} aria-label="surgical history table">
           <TableHead>
@@ -245,14 +243,13 @@ export default function SurgicalHistory() {
           </TableBody>
         </Table>
       </Box>
-
       {(isAddingNew || editingEntry) && (
         <Box sx={{ p: 3, mt: 3, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f9f9f9' }}>
           <Label variant="h6" gutterBottom sx={{ mb: 3 }}>
             {editingEntry ? 'Edit Surgical Entry' : 'Add New Surgical Entry'}
           </Label>
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Procedure *</InputLabel>
                 <Select
@@ -270,7 +267,7 @@ export default function SurgicalHistory() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid size={{ xs: 12, sm: 3 }}>
               <FormControl fullWidth>
                 <InputLabel>Laterality</InputLabel>
                 <Select
@@ -287,28 +284,28 @@ export default function SurgicalHistory() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField 
-                label="Date" 
-                name="date" 
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <TextField
+                label="Date"
+                name="date"
                 type="date"
-                value={newEntry.date} 
-                onChange={handleChange} 
-                fullWidth 
+                value={newEntry.date}
+                onChange={handleChange}
+                fullWidth
                 InputLabelProps={{ shrink: true }}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField 
-                label="Age" 
-                name="age" 
-                value={newEntry.age} 
-                onChange={handleChange} 
-                fullWidth 
-                placeholder="e.g. 25 years old" 
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                label="Age"
+                name="age"
+                value={newEntry.age}
+                onChange={handleChange}
+                fullWidth
+                placeholder="e.g. 25 years old"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Source</InputLabel>
                 <Select
@@ -325,30 +322,30 @@ export default function SurgicalHistory() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <TextField 
-                label="Comment/Notes" 
-                name="notes" 
-                value={newEntry.notes} 
-                onChange={handleChange} 
-                fullWidth 
+            <Grid size={12}>
+              <TextField
+                label="Comment/Notes"
+                name="notes"
+                value={newEntry.notes}
+                onChange={handleChange}
+                fullWidth
                 multiline
                 rows={3}
-                placeholder="Additional details about the procedure..." 
+                placeholder="Additional details about the procedure..."
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button 
-                  onClick={handleSave} 
-                  variant="contained" 
+                <Button
+                  onClick={handleSave}
+                  variant="contained"
                   color="primary"
                   sx={{ mr: 1 }}
                 >
                   {editingEntry ? 'Update' : 'Save'}
                 </Button>
-                <Button 
-                  onClick={handleCancel} 
+                <Button
+                  onClick={handleCancel}
                   variant="outlined"
                 >
                   Cancel
@@ -358,7 +355,6 @@ export default function SurgicalHistory() {
           </Grid>
         </Box>
       )}
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

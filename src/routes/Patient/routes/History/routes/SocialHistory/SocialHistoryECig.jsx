@@ -39,7 +39,7 @@ export default function ECigaretteVapingHistory() {
 
   const useOptions = [
     'Current Every Day User',
-    'Current Some Day User', 
+    'Current Some Day User',
     'Former User',
     'Never Assessed',
     'Never User',
@@ -86,12 +86,11 @@ export default function ECigaretteVapingHistory() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         E-cigarette/Vaping
       </Label>
-
       {/* Main E-cigarette/Vaping Section */}
       <SectionPaper>
         <SectionHeader>E-cigarette/Vaping</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>E-cigarette/Vaping Use</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
               {useOptions.map(option => (
@@ -115,7 +114,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Start Date"
               type="date"
@@ -126,7 +125,7 @@ export default function ECigaretteVapingHistory() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Quit Date"
               type="date"
@@ -137,7 +136,7 @@ export default function ECigaretteVapingHistory() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Cartridges/Day"
               type="number"
@@ -148,7 +147,7 @@ export default function ECigaretteVapingHistory() {
             />
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Passive Exposure</Label>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
@@ -184,7 +183,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Counseling Given</Label>
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
@@ -220,7 +219,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Comments"
               multiline
@@ -232,12 +231,11 @@ export default function ECigaretteVapingHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* E-cigarette/Vaping Substances */}
       <SectionPaper>
         <SubSectionHeader>E-cigarette/Vaping Substances</SubSectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>Nicotine</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -277,7 +275,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>THC</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -317,7 +315,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>CBD</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -357,7 +355,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>Flavoring</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -397,7 +395,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Other"
               fullWidth
@@ -407,12 +405,11 @@ export default function ECigaretteVapingHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* E-cigarette/Vaping Devices */}
       <SectionPaper>
         <SubSectionHeader>E-cigarette/Vaping Devices</SubSectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Disposable</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -452,7 +449,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Pre-filled Pod</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -492,7 +489,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '200px', flex: 1 }}>Pre-filled or Refillable Cartridge</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -532,7 +529,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Refillable Tank</Label>
               <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
@@ -572,7 +569,7 @@ export default function ECigaretteVapingHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Other"
               fullWidth

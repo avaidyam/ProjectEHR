@@ -122,10 +122,10 @@ export const OrderCart = () => {
               <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
                 <Typography variant="body1">{order.name}</Typography>
                 <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
-                  {order['Dose']}
+                  {order.dose}
                 </Typography>
                 <Typography fontSize="8pt" color="grey">
-                  {order['Route']}, {order['Frequency']}, {order['Refills']} refills
+                  {order.route}, {order.frequency}, {order['Refills']} refills
                 </Typography>
                 <Button
                   sx={{
@@ -177,7 +177,7 @@ export const OrderCart = () => {
           setOpenSearchList(null)
           if (item !== null) {
             if (Array.isArray(item)) {
-              const newItems = item.map(x => ({ ...x, id: x.id || crypto.randomUUID(), name: x.originalName || x.name, Dose: x.dose || x.Dose, Route: x.route || x.Route, Frequency: x.frequency || x.Frequency }))
+              const newItems = item.map(x => ({ ...x, id: crypto.randomUUID(), date: new Date(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
               setOrderCart(prev => prev.upsert(newItems, "id"))
             } else {
               setOpenOrder(item)

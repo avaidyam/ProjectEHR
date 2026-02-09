@@ -78,7 +78,7 @@ export default function MedicalHistory() {
       updatedHistory = [...medicalHx, { ...newEntry, id: newId }];
     }
     setMedicalHx(updatedHistory);
-    
+
     setEditingEntry(null);
     setIsAddingNew(false);
     setNewEntry({
@@ -121,7 +121,6 @@ export default function MedicalHistory() {
           New
         </Button>
       </Box>
-
       <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
         <Table sx={{ minWidth: 650 }} aria-label="medical history table">
           <TableHead>
@@ -165,39 +164,37 @@ export default function MedicalHistory() {
           </TableBody>
         </Table>
       </Box>
-
       {(isAddingNew || editingEntry) && (
         <Box sx={{ p: 2, mt: 4, border: '1px solid #e0e0e0' }}>
           <Label variant="h6" gutterBottom>
             {editingEntry ? 'Edit Entry' : 'Add New Entry'}
           </Label>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Diagnosis" name="diagnosis" value={newEntry.diagnosis} onChange={handleChange} fullWidth placeholder="e.g. Chronic kidney disease" />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid size={{ xs: 12, sm: 3 }}>
               <TextField label="Date" name="date" value={newEntry.date} onChange={handleChange} fullWidth placeholder="mm/dd/yyyy" />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid size={{ xs: 12, sm: 3 }}>
               <TextField label="Age" name="age" value={newEntry.age} onChange={handleChange} fullWidth placeholder="e.g. 65 years old" />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField label="Source" name="src" value={newEntry.src} onChange={handleChange} fullWidth placeholder="e.g. Hospital record" />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <FormControlLabel
                 control={<Checkbox checked={newEntry.problemList === 'True'} onChange={(e) => setNewEntry({ ...newEntry, problemList: e.target.checked ? 'True' : 'False' })} />}
                 label="Add to Problem List"
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Button onClick={handleSave} variant="contained" color="primary" sx={{ mr: 1 }}>Save</Button>
               <Button onClick={handleCancel} variant="outlined">Cancel</Button>
             </Grid>
           </Grid>
         </Box>
       )}
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

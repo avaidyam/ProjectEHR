@@ -56,8 +56,9 @@ const DiagnosisSearchResults = ({ data, selection, setSelection, onSelect, queue
                     hideFooter
                     disableColumnMenu
                     density="compact"
-                    rowSelectionModel={selection ? [selection] : []}
-                    onRowSelectionModelChange={(ids) => {
+                    rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
+                    onRowSelectionModelChange={(newModel) => {
+                        const ids = Array.from(newModel.ids);
                         if (ids.length > 0) setSelection(ids[0])
                         else if (data.some(x => x.conceptId === selection)) setSelection(null)
                     }}

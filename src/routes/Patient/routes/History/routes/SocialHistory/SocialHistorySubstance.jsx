@@ -44,7 +44,7 @@ export default function SubstanceAndSexualHistory() {
 
   const drugTypes = [
     'Anabolic Steroids',
-    'Barbiturates', 
+    'Barbiturates',
     'Benzodiazepines',
     'Cannabinoids - Marijuana, Hashish, Synthetics',
     'Hallucinogens - e.g. LSD, Mushrooms',
@@ -87,10 +87,10 @@ export default function SubstanceAndSexualHistory() {
   const handleArrayToggle = (section, field, value) => {
     setSubstanceData(prev => {
       const currentArray = prev[section]?.[field] || [];
-      const newArray = currentArray.includes(value) 
+      const newArray = currentArray.includes(value)
         ? currentArray.filter(item => item !== value)
         : [...currentArray, value];
-      
+
       return {
         ...prev,
         [section]: {
@@ -120,12 +120,11 @@ export default function SubstanceAndSexualHistory() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Substance & Sexual Activity
       </Label>
-
       {/* Tobacco Section */}
       <SectionPaper>
         <SectionHeader>Tobacco</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Smoking</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {tobaccoOptions.map(option => (
@@ -148,8 +147,8 @@ export default function SubstanceAndSexualHistory() {
               ))}
             </Box>
           </Grid>
-          
-          <Grid item xs={12}>
+
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Smokeless</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {smokelessOptions.map(option => (
@@ -173,7 +172,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Cessation</Label>
             <FormControlLabel
               control={
@@ -186,7 +185,7 @@ export default function SubstanceAndSexualHistory() {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Passive Exposure</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               {exposureOptions.map(option => (
@@ -210,7 +209,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Comments"
               multiline
@@ -222,12 +221,11 @@ export default function SubstanceAndSexualHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Alcohol Section */}
       <SectionPaper>
         <SectionHeader>Alcohol</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Alcohol Use?</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
               {useOptions.map(option => (
@@ -251,13 +249,13 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 2, color: '#1976d2' }}>
               Drinks per Week
             </Label>
           </Grid>
-          
-          <Grid item xs={6} md={2}>
+
+          <Grid size={{ xs: 6, md: 2 }}>
             <TextField
               label="Glasses of wine"
               type="number"
@@ -267,8 +265,8 @@ export default function SubstanceAndSexualHistory() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          
-          <Grid item xs={6} md={2}>
+
+          <Grid size={{ xs: 6, md: 2 }}>
             <TextField
               label="Cans of beer"
               type="number"
@@ -278,8 +276,8 @@ export default function SubstanceAndSexualHistory() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          
-          <Grid item xs={6} md={2}>
+
+          <Grid size={{ xs: 6, md: 2 }}>
             <TextField
               label="Shots of liquor"
               type="number"
@@ -289,8 +287,8 @@ export default function SubstanceAndSexualHistory() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          
-          <Grid item xs={6} md={3}>
+
+          <Grid size={{ xs: 6, md: 3 }}>
             <TextField
               label="Drinks containing 1.5 oz of alcohol"
               type="number"
@@ -300,8 +298,8 @@ export default function SubstanceAndSexualHistory() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          
-          <Grid item xs={6} md={3}>
+
+          <Grid size={{ xs: 6, md: 3 }}>
             <TextField
               label="Standard drinks or equivalent"
               type="number"
@@ -312,7 +310,7 @@ export default function SubstanceAndSexualHistory() {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Comments"
               multiline
@@ -324,12 +322,11 @@ export default function SubstanceAndSexualHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Drug Section */}
       <SectionPaper>
         <SectionHeader>Drug</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Drug Use</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
               {useOptions.map(option => (
@@ -353,7 +350,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Use/week"
               type="number"
@@ -364,7 +361,7 @@ export default function SubstanceAndSexualHistory() {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Types</Label>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {drugTypes.map(type => (
@@ -383,7 +380,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Comments"
               multiline
@@ -395,12 +392,11 @@ export default function SubstanceAndSexualHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Sexual Activity Section */}
       <SectionPaper>
         <SectionHeader>Sexual Activity</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Sexually active</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
               {sexualActivityOptions.map(option => (
@@ -424,7 +420,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Birth Control Methods</Label>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {birthControlMethods.map(method => (
@@ -443,7 +439,7 @@ export default function SubstanceAndSexualHistory() {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Partners</Label>
             <FormControlLabel
               control={
@@ -466,7 +462,7 @@ export default function SubstanceAndSexualHistory() {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="Comments"
               multiline

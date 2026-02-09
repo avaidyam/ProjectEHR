@@ -185,7 +185,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
                     <Grid container spacing={2}>
                         {/* Department - Autocomplete (Strict) */}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Autocomplete
                                 options={departments || []}
                                 getOptionLabel={(option) => option.name || ''}
@@ -200,7 +200,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                         </Grid>
 
                         {/* Status - Autocomplete (Strict) */}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Autocomplete
                                 options={VISIT_STATUSES}
                                 value={formData.status}
@@ -214,7 +214,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                         </Grid>
 
                         {/* Provider - Autocomplete (Strict) */}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Autocomplete
                                 options={providers || []}
                                 getOptionLabel={(option) => option.name || ''}
@@ -229,7 +229,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                         </Grid>
 
                         {/* Location - Autocomplete (Strict) */}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Autocomplete
                                 options={locations || []}
                                 getOptionLabel={(option) => option.name || ''}
@@ -243,7 +243,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                             />
                         </Grid>
 
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Autocomplete
                                 freeSolo
                                 options={VISIT_TYPES}
@@ -265,7 +265,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                             />
                         </Grid>
 
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <TextField
                                 label="Appointment Time"
                                 type="datetime-local"
@@ -277,7 +277,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <TextField
                                 label="Chief Complaint (CC)"
                                 value={formData.cc}
@@ -287,7 +287,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <TextField
                                 label="Notes"
                                 value={formData.notes}
@@ -299,7 +299,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={12}>
                             <Button
                                 startIcon={<Icon>{showAdvanced ? 'expand_less' : 'expand_more'}</Icon>}
                                 onClick={() => setShowAdvanced(!showAdvanced)}
@@ -311,7 +311,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
                         {showAdvanced && (
                             <>
-                                <Grid item xs={6}>
+                                <Grid size={6}>
                                     <TextField
                                         label="Check-in Time"
                                         type="datetime-local"
@@ -322,7 +322,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                                         InputLabelProps={{ shrink: true }}
                                     />
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid size={6}>
                                     <TextField
                                         label="Check-out Time"
                                         type="datetime-local"

@@ -1,8 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Label, Box, Tab, TabView, TabList, TabPanel } from "components/ui/Core.jsx";
-// LLM chat UI removed
-// import ChatPanel from "./components/ChatPanel.jsx";
-// import PatientInfoPanel from "./components/PatientInfoPanel.jsx";
+import { Box, IconButton, Icon, Window } from "components/ui/Core";
 import { GeminiAPIProvider } from "./utils/GeminiAPI";
 import VoicePanel from "./components/VoicePanel";
 import ModelConfig from "./components/ModelConfig";
@@ -18,6 +15,7 @@ export default function Chat() {
   const [tab, setTab] = useState("voice");
   const [configUnlocked, setConfigUnlocked] = useState(false);
   const [voiceName, setVoiceName] = useState("Charon");
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
@@ -69,8 +67,8 @@ export default function Chat() {
   const rosNote = (notes || []).find(
     (doc) => doc?.summary === 'Review of Systems'
   );
-  const physicalExamNote = (documents || []).find(
-    (doc) => doc?.kind === 'Note' && doc?.data?.summary === 'Physical Exam'
+  const physicalExamNote = (notes || []).find(
+    (doc) => doc?.summary === 'Physical Exam'
   );
 
   // Histories
@@ -215,6 +213,33 @@ export default function Chat() {
     socialDocumentation, medications, immunizations, allergies
   ]);
 
+  const systemInstruction = useMemo(() => {
+    return `
+If unsure what to say in the beginning just say, "Hey, uh, I'm here for my doctor's appointment." 
+
+You are a mock patient participating in a medical problem-based learning (PBL) session. 
+Your task is to simulate a realistic patient encounter for students learning clinical reasoning. 
+You should answer questions as a real patient would — only provide information that a typical patient might know, 
+and avoid medical jargon unless the patient would reasonably use it.
+
+Here are your characteristics: 
+
+${fullPrompt}
+
+---
+
+**Instructions:**
+- IMPORTANT!: Do not volunteer all the information at once. Only provide details when asked directly.
+- Speak in a less educated, more conversational style.
+- Act like a regular person — don’t use medical jargon unless it would be natural for the character (e.g., “blood pressure,” not “hypertension”).
+- If unsure, say something like “I dunno” or “I never really thought about it.” Try not to make anything up.
+- If the student asks something medically advanced (like lab results, EKG, or terminology you wouldn’t know), respond with confusion or say the doctor told you something general (e.g., “they said it was something about my heart”).
+- Use natural emotion: worry, confusion, frustration, etc., appropriate to the situation.
+- It's ok if the student asks you for information out of order (i.e., ROS, social history, or patient perspective first), act as if the initial part of the appointment has already happened. 
+- IMPORTANT: If it appears the question is for ROS, answer as briefly as possible (i.e. no or yes]) without added commentary
+        `;
+  }, [fullPrompt]);
+
   React.useEffect(() => {
     if (!_PWD) {
       _PWD = window.prompt("Please enter your authorization code:");
@@ -229,17 +254,15 @@ export default function Chat() {
       const pass = window.prompt("Enter password to unlock Model Config:");
       if (pass === "config") {
         setConfigUnlocked(true);
-        setTab("modelConfig");
+        setSettingsOpen(true);
       } else {
         alert("Incorrect password.");
         return;
       }
     } else {
-      setTab(newValue);
+      setSettingsOpen(true);
     }
   };
-
-  // console.dir(fullPrompt)
 
   return (
     <GeminiAPIProvider
@@ -262,89 +285,31 @@ export default function Chat() {
           systemInstruction: {
             parts: [
               {
-                text: `
-        If unsure what to say in the beginning just say, "Hey, uh, I'm here for my doctor's appointment." 
-
-        You are a mock patient participating in a medical problem-based learning (PBL) session. 
-        Your task is to simulate a realistic patient encounter for students learning clinical reasoning. 
-        You should answer questions as a real patient would — only provide information that a typical patient might know, 
-        and avoid medical jargon unless the patient would reasonably use it.
-        
-        Here are your characteristics: 
-        ${fullPrompt}
-
-        ---
-    
-        **Instructions:**
-        - IMPORTANT!: Do not volunteer all the information at once. Only provide details when asked directly.
-        - Speak in a less educated, more conversational style.
-        - Act like a regular person — don’t use medical jargon unless it would be natural for the character (e.g., “blood pressure,” not “hypertension”).
-        - If unsure, say something like “I dunno” or “I never really thought about it.” Try not to make anything up.
-        - If the student asks something medically advanced (like lab results, EKG, or terminology you wouldn’t know), respond with confusion or say the doctor told you something general (e.g., “they said it was something about my heart”).
-        - Use natural emotion: worry, confusion, frustration, etc., appropriate to the situation.
-        - It's ok if the student asks you for information out of order (i.e., ROS, social history, or patient perspective first), act as if the initial part of the appointment has already happened. 
-        - IMPORTANT: If it appears the question is for ROS, answer as briefly as possible (i.e. no or yes]) without added commentary
-        `,
+                text: systemInstruction,
               },
             ],
           },
         },
       }}
     >
-      <TabView value={tab}>
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-          <Label variant="h6" sx={{ fontWeight: "bold", color: "secondary.main", px: 2 }}>
-            BICEP CHAT
-          </Label>
-
-          <TabList onChange={handleTabChange}>
-            {/* LLM Chat disabled */}
-            {/* <Tab value="chat" label="LLM Chat" /> */}
-            <Tab value="voice" label="Speech Mode" />
-            <Tab value="modelConfig" label="Model Config" />
-          </TabList>
-
-          <Box sx={{ flexGrow: 1, minHeight: 0 }}>
-            {/* ⛔ Entire LLM Chat panel removed */}
-            {/*
-          <TabPanel sx={{ p: 0 }} value="chat">
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <ChatPanel />
-              </Box>
-              <Box sx={{ width: "300px", flexShrink: 0 }}>
-                <PatientInfoPanel />
-              </Box>
-            </Box>
-          </TabPanel>
-          */}
-
-            <TabPanel sx={{ p: 0, height: '100%', overflowY: 'auto' }} value="voice">
-              <VoicePanel />
-            </TabPanel>
-
-            <TabPanel sx={{ p: 0, height: '100%' }} value="modelConfig">
-              {configUnlocked ? (
-                <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={fullPrompt} />
-              ) : (
-                <Box
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "gray",
-                    fontStyle: "italic",
-                    p: 4,
-                  }}
-                >
-                  🔒 Model Config is locked.
-                </Box>
-              )}
-            </TabPanel>
-          </Box>
+      <Box sx={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+        <Box sx={{ flexGrow: 1, minHeight: 0, position: "relative" }}>
+          <VoicePanel onSettings={() => handleTabChange(null, "modelConfig")} />
         </Box>
-      </TabView>
+      </Box>
+      <Window
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="Model Configuration"
+        maxWidth="md"
+        fullWidth
+      >
+        <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={systemInstruction} />
+      </Window>
     </GeminiAPIProvider>
   );
 }

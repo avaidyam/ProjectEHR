@@ -1,47 +1,135 @@
 import React, { useState } from 'react';
-import { List } from '@mui/material';
-import { Box, Stack, Icon, Label, Button } from 'components/ui/Core';
+import { List, Popover, Typography } from '@mui/material';
+import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { formatComponentDate } from 'util/componentHistory';
 
-// Helper to get color by category
-const getCategoryColor = (category) => {
-  const colors = {
-    'flowsheets': '#4caf50',
-    'results_lab': '#2196f3',
-    'results_imaging': '#2196f3',
-    'mar_scheduled': '#e91e63',
-    'notes': '#ff9800',
-    'default': '#9e9e9e',
-  };
-  return colors[category] || colors['default'];
+const ComponentPopover = ({ item, historyData }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isAbnormal = item.flag === 'H' || item.flag === 'L';
+  const componentName = item.name || item.label;
+  const history = historyData?.[componentName] || { encounter: [], chart: [] };
+
+  return (
+    <>
+      <Label
+        variant="caption"
+        onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
+        onMouseLeave={() => setAnchorEl(null)}
+        sx={{
+          mr: 1,
+          color: isAbnormal ? 'error.main' : 'text.secondary',
+          fontFamily: 'monospace',
+          whiteSpace: 'nowrap',
+          cursor: 'pointer',
+          fontWeight: isAbnormal ? 'bold' : 'normal',
+        }}
+      >
+        {componentName}: <Box component="span" sx={{ color: isAbnormal ? 'error.main' : 'text.primary', fontWeight: 'bold' }}>{item.value}</Box> {item.unit}
+      </Label>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+        disableRestoreFocus
+        sx={{ pointerEvents: 'none', ml: 1 }}
+        slotProps={{
+          paper: {
+            sx: {
+              p: 0,
+              minWidth: 220,
+              maxHeight: 400,
+              boxShadow: '0px 2px 10px rgba(0,0,0,0.15)',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              overflow: 'visible',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                left: -8,
+                top: 20,
+                width: 0,
+                height: 0,
+                borderTop: '8px solid transparent',
+                borderBottom: '8px solid transparent',
+                borderRight: '8px solid white',
+                filter: 'drop-shadow(-2px 0px 1px rgba(0,0,0,0.1))',
+              },
+            },
+            onMouseEnter: (e) => setAnchorEl(e.currentTarget),
+            onMouseLeave: () => setAnchorEl(null),
+          }
+        }}
+      >
+        <Box sx={{ maxHeight: 400, overflowY: 'auto' }}>
+          {/* Header */}
+          <Typography variant="subtitle2" fontWeight={700} sx={{ px: 1.5, py: 1 }}>
+            {componentName}
+          </Typography>
+
+          {/* This Encounter Section */}
+          {history.encounter.length > 0 && (
+            <Box sx={{ bgcolor: 'action.disabledBackground' }}>
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 600, display: 'block', px: 1.5, pt: 0.5 }}
+              >
+                This Encounter
+              </Typography>
+              {history.encounter.map((entry, idx) => (
+                <Stack
+                  key={`enc-${idx}`}
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ px: 1.5, py: 0.25 }}
+                >
+                  <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                    {entry.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {formatComponentDate(entry.date)}
+                  </Typography>
+                </Stack>
+              ))}
+            </Box>
+          )}
+
+          {/* Chart Section */}
+          {history.chart.length > 0 && (
+            <Box>
+              {history.chart.map((entry, idx) => (
+                <Stack
+                  key={`chart-${idx}`}
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ px: 1.5, py: 0.25 }}
+                >
+                  <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
+                    {entry.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                    {formatComponentDate(entry.date)}
+                  </Typography>
+                </Stack>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Popover>
+    </>
+  );
 };
 
-const getCategoryIcon = (category) => {
-  const icons = {
-    'flowsheets': 'grid_on',
-    'ldas': 'search',
-    'mar': 'vaccines',
-    'mar_scheduled': 'vaccines',
-    'mar_continuous': 'vaccines',
-    'mar_prn': 'vaccines',
-    'narrator': 'location_on',
-    'notes': 'description',
-    'notes_staff': 'description',
-    'patient_movement': 'swap_horiz',
-    'results': 'science',
-    'results_cardiac': 'science',
-    'results_imaging': 'science',
-    'results_lab': 'science',
-    'transfusions': 'water_drop',
-    'default': 'help_outline',
-  };
-  return icons[category] || icons['default'];
-};
 
-const EventItem = ({ event }) => {
+const EventItem = ({ event, categories, componentHistory, flowsheetHistory }) => {
   const { openTab } = useSplitView();
-  const color = getCategoryColor(event.category);
-  const icon = getCategoryIcon(event.category);
+
+  const filter = categories.find(f => f.id === event.category);
+  const color = filter?.color ?? '#9e9e9e';
+  const icon = filter?.icon ?? 'help_outline';
+
   const dateObj = new Date(event.timestamp);
   const timeString = isNaN(dateObj.getTime())
     ? event.timestamp
@@ -70,7 +158,7 @@ const EventItem = ({ event }) => {
           {event.tag === 'Abnormal' ? "error_outline" : icon}
         </Icon>
       </Stack>
-      <Stack direction="column" sx={{ flex: 1, overflow: 'hidden', borderBottom: '1px solid #e0e0e0' }}>
+      <Stack direction="column" sx={{ flex: 1, overflow: 'hidden', borderBottom: '1px solid #e0e0e0', pr: 1 }}>
         <Stack direction="row" alignItems="center">
           <Button
             variant="text"
@@ -99,17 +187,16 @@ const EventItem = ({ event }) => {
           </Label>
         </Stack>
         <Stack direction="row" sx={{ pl: 2, flexWrap: 'wrap', overflowX: 'auto' }}>
-          {(event.subItems ?? []).map((item, index) => (
-            <Label key={index} variant="caption" sx={{ mr: 1, color: 'text.secondary', fontFamily: 'monospace', whiteSpace: 'nowrap' }}>
-              {item.name || item.label}: <Box component="span" sx={{ color: 'text.primary', fontWeight: 'bold' }}>{item.value}</Box> {item.unit}
-            </Label>
-          ))}
+          {(event.subItems ?? []).map((item, index) => {
+            const historyData = event.category === 'flowsheets' ? flowsheetHistory : componentHistory;
+            return <ComponentPopover key={index} item={item} historyData={historyData} />;
+          })}
         </Stack>
       </Stack>
     </Stack>
   );
 };
-// Helper to format date as "Mon DD" or "Mon DD, YYYY" if not current year
+
 const formatDateHeader = (date) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const currentYear = new Date().getFullYear();
@@ -118,7 +205,6 @@ const formatDateHeader = (date) => {
   return dateYear !== currentYear ? `${base}, ${dateYear}` : base;
 };
 
-// Helper to get date key for grouping (YYYY-MM-DD)
 const getDateKey = (timestamp) => {
   const date = new Date(timestamp);
   if (isNaN(date.getTime())) return 'Unknown';
@@ -132,8 +218,7 @@ const DateHeader = ({ date, dateKey }) => (
       position: 'sticky',
       top: 0,
       zIndex: 1,
-      bgcolor: 'primary.main',
-      color: 'primary.contrastText',
+      bgcolor: 'action.disabledBackground',
       px: 1.5,
       py: 0.5,
       borderBottom: '1px solid',
@@ -146,8 +231,7 @@ const DateHeader = ({ date, dateKey }) => (
   </Box>
 );
 
-export const EventList = ({ events }) => {
-  // Group events by date
+export const EventList = ({ events, categories, componentHistory, flowsheetHistory }) => {
   const groupedEvents = events.reduce((groups, event) => {
     const dateKey = getDateKey(event.timestamp);
     if (!groups[dateKey]) {
@@ -157,11 +241,10 @@ export const EventList = ({ events }) => {
     return groups;
   }, {});
 
-  // Sort date keys (most recent first)
   const sortedDateKeys = Object.keys(groupedEvents).sort((a, b) => new Date(b) - new Date(a));
 
   return (
-    <List sx={{ width: '100%', bgcolor: 'background.paper', p: 0 }}>
+    <List sx={{ width: '100%', p: 0 }}>
       {sortedDateKeys.map((dateKey) => {
         const dateObj = new Date(dateKey);
         const dateLabel = isNaN(dateObj.getTime()) ? dateKey : formatDateHeader(dateObj);
@@ -169,7 +252,13 @@ export const EventList = ({ events }) => {
           <Box key={dateKey}>
             <DateHeader date={dateLabel} dateKey={dateKey} />
             {groupedEvents[dateKey].map((event) => (
-              <EventItem key={event.id} event={event} />
+              <EventItem
+                key={event.id}
+                event={event}
+                categories={categories}
+                componentHistory={componentHistory}
+                flowsheetHistory={flowsheetHistory}
+              />
             ))}
           </Box>
         );

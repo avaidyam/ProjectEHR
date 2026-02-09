@@ -693,8 +693,8 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
           Object.entries(x.condition ?? {}).findIndex(([key, value]) => params[key] !== value) < 0
         ).map(x => (
           <React.Fragment key={x.name}>
-            <Grid item xs={3}><Label>{x.name}</Label></Grid>
-            <Grid item xs={9}>
+            <Grid size={3}><Label>{x.name}</Label></Grid>
+            <Grid size={9}>
               {/* Special handling for Dose field - different UI based on whether dose is calculable */}
               {x.name === "Dose" && tempMed?.route ? (
                 isDoseCalculable ? (
@@ -825,8 +825,8 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
             {/* Calculated Dose Display - only shown for calculable medications */}
             {x.name === "Dose" && tempMed?.route && isDoseCalculable && (
               <>
-                <Grid item xs={3}></Grid>
-                <Grid item xs={9}>
+                <Grid size={3}></Grid>
+                <Grid size={9}>
                   <Box sx={{
                     display: 'flex',
                     alignItems: 'center',

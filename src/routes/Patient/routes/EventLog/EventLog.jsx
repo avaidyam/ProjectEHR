@@ -7,17 +7,50 @@ import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
-import { CollapsiblePane } from './components/CollapsiblePane';
+import { CollapsiblePane } from 'components/ui/CollapsiblePane';
+import { getComponentHistory, getFlowsheetHistory } from 'util/componentHistory';
+
+const CATEGORIES = [
+  { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },
+  { id: 'ldas', label: 'LDAs', icon: 'search', color: '#25584e' },
+  { id: 'mar', label: 'MAR', icon: 'vaccines', color: '#891abd' },
+  { id: 'mar_scheduled', label: 'Scheduled', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'mar_continuous', label: 'Continuous', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'mar_prn', label: 'PRN', icon: 'vaccines', color: '#891abd', parent: 'mar' },
+  { id: 'narrator', label: 'Narrator Events', icon: 'location_on', color: '#25584e' },
+  { id: 'notes', label: 'Notes', icon: 'description', color: '#b42563' },
+  { id: 'notes_staff', label: 'Staff Progress', icon: 'description', color: '#b42563', parent: 'notes' },
+  { id: 'orders', label: 'Orders', icon: 'content_paste_go', color: '#1a73e8' },
+  { id: 'patient_movement', label: 'Patient Movement', icon: 'swap_horiz', color: '#2150c8' },
+  { id: 'results', label: 'Results', icon: 'science', color: '#5f3bc9' },
+  { id: 'results_lab', label: 'Lab', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'results_imaging', label: 'Imaging', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'results_cardiac', label: 'Cardiac', icon: 'science', color: '#5f3bc9', parent: 'results' },
+  { id: 'transfusions', label: 'Transfusions', icon: 'water_drop', color: '#c62828' },
+];
 
 export const EventLog = () => {
   const eventListRef = useRef(null);
-  const { useEncounter } = usePatient();
+  const { useEncounter, useChart } = usePatient();
   const [notes] = useEncounter().notes();
   const [labs] = useEncounter().labs();
+  const [chartLabs] = useChart().labs();
   const [imaging] = useEncounter().imaging();
   const [flowsheets] = useEncounter().flowsheets();
+  const [chartFlowsheets] = useChart().flowsheets();
+  const [orders] = useEncounter().orders();
   const [flowsheetDefs] = useDatabase().flowsheets();
   const [providers] = useDatabase().providers();
+
+  // Generate component history for popover display
+  const componentHistory = useMemo(() => {
+    return getComponentHistory(labs, chartLabs);
+  }, [labs, chartLabs]);
+
+  // Generate flowsheet history for popover display
+  const flowsheetHistory = useMemo(() => {
+    return getFlowsheetHistory(flowsheets, chartFlowsheets, flowsheetDefs);
+  }, [flowsheets, chartFlowsheets, flowsheetDefs]);
 
   // Helper to look up provider name by ID
   const getProviderName = (providerId) => {
@@ -27,7 +60,7 @@ export const EventLog = () => {
 
   const [selectedFilters, setSelectedFilters] = useState([
     'flowsheets', 'ldas', 'mar', 'mar_scheduled', 'mar_continuous', 'mar_prn',
-    'narrator', 'notes', 'notes_staff', 'patient_movement',
+    'narrator', 'notes', 'notes_staff', 'orders', 'patient_movement',
     'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -47,7 +80,7 @@ export const EventLog = () => {
         tag: item.abnormal ? 'Abnormal' : undefined,
         author: getProviderName(item.provider) ?? "Unknown",
         data: item,
-        subItems: []
+        subItems: (item.components ?? []).map(x => ({ label: x.name, value: x.value }))
       });
     });
 
@@ -121,8 +154,22 @@ export const EventLog = () => {
       }
     });
 
+    // Process Orders
+    (orders || []).forEach(item => {
+      allEvents.push({
+        id: item.id || `order - ${Math.random()}`,
+        category: 'orders',
+        title: `${item.name} | ${item.dose}`,
+        timestamp: item.date,
+        details: item.priority ?? "New Order",
+        author: getProviderName(item.provider) ?? "Unknown",
+        data: item,
+        subItems: []
+      });
+    });
+
     return allEvents.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers]);
+  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers, orders]);
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = useMemo(() => {
@@ -257,15 +304,22 @@ export const EventLog = () => {
       <Stack direction="row" sx={{ flexGrow: 1, overflow: 'hidden' }}>
         <CollapsiblePane width={280} side="left">
           <EventFilters
+            categories={CATEGORIES}
             selectedFilters={selectedFilters}
             onFilterChange={setSelectedFilters}
           />
         </CollapsiblePane>
-        <Stack sx={{ flex: 1, overflow: 'hidden', p: 1 }}>
-          <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto', pr: 1 }}>
-            <EventList events={filteredEvents} />
+        <Stack sx={{ flex: 1, overflow: 'hidden' }}>
+          <Box ref={eventListRef} sx={{ height: '100%', width: '100%', overflowY: 'auto' }}>
+            <EventList
+              events={filteredEvents}
+              categories={CATEGORIES}
+              componentHistory={componentHistory}
+              flowsheetHistory={flowsheetHistory}
+            />
           </Box>
         </Stack>
+
         <CollapsiblePane width={400} side="right">
           <VitalsGraph data={vitalsGraphData} />
         </CollapsiblePane>

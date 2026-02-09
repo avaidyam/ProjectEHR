@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
 import { FlowsheetGrid } from './components/FlowsheetGrid';
 import LeftRail from './components/LeftRail';
+import { CollapsiblePane } from 'components/ui/CollapsiblePane';
 import { v4 as uuidv4 } from 'uuid';
 import DateHelpers from 'util/helpers.js';
 
@@ -300,16 +301,18 @@ export const Flowsheet = () => {
             <Box sx={{ flexGrow: 1, overflow: 'hidden', display: 'flex' }}>
                 {/* Sidebar */}
                 {activeGroup && (
-                    <LeftRail
-                        rows={activeGroup.rows}
-                        visibleRows={visibleRows}
-                        onToggleRow={handleToggleRow}
-                        onToggleCategory={handleToggleCategory}
-                    />
+                    <CollapsiblePane width={280} side="left" sx={{}}>
+                        <LeftRail
+                            rows={activeGroup.rows}
+                            visibleRows={visibleRows}
+                            onToggleRow={handleToggleRow}
+                            onToggleCategory={handleToggleCategory}
+                        />
+                    </CollapsiblePane>
                 )}
 
                 {/* Main Grid Area */}
-                <Box sx={{ flex: 1, overflow: 'hidden', p: 2 }}>
+                <Box sx={{ flex: 1, overflow: 'hidden' }}>
                     {activeGroup ? (
                         <FlowsheetGrid
                             rowsDefinition={activeGroup.rows}

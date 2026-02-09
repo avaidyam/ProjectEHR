@@ -248,7 +248,7 @@ export const ChartReview = ({ ...props }) => {
   const [providers] = useDatabase().providers()
   const { openTab } = useSplitView()
   const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [rowSelectionModel, setRowSelectionModel] = useState({ type: 'include', ids: new Set() });
 
   const enrichDocs = (docs, kind, enc) => (docs || []).map(d => {
     const authorProv = d.author ? providers.find(p => p.id === d.author) : null;
@@ -348,6 +348,7 @@ export const ChartReview = ({ ...props }) => {
                   sortModel: [{ field: SORT_KEYS[selectedTabLabel] || 'date', sort: 'desc' }],
                 },
               }}
+              showToolbar
               slots={{
                 toolbar: () => (
                   <GridToolbarContainer sx={{ justifyContent: 'flex-start' }}>
@@ -359,9 +360,9 @@ export const ChartReview = ({ ...props }) => {
                         variant="contained"
                         size="small"
                         startIcon={<Icon>medical_services</Icon>}
-                        disabled={rowSelectionModel.length === 0}
+                        disabled={rowSelectionModel.ids.size === 0}
                         onClick={() => {
-                          const selectedRow = filteredData.find(x => JSON.stringify(x) === rowSelectionModel[0]);
+                          const selectedRow = filteredData.find(x => JSON.stringify(x) === Array.from(rowSelectionModel.ids)[0]);
                           if (selectedRow) {
                             console.dir(selectedRow)
                             navigate(`/patient/${chart.id}/encounter/${selectedRow.id}`);
@@ -369,39 +370,6 @@ export const ChartReview = ({ ...props }) => {
                         }}
                       >
                         Open Encounter
-                      </Button>
-                    )}
-                    {selectedTabLabel === 'Lab' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => openTab("Edit Result", {}, "main", true)}
-                      >
-                        New Result
-                      </Button>
-                    )}
-                    {selectedTabLabel === 'Imaging' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => openTab("Edit Result", {}, "main", true)}
-                      >
-                        New Result
-                      </Button>
-                    )}
-                    {selectedTabLabel === 'Notes' && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<Icon>add</Icon>}
-                        onClick={() => {
-                          openTab("Edit Note", {}, "side", true);
-                          openTab("NoteWriter", {}, "main", false);
-                        }}
-                      >
-                        New Note
                       </Button>
                     )}
                   </GridToolbarContainer>

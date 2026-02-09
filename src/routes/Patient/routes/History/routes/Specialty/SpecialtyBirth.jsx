@@ -62,17 +62,17 @@ export default function BirthHistory() {
   // Calculate age from chart birthdate
   const patientAge = useMemo(() => {
     if (!birthdate) return '';
-    
+
     try {
       const birthDate = new Date(birthdate);
       const today = new Date();
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      
+
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      
+
       return `${age} years old`;
     } catch (error) {
       return '';
@@ -102,13 +102,12 @@ export default function BirthHistory() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Birth History
       </Label>
-
       <SectionPaper>
         <Grid container spacing={3}>
           {/* Left Column */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   label="Birth length"
                   type="number"
@@ -118,8 +117,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, step: 0.1 }}
                 />
               </Grid>
-              
-              <Grid item xs={12}>
+
+              <Grid size={12}>
                 <TextField
                   label="Birth weight"
                   type="number"
@@ -129,8 +128,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, step: 0.1 }}
                 />
               </Grid>
-              
-              <Grid item xs={12}>
+
+              <Grid size={12}>
                 <TextField
                   label="Birth head circ"
                   type="number"
@@ -140,8 +139,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, step: 0.1 }}
                 />
               </Grid>
-              
-              <Grid item xs={12}>
+
+              <Grid size={12}>
                 <TextField
                   label="Discharge weight"
                   type="number"
@@ -155,9 +154,9 @@ export default function BirthHistory() {
           </Grid>
 
           {/* Right Column */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="Birth Date"
                   fullWidth
@@ -171,8 +170,8 @@ export default function BirthHistory() {
                   }}
                 />
               </Grid>
-              
-              <Grid item xs={12} sm={6}>
+
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   label="Age"
                   fullWidth
@@ -186,8 +185,8 @@ export default function BirthHistory() {
                   }}
                 />
               </Grid>
-              
-              <Grid item xs={12}>
+
+              <Grid size={12}>
                 <TextField
                   label="Birth Time"
                   type="time"
@@ -197,8 +196,8 @@ export default function BirthHistory() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              
-              <Grid item xs={6}>
+
+              <Grid size={6}>
                 <TextField
                   label="Gestation age (Weeks)"
                   type="number"
@@ -208,8 +207,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, max: 50 }}
                 />
               </Grid>
-              
-              <Grid item xs={6}>
+
+              <Grid size={6}>
                 <TextField
                   label="Gestation age (Days)"
                   type="number"
@@ -219,8 +218,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, max: 6 }}
                 />
               </Grid>
-              
-              <Grid item xs={12} sm={4}>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="APGAR 1"
                   type="number"
@@ -230,8 +229,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, max: 10 }}
                 />
               </Grid>
-              
-              <Grid item xs={12} sm={4}>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="APGAR 5"
                   type="number"
@@ -241,8 +240,8 @@ export default function BirthHistory() {
                   inputProps={{ min: 0, max: 10 }}
                 />
               </Grid>
-              
-              <Grid item xs={12} sm={4}>
+
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <TextField
                   label="APGAR 10"
                   type="number"
@@ -256,9 +255,9 @@ export default function BirthHistory() {
           </Grid>
 
           {/* Full Width Fields */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <FormControl fullWidth>
                   <InputLabel>Delivery method</InputLabel>
                   <Select
@@ -272,8 +271,8 @@ export default function BirthHistory() {
                   </Select>
                 </FormControl>
               </Grid>
-              
-              <Grid item xs={12} md={6}>
+
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Duration of labor"
                   fullWidth
@@ -281,8 +280,8 @@ export default function BirthHistory() {
                   onChange={(e) => handleFieldChange('durationOfLabor', e.target.value)}
                 />
               </Grid>
-              
-              <Grid item xs={12} md={6}>
+
+              <Grid size={{ xs: 12, md: 6 }}>
                 <FormControl fullWidth>
                   <InputLabel>Feeding method</InputLabel>
                   <Select
@@ -300,12 +299,11 @@ export default function BirthHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Hospital Information */}
       <SectionPaper>
         <SectionHeader>Hospital information</SectionHeader>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               label="Date in hospital"
               type="date"
@@ -315,8 +313,8 @@ export default function BirthHistory() {
               InputLabelProps={{ shrink: true }}
             />
           </Grid>
-          
-          <Grid item xs={12} md={4}>
+
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               label="Hospital name"
               fullWidth
@@ -324,8 +322,8 @@ export default function BirthHistory() {
               onChange={(e) => handleFieldChange('hospitalName', e.target.value)}
             />
           </Grid>
-          
-          <Grid item xs={12} md={4}>
+
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               label="Hospital location"
               fullWidth
@@ -335,17 +333,15 @@ export default function BirthHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Comments */}
       <SectionPaper>
         <SectionHeader>Comments:</SectionHeader>
-        <Editor 
+        <Editor
           initialContent={birthHistoryData?.comments || ''}
           onSave={handleCommentsChange}
           disableStickyMenuBar={true}
         />
       </SectionPaper>
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

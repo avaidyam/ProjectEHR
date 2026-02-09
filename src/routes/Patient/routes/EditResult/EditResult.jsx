@@ -124,10 +124,9 @@ export const EditResult = ({ ...props }) => {
             <Box sx={{ p: 1 }}>
                 <Label variant="h6" color="primary">New Result</Label>
             </Box>
-
             <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <TextField
                             type="datetime-local"
                             label="Date/Time"
@@ -137,7 +136,7 @@ export const EditResult = ({ ...props }) => {
                             InputLabelProps={{ shrink: true }}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <Autocomplete
                             options={procedures}
                             filterOptions={filterOptions}
@@ -147,7 +146,7 @@ export const EditResult = ({ ...props }) => {
                             renderInput={(params) => <TextField {...params} label="Test / Exam Name" fullWidth />}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <Autocomplete
                             options={["Final Result", "Preliminary"]}
                             value={status}
@@ -155,7 +154,7 @@ export const EditResult = ({ ...props }) => {
                             renderInput={(params) => <TextField {...params} label="Status" fullWidth />}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                         <Autocomplete
                             options={providers}
                             getOptionLabel={(option) => option.name}
@@ -234,7 +233,6 @@ export const EditResult = ({ ...props }) => {
                     Add Component
                 </Button>
             </Box>
-
             <Box sx={{
                 p: 1,
                 borderTop: '1px solid #e0e0e0',

@@ -27,12 +27,12 @@ export class AudioRecorder extends EventEmitter {
     super();
   }
 
-  async getDevices() {
+  async getDevices(kind: MediaDeviceKind = 'audioinput') {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       return [];
     }
     const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices.filter((d) => d.kind === "audioinput");
+    return devices.filter((d) => d.kind === kind);
   }
 
   async start(deviceId?: string) {

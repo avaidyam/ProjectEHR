@@ -40,7 +40,8 @@ import {
   TabPanel as MUITabPanel
 } from '@mui/lab'
 import {
-  DatePicker as MUIDatePicker
+  DatePicker as MUIDatePicker,
+  DateTimePicker as MUIDateTimePicker
 } from '@mui/x-date-pickers-pro'
 import {
   DataGridPremium as MUIDataGrid,
@@ -52,7 +53,7 @@ import {
   SimpleTreeView as MUISimpleTreeView,
   TreeItem as MUITreeItem
 } from '@mui/x-tree-view-pro'
-import { LicenseInfo } from '@mui/x-license-pro'
+import { LicenseInfo } from '@mui/x-license'
 import {
   // eslint-disable-next-line import/no-named-default
   default as MUIDraggable
@@ -69,40 +70,46 @@ export const alpha = (_color, _alpha) => MUIalpha(_color, _alpha)
 // Re-export dayjs from the library
 export const dayjs = dayjs2
 
-// This component doubles as Box and Paper.
+/** @type {React.ForwardRefExoticComponent<import('@mui/material').BoxProps & { paper?: boolean } & React.RefAttributes<HTMLDivElement>>} */
 export const Box = React.forwardRef(({ paper, children, ...props }, ref) => {
   if (paper === true)
     return (<MUIPaper ref={ref} {...props}>{children}</MUIPaper>)
   return (<MUIBox ref={ref} {...props}>{children}</MUIBox>)
 })
 
+/** @type {React.FC<import('@mui/material').StackProps>} */
 export const Stack = ({ direction = "column", spacing = 0, children, ...props }) => (
   <MUIStack direction={direction} spacing={spacing} {...props}>
     {children}
   </MUIStack>
 )
 
+/** @type {React.FC<import('@mui/material').GridProps & { masonry?: boolean }>} */
 export const Grid = ({ masonry = false, children, ...props }) => {
   if (masonry)
     return <MUIMasonry {...props}>{children}</MUIMasonry>
   return <MUIGrid {...props}>{children}</MUIGrid>
 }
 
+/** @type {React.FC<import('@mui/material').TypographyProps & { inline?: boolean, bold?: boolean | number, italic?: boolean }>} */
 export const Label = ({ variant = 'body1', inline = false, bold = false, italic = false, children, ...props }) => (
-  <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color="inherit" sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
+  <MUITypography {...props} component={inline ? "span" : props.component} display={inline ? "inline" : props.display} variant={variant} color={props.color ?? "inherit"} sx={{ fontWeight: bold === true ? 900 : bold, fontStyle: italic ? "italic" : undefined, ...props.sx }}>
     {children}
   </MUITypography>
 )
 
 // Render HTML rich text content in a read-only view.
+/** @type {React.FC<{ children?: any }>} */
 export const RichText = ({ children, ...props }) => (
   <MUIEditorReadOnly value={children} {...props} />
 )
 
+/** @type {React.FC<any>} */
 export const RichTextEditor = ({ ...props }) => (
   <MUIEditor {...props} />
 )
 
+/** @type {React.FC<import('@mui/material').TextFieldProps>} */
 export const TextField = ({ label, value, onChange, ...props }) => (
   <MUITextField
     label={label}
@@ -114,6 +121,7 @@ export const TextField = ({ label, value, onChange, ...props }) => (
   />
 )
 
+/** @type {React.FC<import('@mui/material').AutocompleteProps<any, any, any, any> & { label?: string, TextFieldProps?: any }>} */
 export const Autocomplete = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
     fullWidth
@@ -126,6 +134,7 @@ export const Autocomplete = ({ label, options, value, onChange, TextFieldProps, 
 )
 
 // To use as a ToggleButton, MUST provide `value`!
+/** @type {React.FC<import('@mui/material').ButtonProps & { contained?: boolean, outlined?: boolean, value?: any }>} */
 export const Button = ({ contained = false, outlined = false, color = 'primary', value, children, ...props }) => {
   return (
     <MUIButton
@@ -141,6 +150,7 @@ export const Button = ({ contained = false, outlined = false, color = 'primary',
 
 // FIXME: Need to make sure `exclusive=false` mode works correctly!
 // Buttons inside this MUST have prop `toggle={true}`
+/** @type {React.FC<import('@mui/material').ButtonGroupProps & { exclusive?: boolean, onChange?: (event: any, value: any) => void }>} */
 export const ButtonGroup = ({ exclusive = false, variant, value, onChange, children, ...props }) => {
   const childrenWithProps = React.Children.map(children, child => {
     if (!React.isValidElement(child))
@@ -162,12 +172,14 @@ export const ButtonGroup = ({ exclusive = false, variant, value, onChange, child
   return <MUIButtonGroup {...props}>{childrenWithProps}</MUIButtonGroup>
 }
 
+/** @type {React.FC<import('@mui/material').IconButtonProps & { iconProps?: any }>} */
 export const IconButton = ({ size = "medium", color = "inherit", children, iconProps, ...props }) => (
   <MUIIconButton size={size} color={color} {...props}>
     <MUIIcon fontSize={size} {...iconProps}>{children}</MUIIcon>
   </MUIIconButton>
 )
 
+/** @type {React.FC<import('@mui/material').ChipProps>} */
 export const Chip = ({ children, ...props }) => (
   <MUIChip label={children} {...props} />
 )
@@ -175,6 +187,7 @@ export const Chip = ({ children, ...props }) => (
 // FIXME: Set default verticalAlign=text-top for Icon?
 
 // To see a complete list of icons, visit: https://fonts.google.com/icons
+/** @type {React.FC<import('@mui/material').IconProps & { avatar?: boolean, size?: number, avatarProps?: any }>} */
 export const Icon = ({ avatar = false, size = undefined, children, avatarProps, ...props }) => avatar ? (
   <MUIAvatar {...avatarProps} sx={{ width: size, height: size, ...avatarProps?.sx }}>
     <MUIIcon color="inherit" {...props}>{children}</MUIIcon>
@@ -183,11 +196,13 @@ export const Icon = ({ avatar = false, size = undefined, children, avatarProps, 
   <MUIIcon color="inherit" {...props}>{children}</MUIIcon>
 )
 
+/** @type {React.FC<import('@mui/material').DividerProps>} */
 export const Divider = ({ ...props }) => (
   <MUIDivider {...props} />
 )
 
 // Use this to space out a stack: [Content -----Spacer----- Content]
+/** @type {React.FC<import('@mui/material').BoxProps>} */
 export const Spacer = ({ ...props }) => (
   <Box {...props} sx={{ flexGrow: 1 }} />
 )
@@ -234,36 +249,42 @@ export const KeyValueTable2 = ({ children, ...props }) => (
   </MUITable>
 )
 
+/** @type {React.FC<import('@mui/material').TableProps>} */
 export const Table = ({ children, ...props }) => (
   <MUITable {...props}>
     {children}
   </MUITable>
 )
 
+/** @type {React.FC<import('@mui/material').TableHeadProps>} */
 export const TableHead = ({ children, ...props }) => (
   <MUITableHead {...props}>
     {children}
   </MUITableHead>
 )
 
+/** @type {React.FC<import('@mui/material').TableBodyProps>} */
 export const TableBody = ({ children, ...props }) => (
   <MUITableBody {...props}>
     {children}
   </MUITableBody>
 )
 
+/** @type {React.FC<import('@mui/material').TableRowProps>} */
 export const TableRow = ({ children, ...props }) => (
   <MUITableRow {...props}>
     {children}
   </MUITableRow>
 )
 
+/** @type {React.FC<import('@mui/material').TableCellProps>} */
 export const TableCell = ({ children, ...props }) => (
   <MUITableCell {...props}>
     {children}
   </MUITableCell>
 )
 
+/** @type {React.FC<import('@mui/x-tree-view-pro').SimpleTreeViewProps & { rich?: boolean }>} */
 export const TreeView = ({ rich = false, children, ...props }) => {
   const proRef = React.useRef(null)
   React.useEffect(() => {
@@ -277,18 +298,28 @@ export const TreeView = ({ rich = false, children, ...props }) => {
   return <MUISimpleTreeView {...props}>{children}</MUISimpleTreeView>
 }
 
+/** @type {React.FC<import('@mui/x-tree-view-pro').TreeItemProps>} */
 export const TreeItem = ({ children, ...props }) => (
   <MUITreeItem {...props}>
     {children}
   </MUITreeItem>
 )
 
+/** @type {React.FC<import('@mui/x-date-pickers-pro').DatePickerProps<any>>} */
 export const DatePicker = ({ children, ...props }) => (
   <MUIDatePicker {...props}>
     {children}
   </MUIDatePicker>
 )
 
+/** @type {React.FC<import('@mui/x-date-pickers-pro').DateTimePickerProps<any>>} */
+export const DateTimePicker = ({ children, ...props }) => (
+  <MUIDateTimePicker {...props}>
+    {children}
+  </MUIDateTimePicker>
+)
+
+/** @type {React.FC<import('@mui/material').TabProps>} */
 export const Tab = ({ children, ...props }) => (
   <MUITab {...props}>
     {children}
@@ -296,6 +327,7 @@ export const Tab = ({ children, ...props }) => (
 )
 
 // TODO: Automate the useState()/onChange() so the client does not need to worry
+/** @type {React.FC<import('@mui/lab').TabListProps>} */
 export const TabList = ({ children, ...props }) => (
   <MUITabList
     variant="scrollable"
@@ -308,12 +340,14 @@ export const TabList = ({ children, ...props }) => (
   </MUITabList>
 )
 
+/** @type {React.FC<import('@mui/lab').TabPanelProps>} */
 export const TabPanel = ({ children, ...props }) => (
   <MUITabPanel {...props}>
     {children}
   </MUITabPanel>
 )
 
+/** @type {React.FC<import('@mui/lab').TabContextProps>} */
 export const TabView = ({ children, ...props }) => (
   <MUITabContext {...props}>
     {children}
@@ -341,6 +375,7 @@ export const DataGrid = ({ children, ...props }) => {
  title={<><Icon>token</Icon> Title</>}
  ```
  */
+/** @type {React.FC<import('@mui/material').PaperProps & { emphasized?: boolean, title?: React.ReactNode, color?: string, toolbar?: React.ReactNode, toolbarProps?: any, boxProps?: any }>} */
 export const TitledCard = ({ emphasized, title, color, sx, toolbar, toolbarProps, boxProps, children, ...props }) => {
   return (
     <MUIPaper sx={{
@@ -389,6 +424,7 @@ function _MUIDraggablePaperComponent(props) {
   );
 }
 
+/** @type {React.FC<import('@mui/material').DialogProps & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }>} */
 export const Window = ({ title, open, onClose, header, footer, children, ...props }) => {
   return (
     <MUIDialog
@@ -447,12 +483,14 @@ export function useLazyEffect(effect, deps = [], wait = 250) {
 export const useGridApiRef = MUIuseGridApiRef
 export const useKeepGroupedColumnsHidden = MUIuseKeepGroupedColumnsHidden
 
+/** @type {React.FC<import('@mui/material').MenuProps>} */
 export const Menu = ({ children, ...props }) => (
   <MUIMenu {...props}>
     {children}
   </MUIMenu>
 )
 
+/** @type {React.FC<import('@mui/material').MenuItemProps>} */
 export const MenuItem = ({ children, ...props }) => (
   <MUIMenuItem {...props}>
     {children}

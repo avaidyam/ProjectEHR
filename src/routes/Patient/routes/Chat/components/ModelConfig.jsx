@@ -37,22 +37,16 @@ const VOICE_OPTIONS = [
 
 const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }) => {
   return (
-    <Box sx={{ p: 2, bgcolor: 'black', color: 'white', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <Box sx={{ flexShrink: 0 }}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 'bold' }}>
-          Model Config
-        </Typography>
-
-        {/* Voice selector */}
         <FormControl size="small" sx={{ minWidth: 280, mb: 3 }}>
-          <InputLabel id="voice-label" sx={{ color: 'white' }}>Speech Voice</InputLabel>
+          <InputLabel id="voice-label">Speech Voice</InputLabel>
           <Select
             labelId="voice-label"
             value={voiceName}
             label="Speech Voice"
             onChange={(e) => setVoiceName(e.target.value)}
             sx={{
-              color: 'white',
               '.MuiOutlinedInput-notchedOutline': { borderColor: 'gray' },
               '& .MuiSvgIcon-root': { color: 'white' },
             }}
@@ -62,11 +56,6 @@ const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }) => {
             ))}
           </Select>
         </FormControl>
-
-        {/* Combined Prompt */}
-        <Typography variant="h6" sx={{ mb: 1, fontWeight: 'bold' }}>
-          Full Encounter
-        </Typography>
       </Box>
       <Box
         component="pre"
