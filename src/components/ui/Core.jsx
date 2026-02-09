@@ -51,9 +51,9 @@ import {
 import {
   RichTreeViewPro as MUIRichTreeView,
   SimpleTreeView as MUISimpleTreeView,
-  TreeItem2 as MUITreeItem
+  TreeItem as MUITreeItem
 } from '@mui/x-tree-view-pro'
-import { LicenseInfo } from '@mui/x-license-pro'
+import { LicenseInfo } from '@mui/x-license'
 import {
   // eslint-disable-next-line import/no-named-default
   default as MUIDraggable
@@ -363,7 +363,7 @@ export const DataGrid = ({ children, ...props }) => {
     }
   }, [proRef.current])
   return (
-    <MUIDataGrid ref={proRef} unstable_listView={props.listView} unstable_listColumn={props.listViewColumn} {...props}>
+    <MUIDataGrid ref={proRef} {...props}>
       {children}
     </MUIDataGrid>
   )

@@ -513,19 +513,19 @@ const Demographics = () => {
             // ----- READ-ONLY VIEW -----
             <>
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={4}><TitledCardItem label="Name" value={`${firstName} ${lastName}`} /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Date of Birth" value={birthdate} /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Legal Sex" value={gender} /></Grid>
+                <Grid size={4}><TitledCardItem label="Name" value={`${firstName} ${lastName}`} /></Grid>
+                <Grid size={4}><TitledCardItem label="Date of Birth" value={birthdate} /></Grid>
+                <Grid size={4}><TitledCardItem label="Legal Sex" value={gender} /></Grid>
               </Grid>
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={4}><TitledCardItem label="Gender Identity" value={gender} /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Sex Assigned at Birth" value={gender} /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Sexual Orientation" value='' /></Grid>
+                <Grid size={4}><TitledCardItem label="Gender Identity" value={gender} /></Grid>
+                <Grid size={4}><TitledCardItem label="Sex Assigned at Birth" value={gender} /></Grid>
+                <Grid size={4}><TitledCardItem label="Sexual Orientation" value='' /></Grid>
               </Grid>
 
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={4}><TitledCardItem label="Pronouns" value='' /></Grid>
+                <Grid size={4}><TitledCardItem label="Pronouns" value='' /></Grid>
               </Grid>
 
               {/* Communication */}
@@ -535,9 +535,9 @@ const Demographics = () => {
                 <Label variant="h6" sx={{ fontWeight: 'bold' }}>Communication</Label>
               </Stack>
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={4}><TitledCardItem label="Address" value={address} /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Phone" value='' /></Grid>
-                <Grid item xs={4}><TitledCardItem label="Email" value='' /></Grid>
+                <Grid size={4}><TitledCardItem label="Address" value={address} /></Grid>
+                <Grid size={4}><TitledCardItem label="Phone" value='' /></Grid>
+                <Grid size={4}><TitledCardItem label="Email" value='' /></Grid>
               </Grid>
 
               {/* Additional */}
@@ -545,21 +545,21 @@ const Demographics = () => {
                 Additional
               </Label>
               <Grid container spacing={2}>
-                <Grid item xs={3}><TitledCardItem label="Language" value={preferredLanguage} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Interpreter Needed" value={'No'} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Marital Status" value={demographics?.maritalStatus} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Religion" value={demographics?.religion} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Ethnic Group" value={demographics?.ethnicGroup} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Race" value={demographics?.race} /></Grid>
-                <Grid item xs={3}><TitledCardItem label="Preferred Form of Address" value={'—'} /></Grid>
-                <Grid item xs={12}><TitledCardItem label="Permanent Comments" value={'—'} /></Grid>
+                <Grid size={3}><TitledCardItem label="Language" value={preferredLanguage} /></Grid>
+                <Grid size={3}><TitledCardItem label="Interpreter Needed" value={'No'} /></Grid>
+                <Grid size={3}><TitledCardItem label="Marital Status" value={demographics?.maritalStatus} /></Grid>
+                <Grid size={3}><TitledCardItem label="Religion" value={demographics?.religion} /></Grid>
+                <Grid size={3}><TitledCardItem label="Ethnic Group" value={demographics?.ethnicGroup} /></Grid>
+                <Grid size={3}><TitledCardItem label="Race" value={demographics?.race} /></Grid>
+                <Grid size={3}><TitledCardItem label="Preferred Form of Address" value={'—'} /></Grid>
+                <Grid size={12}><TitledCardItem label="Permanent Comments" value={'—'} /></Grid>
               </Grid>
             </>
           ) : (
             // ----- EDIT VIEW -----
             <>
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <TextField
                     fullWidth
                     label="First Name"
@@ -567,7 +567,7 @@ const Demographics = () => {
                     onChange={(e) => handleFormDataChange('firstName', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <TextField
                     fullWidth
                     label="Last Name"
@@ -575,7 +575,7 @@ const Demographics = () => {
                     onChange={(e) => handleFormDataChange('lastName', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <TextField
                     fullWidth
                     label="Date of Birth"
@@ -585,7 +585,7 @@ const Demographics = () => {
                     InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Autocomplete
                     options={legalSexOptions}
                     value={formData.gender}
@@ -596,7 +596,7 @@ const Demographics = () => {
               </Grid>
 
               <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Autocomplete
                     options={genderIdentityOptions}
                     value={formData.genderIdentity}
@@ -604,7 +604,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Gender Identity" />}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Autocomplete
                     options={sexAssignedAtBirthOptions}
                     value={formData.sexAssignedAtBirth}
@@ -612,7 +612,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Sex Assigned at Birth" />}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Autocomplete
                     options={sexualOrientationOptions}
                     value={formData.sexualOrientation}
@@ -620,7 +620,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Sexual Orientation" />}
                   />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Autocomplete
                     options={pronounsOptions}
                     value={formData.pronouns}
@@ -635,7 +635,7 @@ const Demographics = () => {
                 Communication
               </Label>
               <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <TextField
                     fullWidth
                     label="Address"
@@ -643,7 +643,7 @@ const Demographics = () => {
                     onChange={(e) => handleFormDataChange('address', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <TextField
                     fullWidth
                     label="Phone"
@@ -651,7 +651,7 @@ const Demographics = () => {
                     onChange={(e) => handleFormDataChange('phone', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid size={4}>
                   <TextField
                     fullWidth
                     label="Email"
@@ -666,7 +666,7 @@ const Demographics = () => {
                 Additional
               </Label>
               <Grid container spacing={2}>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={languageOptions}
                     value={formData.language}
@@ -674,7 +674,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Language" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={['Yes', 'No']}
                     value={formData.interpreterNeeded}
@@ -682,7 +682,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Interpreter Needed" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={maritalStatusOptions}
                     value={formData.maritalStatus}
@@ -690,7 +690,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Marital Status" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={religionOptions}
                     value={formData.religion}
@@ -698,7 +698,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Religion" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={ethnicGroupOptions}
                     value={formData.ethnicGroup}
@@ -706,7 +706,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Ethnic Group" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <Autocomplete
                     options={raceOptions}
                     value={formData.race}
@@ -714,7 +714,7 @@ const Demographics = () => {
                     renderInput={(params) => <TextField {...params} label="Race" />}
                   />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid size={3}>
                   <TextField
                     fullWidth
                     label="Preferred Form of Address"
@@ -722,7 +722,7 @@ const Demographics = () => {
                     onChange={(e) => handleFormDataChange('preferredFormOfAddress', e.target.value)}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     fullWidth
                     label="Permanent Comments"
@@ -770,22 +770,22 @@ const Demographics = () => {
           {editingCard !== 'employer-identification' ? (
             // ----- READ-ONLY VIEW -----
             <Grid container spacing={4}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Employer Information</Label>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}><TitledCardItem label="Employment Status" value={socioeconomicData?.occupation ? 'Employed' : 'Unknown'} /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="Address" value={'—'} /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="Employer" value='' /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="Phone" value={'—'} /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="Fax" value={'—'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Employment Status" value={socioeconomicData?.occupation ? 'Employed' : 'Unknown'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Address" value={'—'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Employer" value='' /></Grid>
+                  <Grid size={6}><TitledCardItem label="Phone" value={'—'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Fax" value={'—'} /></Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Patient Identification</Label>
                 <Grid container spacing={2}>
-                  <Grid item xs={6}><TitledCardItem label="Patient Status" value={'Alive'} /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="MRN" value={id} /></Grid>
-                  <Grid item xs={6}><TitledCardItem label="Patient Type" value={'TPL'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Patient Status" value={'Alive'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="MRN" value={id} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Patient Type" value={'TPL'} /></Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -793,10 +793,10 @@ const Demographics = () => {
             // ----- EDIT VIEW -----
             <>
               <Grid container spacing={4}>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Employer Information</Label>
                   <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <Autocomplete
                         options={employmentStatusOptions}
                         value={formData.employmentStatus}
@@ -804,7 +804,7 @@ const Demographics = () => {
                         renderInput={(params) => <TextField {...params} label="Employment Status" />}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Address"
@@ -812,7 +812,7 @@ const Demographics = () => {
                         onChange={(e) => handleFormDataChange('employerAddress', e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Employer"
@@ -820,7 +820,7 @@ const Demographics = () => {
                         onChange={(e) => handleFormDataChange('employer', e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Phone"
@@ -828,7 +828,7 @@ const Demographics = () => {
                         onChange={(e) => handleFormDataChange('employerPhone', e.target.value)}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Fax"
@@ -838,10 +838,10 @@ const Demographics = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid size={6}>
                   <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Patient Identification</Label>
                   <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Patient Status"
@@ -849,7 +849,7 @@ const Demographics = () => {
                         disabled
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="MRN"
@@ -857,7 +857,7 @@ const Demographics = () => {
                         disabled
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid size={6}>
                       <TextField
                         fullWidth
                         label="Patient Type"
@@ -909,11 +909,11 @@ const Demographics = () => {
                 contacts.emergency.map((contact, index) => (
                   <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Work Phone" value={contact.workPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -926,11 +926,11 @@ const Demographics = () => {
                 contacts.other.map((contact, index) => (
                   <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -974,11 +974,11 @@ const Demographics = () => {
                       <Icon>cancel</Icon>
                     </Button>
                     <Grid container spacing={2}>
-                      <Grid item xs={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1019,11 +1019,11 @@ const Demographics = () => {
                       <Icon>cancel</Icon>
                     </Button>
                     <Grid container spacing={2}>
-                      <Grid item xs={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid item xs={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1043,8 +1043,8 @@ const Demographics = () => {
         {/* Preferred Pharmacies and Labs */}
         <TitledCard id="pharm-labs" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>medication</Icon> Preferred Pharmacies and Labs</>} color="#009688">
           <Grid container spacing={2}>
-            <Grid item xs={6}><TitledCardItem label="Pharmacies" value={"None"} /></Grid>
-            <Grid item xs={6}><TitledCardItem label="Labs" value={"None"} /></Grid>
+            <Grid size={6}><TitledCardItem label="Pharmacies" value={"None"} /></Grid>
+            <Grid size={6}><TitledCardItem label="Labs" value={"None"} /></Grid>
           </Grid>
         </TitledCard>
 
@@ -1066,12 +1066,12 @@ const Demographics = () => {
         <TitledCard id="code-status" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>health_and_safety</Icon> Code Status</>} color="#009688">
           <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Current Code Status</Label>
           <Grid container spacing={1} sx={{ pl: 1 }}>
-            <Grid item xs={2.5}><TitledCardItem label="Date Active" /></Grid>
-            <Grid item xs={2.5}><TitledCardItem label="Code Status" /></Grid>
-            <Grid item xs={2}><TitledCardItem label="Order ID" /></Grid>
-            <Grid item xs={1.5}><TitledCardItem label="Comments" /></Grid>
-            <Grid item xs={1.5}><TitledCardItem label="User" /></Grid>
-            <Grid item xs={2}><TitledCardItem label="Context" /></Grid>
+            <Grid size={2.5}><TitledCardItem label="Date Active" /></Grid>
+            <Grid size={2.5}><TitledCardItem label="Code Status" /></Grid>
+            <Grid size={2}><TitledCardItem label="Order ID" /></Grid>
+            <Grid size={1.5}><TitledCardItem label="Comments" /></Grid>
+            <Grid size={1.5}><TitledCardItem label="User" /></Grid>
+            <Grid size={2}><TitledCardItem label="Context" /></Grid>
           </Grid>
 
           <Box sx={{ mt: 2, borderTop: '1px solid #e0e0e0', pt: 2 }}>
@@ -1085,10 +1085,10 @@ const Demographics = () => {
         <TitledCard id="po-npo" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>no_meals</Icon> PO/NPO Status</>} color="#009688">
           <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>PO/NPO Status</Label>
           <Grid container spacing={1} sx={{ pl: 1 }}>
-            <Grid item xs={3}><TitledCardItem label="Latest PO/NPO Status" /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Start Time" /></Grid>
-            <Grid item xs={3}><TitledCardItem label="End Time" /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Provider" /></Grid>
+            <Grid size={3}><TitledCardItem label="Latest PO/NPO Status" /></Grid>
+            <Grid size={3}><TitledCardItem label="Start Time" /></Grid>
+            <Grid size={3}><TitledCardItem label="End Time" /></Grid>
+            <Grid size={3}><TitledCardItem label="Provider" /></Grid>
           </Grid>
         </TitledCard>
       </Grid>
@@ -1122,7 +1122,7 @@ const Demographics = () => {
             <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#000' }}>Add New Contact</Label>
 
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label="Name"
@@ -1134,7 +1134,7 @@ const Demographics = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label="Relationship"
@@ -1146,7 +1146,7 @@ const Demographics = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label="Primary Phone"
@@ -1158,7 +1158,7 @@ const Demographics = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <TextField
                   fullWidth
                   label="Work Phone"
@@ -1170,7 +1170,7 @@ const Demographics = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Emergency Contact</Label>
                 <Stack direction="row" spacing={1}>
                   <Button
@@ -1191,7 +1191,7 @@ const Demographics = () => {
                   </Button>
                 </Stack>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Legal Guardian?</Label>
                 <Stack direction="row" spacing={1}>
                   <Button

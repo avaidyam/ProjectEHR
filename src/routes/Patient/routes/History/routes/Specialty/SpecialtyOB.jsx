@@ -90,7 +90,6 @@ export default function SpecialtyOB() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         OB/Gyn History
       </Label>
-
       {/* Obstetric History */}
       <SectionPaper>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -106,7 +105,7 @@ export default function SpecialtyOB() {
 
         <Grid container spacing={2}>
           {/* First row */}
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Gravida"
               type="number"
@@ -116,7 +115,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Para"
               type="number"
@@ -126,7 +125,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Term"
               type="number"
@@ -136,7 +135,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Preterm"
               type="number"
@@ -146,7 +145,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="AB"
               type="number"
@@ -156,7 +155,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Living"
               type="number"
@@ -168,7 +167,7 @@ export default function SpecialtyOB() {
           </Grid>
 
           {/* Second row */}
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="SAB"
               type="number"
@@ -178,7 +177,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="IAB"
               type="number"
@@ -188,7 +187,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Ectopic"
               type="number"
@@ -198,7 +197,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField
               label="Multiple"
               type="number"
@@ -208,7 +207,7 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Live Births"
               type="number"
@@ -220,7 +219,7 @@ export default function SpecialtyOB() {
           </Grid>
 
           {/* Pregnancy status checkboxes */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 2 }}>
               <Button
                 variant="contained"
@@ -228,7 +227,7 @@ export default function SpecialtyOB() {
               >
                 ➕ Add previous pregnancy
               </Button>
-              
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -238,7 +237,7 @@ export default function SpecialtyOB() {
                 }
                 label="Currently pregnant"
               />
-              
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -252,11 +251,11 @@ export default function SpecialtyOB() {
           </Grid>
 
           {/* Obstetric Comments */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
               Obstetric Comments
             </Label>
-            <Editor 
+            <Editor
               initialContent={obgynData?.obstetricHistory?.comments || ''}
               onSave={handleObstetricCommentsChange}
               disableStickyMenuBar={true}
@@ -264,12 +263,11 @@ export default function SpecialtyOB() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Gynecology History */}
       <SectionPaper>
         <SectionHeader>Gynecology History</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Age at menarche"
               type="number"
@@ -279,8 +277,8 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0, max: 50 }}
             />
           </Grid>
-          
-          <Grid item xs={12} sm={4}>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Age at first pregnancy"
               type="number"
@@ -290,8 +288,8 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0, max: 50 }}
             />
           </Grid>
-          
-          <Grid item xs={12} sm={4}>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Age at first live birth"
               type="number"
@@ -301,8 +299,8 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0, max: 50 }}
             />
           </Grid>
-          
-          <Grid item xs={12} sm={4}>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Months breastfeeding"
               type="number"
@@ -312,8 +310,8 @@ export default function SpecialtyOB() {
               inputProps={{ min: 0 }}
             />
           </Grid>
-          
-          <Grid item xs={12} sm={4}>
+
+          <Grid size={{ xs: 12, sm: 4 }}>
             <TextField
               label="Age at menopause"
               type="number"
@@ -325,11 +323,11 @@ export default function SpecialtyOB() {
           </Grid>
 
           {/* Gynecology Comments */}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
               Comment
             </Label>
-            <Editor 
+            <Editor
               initialContent={obgynData?.gynecologyHistory?.comment || ''}
               onSave={handleGynecologyCommentsChange}
               disableStickyMenuBar={true}
@@ -337,7 +335,6 @@ export default function SpecialtyOB() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

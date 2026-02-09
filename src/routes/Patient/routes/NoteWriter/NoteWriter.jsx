@@ -447,16 +447,15 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
   return (
     <Box sx={{ border: '1px solid #ddd', padding: 1, marginBottom: 1, width: '100%', borderRadius: 1, bgcolor: 'background.paper' }}>
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between" sx={{ borderBottom: '1px solid #eee', pb: 0.5, mb: 1 }}>
-        <Grid item>
+        <Grid>
           <IconButton aria-describedby={id} onClick={handleCustomNoteClick} size="small">
             <Icon sx={{ color: state?.custom ? 'primary.main' : 'action.active', fontSize: 20 }}>description</Icon>
           </IconButton>
         </Grid>
-        <Grid item xs>
+        <Grid size="grow">
           <Typography variant="subtitle2" sx={{ marginLeft: 1, fontWeight: 'bold' }}>{title}</Typography>
         </Grid>
       </Grid>
-
       {subsections.map((sub, idx) => {
         const subTitle = sub.subsectionTitle || sub.title || '';
         const subKey = subTitle.toLowerCase();
@@ -475,12 +474,11 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
         return (
           <Box key={idx} sx={{ mb: 1 }}>
             {!!subTitle && <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', display: 'block', mb: 0.5 }}>{subTitle}</Typography>}
-
             {/* Checkboxes */}
             {sub.checkboxes?.length > 0 && (
               <Grid container spacing={1} sx={{ mb: 1 }}>
                 {sub.checkboxes.map(cb => (
-                  <Grid item xs={6} key={cb}>
+                  <Grid key={cb} size={6}>
                     <Box
                       onClick={() => triggerUpdate('checkbox', cb, !getVal('checkbox', cb))}
                       sx={{
@@ -494,14 +492,13 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
                 ))}
               </Grid>
             )}
-
             {/* Symptoms */}
             {sub.symptoms?.length > 0 && (
               <Grid container spacing={1}>
                 {sub.symptoms.map(sym => {
                   const val = getVal('symptom', sym);
                   return (
-                    <Grid item xs={6} key={sym}>
+                    <Grid key={sym} size={6}>
                       <Box sx={{
                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                         p: 0.5, px: 1, borderRadius: 1,
@@ -521,14 +518,13 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
                         </Box>
                       </Box>
                     </Grid>
-                  )
+                  );
                 })}
               </Grid>
             )}
           </Box>
-        )
+        );
       })}
-
       <Popover
         id={id}
         open={open}
@@ -567,7 +563,7 @@ const GenericNoteWriterTab = ({ data, state, updateState }) => {
     <Box sx={{ p: 2, height: '100%', overflow: 'auto' }}>
       <Grid container spacing={2}>
         {data.map((system, idx) => (
-          <Grid item xs={12} md={6} lg={4} key={idx}>
+          <Grid key={idx} size={{ xs: 12, md: 6, lg: 4 }}>
             <GenericBodySystemComponent
               title={system.title}
               subsections={system.subsections || [{ title: '', symptoms: system.symptoms, checkboxes: [] }]}

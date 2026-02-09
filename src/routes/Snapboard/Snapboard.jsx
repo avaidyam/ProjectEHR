@@ -101,10 +101,16 @@ export function Snapboard() {
                     </FormControl>
                 </Box>
             </Box>
-
             <Grid container spacing={3}>
                 {locationState.map(({ location, appointment, patient }) => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={location.id}>
+                    <Grid
+                        key={location.id}
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 4,
+                            lg: 3
+                        }}>
                         <Card variant="outlined" sx={{ height: '100%', borderColor: appointment ? 'primary.main' : 'divider', borderWidth: appointment ? 2 : 1 }}>
                             <CardContent>
                                 <Typography variant="h6" gutterBottom color="text.secondary" sx={{ fontSize: 14 }}>
@@ -155,7 +161,7 @@ export function Snapboard() {
                     </Grid>
                 ))}
                 {locationState.length === 0 && (
-                    <Grid item xs={12}>
+                    <Grid size={12}>
                         <Typography variant="body1" color="text.secondary" textAlign="center">
                             No locations found for this department.
                         </Typography>

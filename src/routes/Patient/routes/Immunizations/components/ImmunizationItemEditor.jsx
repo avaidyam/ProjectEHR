@@ -73,7 +73,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
         <Typography variant="h6" gutterBottom>
           {isAddingNew ? 'New Immunization' : 'Edit Immunization'}
         </Typography>
-        
+
         {errors.length > 0 && (
           <Alert severity="error" style={{ marginBottom: '16px' }}>
             <ul style={{ margin: 0, paddingLeft: '20px' }}>
@@ -83,9 +83,9 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             </ul>
           </Alert>
         )}
-        
+
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Immunization Name"
@@ -93,7 +93,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
               disabled={!isAddingNew}
               onChange={(e) => handleChange('vaccine', e.target.value)}
               margin="normal"
-              sx={{ 
+              sx={{
                 '& .MuiInputBase-input.Mui-disabled': {
                   WebkitTextFillColor: 'rgba(200, 200, 200, 0.6)',
                   backgroundColor: 'rgba(0, 0, 0, 0.04)'
@@ -101,8 +101,8 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
               }}
             />
           </Grid>
-          
-          <Grid item xs={12} md={6}>
+
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Date Received"
@@ -114,7 +114,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Recorder"
@@ -124,7 +124,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Recorded Date"
@@ -136,7 +136,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Given By (Practitioner)"
@@ -146,7 +146,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Facility"
@@ -156,7 +156,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               label="Dose Value"
@@ -167,7 +167,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Mass Unit</InputLabel>
               <Select
@@ -183,7 +183,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Volume Unit</InputLabel>
               <Select
@@ -199,7 +199,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Time Unit</InputLabel>
               <Select
@@ -215,7 +215,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Site"
@@ -226,7 +226,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth margin="normal">
               <InputLabel>Route</InputLabel>
               <Select
@@ -242,7 +242,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Lot Number"
@@ -252,7 +252,7 @@ export default function ImmunizationItemEditor({ immunization, onSave, onCancel,
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Manufacturer"

@@ -6,10 +6,10 @@ import { DatePicker } from 'components/ui/Core.jsx';
 const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }) => {
   return (
     <>
-      <Grid item xs={typographyCols}>
+      <Grid size={typographyCols}>
         <Typography>{label}</Typography>
       </Grid>
-      <Grid item xs={textFieldCols}>
+      <Grid size={textFieldCols}>
         <TextField
           label={label}
           fullWidth
@@ -34,10 +34,10 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
   //
   return (
     <>
-      <Grid item xs={typographyCols}>
+      <Grid size={typographyCols}>
         <Typography>{label}</Typography>
       </Grid>
-      <Grid item xs={textFieldCols}>
+      <Grid size={textFieldCols}>
         <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } })} />
       </Grid>
     </>
@@ -87,10 +87,10 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
 
   return (
     <Grid container spacing={2} alignItems="center">
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Typography>Problem</Typography>
       </Grid>
-      <Grid item xs={10}>
+      <Grid size={10}>
         <TextField
           label='Problem'
           fullWidth
@@ -99,14 +99,13 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
           InputProps={{
             endAdornment: (
               // Want deferred funciton call
-              <IconButton onClick={() => onOpenModal(index)}>
+              (<IconButton onClick={() => onOpenModal(index)}>
                 <Icon>search</Icon>
-              </IconButton>
+              </IconButton>)
             )
           }}
         />
       </Grid>
-
       <EditorGridItem
         label="Display"
         typographyCols={2}
@@ -114,7 +113,7 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
         value={tempData.display}
         onChange={(e) => handleEditorTempChange('display', e.target.value)}
       />
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Button
           variant={tempData.isChronicCondition ? 'contained' : 'outlined'}
           onClick={() => handleEditorTempChange('isChronicCondition', !tempData.isChronicCondition)}
@@ -122,7 +121,7 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
           Chronic Condition
         </Button>
       </Grid>
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Button
           variant={tempData.isShareWithPatient ? 'contained' : 'outlined'}
           onClick={() => handleEditorTempChange('isShareWithPatient', !tempData.isShareWithPatient)}
@@ -130,12 +129,11 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
           Share with Patient
         </Button>
       </Grid>
-      <Grid item style={{ width: '100%' }}/>
-
-      <Grid item xs={2}>
+      <Grid style={{ width: '100%' }} />
+      <Grid size={2}>
         <Typography>Priority</Typography>
       </Grid>
-      <Grid item xs={4}>
+      <Grid size={4}>
         <FormControl fullWidth>
           <TextField
             select
@@ -150,7 +148,6 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
           </TextField>
         </FormControl>
       </Grid>
-
       <EditorGridItem
         label="Class"
         typographyCols={2}
@@ -179,20 +176,19 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal })
         value={tempData.resolvedDate}
         onChange={(e) => handleEditorTempChange('resolvedDate', e.target.value)}
       />
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Button variant="contained" color='error' onClick={() => onDelete(index)}>Delete</Button>
       </Grid>
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Button variant="outlined">Add to History</Button>
       </Grid>
-      <Grid item xs={4}/>
-      <Grid item xs={2}>
+      <Grid size={4} />
+      <Grid size={2}>
         <Button variant="outlined" color="success" onClick={handleEditorAccept}><Icon>check</Icon>Accept</Button>
       </Grid>
-      <Grid item xs={2}>
+      <Grid size={2}>
         <Button variant="outlined" color="error" onClick={handleEditorCancel}><Icon>close</Icon>Cancel</Button>
       </Grid>
-
     </Grid>
   );
 };

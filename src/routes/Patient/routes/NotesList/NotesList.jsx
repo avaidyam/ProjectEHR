@@ -204,6 +204,7 @@ export const NotesList = () => {
               field: 'listColumn',
               renderCell: ({ row }) => <ListViewCell row={row} />
             }}
+            showToolbar
             slots={{
               toolbar: () => (
                 <GridToolbarContainer sx={{ justifyContent: 'flex-start', borderBottom: 1, borderColor: 'divider' }}>

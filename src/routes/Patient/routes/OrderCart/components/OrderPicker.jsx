@@ -164,8 +164,9 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
           hideFooter
           disableColumnMenu
           density="compact"
-          rowSelectionModel={selection ? [selection] : []}
-          onRowSelectionModelChange={(ids) => {
+          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
+          onRowSelectionModelChange={(newModel) => {
+            const ids = Array.from(newModel.ids);
             if (ids.length > 0) setSelection(ids[0])
             else if (data.filter(x => x.type === 'medication').some(x => x.id === selection)) setSelection(null)
           }}
@@ -196,8 +197,9 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
           hideFooter
           disableColumnMenu
           density="compact"
-          rowSelectionModel={selection ? [selection] : []}
-          onRowSelectionModelChange={(ids) => {
+          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
+          onRowSelectionModelChange={(newModel) => {
+            const ids = Array.from(newModel.ids);
             if (ids.length > 0) setSelection(ids[0])
             else if (data.filter(x => ['procedure', 'Imaging', 'Lab'].includes(x.type)).some(x => x.id === selection)) setSelection(null)
           }}

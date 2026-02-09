@@ -50,16 +50,16 @@ export default function OrdersMgmt() {
             <Stack direction="column">
               {visibleList.map((order, idx) => (
                 <Grid container>
-                  <Grid item xs={12} sm={3} align="left">
+                  <Grid size={{ xs: 12, sm: 3 }} align="left">
                     <Label variant="body2">
                       {!!order.holdDate && <Chip size="small" color="primary" sx={{ mr: 1 }}>HELD</Chip>}
                       {order.name} {order.dose}
                     </Label>
                   </Grid>
-                  <Grid item xs={12} sm={5} align="left">
+                  <Grid size={{ xs: 12, sm: 5 }} align="left">
                     <Label variant="body2">{order.dose}, {order.route}, {order.frequency}, started on {!!order.date ? formatter.format(new Date(order.date)) : ""}</Label>
                   </Grid>
-                  <Grid item xs={12} sm={4} align="right">
+                  <Grid size={{ xs: 12, sm: 4 }} align="right">
                     <ButtonGroup size="small" variant="outlined" onChange={(_, mode) => addOrder(order, mode)}>
                       <Button value="Modify">Modify</Button>
                       {!order.holdDate && <Button value="Hold">Hold</Button>}
@@ -67,7 +67,7 @@ export default function OrdersMgmt() {
                       <Button value="Discontinue">Discontinue</Button>
                     </ButtonGroup>
                   </Grid>
-                  {idx < visibleList.length - 1 && <Grid item xs={12}><Divider flexItem sx={{ my: 1 }} /></Grid>}
+                  {idx < visibleList.length - 1 && <Grid size={12}><Divider flexItem sx={{ my: 1 }} /></Grid>}
                 </Grid>
               ))}
             </Stack>

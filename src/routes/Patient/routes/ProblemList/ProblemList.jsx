@@ -22,15 +22,19 @@ const ProblemListTabContent = ({ children, ...other }) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [expandedRowIds, setExpandedRowIds] = useState([]);
+  const [expandedRowIds, setExpandedRowIds] = useState(new Set());
   const [indexToUpdate, setIndexToUpdate] = useState(null);
 
   const handleExpandRow = (rowIndex) => {
-    setExpandedRowIds(prev =>
-      prev.includes(rowIndex)
-        ? prev.filter(id => id !== rowIndex)
-        : [...prev, rowIndex]
-    );
+    setExpandedRowIds(prev => {
+      const next = new Set(prev);
+      if (next.has(rowIndex)) {
+        next.delete(rowIndex);
+      } else {
+        next.add(rowIndex);
+      }
+      return next;
+    });
   };
 
   const handleOpenModal = (index, term = "") => {
@@ -70,7 +74,11 @@ const ProblemListTabContent = ({ children, ...other }) => {
       const newIds = newProblems.map((_, i) => startIdx + i);
 
       setProblems([...problems, ...newProblems]);
-      setExpandedRowIds(prev => [...prev, ...newIds]);
+      setExpandedRowIds(prev => {
+        const next = new Set(prev);
+        newIds.forEach(id => next.add(id));
+        return next;
+      });
     }
     setIndexToUpdate(null);
   };
@@ -78,7 +86,15 @@ const ProblemListTabContent = ({ children, ...other }) => {
   const handleDeleteProblem = (index) => {
     const updatedProblems = problems.filter((_, i) => i !== index);
     setProblems(updatedProblems);
-    setExpandedRowIds(prev => prev.filter(id => id !== index).map(id => id > index ? id - 1 : id));
+    setExpandedRowIds(prev => {
+      const next = new Set();
+      prev.forEach(id => {
+        if (id !== index) {
+          next.add(id > index ? id - 1 : id);
+        }
+      });
+      return next;
+    });
   };
 
   const columns = [
@@ -174,7 +190,7 @@ const ProblemListTabContent = ({ children, ...other }) => {
       hideable: false,
       renderCell: (params) => (
         <IconButton size="small" onClick={() => handleExpandRow(params.row.id)}>
-          <Icon>{expandedRowIds.includes(params.row.id) ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down'}</Icon>
+          <Icon>{expandedRowIds.has(params.row.id) ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down'}</Icon>
         </IconButton>
       )
     }
@@ -247,6 +263,7 @@ const ProblemListTabContent = ({ children, ...other }) => {
               </Box>
             )}
             getDetailPanelHeight={() => 'auto'}
+            showToolbar
             slots={{ toolbar: CustomToolbar }}
             hideFooter
             disableColumnMenu

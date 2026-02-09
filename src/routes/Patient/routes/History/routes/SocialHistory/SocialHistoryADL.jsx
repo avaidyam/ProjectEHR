@@ -59,7 +59,7 @@ export default function SocialHistoryADL() {
   };
 
   const renderItem = (item) => (
-    <Grid item xs={12} key={item.key}>
+    <Grid key={item.key} size={12}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Label variant="body2" sx={{ flex: 1, textAlign: 'right', mr: 2 }}>
           {item.label}
@@ -107,25 +107,23 @@ export default function SocialHistoryADL() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Social History - ADL
       </Label>
-
       <SectionPaper>
         <Grid container spacing={2}>
           {/* Left Column */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={1}>
               {leftColumnItems.map(renderItem)}
             </Grid>
           </Grid>
 
           {/* Right Column */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={1}>
               {rightColumnItems.map(renderItem)}
             </Grid>
           </Grid>
         </Grid>
       </SectionPaper>
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

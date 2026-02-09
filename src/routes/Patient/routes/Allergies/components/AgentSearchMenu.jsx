@@ -54,12 +54,12 @@ const AgentSearchMenu = ({ onAgentSelect }) => {
         renderOption={(props, option) => (
           <li {...props}>
             <Grid container alignItems="center">
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="body2" fontWeight="medium">
                   {option.allergen}
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Typography variant="body2" color="text.secondary">
                   {option.type}
                 </Typography>

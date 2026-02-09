@@ -65,7 +65,7 @@ export default function SocialHistorySocioeconomic() {
 
   const maritalStatusOptions = [
     'Divorced',
-    'Legally Separated', 
+    'Legally Separated',
     'Life Partner',
     'Married',
     'Single',
@@ -114,7 +114,7 @@ export default function SocialHistorySocioeconomic() {
   const handleSave = () => {
     let updatedHistory = [];
     const currentHistory = socioeconomicData?.occupationalHistory || [];
-    
+
     if (editingEntry) {
       updatedHistory = currentHistory.map(entry =>
         entry.id === editingEntry.id ? { ...newEntry, id: entry.id } : entry
@@ -123,12 +123,12 @@ export default function SocialHistorySocioeconomic() {
       const newId = currentHistory.length > 0 ? Math.max(...currentHistory.map(e => e.id)) + 1 : 1;
       updatedHistory = [...currentHistory, { ...newEntry, id: newId }];
     }
-    
+
     setSocioeconomicData(prev => ({
       ...prev,
       occupationalHistory: updatedHistory
     }));
-    
+
     setEditingEntry(null);
     setIsAddingNew(false);
     setNewEntry({
@@ -159,12 +159,11 @@ export default function SocialHistorySocioeconomic() {
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Socioeconomic
       </Label>
-
       {/* Current Occupation */}
       <SectionPaper>
         <SectionHeader>Current Occupation</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Occupation"
               fullWidth
@@ -172,7 +171,7 @@ export default function SocialHistorySocioeconomic() {
               onChange={(e) => handleCurrentOccupationChange('occupation', e.target.value)}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Employer"
               fullWidth
@@ -183,7 +182,6 @@ export default function SocialHistorySocioeconomic() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       {/* Occupation History */}
       <SectionPaper>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -238,52 +236,52 @@ export default function SocialHistorySocioeconomic() {
               Details
             </Label>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextField 
-                  label="Occupation" 
-                  name="occupation" 
-                  value={newEntry.occupation} 
-                  onChange={handleChange} 
-                  fullWidth 
+              <Grid size={12}>
+                <TextField
+                  label="Occupation"
+                  name="occupation"
+                  value={newEntry.occupation}
+                  onChange={handleChange}
+                  fullWidth
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField 
-                  label="Employer" 
-                  name="employer" 
-                  value={newEntry.employer} 
-                  onChange={handleChange} 
-                  fullWidth 
+              <Grid size={12}>
+                <TextField
+                  label="Employer"
+                  name="employer"
+                  value={newEntry.employer}
+                  onChange={handleChange}
+                  fullWidth
                 />
               </Grid>
-              <Grid item xs={12}>
-                <TextField 
-                  label="Comment" 
-                  name="comment" 
-                  value={newEntry.comment} 
-                  onChange={handleChange} 
-                  fullWidth 
+              <Grid size={12}>
+                <TextField
+                  label="Comment"
+                  name="comment"
+                  value={newEntry.comment}
+                  onChange={handleChange}
+                  fullWidth
                   multiline
                   rows={3}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button 
-                    onClick={handleSave} 
-                    variant="contained" 
+                  <Button
+                    onClick={handleSave}
+                    variant="contained"
                     sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
                   >
                     Accept
                   </Button>
-                  <Button 
-                    onClick={handleCancel} 
+                  <Button
+                    onClick={handleCancel}
                     variant="outlined"
                     sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
                   >
                     Cancel
                   </Button>
-                  <Button 
+                  <Button
                     variant="outlined"
                     sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
                   >
@@ -295,12 +293,11 @@ export default function SocialHistorySocioeconomic() {
           </Box>
         )}
       </SectionPaper>
-
       {/* Demographics */}
       <SectionPaper>
         <SectionHeader>Demographics</SectionHeader>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1 }}>Marital Status:</Label>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
               {maritalStatusOptions.map(option => (
@@ -324,7 +321,7 @@ export default function SocialHistorySocioeconomic() {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Spouse Name:"
               fullWidth
@@ -333,7 +330,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Preferred Language:"
               fullWidth
@@ -343,7 +340,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Number of Children:"
               type="number"
@@ -354,7 +351,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Ethnic Group:"
               fullWidth
@@ -364,7 +361,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Years of Education:"
               type="number"
@@ -375,7 +372,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               label="Race:"
               fullWidth
@@ -385,7 +382,7 @@ export default function SocialHistorySocioeconomic() {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               label="What is the highest level of school you have completed or the highest degree you have received?"
               fullWidth
@@ -395,7 +392,6 @@ export default function SocialHistorySocioeconomic() {
           </Grid>
         </Grid>
       </SectionPaper>
-
       <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}

@@ -7,14 +7,12 @@ import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-
 import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core.jsx';
 import { useRouter } from 'util/helpers.js';
 import Notification from '../Login/components/Notification.jsx';
-
-
 import { useDatabase } from 'components/contexts/PatientContext'
 
 // filter bar
 function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selectedDept, setSelectedDept, schedulesDB, departments, open, setOpen, preview, setPreview, hide, setHide }) {
   return (
-    <GridToolbarContainer sx={{ gap: 2, alignItems: 'center' }}>
+    <GridToolbarContainer sx={{ gap: 2, alignItems: 'center', justifyContent: "flex-start" }}>
       <GridToolbarFilterButton ref={setFilterElem} />
       <DatePicker
         value={selectedDate}
@@ -424,6 +422,7 @@ export function Schedule() {
 
               onHandleClickRoute(`patient/${selectedMRN}/encounter/${selectedEnc}`); // Proceed with routing if an encounter is selected
             }}
+            showToolbar
             slots={{ toolbar: customFilterBar }}
             slotProps={{
               panel: {

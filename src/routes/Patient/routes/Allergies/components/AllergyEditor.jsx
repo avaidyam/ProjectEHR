@@ -73,10 +73,9 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
       <Typography variant="h6" gutterBottom>
         {data.id ? 'Edit Allergy' : 'Add New Allergy'}
       </Typography>
-
       <Grid container spacing={2}>
         {/* Left column: Allergen + 2x2 grid */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           {/* Allergen / Allergen Type */}
           {isEditingCustomAllergen ? (
             <Box>
@@ -117,7 +116,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
           )}
           {/* 2x2 Grid: Reaction, Reaction Type, Severity, Noted Date */}
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <TextField
                 select
                 label="Reaction"
@@ -132,7 +131,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <TextField
                 select
                 label="Severity"
@@ -147,7 +146,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <TextField
                 select
                 label="Reaction Type"
@@ -161,9 +160,9 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
                   <MenuItem key={type} value={type}>{type}</MenuItem>
                 ))}
               </TextField>
-        
+
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <TextField
                 label="Noted Date"
                 type="date"
@@ -179,7 +178,7 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
         </Grid>
 
         {/* Right column: Comments */}
-        <Grid item xs={12} md={6} display="flex" flexDirection="column">
+        <Grid display="flex" flexDirection="column" size={{ xs: 12, md: 6 }}>
           <TextField
             label="Comments"
             value={data.comment}
@@ -192,28 +191,27 @@ const AllergyEditor = ({ initialData, onSave, onCancel }) => {
           />
         </Grid>
       </Grid>
-
       {/* Buttons */}
       <Box mt={3} display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" gap={2}>
           <Button variant="outlined" sx={{
-              color: colors.grey[700],
+            color: colors.grey[700],
+            borderColor: colors.grey[700],
+            '&:hover': {
               borderColor: colors.grey[700],
-              '&:hover': {
-                borderColor: colors.grey[700],
-                backgroundColor: colors.grey[200],
-              },
-            }}>
+              backgroundColor: colors.grey[200],
+            },
+          }}>
             Past Updates
           </Button>
           <Button variant="outlined" sx={{
-              color: colors.grey[700],
+            color: colors.grey[700],
+            borderColor: colors.grey[700],
+            '&:hover': {
               borderColor: colors.grey[700],
-              '&:hover': {
-                borderColor: colors.grey[700],
-                backgroundColor: colors.grey[200],
-              },
-            }}>
+              backgroundColor: colors.grey[200],
+            },
+          }}>
             <Icon>clear</Icon>Delete
           </Button>
         </Box>

@@ -109,10 +109,10 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
   return (
     <Box>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid item xs={3}>
+        <Grid size={3}>
           <Label>Dose:</Label>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <TextField
             name="dose"
             value={editedMedication.dose}
@@ -121,7 +121,7 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
             fullWidth
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid size={3}>
           <FormControl fullWidth>
             <InputLabel id="unit-label"/>
             <Select
@@ -139,10 +139,10 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={3}>
+        <Grid size={3}>
           <Label>Route:</Label>
         </Grid>
-        <Grid item xs={9}>
+        <Grid size={9}>
           <Autocomplete
             options={routesOfAdministration}
             getOptionLabel={(option) => option}
@@ -153,10 +153,10 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
             )}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid size={3}>
           <Label>Frequency:</Label>
         </Grid>
-        <Grid item xs={9}>
+        <Grid size={9}>
           <TextField
             name="frequency"
             value={editedMedication.frequency}
@@ -165,10 +165,10 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
           />
         </Grid>
 
-        <Grid item xs={3}>
+        <Grid size={3}>
           <Label>Date Range:</Label>
         </Grid>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <TextField
             name="startDate"
             placeholder="mm/dd/yyyy"
@@ -177,7 +177,7 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
             fullWidth
           />
         </Grid>
-        <Grid item xs={5}>
+        <Grid size={5}>
           <TextField
             name="endDate"
             placeholder="mm/dd/yyyy"
@@ -189,10 +189,10 @@ export default function MedicationItemEditor({ medication, onSave, onCancel }) {
 
         {editedMedication.possiblePrnReasons && editedMedication.possiblePrnReasons.length > 0 && (
           <>
-            <Grid item xs={3}>
+            <Grid size={3}>
               <Label component="legend">PRN Reasons:</Label>
             </Grid>
-            <Grid item xs={9}>
+            <Grid size={9}>
               <FormControl component="fieldset" fullWidth margin="normal">
                 <PrnFormGroup>
                   {editedMedication.possiblePrnReasons.map((reason) => (
