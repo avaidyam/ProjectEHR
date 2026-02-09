@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView } from "components/ui/Core.jsx";
+import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core.jsx";
 import { CollapsiblePane } from "components/ui/CollapsiblePane";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext.jsx";
@@ -23,7 +23,6 @@ const formatDate = (iso, format) => {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(d);
 };
 
-// --- Data Hook ---
 function useNormalizedLabs() {
   const { useEncounter } = usePatient();
   const [documents] = useEncounter().labs();
@@ -111,174 +110,116 @@ const ResultCell = ({ cell }) => {
   );
 };
 
-const SeriesSelector = ({ tests, selectedTests, onToggle }) => (
-  <Box sx={{ width: 260, borderLeft: "1px solid", borderColor: "divider", pl: 1.5 }}>
-    <Box sx={{ fontWeight: 700, mb: 1 }}>Series</Box>
-    <Stack direction="column" spacing={0.75}>
-      {tests.map((t) => (
-        <label key={t.name} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <input type="checkbox" checked={!!selectedTests[t.name]} onChange={() => onToggle(t.name)} />
-          <span style={{ width: 14, height: 14, borderRadius: 3, background: getColor(t.name), border: "1px solid #00000020" }} />
-          <span style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</span>
-        </label>
-      ))}
-    </Stack>
-    <Divider sx={{ my: 1 }} />
-    <Box sx={{ fontWeight: 700, mb: 1 }}>Reference bar</Box>
-    <Stack direction="column" spacing={1}>
-      {tests.map((t) => (
-        <Box key={t.name} sx={{ fontSize: 12 }}>
-          <Stack direction="row" alignItems="center" spacing={0.75}>
-            <span style={{ width: 24, height: 6, background: getColor(t.name), borderRadius: 2 }} />
-            <b>{t.name}</b>
-          </Stack>
-          <Box sx={{ opacity: 0.8, mt: 0.5 }}>
-            Ref: <code>{t.referenceRange}</code> {t.unit && `(${t.unit})`}
-          </Box>
-        </Box>
-      ))}
-    </Stack>
-  </Box>
-);
+function ResultsNavigator({ treeItems, onComponentsChange }) {
+  const labPanels = useNormalizedLabs();
+  const [query, setQuery] = useState("");
+  const [treeSelection, setTreeSelection] = useState(['cat:Laboratory']);
 
-function ResultsNavigator({ query, onQueryChange, treeItems, treeSelection, onTreeSelect, treeExpanded, onTreeExpandedChange, onItemClick }) {
+  const allParents = useMemo(() => [...treeItems.map(x => x.id), ...treeItems.flatMap(x => x.children.flatMap(y => y.id))], [treeItems])
+  const allItems = useMemo(() => treeItems.flatMap(x => x.children.flatMap(y => y.children.map(z => z.label))), [treeItems])
+
+  const selectedComponents = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const selectedIds = new Set(treeSelection);
+    const isLabSelected = selectedIds.has("cat:Laboratory");
+
+    return labPanels.flatMap(panel =>
+      panel.tests.filter(test => {
+        const isPanelSelected = isLabSelected || selectedIds.has(`panel:${panel.name}`);
+        const isTestSelected = isPanelSelected || selectedIds.has(`test:${panel.name}:${test.name}`);
+        return isTestSelected && (!q || test.name.toLowerCase().includes(q));
+      })
+    );
+  }, [labPanels, treeSelection, query]);
+
+  // Use a ref to make sure we aren't looping our render infinitely.
+  const lastComponentsKeyRef = useRef("");
+  useEffect(() => {
+    const key = selectedComponents.map((c) => c.name).sort().join(",");
+    if (key !== lastComponentsKeyRef.current) {
+      lastComponentsKeyRef.current = key;
+      onComponentsChange(selectedComponents);
+    }
+  }, [selectedComponents, onComponentsChange]);
+
   return (
-    <CollapsiblePane width={280} side="left">
-      <Box sx={{ p: 1.5 }}>
-        <input
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Search tests..."
-          style={{ width: "100%", padding: "8px 10px", border: "1px solid #e0e0e0", outline: "none" }}
+    <Stack spacing={1.5} sx={{ p: 1.5, height: "100%" }}>
+      <Autocomplete
+        freeSolo
+        size="small"
+        options={allItems}
+        inputValue={query}
+        onInputChange={(_, val) => setQuery(val)}
+        TextFieldProps={{ placeholder: "Search tests..." }}
+      />
+      <Box sx={{ flex: 1, overflow: "hidden" }}>
+        <TreeView rich
+          items={treeItems}
+          checkboxSelection
+          multiSelect
+          selectionPropagation={{ descendants: true, parents: true }}
+          selectedItems={treeSelection}
+          onSelectedItemsChange={(_, ids) => setTreeSelection(ids)}
+          defaultExpandedItems={allParents}
+          sx={{ height: "100%", overflowY: "auto", "& .MuiTreeItem-content": { py: 0.25 } }}
         />
-        <Box sx={{ mt: 1 }}>
-          <TreeView rich
-            items={treeItems}
-            checkboxSelection
-            multiSelect
-            selectionPropagation={{ descendants: false, parents: false }}
-            selectedItems={treeSelection}
-            onSelectedItemsChange={onTreeSelect}
-            expandedItems={treeExpanded}
-            onExpandedItemsChange={(_, ids) => onTreeExpandedChange(ids)}
-            defaultExpandedItems={["cat:Laboratory"]}
-            onItemClick={onItemClick}
-            sx={{ flex: 1, overflowY: "auto", "& .MuiTreeItem-content": { py: 0.25 } }}
-          />
-        </Box>
       </Box>
-    </CollapsiblePane>
-  );
-}
-
-function ResultsGraph({ graphData, graphTimeKeys, visibleGraphTests, selectedTests, toggleTest }) {
-  return (
-    <Stack direction="row" spacing={1.5}>
-      <Box sx={{ flex: 1, minHeight: 320 }}>
-        <Box sx={{ height: 360, width: "100%", border: "1px solid #e0e0e0" }}>
-          <LineChart
-            height={360}
-            dataset={graphData}
-            xAxis={[{ dataKey: "time", scaleType: "band", valueFormatter: (iso) => formatDate(iso) }]}
-            yAxis={[{}]}
-            grid={{ vertical: true, horizontal: true }}
-            slotProps={{ xAxis: { tickLabelStyle: { fontSize: 12 } }, yAxis: { tickLabelStyle: { fontSize: 12 } } }}
-            series={visibleGraphTests.map((t) => ({
-              dataKey: t.name,
-              color: getColor(t.name),
-              curve: "linear",
-              showMark: true,
-              connectNulls: true,
-              strokeWidth: 3,
-            }))}
-            margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
-          />
-        </Box>
-      </Box>
-      <SeriesSelector tests={visibleGraphTests} selectedTests={selectedTests} onToggle={toggleTest} />
     </Stack>
   );
 }
 
-function ResultsGrid({ rows, columns }) {
+function ResultsGraph({ components }) {
+  const timeKeys = useMemo(() => {
+    const times = new Set();
+    components.forEach((t) => t.results.forEach((r) => times.add(r.time)));
+    return [...times].sort((a, b) => new Date(b) - new Date(a)).slice(0, 6);
+  }, [components]);
+
+  const graphData = useMemo(() => {
+    const timesAsc = [...timeKeys].sort((a, b) => new Date(a) - new Date(b));
+    return timesAsc.map((iso) => {
+      const row = { time: iso };
+      components.forEach((t) => {
+        const hit = t.results.find((r) => r.time === iso);
+        row[t.name] = hit?.value ?? null;
+      });
+      return row;
+    });
+  }, [timeKeys, components]);
+
   return (
-    <DataGrid
-      rows={rows}
-      columns={columns}
-      hideFooter
-      density="compact"
-      disableRowSelectionOnClick
-      sx={{
-        '& .MuiDataGrid-cell': {
-          borderRight: '1px solid #f0f0f0',
-        }
-      }}
+    <LineChart
+      height={360}
+      dataset={graphData}
+      xAxis={[{ dataKey: "time", scaleType: "band", valueFormatter: (iso) => formatDate(iso) }]}
+      yAxis={[{}]}
+      grid={{ vertical: true, horizontal: true }}
+      slotProps={{ xAxis: { tickLabelStyle: { fontSize: 12 } }, yAxis: { tickLabelStyle: { fontSize: 12 } } }}
+      series={components.map((t) => ({
+        dataKey: t.name,
+        color: getColor(t.name),
+        curve: "linear",
+        showMark: true,
+        connectNulls: true,
+        strokeWidth: 3,
+      }))}
+      margin={{ top: 16, right: 16, left: 48, bottom: 28 }}
     />
   );
 }
 
-export default function ResultsReview() {
-  const labPanels = useNormalizedLabs();
-  const { openTab } = useSplitView();
-
-  const [panel, setPanel] = useState(labPanels[0]?.name || "");
-  const [query, setQuery] = useState("");
-  const [viewMode, setViewMode] = useState("table");
-  const [treeSelection, setTreeSelection] = useState([]);
-  const [treeExpanded, setTreeExpanded] = useState(["cat:Laboratory", panel ? `panel:${panel}` : "cat:Laboratory"]);
-  const [selectedTests, setSelectedTests] = useState({});
-
-  const activePanel = useMemo(() => labPanels.find((p) => p.name === panel) || labPanels[0], [panel, labPanels]);
-
-  // Sync selected tests when panel changes
-  useEffect(() => {
-    setSelectedTests((prev) => {
-      const base = {};
-      for (const t of activePanel?.tests || []) base[t.name] = prev[t.name] ?? true;
-      return base;
-    });
-  }, [activePanel]);
-
-  // Auto-select active panel in tree
-  useEffect(() => {
-    if (!panel) return;
-    const pid = `panel:${panel}`;
-    setTreeSelection((prev) => (prev.includes(pid) ? prev : [...prev, pid]));
-  }, [panel]);
-
-  // Tree items
-  const treeItems = useMemo(
-    () => [{ id: "cat:Laboratory", label: "Laboratory", children: labPanels.map((p) => ({ id: `panel:${p.name}`, label: p.name })) }],
-    [labPanels]
-  );
-
-  // Selected panels from tree
-  const selectedPanelNames = useMemo(
-    () => new Set(treeSelection.filter((id) => id.startsWith("panel:")).map((id) => id.slice(6))),
-    [treeSelection]
-  );
-
-  // Filtered tests for table (across all selected panels)
-  const tableTests = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return labPanels
-      .filter((p) => selectedPanelNames.has(p.name))
-      .flatMap((p) => p.tests.filter((t) => !q || t.name.toLowerCase().includes(q)).map((t) => ({ ...t, panelName: p.name })));
-  }, [labPanels, selectedPanelNames, query]);
-
-  // Time keys for table
-  const tableTimeKeys = useMemo(() => {
+function ResultsGrid({ components }) {
+  const timeKeys = useMemo(() => {
     const times = new Set();
-    tableTests.forEach((t) => t.results.forEach((r) => times.add(r.time)));
+    components.forEach((t) => t.results.forEach((r) => times.add(r.time)));
     return [...times].sort((a, b) => new Date(b) - new Date(a)).slice(0, 6);
-  }, [tableTests]);
+  }, [components]);
 
-  // Table rows
-  const tableRows = useMemo(
+  const rows = useMemo(
     () =>
-      tableTests.map((t, idx) => {
+      components.map((t, idx) => {
         const row = { id: idx + 1, test: t.name };
-        tableTimeKeys.forEach((iso, i) => {
+        timeKeys.forEach((iso, i) => {
           const hit = t.results.find((r) => r.time === iso);
           row[`t${i}`] = hit
             ? { value: hit.value, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short") }
@@ -286,12 +227,11 @@ export default function ResultsReview() {
         });
         return row;
       }),
-    [tableTests, tableTimeKeys]
+    [components, timeKeys]
   );
 
-  // Table columns
-  const tableColumns = useMemo(() => {
-    const timeCols = tableTimeKeys.map((iso, i) => {
+  const columns = useMemo(() => {
+    const timeCols = timeKeys.map((iso, i) => {
       const [datePart, timePart] = formatDate(iso, "short").split(" ");
       return {
         field: `t${i}`,
@@ -303,83 +243,71 @@ export default function ResultsReview() {
       };
     });
     return [{ field: "test", headerName: "Test", width: 160, sortable: false }, ...timeCols];
-  }, [tableTimeKeys]);
-
-  // Graph data (active panel only)
-  const visibleGraphTests = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const selected = Object.entries(selectedTests).filter(([, v]) => v).map(([name]) => name);
-    return (activePanel?.tests || []).filter((t) => selected.includes(t.name) && (!q || t.name.toLowerCase().includes(q)));
-  }, [activePanel, selectedTests, query]);
-
-  const graphTimeKeys = useMemo(() => {
-    const times = new Set();
-    visibleGraphTests.forEach((t) => t.results.forEach((r) => times.add(r.time)));
-    return [...times].sort((a, b) => new Date(b) - new Date(a)).slice(0, 6);
-  }, [visibleGraphTests]);
-
-  const graphData = useMemo(() => {
-    const timesAsc = [...graphTimeKeys].sort((a, b) => new Date(a) - new Date(b));
-    return timesAsc.map((iso) => {
-      const row = { time: iso };
-      visibleGraphTests.forEach((t) => {
-        const hit = t.results.find((r) => r.time === iso);
-        row[t.name] = hit?.value ?? null;
-      });
-      return row;
-    });
-  }, [graphTimeKeys, visibleGraphTests]);
-
-  // Handlers
-  const handleTreeItemClick = useCallback((_, itemId) => {
-    if (itemId?.startsWith("panel:")) {
-      setPanel(itemId.slice(6));
-      setTreeExpanded((prev) => (prev.includes(itemId) ? prev : [...prev, itemId]));
-    }
-  }, []);
-
-  const handleTreeSelect = useCallback((_, ids) => {
-    setTreeSelection((Array.isArray(ids) ? ids : [ids]).filter((id) => id?.startsWith("panel:")));
-  }, []);
-
-  const toggleTest = useCallback((name) => setSelectedTests((s) => ({ ...s, [name]: !s[name] })), []);
+  }, [timeKeys]);
 
   return (
-    <Stack sx={{ height: "100%" }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 1, borderBottom: "1px solid", borderColor: "divider" }}>
+    <DataGrid
+      rows={rows}
+      columns={columns}
+      hideFooter
+      density="compact"
+      disableRowSelectionOnClick
+      sx={{ '& .MuiDataGrid-cell': { borderRight: '1px solid #f0f0f0' } }}
+    />
+  );
+}
+
+export default function ResultsReview() {
+  const labPanels = useNormalizedLabs();
+  const { openTab } = useSplitView();
+  const [viewMode, setViewMode] = useState("table");
+  const [selectedComponents, setSelectedComponents] = useState([]);
+
+  const treeItems = useMemo(() => [{
+    id: "cat:Laboratory",
+    label: "Laboratory",
+    children: labPanels.map((p) => ({
+      id: `panel:${p.name}`,
+      label: p.name,
+      children: p.tests.map(t => ({
+        id: `test:${p.name}:${t.name}`,
+        label: t.name
+      }))
+    }))
+  }], [labPanels]);
+
+  return (
+    <Stack direction="column" sx={{ height: "100%" }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ px: 2, py: 1, borderBottom: "1px solid", borderColor: "divider" }}
+      >
         <Label variant="h6">Results Review</Label>
         <ButtonGroup value={viewMode}>
           <Button toggle value="table" onClick={() => setViewMode("table")}>Lab</Button>
           <Button toggle value="graph" onClick={() => setViewMode("graph")}>Graph</Button>
         </ButtonGroup>
-        <Button variant="contained" size="small" startIcon={<Icon>add</Icon>} onClick={() => openTab("Edit Result", {}, "main", true)}>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<Icon>add</Icon>}
+          onClick={() => openTab("Edit Result", {}, "main", true)}
+        >
           New Result
         </Button>
       </Stack>
       <Stack direction="row" sx={{ flex: 1, overflow: "hidden" }}>
-        <ResultsNavigator
-          query={query}
-          onQueryChange={setQuery}
-          treeItems={treeItems}
-          treeSelection={treeSelection}
-          onTreeSelect={handleTreeSelect}
-          treeExpanded={treeExpanded}
-          onTreeExpandedChange={setTreeExpanded}
-          onItemClick={handleTreeItemClick}
-        />
+        <CollapsiblePane width={280} side="left">
+          <ResultsNavigator
+            treeItems={treeItems}
+            onComponentsChange={setSelectedComponents}
+          />
+        </CollapsiblePane>
         <Box sx={{ flex: 1, overflow: "auto" }}>
-          {viewMode === "table" &&
-            <ResultsGrid rows={tableRows} columns={tableColumns} />
-          }
-          {viewMode === "graph" && (
-            <ResultsGraph
-              graphData={graphData}
-              graphTimeKeys={graphTimeKeys}
-              visibleGraphTests={visibleGraphTests}
-              selectedTests={selectedTests}
-              toggleTest={toggleTest}
-            />
-          )}
+          {viewMode === "table" && <ResultsGrid components={selectedComponents} />}
+          {viewMode === "graph" && <ResultsGraph components={selectedComponents} />}
         </Box>
       </Stack>
     </Stack>
