@@ -3,7 +3,7 @@ import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, T
 import { useDatabase } from 'components/contexts/PatientContext'
 
 const BROWSE_CATEGORIES = {
-  "Hematology": ["CBC", "ESR", "PTTP", "APTTP"],
+  "Hematology": ["CBC", "ESR", "PTTP", "APTSC"],
   "Drug Levels": ["ACMA", "ALC", "CARTA", "DIG", "PBR", "PNYA", "SALCA", "THEO", "VALPA"],
   "Microbiology": ["ANAES", "BLOODCUL7", "CSFME"],
   "Urine (Lab)": ["URINEPRE", "ADULT", "URINECUL", "DSS"],

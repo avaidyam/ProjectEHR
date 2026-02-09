@@ -256,7 +256,6 @@
     "APRI": "Prolonged Clot Time Profile Interpretation",
     "APROL": "Prolonged Clot Time Profile, Plasma",
     "APTSC": "Activated Partial Thromboplastin Time (APTT), Plasma",
-    "APTTP": "Activated Partial Thromboplastin Time, Plasma",
     "ARAV": "Aldosterone, Right Adrenal Vein, Serum",
     "ARBI": "Acetylcholine Receptor (Muscle AChR) Binding Antibody, Serum",
     "ARBOP": "Arbovirus Antibody Panel, IgG and IgM, Serum",
@@ -4779,7 +4778,6 @@
     "TRANSCUT": "TRANSCUTANEOUS BILIRUBIN",
     "URINEPRE": "URINE PREGNANCY, POCT",
     "VBG": "VBG",
-    "ELECTROC": "ELECTROCARDIOGRAM (EKG/ECG)",
     "2DRUGPAN": "2 DRUG PANEL, URINE",
     "5HYDROXY": "5-HYDROXYINDOLEACETIC ACID (5HIAA), 24H, U",
     "ACUTEMYE": "Acute Myeloid Leukemia (AML), FISH, ADULT, BONE MARROW",
@@ -5561,7 +5559,7 @@
     "CVPROCED": "CV PROCEDURE NOT PERFORMED",
     "DOBUTAMI": "DOBUTAMINE CHALLENGE",
     "DOBUTAMI1": "DOBUTAMINE TEE ECHO",
-    "ECG12LEA": "ECG 12 LEAD",
+    "ECG12LEA": "ECG (EKG) 12 LEAD",
     "ECHOCARD": "ECHOCARDIOGRAM-ADULT",
     "ECHOCARD1": "ECHOCARDIOGRAM-ADULT STRAIN",
     "ECHOCARD2": "ECHOCARDIOGRAM- LIMITED",
@@ -6644,7 +6642,8 @@
     "XRWRISTR": "XR WRIST RIGHT CARPAL TUNNEL ONLY",
     "XRWRISTR1": "XR WRIST RIGHT COMPLETE",
     "XRWRISTR2": "XR WRIST RIGHT DOBBINS SERIES",
-    "XRWRISTR3": "XR WRIST RIGHT PA/LAT ONLY"
+    "XRWRISTR3": "XR WRIST RIGHT PA/LAT ONLY",
+    "__BICEP__": "__ADVANCE_PATIENT_BICEP_SLIDE__"
   },
   "result_map": {
     "FDISU": [
@@ -17188,9 +17187,6 @@
       "608961",
       "608964",
       "608965"
-    ],
-    "APTTP": [
-      "APTTP"
     ],
     "APTSC": [
       "APTSC"
@@ -34018,7 +34014,6 @@
     "Z5791": "Anti-PM/Scl-100 Ab",
     "FAU3R": "Anti-U3 RNP (Fibrillarin)",
     "IL6DX": "Interleukin-6, S",
-    "APTTP": "Activated Partial Thrombopl Time, P",
     "APTSC": "Activated Partial Thrombopl Time, P",
     "FAMDA": "Anti-MDA-5 Ab (CADM-140)",
     "BETV2": "BET v2 (Profilin), IgE, S",

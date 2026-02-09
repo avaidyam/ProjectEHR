@@ -55,6 +55,7 @@ export const OrderCart = () => {
   // eslint-disable-next-line dot-notation
   const [orderList, setOrderList] = useEncounter().orders([])
   const [orderCart, setOrderCart] = useEncounter().orderCart["_currentUser"]([])
+  const [conditionals] = useEncounter().conditionals({})
 
   const inputRef = React.useRef(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -163,13 +164,15 @@ export const OrderCart = () => {
           }}>
             <Icon>check</Icon> Sign
           </Button>
-          <Button variant="contained" color="success" onClick={() => {
-            setOrderList(prev => prev.upsert([
-              { id: crypto.randomUUID(), name: "__ADVANCE_PATIENT_BICEP_SLIDE__" }
-            ], "id"))
-          }}>
-            <Icon>queue_play_next</Icon> Advance Patient BiCEP Slide
-          </Button>
+          {Object.values(conditionals ?? {}).flat().includes('__BICEP__') && (
+            <Button variant="contained" color="success" onClick={() => {
+              setOrderList(prev => prev.upsert([
+                { id: crypto.randomUUID(), name: "__ADVANCE_PATIENT_BICEP_SLIDE__", code: "__BICEP__" }
+              ], "id"))
+            }}>
+              <Icon>queue_play_next</Icon> Advance Case
+            </Button>
+          )}
         </Box>
       </Box>
       {!!openSearchList &&

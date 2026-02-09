@@ -23,23 +23,31 @@ const formatDate = (iso, format) => {
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(d);
 };
 
-function useNormalizedLabs() {
+function useNormalizedResults() {
   const { useEncounter } = usePatient();
-  const [documents] = useEncounter().labs();
+  const [labDocs] = useEncounter().labs();
+  const [imagingDocs] = useEncounter().imaging();
   const [conditionals] = useEncounter().conditionals();
   const [orders] = useEncounter().orders();
-  const visibleDocs = filterDocuments(documents, conditionals, orders);
+
+  const visibleLabs = filterDocuments(labDocs, conditionals, orders);
+  const visibleImaging = filterDocuments(imagingDocs, conditionals, orders);
 
   return useMemo(() => {
-    const panels = {};
-    for (const doc of visibleDocs || []) {
-      const panelName = doc.Test || "Unknown Panel";
+    const categories = {
+      Laboratory: {},
+      Imaging: {},
+    };
+
+    // Process Labs
+    for (const doc of visibleLabs || []) {
+      const panelName = doc.test || doc.Test || "Unknown Panel";
       const time = doc.date || doc.collected;
-      if (!panels[panelName]) panels[panelName] = {};
+      if (!categories.Laboratory[panelName]) categories.Laboratory[panelName] = {};
 
       for (const r of doc.components || []) {
-        if (!panels[panelName][r.name]) {
-          panels[panelName][r.name] = {
+        if (!categories.Laboratory[panelName][r.name]) {
+          categories.Laboratory[panelName][r.name] = {
             name: r.name,
             unit: r.units || "",
             referenceRange: r.low != null || r.high != null ? `${r.low ?? ""} – ${r.high ?? ""}`.trim() : "",
@@ -47,7 +55,7 @@ function useNormalizedLabs() {
           };
         }
         const val = Number(r.value);
-        panels[panelName][r.name].results.push({
+        categories.Laboratory[panelName][r.name].results.push({
           time: new Date(time).toISOString(),
           value: val,
           flag: r.low != null && val < r.low ? "L" : r.high != null && val > r.high ? "H" : "",
@@ -58,20 +66,47 @@ function useNormalizedLabs() {
       }
     }
 
-    return Object.entries(panels).map(([name, tests]) => ({
-      name,
-      tests: Object.values(tests).map((t) => ({
-        ...t,
-        results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
+    // Process Imaging
+    for (const doc of visibleImaging || []) {
+      const panelName = "Imaging";
+      const testName = doc.test || doc.Test || "Unknown Study";
+      const time = doc.date || doc.statusDate || doc.collected;
+      if (!categories.Imaging[panelName]) categories.Imaging[panelName] = {};
+
+      if (!categories.Imaging[panelName][testName]) {
+        categories.Imaging[panelName][testName] = {
+          name: testName,
+          unit: "",
+          referenceRange: "",
+          results: [],
+        };
+      }
+      categories.Imaging[panelName][testName].results.push({
+        time: new Date(time).toISOString(),
+        value: "image",
+        isImage: true,
+        test: testName,
+        agency: doc.resultingAgency || "",
+      });
+    }
+
+    return Object.entries(categories).map(([catName, panels]) => ({
+      category: catName,
+      panels: Object.entries(panels).map(([name, tests]) => ({
+        name,
+        tests: Object.values(tests).map((t) => ({
+          ...t,
+          results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
+        })),
       })),
-    }));
-  }, [visibleDocs]);
+    })).filter(cat => cat.panels.length > 0);
+  }, [visibleLabs, visibleImaging]);
 }
 
 const ResultCell = ({ cell }) => {
   if (!cell) return <span style={{ opacity: 0.6 }}>—</span>;
-  const isOut = cell.flag === "H" || cell.flag === "L";
-  const display = `${cell.value}${isOut ? " !" : ""}`;
+  const isOut = !cell.isImage && (cell.flag === "H" || cell.flag === "L");
+  const display = cell.isImage ? <Icon sx={{ fontSize: 24, verticalAlign: "middle" }}>{cell.value}</Icon> : `${cell.value}${isOut ? " !" : ""}`;
 
   return (
     <Tooltip
@@ -79,7 +114,9 @@ const ResultCell = ({ cell }) => {
         <Box sx={{ maxWidth: 260, lineHeight: 1.25 }}>
           <Box sx={{ fontWeight: 800, fontSize: 17, color: "#5EA1F8", mb: 0.5 }}>{cell.test}</Box>
           <Box sx={{ fontSize: 12, opacity: 0.9, mb: 0.75 }}>{cell.label}</Box>
-          <Box sx={{ fontWeight: 900, fontSize: 24, color: isOut ? "#d32f2f" : "inherit", mb: 0.75 }}>{display}</Box>
+          <Box sx={{ fontWeight: 900, fontSize: 24, color: isOut ? "#d32f2f" : "inherit", mb: 0.75 }}>
+            {cell.isImage ? <Icon sx={{ fontSize: 48 }}>{cell.value}</Icon> : display}
+          </Box>
           {cell.ref && <Box sx={{ fontSize: 12, opacity: 0.9, mb: 0.5 }}>Ref range: {cell.ref}</Box>}
           {cell.agency && <Box sx={{ fontSize: 12, opacity: 0.9 }}>Resulting agency: {cell.agency}</Box>}
         </Box>
@@ -103,7 +140,7 @@ const ResultCell = ({ cell }) => {
       }}
       enterDelay={150}
     >
-      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block" }}>
+      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block", textAlign: cell.isImage ? "center" : "inherit" }}>
         {display}
       </span>
     </Tooltip>
@@ -111,7 +148,7 @@ const ResultCell = ({ cell }) => {
 };
 
 function ResultsNavigator({ treeItems, onComponentsChange }) {
-  const labPanels = useNormalizedLabs();
+  const categories = useNormalizedResults();
   const [query, setQuery] = useState("");
   const [treeSelection, setTreeSelection] = useState(['cat:Laboratory']);
 
@@ -121,16 +158,18 @@ function ResultsNavigator({ treeItems, onComponentsChange }) {
   const selectedComponents = useMemo(() => {
     const q = query.trim().toLowerCase();
     const selectedIds = new Set(treeSelection);
-    const isLabSelected = selectedIds.has("cat:Laboratory");
 
-    return labPanels.flatMap(panel =>
-      panel.tests.filter(test => {
-        const isPanelSelected = isLabSelected || selectedIds.has(`panel:${panel.name}`);
-        const isTestSelected = isPanelSelected || selectedIds.has(`test:${panel.name}:${test.name}`);
-        return isTestSelected && (!q || test.name.toLowerCase().includes(q));
-      })
-    );
-  }, [labPanels, treeSelection, query]);
+    return categories.flatMap(cat => {
+      const isCatSelected = selectedIds.has(`cat:${cat.category}`);
+      return cat.panels.flatMap(panel =>
+        panel.tests.filter(test => {
+          const isPanelSelected = isCatSelected || selectedIds.has(`panel:${panel.name}`);
+          const isTestSelected = isPanelSelected || selectedIds.has(`test:${panel.name}:${test.name}`);
+          return isTestSelected && (!q || test.name.toLowerCase().includes(q));
+        })
+      );
+    });
+  }, [categories, treeSelection, query]);
 
   // Use a ref to make sure we aren't looping our render infinitely.
   const lastComponentsKeyRef = useRef("");
@@ -222,7 +261,7 @@ function ResultsGrid({ components }) {
         timeKeys.forEach((iso, i) => {
           const hit = t.results.find((r) => r.time === iso);
           row[`t${i}`] = hit
-            ? { value: hit.value, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short") }
+            ? { value: hit.value, isImage: hit.isImage, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short") }
             : null;
         });
         return row;
@@ -258,15 +297,15 @@ function ResultsGrid({ components }) {
 }
 
 export default function ResultsReview() {
-  const labPanels = useNormalizedLabs();
+  const categories = useNormalizedResults();
   const { openTab } = useSplitView();
   const [viewMode, setViewMode] = useState("table");
   const [selectedComponents, setSelectedComponents] = useState([]);
 
-  const treeItems = useMemo(() => [{
-    id: "cat:Laboratory",
-    label: "Laboratory",
-    children: labPanels.map((p) => ({
+  const treeItems = useMemo(() => categories.map(cat => ({
+    id: `cat:${cat.category}`,
+    label: cat.category,
+    children: cat.panels.map((p) => ({
       id: `panel:${p.name}`,
       label: p.name,
       children: p.tests.map(t => ({
@@ -274,7 +313,7 @@ export default function ResultsReview() {
         label: t.name
       }))
     }))
-  }], [labPanels]);
+  })), [categories]);
 
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
