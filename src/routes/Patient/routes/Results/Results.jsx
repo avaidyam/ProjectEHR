@@ -37,6 +37,7 @@ function useNormalizedResults() {
     const categories = {
       Laboratory: {},
       Imaging: {},
+      Cardiac: {},
     };
 
     // Process Labs
@@ -67,39 +68,44 @@ function useNormalizedResults() {
     }
 
     // Process Imaging
-    for (const doc of visibleImaging || []) {
-      const panelName = "Imaging";
+    (visibleImaging || []).forEach((doc, i) => {
       const testName = doc.test || doc.Test || "Unknown Study";
       const time = doc.date || doc.statusDate || doc.collected;
-      if (!categories.Imaging[panelName]) categories.Imaging[panelName] = {};
+      const panelKey = `Imaging_${testName}_${i}`;
 
-      if (!categories.Imaging[panelName][testName]) {
-        categories.Imaging[panelName][testName] = {
+      categories.Imaging[panelKey] = {
+        _displayName: testName,
+        [testName]: {
           name: testName,
           unit: "",
           referenceRange: "",
-          results: [],
-        };
-      }
-      categories.Imaging[panelName][testName].results.push({
-        time: new Date(time).toISOString(),
-        value: "image",
-        isImage: true,
-        test: testName,
-        agency: doc.resultingAgency || "",
-      });
-    }
+          results: [{
+            time: new Date(time).toISOString(),
+            value: "image",
+            isImage: true,
+            test: testName,
+            agency: doc.resultingAgency || "",
+          }],
+        }
+      };
+    });
 
     return Object.entries(categories).map(([catName, panels]) => ({
       category: catName,
-      panels: Object.entries(panels).map(([name, tests]) => ({
-        name,
-        tests: Object.values(tests).map((t) => ({
-          ...t,
-          results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
-        })),
-      })),
-    })).filter(cat => cat.panels.length > 0);
+      panels: Object.entries(panels).map(([key, tests]) => {
+        const { _displayName, ...actualTests } = tests;
+        return {
+          name: _displayName || key,
+          tests: Object.values(actualTests).map((t) => ({
+            ...t,
+            results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
+          })),
+        };
+      }),
+    })).sort((a, b) => {
+      const order = { Laboratory: 1, Imaging: 2, Cardiac: 3 };
+      return (order[a.category] || 99) - (order[b.category] || 99);
+    });
   }, [visibleLabs, visibleImaging]);
 }
 
@@ -150,7 +156,7 @@ const ResultCell = ({ cell }) => {
 function ResultsNavigator({ treeItems, onComponentsChange }) {
   const categories = useNormalizedResults();
   const [query, setQuery] = useState("");
-  const [treeSelection, setTreeSelection] = useState(['cat:Laboratory']);
+  const [treeSelection, setTreeSelection] = useState(['cat:Laboratory', 'cat:Imaging', 'cat:Cardiac']);
 
   const allParents = useMemo(() => [...treeItems.map(x => x.id), ...treeItems.flatMap(x => x.children.flatMap(y => y.id))], [treeItems])
   const allItems = useMemo(() => treeItems.flatMap(x => x.children.flatMap(y => y.children.map(z => z.label))), [treeItems])
