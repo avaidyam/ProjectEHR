@@ -27,7 +27,7 @@ const Demographics = () => {
   const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic()
   const [demographics, setDemographics] = useEncounter().history.Socioeconomic.demographics()
   const [editingCard, setEditingCard] = React.useState(null)
-  
+
   // State for editable form data
   const [formData, setFormData] = React.useState({
     // Basics section
@@ -50,7 +50,7 @@ const Demographics = () => {
     race: demographics?.race || '',
     preferredFormOfAddress: '',
     permanentComments: '',
-    
+
     // Employer & Identification section
     employmentStatus: socioeconomicData?.occupation ? 'Employed' : 'Unknown',
     employerAddress: '',
@@ -60,10 +60,10 @@ const Demographics = () => {
     patientStatus: 'Alive',
     mrn: id || '',
     patientType: 'TPL',
-    
+
     // Contacts section (managed separately in contacts state)
   })
-  
+
   // State for contacts management
   const [contacts, setContacts] = React.useState({
     emergency: [
@@ -110,7 +110,7 @@ const Demographics = () => {
 
   const employmentStatusOptions = [
     'Unknown',
-    'Employed', 
+    'Employed',
     'Unemployed',
     'Retired',
     'Student',
@@ -233,7 +233,6 @@ const Demographics = () => {
     { id: 'employer-identification', label: 'Employer & Identification' },
     { id: 'patient-contacts', label: 'Contacts' },
     { id: 'pharm-labs', label: 'Pharmacies & Labs' },
-    { id: 'epiccare-info', label: 'EpicCare Info' },
     { id: 'patient-lists', label: 'Patient Lists' },
     { id: 'advance-directives', label: 'Advance Directives' },
     { id: 'code-status', label: 'Code Status' },
@@ -381,7 +380,7 @@ const Demographics = () => {
       id: Date.now(), // Simple ID generation
       ...newContact
     }
-    
+
     if (newContact.isEmergency) {
       setContacts(prev => ({
         ...prev,
@@ -393,7 +392,7 @@ const Demographics = () => {
         other: [...prev.other, contact]
       }))
     }
-    
+
     // Reset form
     setNewContact({
       name: '',
@@ -488,98 +487,98 @@ const Demographics = () => {
       </Box>
 
       <Grid masonry sequential columns={{ md: 1 }} spacing={2}>
-        
+
         {/* BASICS */}
-        <TitledCard 
+        <TitledCard
           id="basics"
-          emphasized 
+          emphasized
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>person</Icon> Basics
               </Box>
-              <Button 
-                variant="text" 
-                size="small" 
-                onClick={() => setEditingCard(editingCard === 'basics' ? null : 'basics')} 
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setEditingCard(editingCard === 'basics' ? null : 'basics')}
                 sx={{ minWidth: 'unset', p: 0 }}
               >
                 <Icon>{editingCard === 'basics' ? "close" : "edit"}</Icon>
               </Button>
             </Box>
-          } 
+          }
           color="#5EA1F8"
         >
           {editingCard !== 'basics' ? (
             // ----- READ-ONLY VIEW -----
             <>
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={4}><TitledCardItem label="Name" value={`${firstName} ${lastName}`} /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Date of Birth" value={birthdate} /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Legal Sex" value={gender} /></Grid>
-          </Grid>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={4}><TitledCardItem label="Name" value={`${firstName} ${lastName}`} /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Date of Birth" value={birthdate} /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Legal Sex" value={gender} /></Grid>
+              </Grid>
 
-          <Grid container spacing={2} sx={{ mb: 2 }}>
-            <Grid item xs={4}><TitledCardItem label="Gender Identity" value={gender} /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Sex Assigned at Birth" value={gender} /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Sexual Orientation" value='' /></Grid>
-          </Grid>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={4}><TitledCardItem label="Gender Identity" value={gender} /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Sex Assigned at Birth" value={gender} /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Sexual Orientation" value='' /></Grid>
+              </Grid>
 
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={4}><TitledCardItem label="Pronouns" value='' /></Grid>
-          </Grid>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={4}><TitledCardItem label="Pronouns" value='' /></Grid>
+              </Grid>
 
               {/* Communication */}
-              <Stack direction="row" justifyContent="space-between" alignItems="center" 
-            sx={{ borderTop: '1px solid #e0e0e0', pt: 2, mt: 2, mb: 1 }}
-          >
-            <Label variant="h6" sx={{ fontWeight: 'bold' }}>Communication</Label>
-          </Stack>
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={4}><TitledCardItem label="Address" value={address} /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Phone" value='' /></Grid>
-            <Grid item xs={4}><TitledCardItem label="Email" value='' /></Grid>
-          </Grid>
+              <Stack direction="row" justifyContent="space-between" alignItems="center"
+                sx={{ borderTop: '1px solid #e0e0e0', pt: 2, mt: 2, mb: 1 }}
+              >
+                <Label variant="h6" sx={{ fontWeight: 'bold' }}>Communication</Label>
+              </Stack>
+              <Grid container spacing={2} sx={{ mb: 3 }}>
+                <Grid item xs={4}><TitledCardItem label="Address" value={address} /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Phone" value='' /></Grid>
+                <Grid item xs={4}><TitledCardItem label="Email" value='' /></Grid>
+              </Grid>
 
               {/* Additional */}
-          <Label variant="h6" sx={{ fontWeight: 'bold', borderTop: '1px solid #e0e0e0', pt: 2, mt: 2, mb: 1 }}>
-            Additional
-          </Label>
-          <Grid container spacing={2}>
-            <Grid item xs={3}><TitledCardItem label="Language" value={preferredLanguage} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Interpreter Needed" value={'No'} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Marital Status" value={demographics?.maritalStatus} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Religion" value={demographics?.religion} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Ethnic Group" value={demographics?.ethnicGroup} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Race" value={demographics?.race} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Preferred Form of Address" value={'—'} /></Grid>
-            <Grid item xs={12}><TitledCardItem label="Permanent Comments" value={'—'} /></Grid>
-          </Grid>
+              <Label variant="h6" sx={{ fontWeight: 'bold', borderTop: '1px solid #e0e0e0', pt: 2, mt: 2, mb: 1 }}>
+                Additional
+              </Label>
+              <Grid container spacing={2}>
+                <Grid item xs={3}><TitledCardItem label="Language" value={preferredLanguage} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Interpreter Needed" value={'No'} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Marital Status" value={demographics?.maritalStatus} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Religion" value={demographics?.religion} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Ethnic Group" value={demographics?.ethnicGroup} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Race" value={demographics?.race} /></Grid>
+                <Grid item xs={3}><TitledCardItem label="Preferred Form of Address" value={'—'} /></Grid>
+                <Grid item xs={12}><TitledCardItem label="Permanent Comments" value={'—'} /></Grid>
+              </Grid>
             </>
           ) : (
             // ----- EDIT VIEW -----
             <>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="First Name" 
+                  <TextField
+                    fullWidth
+                    label="First Name"
                     value={formData.firstName}
                     onChange={(e) => handleFormDataChange('firstName', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Last Name" 
+                  <TextField
+                    fullWidth
+                    label="Last Name"
                     value={formData.lastName}
                     onChange={(e) => handleFormDataChange('lastName', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={6}>
-                  <TextField 
-                    fullWidth 
-                    label="Date of Birth" 
+                  <TextField
+                    fullWidth
+                    label="Date of Birth"
                     type="date"
                     value={formData.birthdate}
                     onChange={(e) => handleFormDataChange('birthdate', e.target.value)}
@@ -637,25 +636,25 @@ const Demographics = () => {
               </Label>
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid item xs={4}>
-                  <TextField 
-                    fullWidth 
-                    label="Address" 
+                  <TextField
+                    fullWidth
+                    label="Address"
                     value={formData.address}
                     onChange={(e) => handleFormDataChange('address', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={4}>
-                  <TextField 
-                    fullWidth 
-                    label="Phone" 
+                  <TextField
+                    fullWidth
+                    label="Phone"
                     value={formData.phone}
                     onChange={(e) => handleFormDataChange('phone', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={4}>
-                  <TextField 
-                    fullWidth 
-                    label="Email" 
+                  <TextField
+                    fullWidth
+                    label="Email"
                     value={formData.email}
                     onChange={(e) => handleFormDataChange('email', e.target.value)}
                   />
@@ -716,21 +715,21 @@ const Demographics = () => {
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
-                    fullWidth 
-                    label="Preferred Form of Address" 
+                  <TextField
+                    fullWidth
+                    label="Preferred Form of Address"
                     value={formData.preferredFormOfAddress}
                     onChange={(e) => handleFormDataChange('preferredFormOfAddress', e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField 
-                    fullWidth 
-                    label="Permanent Comments" 
+                  <TextField
+                    fullWidth
+                    label="Permanent Comments"
                     value={formData.permanentComments}
                     onChange={(e) => handleFormDataChange('permanentComments', e.target.value)}
-                    multiline 
-                    rows={3} 
+                    multiline
+                    rows={3}
                   />
                 </Grid>
               </Grid>
@@ -748,24 +747,24 @@ const Demographics = () => {
         </TitledCard>
 
         {/* EMPLOYER & IDENTIFICATION */}
-        <TitledCard 
+        <TitledCard
           id="employer-identification"
-          emphasized 
+          emphasized
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>badge</Icon> Employer and Identification
               </Box>
-              <Button 
-                variant="text" 
-                size="small" 
-                onClick={() => setEditingCard(editingCard === 'employer-identification' ? null : 'employer-identification')} 
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setEditingCard(editingCard === 'employer-identification' ? null : 'employer-identification')}
                 sx={{ minWidth: 'unset', p: 0 }}
               >
                 <Icon>{editingCard === 'employer-identification' ? "close" : "edit"}</Icon>
               </Button>
             </Box>
-          } 
+          }
           color="#5EA1F8"
         >
           {editingCard !== 'employer-identification' ? (
@@ -806,33 +805,33 @@ const Demographics = () => {
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Address" 
+                      <TextField
+                        fullWidth
+                        label="Address"
                         value={formData.employerAddress}
                         onChange={(e) => handleFormDataChange('employerAddress', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Employer" 
+                      <TextField
+                        fullWidth
+                        label="Employer"
                         value={formData.employer}
                         onChange={(e) => handleFormDataChange('employer', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Phone" 
+                      <TextField
+                        fullWidth
+                        label="Phone"
                         value={formData.employerPhone}
                         onChange={(e) => handleFormDataChange('employerPhone', e.target.value)}
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Fax" 
+                      <TextField
+                        fullWidth
+                        label="Fax"
                         value={formData.employerFax}
                         onChange={(e) => handleFormDataChange('employerFax', e.target.value)}
                       />
@@ -843,25 +842,25 @@ const Demographics = () => {
                   <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Patient Identification</Label>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Patient Status" 
+                      <TextField
+                        fullWidth
+                        label="Patient Status"
                         value={formData.patientStatus}
                         disabled
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="MRN" 
+                      <TextField
+                        fullWidth
+                        label="MRN"
                         value={formData.mrn}
                         disabled
                       />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField 
-                        fullWidth 
-                        label="Patient Type" 
+                      <TextField
+                        fullWidth
+                        label="Patient Type"
                         value={formData.patientType}
                         disabled
                       />
@@ -882,24 +881,24 @@ const Demographics = () => {
           )}
         </TitledCard>
         {/* Patient Contacts */}
-        <TitledCard 
-          id="patient-contacts" 
-          emphasized 
+        <TitledCard
+          id="patient-contacts"
+          emphasized
           title={
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Box>
                 <Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>people</Icon> Patient Contacts
               </Box>
-              <Button 
-                variant="text" 
-                size="small" 
-                onClick={() => setEditingCard(editingCard === 'patient-contacts' ? null : 'patient-contacts')} 
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setEditingCard(editingCard === 'patient-contacts' ? null : 'patient-contacts')}
                 sx={{ minWidth: 'unset', p: 0 }}
               >
                 <Icon>{editingCard === 'patient-contacts' ? "close" : "edit"}</Icon>
               </Button>
             </Box>
-          } 
+          }
           color="#009688"
         >
           {editingCard !== 'patient-contacts' ? (
@@ -944,9 +943,9 @@ const Demographics = () => {
             <>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Label variant="h6" sx={{ fontWeight: 'bold' }}>Emergency Contacts</Label>
-                <Button 
-                  variant="contained" 
-                  color="success" 
+                <Button
+                  variant="contained"
+                  color="success"
                   size="small"
                   onClick={() => setShowAddContactPopup(true)}
                   sx={{ textTransform: 'none' }}
@@ -954,7 +953,7 @@ const Demographics = () => {
                   <Icon sx={{ mr: 1 }}>add</Icon>Add Contact
                 </Button>
               </Box>
-              
+
               {contacts.emergency.length > 0 ? (
                 contacts.emergency.map((contact, index) => (
                   <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
@@ -963,11 +962,11 @@ const Demographics = () => {
                       color="error"
                       size="small"
                       onClick={() => handleDeleteContact(contact.id, true)}
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 8, 
-                        right: 8, 
-                        minWidth: 'unset', 
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        minWidth: 'unset',
                         p: 0.5,
                         borderRadius: '50%'
                       }}
@@ -989,9 +988,9 @@ const Demographics = () => {
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, mt: 3 }}>
                 <Label variant="h6" sx={{ fontWeight: 'bold' }}>Other Contacts</Label>
-                <Button 
-                  variant="contained" 
-                  color="success" 
+                <Button
+                  variant="contained"
+                  color="success"
                   size="small"
                   onClick={() => setShowAddContactPopup(true)}
                   sx={{ textTransform: 'none' }}
@@ -999,7 +998,7 @@ const Demographics = () => {
                   <Icon sx={{ mr: 1 }}>add</Icon>Add Contact
                 </Button>
               </Box>
-              
+
               {contacts.other.length > 0 ? (
                 contacts.other.map((contact, index) => (
                   <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
@@ -1008,11 +1007,11 @@ const Demographics = () => {
                       color="error"
                       size="small"
                       onClick={() => handleDeleteContact(contact.id, false)}
-                      sx={{ 
-                        position: 'absolute', 
-                        top: 8, 
-                        right: 8, 
-                        minWidth: 'unset', 
+                      sx={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        minWidth: 'unset',
                         p: 0.5,
                         borderRadius: '50%'
                       }}
@@ -1043,40 +1042,30 @@ const Demographics = () => {
 
         {/* Preferred Pharmacies and Labs */}
         <TitledCard id="pharm-labs" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>medication</Icon> Preferred Pharmacies and Labs</>} color="#009688">
-            <Grid container spacing={2}>
+          <Grid container spacing={2}>
             <Grid item xs={6}><TitledCardItem label="Pharmacies" value={"None"} /></Grid>
             <Grid item xs={6}><TitledCardItem label="Labs" value={"None"} /></Grid>
-            </Grid>
-        </TitledCard>
-
-        {/* EpicCare Information */}
-        <TitledCard id="epiccare-info" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>info</Icon> EpicCare Information</>} color="#009688">
-            <Grid container spacing={2}>
-            <Grid item xs={3}><TitledCardItem label="Primary Location" value={"-"} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="EpicCare Patient" value={"Yes"} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Restricted Access" value={"No"} /></Grid>
-            <Grid item xs={3}><TitledCardItem label="Chart Abstracted" value={"No"} /></Grid>
-            </Grid>
+          </Grid>
         </TitledCard>
 
         {/* Patient Lists */}
         <TitledCard id="patient-lists" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>list</Icon> Patient Lists</>} color="#5EA1F8">
-            <Label variant="body2"></Label>
-            <Button variant="text" sx={{ mt: 1, textTransform: 'none', color: '#1565c0' }}>
+          <Label variant="body2"></Label>
+          <Button variant="text" sx={{ mt: 1, textTransform: 'none', color: '#1565c0' }}>
             <Icon sx={{ fontSize: '16px', mr: 1 }}>edit</Icon> Edit patient list memberships
-            </Button>
+          </Button>
         </TitledCard>
 
         {/* Advance Directives */}
         <TitledCard id="advance-directives" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>description</Icon> Advance Directives</>} color="#009688">
-            <Label variant="body2">No documents to show</Label>
-            <Button variant="outlined" size="small" sx={{ mt: 2 }}>Mark as Reviewed</Button>
+          <Label variant="body2">No documents to show</Label>
+          <Button variant="outlined" size="small" sx={{ mt: 2 }}>Mark as Reviewed</Button>
         </TitledCard>
 
         {/* Code Status */}
         <TitledCard id="code-status" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>health_and_safety</Icon> Code Status</>} color="#009688">
           <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Current Code Status</Label>
-            <Grid container spacing={1} sx={{ pl: 1 }}>
+          <Grid container spacing={1} sx={{ pl: 1 }}>
             <Grid item xs={2.5}><TitledCardItem label="Date Active" /></Grid>
             <Grid item xs={2.5}><TitledCardItem label="Code Status" /></Grid>
             <Grid item xs={2}><TitledCardItem label="Order ID" /></Grid>
@@ -1084,7 +1073,7 @@ const Demographics = () => {
             <Grid item xs={1.5}><TitledCardItem label="User" /></Grid>
             <Grid item xs={2}><TitledCardItem label="Context" /></Grid>
           </Grid>
-          
+
           <Box sx={{ mt: 2, borderTop: '1px solid #e0e0e0', pt: 2 }}>
             <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Code Status History</Label>
             <Label variant="body2" sx={{ color: '#666' }}></Label>
@@ -1131,15 +1120,15 @@ const Demographics = () => {
             }}
           >
             <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#000' }}>Add New Contact</Label>
-            
+
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Name"
                   value={newContact.name}
-                  onChange={(e) => setNewContact({...newContact, name: e.target.value})}
-                  sx={{ 
+                  onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
+                  sx={{
                     '& .MuiInputBase-input': { color: '#000' },
                     '& .MuiInputLabel-root': { color: '#666' }
                   }}
@@ -1150,8 +1139,8 @@ const Demographics = () => {
                   fullWidth
                   label="Relationship"
                   value={newContact.relationship}
-                  onChange={(e) => setNewContact({...newContact, relationship: e.target.value})}
-                  sx={{ 
+                  onChange={(e) => setNewContact({ ...newContact, relationship: e.target.value })}
+                  sx={{
                     '& .MuiInputBase-input': { color: '#000' },
                     '& .MuiInputLabel-root': { color: '#666' }
                   }}
@@ -1162,8 +1151,8 @@ const Demographics = () => {
                   fullWidth
                   label="Primary Phone"
                   value={newContact.primaryPhone}
-                  onChange={(e) => setNewContact({...newContact, primaryPhone: e.target.value})}
-                  sx={{ 
+                  onChange={(e) => setNewContact({ ...newContact, primaryPhone: e.target.value })}
+                  sx={{
                     '& .MuiInputBase-input': { color: '#000' },
                     '& .MuiInputLabel-root': { color: '#666' }
                   }}
@@ -1174,8 +1163,8 @@ const Demographics = () => {
                   fullWidth
                   label="Work Phone"
                   value={newContact.workPhone}
-                  onChange={(e) => setNewContact({...newContact, workPhone: e.target.value})}
-                  sx={{ 
+                  onChange={(e) => setNewContact({ ...newContact, workPhone: e.target.value })}
+                  sx={{
                     '& .MuiInputBase-input': { color: '#000' },
                     '& .MuiInputLabel-root': { color: '#666' }
                   }}
@@ -1188,7 +1177,7 @@ const Demographics = () => {
                     variant={newContact.isEmergency ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({...newContact, isEmergency: true})}
+                    onClick={() => setNewContact({ ...newContact, isEmergency: true })}
                   >
                     Yes
                   </Button>
@@ -1196,7 +1185,7 @@ const Demographics = () => {
                     variant={!newContact.isEmergency ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({...newContact, isEmergency: false})}
+                    onClick={() => setNewContact({ ...newContact, isEmergency: false })}
                   >
                     No
                   </Button>
@@ -1209,7 +1198,7 @@ const Demographics = () => {
                     variant={newContact.isLegalGuardian ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({...newContact, isLegalGuardian: true})}
+                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: true })}
                   >
                     Yes
                   </Button>
@@ -1217,7 +1206,7 @@ const Demographics = () => {
                     variant={!newContact.isLegalGuardian ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({...newContact, isLegalGuardian: false})}
+                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: false })}
                   >
                     No
                   </Button>
