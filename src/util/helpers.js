@@ -35,12 +35,12 @@ export const filterDocuments = (documents, conditionals, orders) => {
   // 1. Pre-process available orders into a frequency map (Count of available items)
   // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
   const availableCounts = (orders ?? []).reduce((acc, order) => {
-    acc[order.name] = (acc[order.name] || 0) + 1;
+    acc[order.code] = (acc[order.code] || 0) + 1;
     return acc;
   }, {});
 
   // 2. Use the Array.filter method to check each document's validity
-  return (documents ?? []).filter(doc => {
+  const output = (documents ?? []).filter(doc => {
     const requiredOrders = conditionals?.[doc.id];
 
     // If the document ID has no entry in the conditionals, it passes the filter by default.
@@ -64,6 +64,10 @@ export const filterDocuments = (documents, conditionals, orders) => {
       return available >= required;
     });
   });
+
+  console.log("FILTERING DOCS")
+  console.dir({ documents, conditionals, orders, output })
+  return output
 };
 
 /**

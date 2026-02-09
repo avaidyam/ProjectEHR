@@ -5,33 +5,40 @@ import { DataGrid, Spacer } from 'components/ui/Core';
 import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
 import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { filterDocuments } from 'util/helpers';
 import NoteViewer from '../NoteViewer/NoteViewer.jsx';
 
 export const NotesList = () => {
   const { useEncounter } = usePatient();
   const { openTab } = useSplitView();
   const [notes] = useEncounter().notes();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [providers] = useDatabase().providers();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedNote, setSelectedNote] = useState(null);
 
+  const visibleNotes = useMemo(() => {
+    return filterDocuments(notes, conditionals, orders);
+  }, [notes, conditionals, orders]);
+
   // Extract unique categories from notes
   const categories = useMemo(() => {
     const categorySet = new Set(['All']);
-    (notes || []).forEach(note => {
+    (visibleNotes || []).forEach(note => {
       if (note.type) {
         categorySet.add(note.type);
       }
     });
     return Array.from(categorySet);
-  }, [notes]);
+  }, [visibleNotes]);
 
   // Filter notes by selected category
   const filteredNotes = useMemo(() => {
-    if (!notes) return [];
-    if (selectedCategory === 'All') return notes;
-    return notes.filter(note => note.type === selectedCategory);
-  }, [notes, selectedCategory]);
+    if (!visibleNotes) return [];
+    if (selectedCategory === 'All') return visibleNotes;
+    return visibleNotes.filter(note => note.type === selectedCategory);
+  }, [visibleNotes, selectedCategory]);
 
   // Auto-select first note when filtered notes change
   React.useEffect(() => {

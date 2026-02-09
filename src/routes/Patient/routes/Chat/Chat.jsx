@@ -307,6 +307,7 @@ ${fullPrompt}
         title="Model Configuration"
         maxWidth="md"
         fullWidth
+        ContentProps={{ sx: { height: '85vh' } }}
       >
         <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={systemInstruction} />
       </Window>

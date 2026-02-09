@@ -679,11 +679,12 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props })
       footer={<>
         <Button color="success.light" onClick={() => onSelect({
           name: effectiveName,
+          code: tempMed.code,
           ...params,
           // Include dose information (only for calculable medications)
-          Dose: isDoseCalculable && doseAmount && doseUnit ? `${doseAmount} ${doseUnit}` : (selectedFormulation || ''),
-          Formulation: selectedFormulation,
-          CalculatedDose: isDoseCalculable ? calculatedDoseDisplay : null
+          dose: isDoseCalculable && doseAmount && doseUnit ? `${doseAmount} ${doseUnit}` : (selectedFormulation || null),
+          formulation: selectedFormulation,
+          calculatedDose: isDoseCalculable ? calculatedDoseDisplay : null
         })}><Icon>check</Icon>Accept</Button>
         <Button color="error" onClick={() => onSelect(null)}><Icon>clear</Icon>Cancel</Button>
       </>}

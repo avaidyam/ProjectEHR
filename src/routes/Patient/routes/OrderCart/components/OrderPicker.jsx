@@ -3,7 +3,7 @@ import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, T
 import { useDatabase } from 'components/contexts/PatientContext'
 
 const BROWSE_CATEGORIES = {
-  "Hematology": ["CBC", "ESR", "PTTP", "APTTP"],
+  "Hematology": ["CBC", "ESR", "PTTP", "APTSC", "PTINRPOC", "FIBTP"],
   "Drug Levels": ["ACMA", "ALC", "CARTA", "DIG", "PBR", "PNYA", "SALCA", "THEO", "VALPA"],
   "Microbiology": ["ANAES", "BLOODCUL7", "CSFME"],
   "Urine (Lab)": ["URINEPRE", "ADULT", "URINECUL", "DSS"],
@@ -13,7 +13,8 @@ const BROWSE_CATEGORIES = {
   "Point of Care": ["URINEPRE", "BEDSIDEU1", "BLOODGLU", "ISTAT8PL", "LACTICAC", "OCCULTBL1", "FOBT"],
   "Blood Bank": ["ABORH", "731383", "TYPEANDS"],
   "Radiology: XR": ["XRCH1V", "XRCH4+V", "XRKUB"],
-  "Radiology: CT": ["CTAPU", "CTAPE", "CTCAPU3D", "CTCHE", "CTCHCA", "CTHDU", "CTCSU", "CTTSU", "CTLSU"],
+  "Radiology: CT": ["CTAPU", "CTAPE", "CTCAPU3D", "CTCHE", "CTCHCA", "CTHDU", "CTCSU", "CTTSU", "CTLSU", "CTBRAINW"],
+  "Consults": ["CONSULTA1", "CONSULTC8", "CONSULTC4", "CONSULTG2", "CONSULTT1", "CONSULTN6", "CONSULTN5", "CONSULTO11", "CONSULTP19", "CONSULTG6", "CONSULTG", "CONSULTU1", "CONSULTV", "CONSULTP10"],
   "Misc Orders": ["ADMIT"],
   "Medications": ["198466", "1723740", "2629337", "2474269", "897756", "897757", "727619", "998212", "998213", "104894", "312085", "1314133", "992460"]
 }
