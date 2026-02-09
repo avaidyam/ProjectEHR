@@ -68,7 +68,7 @@ export default function Chat() {
     (doc) => doc?.summary === 'Review of Systems'
   );
   const physicalExamNote = (notes || []).find(
-    (doc) => doc?.summary === 'Physical Exam'
+    (doc) => doc?.summary === 'Physical Exam' || doc?.summary === 'Physical Examination'
   );
 
   // Histories
@@ -198,7 +198,7 @@ export default function Chat() {
 
     // Physical Exam (formatted similarly to ROS)
     text += "### Physical Examination\n";
-    text += physicalExamNote?.data?.content
+    text += physicalExamNote?.content
       ?.replace(/(<\/p\s*>|<br\s*\/?>)/gi, '\n')
       ?.replace(/<[^>]+>/g, '')
       ?.replace(/\n{2,}/g, '\n')
@@ -270,7 +270,7 @@ ${fullPrompt}
       options={{
         httpOptions: { apiVersion: "v1alpha" },
         apiKey: apiKey,
-        model: "models/gemini-2.5-flash-native-audio-preview-09-2025",
+        model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
         config: {
           speechConfig: {
             languageCode: "en-US",
