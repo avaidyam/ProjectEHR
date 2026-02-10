@@ -1,303 +1,503 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  TableHead,
-  Paper,
+  Box,
+  Stack,
+  Button,
+  Icon,
   IconButton,
-  Collapse,
-  Typography,
-  colors
-} from '@mui/material';
-import { Box, Label, Button, TitledCard, Icon } from 'components/ui/Core.jsx';
+  DataGrid,
+  TextField,
+  MenuItem,
+  Autocomplete,
+  Label,
+  Grid
+} from 'components/ui/Core.jsx';
+import { Checkbox, FormControlLabel } from '@mui/material';
+import dayjs from 'dayjs';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+// Common immunization routes
+const IMMUNIZATION_ROUTES = {
+  IM: 'Intramuscular (IM)',
+  SC: 'Subcutaneous (SC)',
+  ID: 'Intradermal (ID)',
+  IN: 'Intranasal (IN)',
+  PO: 'Oral (PO)',
+  IV: 'Intravenous (IV)'
+};
 
-import { usePatient } from 'components/contexts/PatientContext.jsx';
-import ImmunizationItemEditor from './components/ImmunizationItemEditor.jsx';
-import {
-  formatDose,
-  formatDate,
-  groupImmunizationsByType,
-  sortImmunizationsByDate
-} from './utils/immunizationUtils.js';
+// Common immunization sites
+const IMMUNIZATION_SITES = {
+  'left_deltoid': 'Left deltoid',
+  'right_deltoid': 'Right deltoid',
+  'left_thigh': 'Left thigh',
+  'right_thigh': 'Right thigh',
+  'left_arm': 'Left arm',
+  'right_arm': 'Right arm',
+  'left_glute': 'Left gluteal',
+  'right_glute': 'Right gluteal',
+  'oral': 'Oral',
+  'nasal': 'Nasal'
+};
 
-export default function Immunizations() {
-  const { useChart, useEncounter } = usePatient()
-  const [immunizations, setImmunizations] = useEncounter().immunizations([])
-  const [editingImmunization, setEditingImmunization] = useState(null);
-  const [isAddingNew, setIsAddingNew] = useState(false);
+// Common mass units
+const MASS_UNITS = {
+  'mg': 'mg',
+  'g': 'g',
+  'mcg': 'mcg',
+  'mg/ml': 'mg/ml',
+  'mg/kg': 'mg/kg'
+};
 
-  const grouped = groupImmunizationsByType(immunizations ?? []);
+// Common volume units
+const VOLUME_UNITS = {
+  'ml': 'ml',
+  'l': 'L',
+  'cc': 'cc'
+};
 
-  const initialState = Object.keys(grouped).reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {});
-  const [openGroups, setOpenGroups] = useState(initialState);
+// Common time units
+const TIME_UNITS = {
+  'min': 'minutes',
+  'hr': 'hours',
+  'day': 'days'
+};
 
-  const toggleGroup = (vaccine) => {
-    setOpenGroups(prev => ({ ...prev, [vaccine]: !prev[vaccine] }));
+// Format dose for display
+const formatDose = (dose) => {
+  if (!dose) return '';
+  const { value, unit } = dose;
+  const unitStr = [unit?.mass, unit?.volume, unit?.time].filter(Boolean).join('/');
+  return `${value} ${unitStr}`;
+};
+
+// Format date for display
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+    return dateString;
+  } catch (error) {
+    return 'Invalid Date';
+  }
+};
+
+const dummyVaccines = [
+  { vaccine: 'Influenza, inactivated (IIV)', family: 'Influenza' },
+  { vaccine: 'Tetanus, diphtheria toxoids and acellular pertussis (Tdap)', family: 'Tdap' },
+  { vaccine: 'Pneumococcal 20-valent conjugate (PCV20)', family: 'Pneumococcal' },
+  { vaccine: 'Hepatitis B (HepB)', family: 'Hepatitis B' },
+  { vaccine: 'Measles, Mumps, Rubella (MMR)', family: 'MMR' },
+  { vaccine: 'Varicella (VAR)', family: 'Varicella' },
+  { vaccine: 'Zoster Recombinant (RZV)', family: 'Zoster' },
+  { vaccine: 'Human Papillomavirus (HPV)', family: 'HPV' },
+];
+
+function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }) {
+  const [providers] = useDatabase().providers();
+  const [formData, setFormData] = useState({ ...row });
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleEdit = (immunization) => {
-    setEditingImmunization(immunization);
-    setIsAddingNew(false);
+  const handleDoseChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      dose: {
+        ...prev.dose,
+        [field]: value
+      }
+    }));
   };
 
-  const handleAddNew = () => {
-    setEditingImmunization({
+  const handleUnitChange = (type, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      dose: {
+        ...prev.dose,
+        unit: {
+          ...prev.dose?.unit,
+          [type]: value
+        }
+      }
+    }));
+  };
+
+  const FieldLabel = ({ children, sx }) => (
+    <Label variant="caption" sx={{ minWidth: 100, color: 'text.secondary', ...sx }}>
+      {children}
+    </Label>
+  );
+
+  return (
+    <Box paper elevation={4} sx={{ p: 2, bgcolor: 'background.paper', mx: 4, my: 2 }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Stack spacing={1.5}>
+            <Stack direction="row" alignItems="center">
+              <FieldLabel>Vaccine</FieldLabel>
+              {formData.isNew ? (
+                <Autocomplete
+                  fullWidth
+                  size="small"
+                  options={dummyVaccines}
+                  getOptionLabel={(option) => option.vaccine || ''}
+                  onChange={(e, newVal) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      vaccine: newVal?.vaccine || '',
+                      family: newVal?.family || prev.family
+                    }));
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              ) : (
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={formData.vaccine}
+                  disabled
+                  sx={{ '& .MuiInputBase-input': { bgcolor: 'grey.100' } }}
+                />
+              )}
+            </Stack>
+
+            <Stack direction="row" alignItems="center">
+              <FieldLabel>Date Received</FieldLabel>
+              <TextField
+                fullWidth
+                type="date"
+                size="small"
+                value={formData.received}
+                onChange={(e) => handleChange('received', e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={2}>
+              <Stack spacing={1} sx={{ flex: 1 }}>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Recorder:</FieldLabel>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    options={providers || []}
+                    getOptionLabel={(option) => typeof option === 'string' ? option : (option.name || '')}
+                    value={providers?.find(p => p.name === formData.recorder) || null}
+                    onChange={(e, newVal) => handleChange('recorder', newVal?.name || '')}
+                    disableClearable
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Recorded:</FieldLabel>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    size="small"
+                    value={formData.recorded}
+                    onChange={(e) => handleChange('recorded', e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                  />
+                </Stack>
+              </Stack>
+              <Stack spacing={1} sx={{ flex: 1 }}>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Given By:</FieldLabel>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    options={providers || []}
+                    getOptionLabel={(option) => typeof option === 'string' ? option : (option.name || '')}
+                    value={providers?.find(p => p.name === formData.given_by) || null}
+                    onChange={(e, newVal) => handleChange('given_by', newVal?.name || '')}
+                    disableClearable
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Facility:</FieldLabel>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={formData.facility}
+                    onChange={(e) => handleChange('facility', e.target.value)}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Stack spacing={1.5}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <FieldLabel sx={{ minWidth: 60 }}>Dose:</FieldLabel>
+              <TextField
+                type="number"
+                size="small"
+                sx={{ width: 80 }}
+                value={formData.dose?.value}
+                onChange={(e) => handleDoseChange('value', parseFloat(e.target.value))}
+              />
+              <Autocomplete
+                size="small"
+                sx={{ width: 100 }}
+                options={Object.keys(MASS_UNITS)}
+                value={formData.dose?.unit?.mass}
+                onChange={(e, newVal) => handleUnitChange('mass', newVal)}
+                renderInput={(params) => <TextField {...params} label="Mass" />}
+                disableClearable
+              />
+              <Autocomplete
+                size="small"
+                sx={{ width: 100 }}
+                options={Object.keys(VOLUME_UNITS)}
+                value={formData.dose?.unit?.volume}
+                onChange={(e, newVal) => handleUnitChange('volume', newVal)}
+                renderInput={(params) => <TextField {...params} label="Vol" />}
+                disableClearable
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={2}>
+              <Stack spacing={1} sx={{ flex: 1 }}>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Site:</FieldLabel>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    options={Object.values(IMMUNIZATION_SITES)}
+                    value={formData.site}
+                    onChange={(e, newVal) => handleChange('site', newVal)}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Route:</FieldLabel>
+                  <Autocomplete
+                    fullWidth
+                    size="small"
+                    options={Object.values(IMMUNIZATION_ROUTES)}
+                    value={formData.route}
+                    onChange={(e, newVal) => handleChange('route', newVal)}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Stack>
+              </Stack>
+              <Stack spacing={1} sx={{ flex: 1 }}>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Lot #:</FieldLabel>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={formData.lot}
+                    onChange={(e) => handleChange('lot', e.target.value)}
+                  />
+                </Stack>
+                <Stack direction="row" alignItems="center">
+                  <FieldLabel sx={{ minWidth: 60 }}>Mfr:</FieldLabel>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    value={formData.manufacturer}
+                    onChange={(e) => handleChange('manufacturer', e.target.value)}
+                  />
+                </Stack>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Grid>
+      </Grid>
+
+      <Stack direction="row" justifyContent="space-between" mt={3}>
+        <Stack direction="row" spacing={1}>
+          <Button outlined size="small">Past Updates</Button>
+          <Button
+            outlined
+            color="error"
+            size="small"
+            startIcon={<Icon>close</Icon>}
+            onClick={() => onDelete(formData.id)}
+          >
+            Delete
+          </Button>
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <Button
+            contained
+            color="success"
+            size="small"
+            startIcon={<Icon>check</Icon>}
+            onClick={() => onSave({ ...formData, isNew: false })}
+          >
+            Accept
+          </Button>
+          <Button
+            outlined
+            color="error"
+            size="small"
+            startIcon={<Icon>close</Icon>}
+            onClick={() => onCancel(row)}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
+export const Immunizations = () => {
+  const { useEncounter } = usePatient();
+  const [immunizations, setImmunizations] = useEncounter().immunizations([]);
+  const [expandedRowIds, setExpandedRowIds] = useState(new Set());
+  const [reviewed, setReviewed] = useState(false);
+  const [lastReviewed, setLastReviewed] = useState(null);
+
+  const handleEdit = (id) => {
+    setExpandedRowIds(new Set([id]));
+  };
+
+  const handleSave = (updatedRow) => {
+    setImmunizations((prev) =>
+      prev.map((row) => (row.id === updatedRow.id ? updatedRow : row))
+    );
+    setExpandedRowIds(new Set());
+  };
+
+  const handleDelete = (id) => {
+    setImmunizations((prev) => prev.filter((row) => row.id !== id));
+    setExpandedRowIds(new Set());
+  };
+
+  const handleCancel = (row) => {
+    if (row.isNew) {
+      setImmunizations((prev) => prev.filter((r) => r.id !== row.id));
+    }
+    setExpandedRowIds(new Set());
+  };
+
+  const handleAddClick = () => {
+    const newId = (immunizations || []).length > 0 ? Math.max(...immunizations.map(a => Number.isFinite(Number(a.id)) ? Number(a.id) : 0)) + 1 : 1;
+    const newEntry = {
+      id: newId,
       vaccine: '',
-      received: '',
+      received: dayjs().format('YYYY-MM-DD'),
       recorder: '',
-      recorded: '',
+      recorded: dayjs().format('YYYY-MM-DD'),
       given_by: '',
       facility: '',
       dose: { value: 0, unit: { mass: '', volume: '', time: '' } },
       site: '',
       route: '',
       lot: '',
-      manufacturer: ''
-    });
-    setIsAddingNew(true);
+      manufacturer: '',
+      isNew: true
+    };
+
+    setImmunizations([...(immunizations || []), newEntry]);
+    setExpandedRowIds(new Set([newId]));
   };
 
-  const handleSave = (updatedImmunization) => {
-    if (isAddingNew) {
-      // Add new immunization
-      const newId = immunizations?.length > 0 ? Math.max(...(immunizations ?? []).map(imm => imm.id || 0)) + 1 : 1;
-      setImmunizations(prev => [...prev, { ...updatedImmunization, id: newId }]);
-      setIsAddingNew(false);
-    } else {
-      // Edit existing immunization
-      setImmunizations((prevImmunizations) =>
-        prevImmunizations.map((imm) => {
-          const immId = imm.id || imm.vaccine + imm.received;
-          const updatedId = updatedImmunization.id || updatedImmunization.vaccine + updatedImmunization.received;
-          return immId === updatedId ? updatedImmunization : imm;
-        })
-      );
+  const handleReviewedChange = (e) => {
+    setReviewed(e.target.checked);
+    if (e.target.checked) {
+      setLastReviewed(dayjs().format('MMM D, YYYY h:mm A'));
     }
-    setEditingImmunization(null);
   };
 
-  const handleCancel = () => {
-    setEditingImmunization(null);
-    setIsAddingNew(false);
-  };
+  const columns = [
+    { field: 'vaccine', headerName: 'Vaccine', flex: 1 },
+    {
+      field: 'received',
+      headerName: 'Date Received',
+      width: 150,
+      valueFormatter: (params) => formatDate(params.value)
+    },
+    { field: 'recorder', headerName: 'Recorder', width: 150 },
+    { field: 'given_by', headerName: 'Given By', width: 150 },
+    { field: 'facility', headerName: 'Facility', width: 150 },
+    {
+      field: 'dose',
+      headerName: 'Dose',
+      width: 120,
+      renderCell: (params) => formatDose(params.value)
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 70,
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleEdit(params.row.id)} color="primary">
+          edit
+        </IconButton>
+      )
+    }
+  ];
 
-  const handleDelete = (immunizationId) => {
-    setImmunizations(prev => prev.filter(imm => {
-      // Create a unique identifier for comparison
-      const immId = imm.id || imm.vaccine + imm.received;
-      return immId !== immunizationId;
-    }));
-  };
+  const getDetailPanelContent = useCallback(
+    ({ row }) => (
+      <ImmunizationsDetailPanel
+        row={row}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        onDelete={handleDelete}
+      />
+    ),
+    [handleSave, handleCancel, handleDelete]
+  );
 
   return (
-    <Box sx={{ height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
-      <Box sx={{ bgcolor: 'grey.100', pt: 4, pb: 1, px: 3, borderRadius: 1, mb: 1 }}>
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: colors.blue[500] }}>
-          Immunizations - All Types
-        </Typography>
+    <Stack spacing={2} sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Label variant="h6">Current Immunizations</Label>
+        <Button
+          contained
+          startIcon={<Icon>add</Icon>}
+          onClick={handleAddClick}
+          size="small"
+        >
+          Add Immunization
+        </Button>
+      </Stack>
 
-        <Box display="flex" alignItems="center" mb={1} gap={2}>
-          <Button
-            variant="outlined"
-            startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>}
-            onClick={handleAddNew}
-            sx={{
-              color: colors.blue[500],
-              borderColor: colors.blue[500],
-              '&:hover': {
-                borderColor: colors.blue[700],
-                backgroundColor: colors.blue[50],
-              },
-            }}>
-            Add
-          </Button>
-        </Box>
-      </Box>
+      <DataGrid
+        rows={immunizations || []}
+        columns={columns}
+        getRowId={(row) => row.id}
+        initialState={{
+          columns: {
+            columnVisibilityModel: {
+              __detail_panel_toggle__: false,
+            },
+          },
+        }}
+        hideFooter
+        disableRowSelectionOnClick
+        getDetailPanelHeight={() => 'auto'}
+        getDetailPanelContent={getDetailPanelContent}
+        detailPanelExpandedRowIds={expandedRowIds}
+        onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
+      />
 
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', px: 3, py: 1, mb: 1 }}>
-        <Box sx={{ mt: 2 }}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="immunizations table">
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{ width: '5%' }} />
-                  <TableCell>Immunization Family</TableCell>
-                  <TableCell>Admin Dates</TableCell>
-                  <TableCell>Next Due</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {Object.entries(grouped).map(([vaccine, records]) => {
-                  // Sort records by date, most recent first
-                  const sortedRecords = sortImmunizationsByDate(records);
-                  const adminDates = sortedRecords.map(r => formatDate(r.received)).join(', ');
-
-                  return (
-                    <React.Fragment key={vaccine}>
-                      <TableRow
-                        onClick={() => toggleGroup(vaccine)}
-                        sx={{
-                          '&:last-child td, &:last-child th': { border: 0 },
-                          cursor: 'pointer',
-                          '&:hover': {
-                            backgroundColor: 'action.hover',
-                          },
-                          '& td': {
-                            verticalAlign: 'top',
-                          },
-                        }}
-                      >
-                        <TableCell>
-                          <IconButton onClick={(e) => {
-                            e.stopPropagation();
-                            toggleGroup(vaccine);
-                          }}>
-                            {openGroups[vaccine] ? <Icon>expand_less</Icon> : <Icon>expand_more</Icon>}
-                          </IconButton>
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{
-                            color: colors.blue[500],
-                            fontWeight: 'normal',
-                          }}
-                        >
-                          <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-                            {vaccine}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body1">
-                            {adminDates}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body1" style={{ fontStyle: 'italic', color: '#666' }}>
-                            {/* Next due calculation would go here */}
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell colSpan={5} style={{ padding: 0 }}>
-                          <Collapse in={openGroups[vaccine]} timeout="auto" unmountOnExit>
-                            <Box margin={1}>
-                              <Table size="small">
-                                <TableHead>
-                                  <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>Name</TableCell>
-                                    <TableCell>Recorder</TableCell>
-                                    <TableCell>Given By</TableCell>
-                                    <TableCell>Facility</TableCell>
-                                    <TableCell>Dose</TableCell>
-                                    <TableCell>Route/Site</TableCell>
-                                    <TableCell>Lot/Manufacturer</TableCell>
-                                    <TableCell align="right">Actions</TableCell>
-                                  </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {sortedRecords.map((record, idx) => (
-                                    <React.Fragment key={record.id || idx}>
-                                      <TableRow>
-                                        <TableCell>{formatDate(record.received)}</TableCell>
-                                        <TableCell>{record.vaccine}</TableCell>
-                                        <TableCell>{record.recorder}</TableCell>
-                                        <TableCell>{record.given_by || 'N/A'}</TableCell>
-                                        <TableCell>{record.facility || 'N/A'}</TableCell>
-                                        <TableCell>{formatDose(record.dose) || 'N/A'}</TableCell>
-                                        <TableCell>
-                                          {record.route || 'N/A'} {record.site && `• ${record.site}`}
-                                        </TableCell>
-                                        <TableCell>
-                                          <Typography variant="body2">
-                                            {record.lot || 'N/A'}
-                                          </Typography>
-                                          <Typography variant="caption" color="textSecondary">
-                                            {record.manufacturer || 'N/A'}
-                                          </Typography>
-                                        </TableCell>
-                                        <TableCell align="right">
-                                          <IconButton
-                                            aria-label="edit"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleEdit(record);
-                                            }}
-                                            size="small"
-                                          >
-                                            <Icon fontSize="small">edit</Icon>
-                                          </IconButton>
-                                          <IconButton
-                                            aria-label="delete"
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleDelete(record.id || record.vaccine + record.received);
-                                            }}
-                                            size="small"
-                                          >
-                                            <Icon fontSize="small">delete</Icon>
-                                          </IconButton>
-                                        </TableCell>
-                                      </TableRow>
-                                      {editingImmunization && (() => {
-                                        const editingId = editingImmunization.id || editingImmunization.vaccine + editingImmunization.received;
-                                        const recordId = record.id || record.vaccine + record.received;
-                                        return editingId === recordId;
-                                      })() && (
-                                          <TableRow>
-                                            <TableCell colSpan={9}>
-                                              <ImmunizationItemEditor
-                                                immunization={editingImmunization}
-                                                onSave={handleSave}
-                                                onCancel={handleCancel}
-                                              />
-                                            </TableCell>
-                                          </TableRow>
-                                        )}
-                                    </React.Fragment>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </Box>
-                          </Collapse>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  );
-                })}
-                {immunizations?.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5}>
-                      <Typography variant="body2" style={{ fontStyle: 'italic', color: '#666', textAlign: 'center' }}>
-                        No immunizations on file
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Box>
-
-      {/* Editor for new immunizations */}
-      {editingImmunization && isAddingNew && (
-        <Box sx={{ mt: 2, px: 3 }}>
-          <ImmunizationItemEditor
-            immunization={editingImmunization}
-            onSave={handleSave}
-            onCancel={handleCancel}
-            isAddingNew={true}
-          />
-        </Box>
-      )}
-    </Box>
+      <Stack direction="row" alignItems="center" spacing={2}>
+        <FormControlLabel
+          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
+          label="Mark as Reviewed"
+        />
+        {reviewed && (
+          <Label variant="body2" color="green" italic>
+            Last Reviewed at {lastReviewed}
+          </Label>
+        )}
+      </Stack>
+    </Stack>
   );
-}
+};
+
+export default Immunizations;
