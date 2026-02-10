@@ -160,6 +160,7 @@ export const Titlebar = ({ onLogout }) => {
                 }
                 setPatientsDB(prev => ({ ...prev, [pt.id]: pt }))
                 setAnchorEl(null)
+                navigate(`/patient/${pt.id}/encounter/${encID}`)
               }}>
                 Create Patient
               </MenuItem>
