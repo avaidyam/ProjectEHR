@@ -1,25 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
+  Stack,
   Button,
-  Typography,
   Icon,
-  colors,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   IconButton,
-  Snackbar,
-  Alert,
+  DataGrid,
   TextField,
   MenuItem,
-  Grid,
-  Autocomplete
-} from '@mui/material';
+  Autocomplete,
+  Label,
+  Grid
+} from 'components/ui/Core.jsx';
+import { Checkbox, FormControlLabel, colors } from '@mui/material';
 import dayjs from 'dayjs';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 
@@ -50,563 +43,391 @@ const dummyAgents = [
   { allergen: 'Other', type: 'Other' },
 ];
 
-const AgentSearchMenu = ({ onAgentSelect }) => {
-  const [inputValue, setInputValue] = useState('');
+function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }) {
+  const [formData, setFormData] = useState({ ...row });
 
-  return (
-    <Box sx={{ my: 2, width: 300 }}>
-      <Autocomplete
-        options={dummyAgents}
-        getOptionLabel={(option) => option.allergen}
-        inputValue={inputValue}
-        onInputChange={(event, newInputValue) => {
-          setInputValue(newInputValue);
-        }}
-        onChange={(event, newValue) => {
-          if (newValue) {
-            onAgentSelect(newValue);
-          }
-        }}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Select an agent"
-            variant="outlined"
-            size="small"
-            sx={{ bgcolor: 'white', borderRadius: 1 }}
-          />
-        )}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Grid container alignItems="center">
-              <Grid size={6}>
-                <Typography variant="body2" fontWeight="medium">
-                  {option.allergen}
-                </Typography>
-              </Grid>
-              <Grid size={6}>
-                <Typography variant="body2" color="text.secondary">
-                  {option.type}
-                </Typography>
-              </Grid>
-            </Grid>
-          </li>
-        )}
-        blurOnSelect
-      />
-    </Box>
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const FieldLabel = ({ children, sx }) => (
+    <Label variant="caption" sx={{ minWidth: 100, color: 'text.secondary', ...sx }}>
+      {children}
+    </Label>
   );
-};
-
-const AllergiesTable = ({ allergies, onEdit, onDelete }) => {
-  const handleDelete = (id) => {
-    onDelete && onDelete(id);
-  };
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" component="div" sx={{ mb: 1 }}>
-        Allergies
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="allergies table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Allergen</TableCell>
-              <TableCell>Allergen Type</TableCell>
-              <TableCell>Reaction</TableCell>
-              <TableCell>Severity</TableCell>
-              <TableCell>Reaction Type</TableCell>
-              <TableCell>Noted</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allergies?.map((allergy) => (
-              <TableRow
-                key={allergy.id}
-                onClick={() => onEdit(allergy)}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                  backgroundColor: allergy.severity === 'High' ? '#ffcb00' : 'inherit',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: allergy.severity === 'High' ? '#FFB700' : 'action.hover',
-                  },
-                  '& td': {
-                    fontWeight: allergy.severity === 'High' ? 'bold' : 'normal',
-                  },
-                }}
-              >
-                <TableCell
-                  component="th"
-                  scope="row"
-                  sx={{
-                    color: allergy.severity === 'High' ? 'text.primary' : colors.blue[500],
-                    fontWeight: allergy.severity === 'High' ? 'bold' : 'normal',
+    <Box paper elevation={4} sx={{ p: 2, bgcolor: 'background.paper', mx: 4, my: 2 }}>
+      <Label variant="subtitle1" sx={{ color: colors.blue[700], mb: 1, fontWeight: 500 }}>
+        {formData.allergen || 'New Allergy'}
+      </Label>
+
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={5.5}>
+          <Stack spacing={1.5}>
+            <Stack direction="row" alignItems="center">
+              <FieldLabel>Agent</FieldLabel>
+              {formData.isNew ? (
+                <Autocomplete
+                  fullWidth
+                  size="small"
+                  options={dummyAgents}
+                  getOptionLabel={(option) => option.allergen || ''}
+                  onChange={(e, newVal) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      allergen: newVal?.allergen || '',
+                      type: newVal?.type || prev.type
+                    }));
                   }}
-                >
-                  <Box>
-                    {allergy.allergen}
-                    {allergy.comment && (
-                      <Typography variant="body2" sx={{
-                        color: 'text.secondary',
-                        fontWeight: 'normal',
-                        pl: 4,
-                      }}
-                      >
-                        {allergy.comment}
-                      </Typography>
-                    )}
-                  </Box>
-                </TableCell>
+                  renderInput={(params) => <TextField {...params} />}
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <Grid container alignItems="center">
+                        <Grid item xs={6}>
+                          <Label variant="body2" fontWeight="medium">
+                            {option.allergen}
+                          </Label>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Label variant="body2" color="text.secondary">
+                            {option.type}
+                          </Label>
+                        </Grid>
+                      </Grid>
+                    </li>
+                  )}
+                />
+              ) : (
+                <TextField
+                  fullWidth
+                  size="small"
+                  name="allergen"
+                  value={formData.allergen}
+                  disabled
+                  sx={{ '& .MuiInputBase-input': { bgcolor: 'grey.100' } }}
+                />
+              )}
+            </Stack>
 
-                <TableCell sx={{ verticalAlign: allergy.comment ? 'top' : 'middle' }}>{allergy.type}</TableCell>
-                <TableCell sx={{ verticalAlign: allergy.comment ? 'top' : 'middle' }}>{allergy.reaction}</TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: allergy.severity === 'Not Specified' ? 'bold!important' : 'inherit',
-                    backgroundColor: allergy.severity === 'Not Specified' ? '#ffcb00!important' : 'inherit',
-                    verticalAlign: allergy.comment ? 'top' : 'middle',
-                  }}
-                >
-                  {allergy.severity}
-                </TableCell>
-                <TableCell sx={{ verticalAlign: allergy.comment ? 'top' : 'middle' }}>{allergy.reactionType}</TableCell>
-                <TableCell sx={{ verticalAlign: allergy.comment ? 'top' : 'middle' }}>
-                  {allergy.recorded ? dayjs(allergy.recorded).format('MM-DD-YYYY') : ''}
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    aria-label="edit"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(allergy);
-                    }}
+            <Stack direction="row" alignItems="center">
+              <FieldLabel>Allergen Types:</FieldLabel>
+              <Label variant="body2">{formData.type || 'None'}</Label>
+            </Stack>
+
+            <Stack spacing={1}>
+              <Stack direction="row" spacing={2} alignItems="flex-start">
+                <Stack direction="row" alignItems="flex-start" sx={{ flex: 1.5 }}>
+                  <FieldLabel sx={{ mt: 1, minWidth: 80 }}>Reactions:</FieldLabel>
+                  <Autocomplete
+                    fullWidth
                     size="small"
-                  >
-                    <Icon fontSize="small">edit</Icon>
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(allergy.id);
-                    }}
-                    size="small"
-                  >
-                    <Icon fontSize="small">delete</Icon>
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
-};
+                    options={reactions}
+                    value={formData.reaction}
+                    onChange={(e, newVal) => setFormData(prev => ({ ...prev, reaction: newVal }))}
+                    renderInput={(params) => <TextField {...params} />}
+                    disableClearable
+                  />
+                </Stack>
+                <Stack spacing={1} sx={{ flex: 1 }}>
+                  <Stack direction="row" alignItems="center">
+                    <Label variant="caption" sx={{ minWidth: 60, color: 'text.secondary' }}>Severity:</Label>
+                    <Autocomplete
+                      fullWidth
+                      size="small"
+                      options={severityLevels}
+                      value={formData.severity}
+                      onChange={(e, newVal) => setFormData(prev => ({ ...prev, severity: newVal }))}
+                      renderInput={(params) => <TextField {...params} />}
+                      disableClearable
+                    />
+                  </Stack>
+                  <Stack direction="row" alignItems="center">
+                    <Label variant="caption" sx={{ minWidth: 60, color: 'text.secondary' }}>Noted:</Label>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      size="small"
+                      name="recorded"
+                      value={formData.recorded}
+                      onChange={handleChange}
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
 
-const AllergyEditor = ({ initialData, onSave, onCancel }) => {
-  const [data, setData] = useState({
-    allergen: '',
-    type: '',
-    reaction: '',
-    severity: 'Not Specified',
-    reactionType: '',
-    recorded: '',
-    comment: ''
-  });
-
-  const [isEditingCustomAllergen, setIsEditingCustomAllergen] = useState(false);
-
-  useEffect(() => {
-    if (initialData) {
-      setData({
-        ...initialData,
-        severity: initialData.severity || 'Not Specified',
-      });
-      if (initialData.allergen === 'Other') {
-        setIsEditingCustomAllergen(true);
-        setData((prev) => ({ ...prev, allergen: '', type: '' }));
-      }
-    }
-  }, [initialData]);
-
-  const handleChange = (field) => (e) => {
-    setData({ ...data, [field]: e.target.value });
-  };
-
-  const handleSave = () => {
-    onSave(data);
-    setIsEditingCustomAllergen(false);
-  };
-
-  return (
-    <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        {data.id ? 'Edit Allergy' : 'Add New Allergy'}
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          {isEditingCustomAllergen ? (
-            <Box>
-              <TextField
-                label="Allergen"
-                value={data.allergen}
-                onChange={handleChange('allergen')}
-                fullWidth
-                size="small"
-                margin="normal"
-              />
-
-              <TextField
-                select
-                label="Allergen Type"
-                value={data.type}
-                onChange={handleChange('type')}
-                fullWidth
-                size="small"
-                margin="normal"
-              >
-                {allergenTypes.map((type) => (
-                  <MenuItem key={type} value={type}>
-                    {type}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Box>
-          ) : (
-            <>
-              <Typography variant="subtitle1" gutterBottom>
-                Agent: {data.allergen}
-              </Typography>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                Allergen Type: {data.type}
-              </Typography>
-            </>
-          )}
-          <Grid container spacing={2}>
-            <Grid size={6}>
-              <TextField
-                select
-                label="Reaction"
-                value={data.reaction}
-                onChange={handleChange('reaction')}
-                fullWidth
-                size="small"
-                margin="normal"
-              >
-                {reactions.map((r) => (
-                  <MenuItem key={r} value={r}>{r}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                select
-                label="Severity"
-                value={data.severity}
-                onChange={handleChange('severity')}
-                fullWidth
-                size="small"
-                margin="normal"
-              >
-                {severityLevels.map((s) => (
-                  <MenuItem key={s} value={s}>{s}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                select
-                label="Reaction Type"
-                value={data.reactionType}
-                onChange={handleChange('reactionType')}
-                fullWidth
-                size="small"
-                margin="normal"
-              >
-                {reactionTypes.map((type) => (
-                  <MenuItem key={type} value={type}>{type}</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                label="Noted Date"
-                type="date"
-                value={data.recorded}
-                onChange={handleChange('recorded')}
-                fullWidth
-                size="small"
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          </Grid>
+              <Stack direction="row" alignItems="center">
+                <FieldLabel sx={{ minWidth: 80 }}>Reaction Type:</FieldLabel>
+                <Autocomplete
+                  sx={{ width: '40%' }}
+                  size="small"
+                  options={reactionTypes}
+                  value={formData.reactionType}
+                  onChange={(e, newVal) => setFormData(prev => ({ ...prev, reactionType: newVal }))}
+                  renderInput={(params) => <TextField {...params} />}
+                  disableClearable
+                />
+              </Stack>
+            </Stack>
+          </Stack>
         </Grid>
 
-        <Grid display="flex" flexDirection="column" size={{ xs: 12, md: 6 }}>
-          <TextField
-            label="Comments"
-            value={data.comment}
-            onChange={handleChange('comment')}
-            fullWidth
-            multiline
-            rows={7}
-            size="small"
-            margin="normal"
-          />
+        <Grid item xs={12} md={6.5}>
+          <Stack spacing={1} sx={{ height: '100%' }}>
+            <TextField
+              fullWidth
+              multiline
+              rows={6}
+              name="comment"
+              value={formData.comment}
+              onChange={handleChange}
+              sx={{ '& .MuiInputBase-root': { py: 1 } }}
+            />
+          </Stack>
         </Grid>
       </Grid>
-      <Box mt={3} display="flex" justifyContent="space-between" alignItems="center">
-        <Box display="flex" gap={2}>
-          <Button variant="outlined" sx={{
-            color: colors.grey[700],
-            borderColor: colors.grey[700],
-            '&:hover': {
-              borderColor: colors.grey[700],
-              backgroundColor: colors.grey[200],
-            },
-          }}>
-            Past Updates
-          </Button>
-          <Button variant="outlined" sx={{
-            color: colors.grey[700],
-            borderColor: colors.grey[700],
-            '&:hover': {
-              borderColor: colors.grey[700],
-              backgroundColor: colors.grey[200],
-            },
-          }}>
-            <Icon>clear</Icon>Delete
-          </Button>
-        </Box>
 
-        <Box display="flex" gap={2}>
-          <Button variant="outlined" color="success" onClick={handleSave}>
-            <Icon>check</Icon>Accept
+      <Stack direction="row" justifyContent="space-between" mt={2}>
+        <Stack direction="row" spacing={1}>
+          <Button outlined size="small">Past Updates</Button>
+          <Button
+            outlined
+            color="error"
+            size="small"
+            startIcon={<Icon>close</Icon>}
+            onClick={() => onDelete(formData.id)}
+          >
+            Delete
           </Button>
-          <Button variant="outlined" color="error" onClick={onCancel}>
-            <Icon>clear</Icon>Cancel
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <Button
+            outlined
+            color="success"
+            size="small"
+            startIcon={<Icon>check</Icon>}
+            onClick={() => onSave({ ...formData, isNew: false })}
+          >
+            Accept
           </Button>
-        </Box>
-      </Box>
-    </Paper>
+          <Button
+            outlined
+            color="error"
+            size="small"
+            startIcon={<Icon>close</Icon>}
+            onClick={() => onCancel(row)}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
-};
+}
 
 export const Allergies = () => {
-  const { useChart, useEncounter } = usePatient();
+  const { useEncounter } = usePatient();
   const [allergies, setAllergies] = useEncounter().allergies([]);
-  const [editingAllergy, setEditingAllergy] = useState(null);
-  const [isEditingMode, setIsEditingMode] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState(null);  // <--- selected from search, waiting to add
+  const [expandedRowIds, setExpandedRowIds] = useState(new Set());
+  const [reviewed, setReviewed] = useState(false);
   const [lastReviewed, setLastReviewed] = useState(null);
 
-  // Normalize backend allergy data and assign numeric IDs if needed
   const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-  const normalizeAllergies = (rawAllergies) => {
-    let nextId = 1;
-    return rawAllergies.map((raw) => {
-      let numericId = Number(raw.id);
-      if (!Number.isFinite(numericId)) {
-        numericId = nextId++;
-      } else {
-        nextId = Math.max(nextId, numericId + 1); // ensure nextId is always higher
-      }
 
-      return {
-        id: numericId,
+  useEffect(() => {
+    if (allergies) {
+      const normalized = allergies.map((raw, idx) => ({
+        ...raw,
+        id: raw.id || `allergy-${idx}`,
         allergen: capitalize(raw.allergen),
         type: capitalize(raw.type),
         reaction: capitalize(raw.reaction),
         reactionType: capitalize(raw.reactionType),
         severity: capitalize(raw.severity || 'Not Specified'),
-        recorded: raw.recorded || '',
-        comment: raw.comment || '',
-
-      };
-    });
-  };
-
-  // Use it when initializing state
-  useEffect(() => {
-    setAllergies(normalizeAllergies(allergies ?? []));
-  }, []);
-
-  const handleEdit = (allergy) => {
-    setEditingAllergy(allergy);
-    setIsEditingMode(true);
-  };
-
-  const handleSaveAllergy = (newAllergyData) => {
-    if (editingAllergy && editingAllergy.id) {
-      setAllergies((prev) =>
-        prev.map((allergy) =>
-          allergy.id === editingAllergy.id
-            ? { ...allergy, ...newAllergyData }
-            : allergy
-        )
-      );
-    } else {
-      // filter out any NaN or undefined ids
-      const validIds = allergies
-        .map(a => Number(a.id))
-        .filter(id => Number.isFinite(id));
-
-      const newId = validIds.length > 0 ? Math.max(...validIds) + 1 : 1;
-
-      setAllergies((prev) => [
-        ...prev,
-        { id: newId, ...newAllergyData }
-      ]);
-    }
-
-    setIsEditingMode(false);
-    setEditingAllergy(null);
-    setLastReviewed(null); // reset last reviewed date when saving new allergy
-  };
-
-
-  const handleDeleteAllergy = (id) => {
-    setAllergies((prev) => prev.filter((allergy) => allergy.id !== id));
-    if (editingAllergy?.id === id) {
-      setIsEditingMode(false);
-      setEditingAllergy(null);
-      setLastReviewed(null);
-    }
-  };
-
-  const handleAgentSelect = (agentObject) => {
-    setSelectedAgent(agentObject);  // store selected agent, do NOT open editor yet
-  };
-
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  // On Add button click, open editor with selectedAgent (or empty if none selected)
-  const handleAddClick = () => {
-    const agentName = selectedAgent?.allergen?.trim() || '';
-    // Check if the agent already exists
-    if (agentName) {
-      const alreadyExists = allergies.some(
-        (a) => a?.allergen?.trim().toLowerCase() === agentName.toLowerCase()
-      );
-      if (alreadyExists) {
-        setSnackbarMessage('Allergen already on file');
-        setSnackbarOpen(true);
-        return; // Stop opening the editor
+      }));
+      // Simple shallow check to avoid infinite loop
+      if (JSON.stringify(normalized) !== JSON.stringify(allergies)) {
+        setAllergies(normalized);
       }
     }
-    if (selectedAgent) {
-      setEditingAllergy({ ...selectedAgent });
-    } else {
-      setEditingAllergy({
-        allergen: '',
-        type: '',
-        reaction: '',
-        severity: '',
-        reactionType: '',
-        recorded: '',
-        comment: '',
-      });
+  }, [allergies, setAllergies]);
+
+  const handleEdit = (id) => {
+    setExpandedRowIds(new Set([id]));
+  };
+
+  const handleSave = (updatedRow) => {
+    setAllergies((prev) =>
+      prev.map((row) => (row.id === updatedRow.id ? { ...updatedRow, isNew: false } : row))
+    );
+    setExpandedRowIds(new Set());
+    setLastReviewed(null); // Reset review status when data changes
+  };
+
+  const handleDelete = (id) => {
+    setAllergies((prev) => prev.filter((row) => row.id !== id));
+    setExpandedRowIds(new Set());
+  };
+
+  const handleCancel = (row) => {
+    if (row.isNew) {
+      setAllergies((prev) => prev.filter((r) => r.id !== row.id));
     }
-    setIsEditingMode(true);
-    setLastReviewed(null); // reset last reviewed date when adding new allergy
+    setExpandedRowIds(new Set());
   };
 
-  const handleCancelEdit = () => {
-    setIsEditingMode(false);
-    setEditingAllergy(null);
+
+  const handleAddClick = () => {
+    const newId = (allergies || []).length > 0 ? Math.max(...allergies.map(a => Number.isFinite(Number(a.id)) ? Number(a.id) : 0)) + 1 : 1;
+    const newEntry = {
+      id: newId,
+      allergen: '',
+      type: '',
+      reaction: '',
+      severity: 'Not Specified',
+      reactionType: '',
+      recorded: '',
+      comment: '',
+      isNew: true
+    };
+
+    setAllergies([...(allergies || []), newEntry]);
+    setExpandedRowIds(new Set([newId]));
   };
-  const handleMarkAsReviewed = () => {
-    const now = dayjs().format('MMM D, YYYY h:mm A');
-    setLastReviewed(now);
+
+  const handleReviewedChange = (e) => {
+    setReviewed(e.target.checked);
+    if (e.target.checked) {
+      setLastReviewed(dayjs().format('MMM D, YYYY h:mm A'));
+    }
   };
 
-  return (
-    <Box sx={{ height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
-      <Box sx={{ bgcolor: 'grey.100', pt: 4, pb: 1, px: 3, borderRadius: 1, mb: 1 }}>
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: colors.blue[500] }}>
-          Allergies / Contraindications
-        </Typography>
-
-        <Box display="flex" alignItems="center" mb={1} gap={2} >
-          <AgentSearchMenu onAgentSelect={handleAgentSelect} />
-          <Button
-            variant="outlined"
-            startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>}
-            onClick={handleAddClick}>
-            Add
-          </Button>
-        </Box>
-
-      </Box>
-
-
-      <Box sx={{ flexGrow: 1, overflowY: 'auto', px: 3, py: 1, mb: 1 }}>
-        <AllergiesTable
-          allergies={allergies}
-          onEdit={handleEdit}
-          onDelete={handleDeleteAllergy}
-        />
-        {isEditingMode && (
-          <AllergyEditor
-            initialData={editingAllergy}
-            onSave={handleSaveAllergy}
-            onCancel={handleCancelEdit}
-          />
-        )}
-      </Box>
-
-      <Box
-        sx={{
-          bgcolor: 'grey.100',
-          borderTop: 1,
-          borderColor: 'divider',
-          p: 2,
-          display: 'flex',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          gap: 2,
-          flexWrap: 'wrap'
-
+  const columns = [
+    {
+      field: 'allergen',
+      headerName: 'Allergen',
+      flex: 1,
+      renderCell: (params) => (
+        <Stack>
+          <Label variant="body2" bold={params.row.severity === 'High'}>
+            {params.value}
+          </Label>
+          {params.row.comment && (
+            <Label variant="caption" sx={{ display: 'block', pl: 1, opacity: 0.7 }}>
+              {params.row.comment}
+            </Label>
+          )}
+        </Stack>
+      )
+    },
+    { field: 'type', headerName: 'Allergen Type', width: 150 },
+    { field: 'reaction', headerName: 'Reaction', width: 150 },
+    {
+      field: 'severity',
+      headerName: 'Severity',
+      width: 130,
+      renderCell: (params) => (
+        <Box sx={{
+          fontWeight: params.value === 'Not Specified' ? 'bold' : 'normal',
+          bgcolor: params.value === 'Not Specified' ? '#ffcb00' : 'transparent',
+          px: 1,
+          borderRadius: 0.5
         }}>
-        <Button variant="outlined" onClick={handleMarkAsReviewed} sx={{
-          color: colors.grey[700],
-          borderColor: colors.grey[700],
-          '&:hover': {
-            borderColor: colors.grey[700],
-            backgroundColor: colors.grey[300], // subtle hover effect
-          },
-        }}> <Icon>check</Icon>Mark as Reviewed </Button>
-        <Button variant="outlined" sx={{
-          color: colors.grey[700],
-          borderColor: colors.grey[700],
-          '&:hover': {
-            borderColor: colors.grey[700],
-            backgroundColor: colors.grey[300], // subtle hover effect
-          },
-        }}>Unable to Assess</Button>
-        <Typography variant="body2" sx={{ color: lastReviewed ? 'green' : 'gray', fontStyle: 'italic' }}>
-          {lastReviewed ? `Last Reviewed at ${lastReviewed}` : 'Not Reviewed'}
-        </Typography>
+          {params.value}
+        </Box>
+      )
+    },
+    { field: 'reactionType', headerName: 'Reaction Type', width: 150 },
+    {
+      field: 'recorded',
+      headerName: 'Noted',
+      width: 120,
+      valueFormatter: (params) => params.value ? dayjs(params.value).format('MM-DD-YYYY') : ''
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 70,
+      sortable: false,
+      renderCell: (params) => (
+        <IconButton onClick={() => handleEdit(params.row.id)} color="primary">
+          edit
+        </IconButton>
+      )
+    }
+  ];
 
-      </Box>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert severity="error" onClose={() => setSnackbarOpen(false)} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
-
+  const getDetailPanelContent = useCallback(
+    ({ row }) => (
+      <AllergiesDetailPanel
+        row={row}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        onDelete={handleDelete}
+      />
+    ),
+    [handleSave, handleCancel, handleDelete]
   );
 
+  return (
+    <Stack spacing={2} sx={{ height: '100%', p: 2, overflow: 'hidden' }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Label variant="h6">Allergies/Contraindications</Label>
+        <Button
+          contained
+          startIcon={<Icon>add</Icon>}
+          onClick={handleAddClick}
+          size="small"
+        >
+          Add Allergy
+        </Button>
+      </Stack>
+      <DataGrid
+        rows={allergies || []}
+        columns={columns}
+        getRowId={(row) => row.id}
+        initialState={{
+          columns: {
+            columnVisibilityModel: {
+              __detail_panel_toggle__: false,
+            },
+          },
+        }}
+        hideFooter
+        disableRowSelectionOnClick
+        getDetailPanelHeight={() => 'auto'}
+        getDetailPanelContent={getDetailPanelContent}
+        detailPanelExpandedRowIds={expandedRowIds}
+        onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
+        getRowClassName={(params) => params.row.severity === 'High' ? 'severity-high' : ''}
+        sx={{
+          '& .severity-high': {
+            bgcolor: '#ffcb00',
+            '&:hover': {
+              bgcolor: '#FFB700',
+            },
+          },
+        }}
+      />
+      <Stack direction="row" alignItems="center" spacing={2}>
+        <FormControlLabel
+          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
+          label="Mark as Reviewed"
+        />
+        {reviewed && (
+          <Label variant="body2" color="green" italic>
+            Last Reviewed at {lastReviewed}
+          </Label>
+        )}
+        {!reviewed && (
+          <Label variant="body2" color="gray" italic>
+            Not Reviewed
+          </Label>
+        )}
+      </Stack>
+    </Stack>
+  );
 };
+
+export default Allergies;
