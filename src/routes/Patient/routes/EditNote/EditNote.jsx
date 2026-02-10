@@ -25,7 +25,7 @@ const NOTE_TYPES = [
 
 const EditNote = () => {
     const { useEncounter } = usePatient();
-    const [_, setNotes] = useEncounter().notes();
+    const [_, setNotes] = useEncounter().notes([]);
     const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
     const [departments] = useDatabase().departments();
     const { closeTab } = useSplitView();
@@ -48,7 +48,7 @@ const EditNote = () => {
     }
 
     const handleAccept = () => {
-        setNotes(prev => [...(prev ?? []), {
+        setNotes(prev => [...prev, {
             id: crypto.randomUUID(),
             serviceDate: activeNote.date.toString(),
             date: activeNote.date.toString(),

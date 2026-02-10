@@ -99,7 +99,7 @@ export const VitalsPopup = ({ vitals, definition, ...props }) => {
 
 export const SidebarVitals = ({ ...props }) => {
   const { useChart, useEncounter } = usePatient()
-  const [flowsheets] = useEncounter().flowsheets()
+  const [flowsheets] = useEncounter().flowsheets([])
 
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
@@ -384,8 +384,8 @@ export const SidebarClinicalImpressions = () => {
 
 export const SidebarSepsisAlert = () => {
   const { useChart, useEncounter } = usePatient();
-  const [flowsheets] = useEncounter().flowsheets();
-  const [labs] = useEncounter().labs();
+  const [flowsheets] = useEncounter().flowsheets([]);
+  const [labs] = useEncounter().labs([]);
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 

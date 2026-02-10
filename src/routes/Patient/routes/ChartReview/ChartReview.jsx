@@ -267,12 +267,10 @@ export const ChartReview = ({ ...props }) => {
   })
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
-  // TODO: this is where modifications should be made for order-conditional documents being shown
-  // or logic to advance from one encounter to the next
   const currentEncDate = encounter.startDate
   const documents2 = Object.values(chart.encounters)
     .toSorted((a, b) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
-    .filter(x => (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
+    .filter(x => x.id === encounter.id || (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
     .flatMap(x => [
       ...enrichDocs(x.notes, 'Notes', x),
       ...enrichDocs(x.labs, 'Lab', x),
