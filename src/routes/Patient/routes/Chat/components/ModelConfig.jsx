@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, MenuItem, IconButton, Label, Autocomplete, Stack } from 'components/ui/Core.jsx';
+import React, { useState, useEffect } from 'react';
+import { Box, MenuItem, IconButton, Label, Autocomplete, Stack, TextField } from 'components/ui/Core.jsx';
 
 const VOICE_OPTIONS = {
   "Zephyr": "Bright, Higher pitch",
@@ -34,9 +34,25 @@ const VOICE_OPTIONS = {
   "Sulafat": "Warm, Middle pitch"
 };
 
-const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }) => {
+const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePrompt, fullPrompt }) => {
   const [playingVoice, setPlayingVoice] = useState(null);
+  const [localPrompt, setLocalPrompt] = useState(systemPrompt);
   const audioRef = React.useRef(null);
+
+  useEffect(() => {
+    setLocalPrompt(systemPrompt);
+  }, [systemPrompt]);
+
+  const handlePromptChange = (e) => {
+    setLocalPrompt(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (onChangePrompt) onChangePrompt(localPrompt);
+    }
+  };
 
   const playSample = (voiceId) => {
     if (playingVoice === voiceId) {
@@ -113,6 +129,19 @@ const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }) => {
           }
         }}
       />
+      <TextField
+        label="System Prompt"
+        multiline
+        minRows={6}
+        maxRows={12}
+        value={localPrompt}
+        onChange={handlePromptChange}
+        onKeyDown={handleKeyDown}
+        helperText="Press Enter to update settings"
+        fullWidth
+        sx={{ mt: 2 }}
+      />
+      <Label sx={{ mt: 2, mb: 1 }}>Full System Instruction (Read Only)</Label>
       <Box
         component="pre"
         sx={{
@@ -128,7 +157,7 @@ const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }) => {
           wordBreak: 'break-word',
         }}
       >
-        {fullPrompt}
+        {`${systemPrompt}\n\n${fullPrompt}`}
       </Box>
     </Stack>
   );

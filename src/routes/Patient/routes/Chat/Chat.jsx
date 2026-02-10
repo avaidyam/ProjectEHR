@@ -213,20 +213,11 @@ export default function Chat() {
     socialDocumentation, medications, immunizations, allergies
   ]);
 
-  const systemInstruction = useMemo(() => {
-    return `
-If unsure what to say in the beginning just say, "Hey, uh, I'm here for my doctor's appointment." 
-
-You are a mock patient participating in a medical problem-based learning (PBL) session. 
+  const [systemPrompt, setSystemPrompt] = useState(`
+You are a mock standardized patient participating in a medical problem-based learning (PBL) session. 
 Your task is to simulate a realistic patient encounter for students learning clinical reasoning. 
 You should answer questions as a real patient would — only provide information that a typical patient might know, 
 and avoid medical jargon unless the patient would reasonably use it.
-
-Here are your characteristics: 
-
-${fullPrompt}
-
----
 
 **Instructions:**
 - IMPORTANT!: Do not volunteer all the information at once. Only provide details when asked directly.
@@ -235,10 +226,10 @@ ${fullPrompt}
 - If unsure, say something like “I dunno” or “I never really thought about it.” Try not to make anything up.
 - If the student asks something medically advanced (like lab results, EKG, or terminology you wouldn’t know), respond with confusion or say the doctor told you something general (e.g., “they said it was something about my heart”).
 - Use natural emotion: worry, confusion, frustration, etc., appropriate to the situation.
-- It's ok if the student asks you for information out of order (i.e., ROS, social history, or patient perspective first), act as if the initial part of the appointment has already happened. 
-- IMPORTANT: If it appears the question is for ROS, answer as briefly as possible (i.e. no or yes]) without added commentary
-        `;
-  }, [fullPrompt]);
+- It's ok if the student asks you for information out of order (i.e., review of systems, social history, or patient perspective first), act as if the initial part of the appointment has already happened. 
+- IMPORTANT: If it appears the question is for review of systems, answer as briefly as possible (i.e. no or yes]) without added commentary
+
+Here is the standardized patient's chart information:`);
 
   React.useEffect(() => {
     if (!_PWD) {
@@ -246,6 +237,36 @@ ${fullPrompt}
       setApiKey(XORcrypt(_API_KEY, _PWD));
     }
   }, []);
+
+  const geminiOptions = useMemo(() => ({
+    httpOptions: { apiVersion: "v1alpha" },
+    apiKey: apiKey,
+    model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
+    config: {
+      speechConfig: {
+        languageCode: "en-US",
+        voiceConfig: { prebuiltVoiceConfig: { voiceName } },
+      },
+      thinkingConfig: { thinkingBudget: 0 }, // disable thinking
+      responseModalities: ["AUDIO"],
+      enableAffectiveDialog: true,
+      proactivity: { proactiveAudio: true },
+      inputAudioTranscription: {},
+      outputAudioTranscription: {},
+      realtimeInputConfig: {
+        automaticActivityDetection: {
+          startOfSpeechSensitivity: "START_SENSITIVITY_LOW",
+        },
+      },
+      systemInstruction: {
+        parts: [
+          {
+            text: `${systemPrompt}\n\n${fullPrompt}`,
+          },
+        ],
+      },
+    },
+  }), [apiKey, voiceName, fullPrompt, systemPrompt]);
 
   if (!_PWD) return <></>;
 
@@ -267,30 +288,7 @@ ${fullPrompt}
   return (
     <GeminiAPIProvider
       key={`gem-${voiceName}`}
-      options={{
-        httpOptions: { apiVersion: "v1alpha" },
-        apiKey: apiKey,
-        model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
-        config: {
-          speechConfig: {
-            languageCode: "en-US",
-            voiceConfig: { prebuiltVoiceConfig: { voiceName } },
-          },
-          thinkingConfig: { thinkingBudget: 0 }, // disable thinking
-          responseModalities: ["AUDIO"],
-          enableAffectiveDialog: true,
-          proactivity: { proactiveAudio: true },
-          inputAudioTranscription: {},
-          outputAudioTranscription: {},
-          systemInstruction: {
-            parts: [
-              {
-                text: systemInstruction,
-              },
-            ],
-          },
-        },
-      }}
+      options={geminiOptions}
     >
       <Box sx={{
         height: "100%",
@@ -309,7 +307,13 @@ ${fullPrompt}
         fullWidth
         ContentProps={{ sx: { height: '85vh' } }}
       >
-        <ModelConfig voiceName={voiceName} setVoiceName={setVoiceName} fullPrompt={systemInstruction} />
+        <ModelConfig
+          voiceName={voiceName}
+          setVoiceName={setVoiceName}
+          systemPrompt={systemPrompt}
+          onChangePrompt={setSystemPrompt}
+          fullPrompt={fullPrompt}
+        />
       </Window>
     </GeminiAPIProvider>
   );
