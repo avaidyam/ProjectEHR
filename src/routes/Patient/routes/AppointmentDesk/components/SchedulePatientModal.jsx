@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Grid, Autocomplete } from '@mui/material';
-import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, Label } from 'components/ui/Core.jsx';
-import { dayjs } from 'components/ui/Core.jsx';
+import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, Label } from 'components/ui/Core';
+import { dayjs } from 'components/ui/Core';
 
 const VISIT_TYPES = [
     "Admission",

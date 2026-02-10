@@ -14,8 +14,8 @@ import {
   Button,
   Icon,
   RichTextEditor
-} from 'components/ui/Core.jsx';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+} from 'components/ui/Core';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
 const Handoff = () => {
   const [departmentsDB] = useDatabase().departments()

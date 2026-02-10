@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete, IconButton } from 'components/ui/Core.jsx';
+import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete, IconButton } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 
 export const PDMPManagerWindow = ({ open, onClose, mrn, encounterId }) => {

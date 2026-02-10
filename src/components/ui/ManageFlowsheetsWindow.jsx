@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
-import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton, Divider } from 'components/ui/Core.jsx';
+import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton, Divider } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 
 export const ManageFlowsheetsWindow = ({ open, onClose }) => {

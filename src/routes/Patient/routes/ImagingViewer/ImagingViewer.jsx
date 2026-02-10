@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Popover, Switch, Slider } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Box, Label, Button, Icon, Stack, IconButton, Menu, MenuItem, Divider, Grid } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
-import { DICOMViewer } from './components/DICOMViewer.jsx';
+import { Box, Label, Button, Icon, Stack, IconButton, Menu, MenuItem, Divider, Grid } from 'components/ui/Core';
+import { usePatient } from 'components/contexts/PatientContext';
+import { DICOMViewer } from './components/DICOMViewer';
 
 const dicomTheme = createTheme({
   palette: {

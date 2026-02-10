@@ -2,20 +2,20 @@
 import React, { useState } from 'react';
 import { Tab, Divider } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Label, Stack } from 'components/ui/Core.jsx';
-import { usePatient } from '../../../../components/contexts/PatientContext.jsx';
+import { Box, Label, Stack } from 'components/ui/Core';
+import { usePatient } from '../../../../components/contexts/PatientContext';
 
-import MedicalHistory from './routes/MedicalHistory.jsx';
-import SurgicalHistory from './routes/SurgicalHistory.jsx';
-import FamilyHistory from './routes/FamilyHistory.jsx';
-import SocialHistorySubstance from './routes/SocialHistorySubstance.jsx';
-import SocialHistoryECig from './routes/SocialHistoryECig.jsx';
-import SocialHistorySocioeconomic from './routes/SocialHistorySocioeconomic.jsx';
-import SocialHistoryADL from './routes/SocialHistoryADL.jsx';
-import SocialHistoryDocumentation from './routes/SocialHistoryDocumentation.jsx';
-import SocialHistoryBirth from './routes/SpecialtyBirth.jsx';
-import SpecialtyOB from './routes/SpecialtyOB.jsx';
-import SpecialtyPap from './routes/SpecialtyPap.jsx';
+import MedicalHistory from './routes/MedicalHistory';
+import SurgicalHistory from './routes/SurgicalHistory';
+import FamilyHistory from './routes/FamilyHistory';
+import SocialHistorySubstance from './routes/SocialHistorySubstance';
+import SocialHistoryECig from './routes/SocialHistoryECig';
+import SocialHistorySocioeconomic from './routes/SocialHistorySocioeconomic';
+import SocialHistoryADL from './routes/SocialHistoryADL';
+import SocialHistoryDocumentation from './routes/SocialHistoryDocumentation';
+import SocialHistoryBirth from './routes/SpecialtyBirth';
+import SpecialtyOB from './routes/SpecialtyOB';
+import SpecialtyPap from './routes/SpecialtyPap';
 
 
 export default function HistoryTabContent() {

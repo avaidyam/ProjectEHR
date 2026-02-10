@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
-import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core.jsx'
-import { usePatient } from 'components/contexts/PatientContext.jsx'
-import { OrderComposer } from './components/OrderComposer.jsx'
-import { OrderPicker } from './components/OrderPicker.jsx'
+import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core'
+import { usePatient } from 'components/contexts/PatientContext'
+import { OrderComposer } from './components/OrderComposer'
+import { OrderPicker } from './components/OrderPicker'
 
 const categories = {
   "New": {

@@ -10,12 +10,12 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { PatientListsContext } from 'components/contexts/PatientListContext.jsx';
+import { PatientListsContext } from 'components/contexts/PatientListContext';
 import { useDatabase } from 'components/contexts/PatientContext';
-import { ListFormModal } from './components/ListFormModal.jsx';
-import { PatientsTable } from './components/PatientsTable.jsx';
-import { ListsSidebar } from './components/ListsSidebar.jsx';
-import { PrintPreviewDialog } from './components/PrintPreviewDialog.jsx';
+import { ListFormModal } from './components/ListFormModal';
+import { PatientsTable } from './components/PatientsTable';
+import { ListsSidebar } from './components/ListsSidebar';
+import { PrintPreviewDialog } from './components/PrintPreviewDialog';
 
 function PatientLists() {
   const { listId } = useParams();

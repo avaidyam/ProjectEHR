@@ -5,14 +5,14 @@ import {
   Label,
   TitledCard,
   Icon,
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
-import { Editor } from 'components/ui/Editor.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { Editor } from 'components/ui/Editor';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),

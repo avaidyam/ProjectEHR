@@ -13,7 +13,7 @@ import {
   Label,
   TitledCard,
   Icon,
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import {
   Checkbox,
   FormControlLabel,
@@ -24,7 +24,7 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext';
 import icd10 from '../../../../../util/data/icd10cm.json';
 
 

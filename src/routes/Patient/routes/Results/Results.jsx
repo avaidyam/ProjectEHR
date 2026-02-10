@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
-import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core.jsx";
+import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core";
 import { CollapsiblePane } from "components/ui/CollapsiblePane";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { usePatient } from "components/contexts/PatientContext.jsx";
-import { useSplitView } from "components/contexts/SplitViewContext.jsx";
+import { usePatient } from "components/contexts/PatientContext";
+import { useSplitView } from "components/contexts/SplitViewContext";
 import { Tooltip } from "@mui/material";
 import { filterDocuments } from "util/helpers";
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, TextField, Autocomplete } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, TextField, Autocomplete } from 'components/ui/Core';
+import { usePatient } from 'components/contexts/PatientContext';
 
 /*
  * FIELDS NOT IN CURRENT DATA STRUCTURE (commented out for future use):

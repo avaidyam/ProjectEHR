@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, DataGrid, Label, Button, Window, IconButton } from 'components/ui/Core';
 import { useDatabase, usePatient } from 'components/contexts/PatientContext';
 import dayjs from 'dayjs';
-import { SchedulePatientModal } from './components/SchedulePatientModal.jsx';
+import { SchedulePatientModal } from './components/SchedulePatientModal';
 
 export const AppointmentDesk = () => {
     const { useChart } = usePatient();

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Window, TextField, Stack, Label, Icon, IconButton, Divider } from 'components/ui/Core.jsx';
+import { Box, Button, Window, TextField, Stack, Label, Icon, IconButton, Divider } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 import { List, ListItem, ListItemText, ListItemButton, InputAdornment } from '@mui/material';
 

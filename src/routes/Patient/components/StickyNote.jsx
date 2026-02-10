@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Paper, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextareaAutosize } from '@mui/material';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import Draggable from 'react-draggable';
-import { Icon } from 'components/ui/Core.jsx';
+import { Icon } from 'components/ui/Core';
 
 // Module-level z-index counter so clicked windows come to front
 // high z so notes appear above any route/tab content; portal will render to body

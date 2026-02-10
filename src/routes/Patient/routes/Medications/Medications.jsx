@@ -11,12 +11,12 @@ import {
   DataGrid,
   TitledCard,
   Grid,
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import {
   Checkbox,
 } from '@mui/material';
-import MedicationItemEditor from './components/MedicationItemEditor.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import MedicationItemEditor from './components/MedicationItemEditor';
+import { usePatient } from 'components/contexts/PatientContext';
 
 export default function Medications() {
   const { useEncounter } = usePatient();

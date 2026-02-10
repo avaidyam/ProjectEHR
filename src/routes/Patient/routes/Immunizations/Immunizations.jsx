@@ -11,10 +11,10 @@ import {
   Autocomplete,
   Label,
   Grid
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import dayjs from 'dayjs';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 // Common immunization routes
 const IMMUNIZATION_ROUTES = {
   IM: 'Intramuscular (IM)',

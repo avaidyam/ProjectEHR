@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Stack, Divider, Label, RichText } from 'components/ui/Core';
-import { useDatabase } from 'components/contexts/PatientContext.jsx';
+import { useDatabase } from 'components/contexts/PatientContext';
 
 export const NoteViewer = ({ data }) => {
   const [providers] = useDatabase().providers();

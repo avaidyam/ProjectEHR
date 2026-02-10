@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
-import { AuthContext } from 'components/contexts/AuthContext.jsx';
-import ConfigureDialog from './components/ConfigureDialog.jsx'; // Import the dialog component
-import Notification from './components/Notification.jsx';
-import PromptDialog from './components/PromptDialog.jsx';
+import { AuthContext } from 'components/contexts/AuthContext';
+import ConfigureDialog from './components/ConfigureDialog'; // Import the dialog component
+import Notification from './components/Notification';
+import PromptDialog from './components/PromptDialog';
 
 import { useDatabase } from 'components/contexts/PatientContext'
 

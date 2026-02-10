@@ -10,13 +10,13 @@ import {
   Label,
   DataGrid,
   TitledCard,
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import {
   Checkbox,
   FormControlLabel,
   Grid,
 } from '@mui/material';
-import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
   const [formData, setFormData] = useState({ ...row });

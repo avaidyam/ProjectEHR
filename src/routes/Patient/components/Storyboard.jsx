@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import DateHelpers from 'util/helpers.js';
 import { Divider, Alert, Typography, Avatar, Fade, Paper, Popper, colors, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers'
 import { StickyNote } from './StickyNote'
 import {
   Window, Button, TextField, Icon, IconButton
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 
 const _isBPProblematic = ({ systolic, diastolic }) => systolic > 130 || diastolic > 90; // htn
 const _isBMIProblematic = ({ bmi }) => bmi > 30; // obese

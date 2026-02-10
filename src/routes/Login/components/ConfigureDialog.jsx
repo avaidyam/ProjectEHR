@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { MenuItem, Select } from '@mui/material';
-import { Box, Label, Button, Window } from 'components/ui/Core.jsx';
+import { Box, Label, Button, Window } from 'components/ui/Core';
 
 const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
   const [selectedEncounters, setSelectedEncounters] = useState({});

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import { Box, Button, Window, TextField } from 'components/ui/Core.jsx';
+import { Box, Button, Window, TextField } from 'components/ui/Core';
 
 const VISIT_TYPES = [
     "Admission",

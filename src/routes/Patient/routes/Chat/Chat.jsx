@@ -4,7 +4,7 @@ import { GeminiAPIProvider } from "./utils/GeminiAPI";
 import VoicePanel from "./components/VoicePanel";
 import ModelConfig from "./components/ModelConfig";
 import { XORcrypt } from "util/helpers";
-import { usePatient } from "components/contexts/PatientContext.jsx";
+import { usePatient } from "components/contexts/PatientContext";
 
 const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u0003)O!<P\t\u000e&:V\u001fSDTW2(\u000e\u00020`;
 let _PWD = null;

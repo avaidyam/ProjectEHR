@@ -4,8 +4,8 @@ import { HashRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, GlobalStyles } from '@mui/material';
 import 'util/helpers.js';
 
-import { App } from './routes/App.jsx';
-import { AuthProvider } from './components/contexts/AuthContext.jsx';
+import { App } from './routes/App';
+import { AuthProvider } from './components/contexts/AuthContext';
 
 const theme = createTheme({
   colorSchemes: {

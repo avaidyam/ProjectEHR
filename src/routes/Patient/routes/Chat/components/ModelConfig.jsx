@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, MenuItem, IconButton, Label, Autocomplete, Stack } from 'components/ui/Core.jsx';
+import { Box, MenuItem, IconButton, Label, Autocomplete, Stack } from 'components/ui/Core';
 
 const VOICE_OPTIONS = {
   "Zephyr": "Bright, Higher pitch",

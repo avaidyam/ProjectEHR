@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Window } from 'components/ui/Core.jsx';
+import { Box, Button, TextField, Window } from 'components/ui/Core';
 
 const PromptDialog = ({ open, onClose, onConfirm, title, placeholder = '' }) => {
   const [inputValue, setInputValue] = useState('');

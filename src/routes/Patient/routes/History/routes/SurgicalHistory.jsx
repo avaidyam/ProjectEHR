@@ -10,7 +10,7 @@ import {
   Label,
   DataGrid,
   TitledCard,
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import {
   Checkbox,
   FormControlLabel,
@@ -20,7 +20,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext';
 
 const procedures = [
   "Appendectomy", "Cholecystectomy", "Hernia Repair - Inguinal", "Hernia Repair - Umbilical",

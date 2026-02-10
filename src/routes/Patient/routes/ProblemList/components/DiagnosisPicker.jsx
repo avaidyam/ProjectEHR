@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core.jsx';
+import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
 import { getAllCategories, getCodesForChapter, searchICD10Codes } from 'util/icd10';
 
 const COLUMN_DEFS = {

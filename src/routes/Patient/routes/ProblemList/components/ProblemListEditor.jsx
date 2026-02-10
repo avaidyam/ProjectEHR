@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
-import { DatePicker } from 'components/ui/Core.jsx';
+import { DatePicker } from 'components/ui/Core';
 
 // Quicker way to quickly generate generic Probelem List Editor inputs
 const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }) => {

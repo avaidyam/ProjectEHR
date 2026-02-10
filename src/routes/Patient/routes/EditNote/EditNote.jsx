@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, IconButton, Button, Autocomplete, Typography } from '@mui/material';
-import { Editor } from 'components/ui/Editor.jsx';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { Editor } from 'components/ui/Editor';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { Label, Stack, Icon, Window } from 'components/ui/Core';
-import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { useSplitView } from 'components/contexts/SplitViewContext';
 
 const NOTE_TYPES = [
     "ACP (Advance Care Planning)",

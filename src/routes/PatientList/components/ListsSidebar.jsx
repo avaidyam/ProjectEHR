@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Icon, TreeView } from 'components/ui/Core.jsx';
+import { Box, Icon, TreeView } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
-import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
+import { usePatientLists } from 'components/contexts/PatientListContext';
 
 const ExpandMoreIcon = () => <Icon>expand_more</Icon>
 const ChevronRightIcon = () => <Icon>chevron_right</Icon>

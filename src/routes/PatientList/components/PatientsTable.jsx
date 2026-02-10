@@ -7,11 +7,11 @@ import {
   Chip,
   Icon,
   DataGrid
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import { Paper } from '@mui/material'
-import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
+import { usePatientLists } from 'components/contexts/PatientListContext';
 import { useDatabase } from 'components/contexts/PatientContext';
-import { AddToListModal } from './AddToListModal.jsx';
+import { AddToListModal } from './AddToListModal';
 
 // Helper function to get status color
 const getStatusColor = (status) => {

@@ -1,6 +1,6 @@
 import React from 'react'
-import { Box, Chip, Grid, Stack, Label, Divider, Button, ButtonGroup, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core.jsx'
-import { usePatient } from 'components/contexts/PatientContext.jsx'
+import { Box, Chip, Grid, Stack, Label, Divider, Button, ButtonGroup, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core'
+import { usePatient } from 'components/contexts/PatientContext'
 
 const formatter = new Intl.DateTimeFormat('en-US', {
   month: '2-digit',

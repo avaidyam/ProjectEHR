@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
-import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker.jsx';
+import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core';
+import { usePatient } from 'components/contexts/PatientContext';
+import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
 
 const ClinicalImpressions = () => {
 

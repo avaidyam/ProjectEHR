@@ -61,7 +61,7 @@ import {
 import {
   Editor as MUIEditor,
   EditorReadOnly as MUIEditorReadOnly
-} from './Editor.jsx'
+} from './Editor'
 LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.

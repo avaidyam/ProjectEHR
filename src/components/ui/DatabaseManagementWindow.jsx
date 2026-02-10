@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Window, Button, Stack, Label, Icon, Box } from 'components/ui/Core.jsx'
+import { Window, Button, Stack, Label, Icon, Box } from 'components/ui/Core'
 import { useDatabase } from 'components/contexts/PatientContext'
 
 export const DatabaseManagementWindow = ({ open, onClose }) => {

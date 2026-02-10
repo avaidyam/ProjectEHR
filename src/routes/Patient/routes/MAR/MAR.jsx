@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tab, Tabs, IconButton, Toolbar, Paper, Chip, Collapse, InputAdornment } from '@mui/material';
-import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimePicker, Autocomplete, dayjs } from 'components/ui/Core.jsx';
+import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimePicker, Autocomplete, dayjs } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 
 const MOCK_ORDERS = [

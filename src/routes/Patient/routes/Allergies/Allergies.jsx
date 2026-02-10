@@ -11,10 +11,10 @@ import {
   Autocomplete,
   Label,
   Grid
-} from 'components/ui/Core.jsx';
+} from 'components/ui/Core';
 import { Checkbox, FormControlLabel, colors } from '@mui/material';
 import dayjs from 'dayjs';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { usePatient } from 'components/contexts/PatientContext';
 
 const allergenTypes = ['Drug', 'Drug Ingredient', 'Environmental', 'Food', 'Other'];
 const severityLevels = ['Low', 'Moderate', 'High', 'Not Specified'];

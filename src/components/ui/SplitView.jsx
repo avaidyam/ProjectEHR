@@ -4,7 +4,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
 import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { DragDropContext, Droppable, DropResult, Draggable } from "@hello-pangea/dnd";
-import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { SplitViewContext, SplitViewProvider, useSplitView } from 'components/contexts/SplitViewContext';
 
 const DraggableTab = ({ index, child, ...props }) => {
   return (

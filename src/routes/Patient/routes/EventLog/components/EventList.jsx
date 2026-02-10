@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { List, Popover, Typography } from '@mui/material';
 import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
-import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
+import { useSplitView } from 'components/contexts/SplitViewContext';
 import { formatComponentDate } from 'util/componentHistory';
 
 const ComponentPopover = ({ item, historyData }) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core.jsx';
+import { Box, Stack, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core';
 
 const availableColumns = [
     { id: 'name', label: 'Patient Name', selected: true, order: 0 },

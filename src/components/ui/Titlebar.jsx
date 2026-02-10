@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
-import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/Core.jsx'
+import { Button, Stack, Label, IconButton, Divider, Icon } from 'components/ui/Core'
 import { useDatabase } from 'components/contexts/PatientContext'
-import { CreateEncounterDialog } from './CreateEncounterDialog.jsx'
-import { ManageDepartmentsWindow } from './ManageDepartmentsWindow.jsx'
-import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow.jsx'
-import { OpenPatientChartDialog } from './OpenPatientChartDialog.jsx'
-import { DatabaseManagementWindow } from './DatabaseManagementWindow.jsx'
-import { PDMPManagerWindow } from './PDMPManagerWindow.jsx'
+import { CreateEncounterDialog } from './CreateEncounterDialog'
+import { ManageDepartmentsWindow } from './ManageDepartmentsWindow'
+import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow'
+import { OpenPatientChartDialog } from './OpenPatientChartDialog'
+import { DatabaseManagementWindow } from './DatabaseManagementWindow'
+import { PDMPManagerWindow } from './PDMPManagerWindow'
 
 const placeholders = [
   "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",

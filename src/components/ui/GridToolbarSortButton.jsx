@@ -8,7 +8,7 @@ import {
   gridSortModelSelector,
   gridColumnDefinitionsSelector,
 } from '@mui/x-data-grid-premium';
-import { Icon } from './Core.jsx';
+import { Icon } from './Core';
 import {
   Button,
   Badge,

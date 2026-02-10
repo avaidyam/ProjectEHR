@@ -1,7 +1,7 @@
 import React from 'react';
 import groupBy from 'lodash/groupBy';
-import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core';
+import { usePatient } from 'components/contexts/PatientContext';
 
 // FIXME: TitledCard
 // At some point I will need to use a URLBuilder to link the title to corresponding pages

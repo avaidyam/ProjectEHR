@@ -1,40 +1,40 @@
 import React, { useState } from 'react'
 import { ErrorBoundary } from "react-error-boundary";
 import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
-import { Icon } from 'components/ui/Core.jsx';
-import { SplitView } from 'components/ui/SplitView.jsx';
-import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext.jsx';
+import { Icon } from 'components/ui/Core';
+import { SplitView } from 'components/ui/SplitView';
+import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext';
 
-import { Storyboard } from './components/Storyboard.jsx'
-import { ChartReview } from './routes/ChartReview/ChartReview.jsx'
-import ProblemListTabContent from './routes/ProblemList/ProblemList.jsx'
-import SnapshotTabContent from './routes/Snapshot/Snapshot.jsx'
-import NotesTabContent from './routes/NoteWriter/NoteWriter.jsx'
-import HistoryTabContent from './routes/History/History.jsx'
-import { OrderCart } from './routes/OrderCart/OrderCart.jsx';
-import { OrderPicker } from './routes/OrderCart/components/OrderPicker.jsx';
-import { DiagnosisPicker } from './routes/ProblemList/components/DiagnosisPicker.jsx';
-import OrdersMgmt from './routes/OrdersManagement/OrdersManagement.jsx';
-import Medications from './routes/Medications/Medications.jsx';
-import ResultsReview from "./routes/Results/Results.jsx";
-import Pdmp from './routes/PDMP/PDMP.jsx';
-import Immunizations from './routes/Immunizations/Immunizations.jsx';
-import { Allergies } from './routes/Allergies/Allergies.jsx';
-import Chat from "./routes/Chat/Chat.jsx";
-import ReportViewer from './routes/ReportViewer/ReportViewer.jsx';
-import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer.jsx';
-import NoteViewer from './routes/NoteViewer/NoteViewer.jsx';
-import NotesList from './routes/NotesList/NotesList.jsx';
-import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions.jsx';
-import Handoff from './routes/Handoff/Handoff.jsx';
-import Demographics from './routes/Demographics/Demographics.jsx';
-import { EncounterAlert } from './components/EncounterAlert.jsx'
+import { Storyboard } from './components/Storyboard'
+import { ChartReview } from './routes/ChartReview/ChartReview'
+import ProblemListTabContent from './routes/ProblemList/ProblemList'
+import SnapshotTabContent from './routes/Snapshot/Snapshot'
+import NotesTabContent from './routes/NoteWriter/NoteWriter'
+import HistoryTabContent from './routes/History/History'
+import { OrderCart } from './routes/OrderCart/OrderCart';
+import { OrderPicker } from './routes/OrderCart/components/OrderPicker';
+import { DiagnosisPicker } from './routes/ProblemList/components/DiagnosisPicker';
+import OrdersMgmt from './routes/OrdersManagement/OrdersManagement';
+import Medications from './routes/Medications/Medications';
+import ResultsReview from "./routes/Results/Results";
+import Pdmp from './routes/PDMP/PDMP';
+import Immunizations from './routes/Immunizations/Immunizations';
+import { Allergies } from './routes/Allergies/Allergies';
+import Chat from "./routes/Chat/Chat";
+import ReportViewer from './routes/ReportViewer/ReportViewer';
+import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer';
+import NoteViewer from './routes/NoteViewer/NoteViewer';
+import NotesList from './routes/NotesList/NotesList';
+import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions';
+import Handoff from './routes/Handoff/Handoff';
+import Demographics from './routes/Demographics/Demographics';
+import { EncounterAlert } from './components/EncounterAlert'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
-import EditNote from './routes/EditNote/EditNote.jsx';
-import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk.jsx';
-import { EditResult } from './routes/EditResult/EditResult.jsx';
-import { EventLog } from './routes/EventLog/EventLog.jsx';
-import MAR from './routes/MAR/MAR.jsx';
+import EditNote from './routes/EditNote/EditNote';
+import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk';
+import { EditResult } from './routes/EditResult/EditResult';
+import { EventLog } from './routes/EventLog/EventLog';
+import MAR from './routes/MAR/MAR';
 
 const ALL_TABS = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,

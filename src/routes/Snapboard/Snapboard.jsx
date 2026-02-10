@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Typography, Card, CardContent, Grid, FormControl, Select, MenuItem, Chip, Avatar } from '@mui/material';
-import { DatePicker, Button } from 'components/ui/Core.jsx';
+import { DatePicker, Button } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 
 export function Snapboard() {

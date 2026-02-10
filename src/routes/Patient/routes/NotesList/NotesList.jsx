@@ -3,10 +3,10 @@ import { Box, Stack, Tabs, Tab, Typography, Toolbar, Button, Icon } from '@mui/m
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, Spacer } from 'components/ui/Core';
 import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
-import { useSplitView } from 'components/contexts/SplitViewContext.jsx';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.jsx';
+import { useSplitView } from 'components/contexts/SplitViewContext';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
-import NoteViewer from '../NoteViewer/NoteViewer.jsx';
+import NoteViewer from '../NoteViewer/NoteViewer';
 
 export const NotesList = () => {
   const { useEncounter } = usePatient();

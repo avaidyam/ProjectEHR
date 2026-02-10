@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Avatar, MenuItem, Menu, ButtonGroup, Grow } from '@mui/material';
 import { Icon, Box, Label, Button, Divider } from 'components/ui/Core';
-import { usePatient } from "components/contexts/PatientContext.jsx";
+import { usePatient } from "components/contexts/PatientContext";
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
 import ChatPanel from './ChatPanel';

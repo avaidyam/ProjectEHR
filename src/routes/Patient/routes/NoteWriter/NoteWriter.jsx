@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, MenuItem, Tab, TabList, TabPanel, TabView, TextField } from 'components/ui/Core';
 import { FormControl, Select, IconButton, Grid, Checkbox, Typography, Icon, Popover } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
+import { usePatient } from 'components/contexts/PatientContext';
 
 const systemsTemplate = {
   "Review of Systems": [

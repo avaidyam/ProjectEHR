@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { TextField, Checkbox, IconButton } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
-import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core.jsx';
-import { usePatient } from 'components/contexts/PatientContext.jsx';
-import ProblemListEditor from './components/ProblemListEditor.jsx';
-import { DiagnosisPicker } from './components/DiagnosisPicker.jsx';
+import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core';
+import { usePatient } from 'components/contexts/PatientContext';
+import ProblemListEditor from './components/ProblemListEditor';
+import { DiagnosisPicker } from './components/DiagnosisPicker';
 
 const CustomToolbar = () => {
   return (

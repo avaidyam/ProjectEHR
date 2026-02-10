@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core.jsx';
+import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core';
 import { Typography } from '@mui/material';
 
 /**

@@ -5,13 +5,13 @@ import { Box } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { DatabaseProvider } from 'components/contexts/PatientContext';
-import { AuthContext } from 'components/contexts/AuthContext.jsx';
-import { Titlebar } from 'components/ui/Titlebar.jsx';
-import { Schedule } from './Schedule/Schedule.jsx';
-import { PatientLists } from './PatientList/PatientList.jsx';
-import { Login } from './Login/Login.jsx';
-import { Patient } from './Patient/Patient.jsx';
-import { Snapboard } from './Snapboard/Snapboard.jsx';
+import { AuthContext } from 'components/contexts/AuthContext';
+import { Titlebar } from 'components/ui/Titlebar';
+import { Schedule } from './Schedule/Schedule';
+import { PatientLists } from './PatientList/PatientList';
+import { Login } from './Login/Login';
+import { Patient } from './Patient/Patient';
+import { Snapboard } from './Snapboard/Snapboard';
 
 export const App = () => {
   const navigate = useNavigate()

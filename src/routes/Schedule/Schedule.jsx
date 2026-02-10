@@ -1,12 +1,12 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { AuthContext } from 'components/contexts/AuthContext.jsx';
+import { AuthContext } from 'components/contexts/AuthContext';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core.jsx';
+import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core';
 import { useRouter } from 'util/helpers.js';
-import Notification from '../Login/components/Notification.jsx';
+import Notification from '../Login/components/Notification';
 import { useDatabase } from 'components/contexts/PatientContext'
 
 // filter bar

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Stack, Button, Label, Window } from 'components/ui/Core.jsx';
-import { usePatientLists } from 'components/contexts/PatientListContext.jsx';
+import { Stack, Button, Label, Window } from 'components/ui/Core';
+import { usePatientLists } from 'components/contexts/PatientListContext';
   
   export const AddToListModal = ({
     open,
