@@ -68,38 +68,37 @@ function useNormalizedResults() {
     }
 
     // Process Imaging
-    (visibleImaging || []).forEach((doc, i) => {
+    for (const doc of visibleImaging || []) {
       const testName = doc.test || doc.Test || "Unknown Study";
       const time = doc.date || doc.statusDate || doc.collected;
-      const panelKey = `Imaging_${testName}_${i}`;
-
-      categories.Imaging[panelKey] = {
-        _displayName: testName,
-        [testName]: {
+      if (!categories.Imaging[testName]) {
+        categories.Imaging[testName] = {
           name: testName,
           unit: "",
           referenceRange: "",
-          results: [{
-            time: new Date(time).toISOString(),
-            value: "image",
-            isImage: true,
-            test: testName,
-            agency: doc.resultingAgency || "",
-          }],
-        }
-      };
-    });
+          results: [],
+        };
+      }
+      categories.Imaging[testName].results.push({
+        time: new Date(time).toISOString(),
+        value: "image",
+        isImage: true,
+        test: testName,
+        agency: doc.resultingAgency || "",
+      });
+    }
 
     return Object.entries(categories).map(([catName, panels]) => ({
       category: catName,
       panels: Object.entries(panels).map(([key, tests]) => {
-        const { _displayName, ...actualTests } = tests;
         return {
-          name: _displayName || key,
-          tests: Object.values(actualTests).map((t) => ({
-            ...t,
-            results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
-          })),
+          name: key,
+          tests: catName === "Imaging"
+            ? [tests]
+            : Object.values(tests).map((t) => ({
+              ...t,
+              results: t.results.sort((a, b) => new Date(a.time) - new Date(b.time)),
+            })),
         };
       }),
     })).sort((a, b) => {
@@ -169,8 +168,8 @@ function ResultsNavigator({ treeItems, onComponentsChange }) {
       const isCatSelected = selectedIds.has(`cat:${cat.category}`);
       return cat.panels.flatMap(panel =>
         panel.tests.filter(test => {
-          const isPanelSelected = isCatSelected || selectedIds.has(`panel:${panel.name}`);
-          const isTestSelected = isPanelSelected || selectedIds.has(`test:${panel.name}:${test.name}`);
+          const isPanelSelected = isCatSelected || selectedIds.has(`panel:${cat.category}:${panel.name}`);
+          const isTestSelected = isPanelSelected || selectedIds.has(`test:${cat.category}:${panel.name}:${test.name}`);
           return isTestSelected && (!q || test.name.toLowerCase().includes(q));
         })
       );
@@ -312,10 +311,10 @@ export default function ResultsReview() {
     id: `cat:${cat.category}`,
     label: cat.category,
     children: cat.panels.map((p) => ({
-      id: `panel:${p.name}`,
+      id: `panel:${cat.category}:${p.name}`,
       label: p.name,
       children: p.tests.map(t => ({
-        id: `test:${p.name}:${t.name}`,
+        id: `test:${cat.category}:${p.name}:${t.name}`,
         label: t.name
       }))
     }))
