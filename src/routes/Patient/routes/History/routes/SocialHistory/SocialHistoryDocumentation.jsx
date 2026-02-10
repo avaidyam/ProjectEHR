@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import {
   Box,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   FormControlLabel,
@@ -36,10 +38,7 @@ export default function SocialHistoryDocumentation() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Social Documentation
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Social Documentation</>} color="#9F3494">
 
       <SectionPaper>
         <Editor
@@ -60,6 +59,6 @@ export default function SocialHistoryDocumentation() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

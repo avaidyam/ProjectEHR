@@ -11,6 +11,8 @@ import {
   TableHead,
   TableRow,
   IconButton,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Grid,
@@ -155,10 +157,7 @@ export default function SocialHistorySocioeconomic() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Socioeconomic
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Socioeconomic</>} color="#9F3494">
       {/* Current Occupation */}
       <SectionPaper>
         <SectionHeader>Current Occupation</SectionHeader>
@@ -403,6 +402,6 @@ export default function SocialHistorySocioeconomic() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

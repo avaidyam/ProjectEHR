@@ -4,6 +4,8 @@ import {
   Box,
   TextField,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Grid,
@@ -98,10 +100,7 @@ export default function BirthHistory() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Birth History
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Birth History</>} color="#9F3494">
       <SectionPaper>
         <Grid container spacing={3}>
           {/* Left Column */}
@@ -353,6 +352,6 @@ export default function BirthHistory() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

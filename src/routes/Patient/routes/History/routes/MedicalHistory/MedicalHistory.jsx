@@ -2,15 +2,14 @@
 import React, { useState } from 'react';
 import {
   Box,
+  Stack,
   Button,
+  Icon,
   IconButton,
   TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Label,
+  DataGrid,
+  TitledCard,
 } from 'components/ui/Core.jsx';
 import {
   Checkbox,
@@ -21,181 +20,176 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.action.selected,
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
+function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
+  const [formData, setFormData] = useState({ ...row });
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  return (
+    <Box paper elevation={5} sx={{ p: 2, mx: 4, my: 1 }}>
+      <Label variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
+        {row.isNew ? 'Add New Entry' : 'Edit Entry'}
+      </Label>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField label="Diagnosis" name="diagnosis" value={formData.diagnosis} onChange={handleChange} fullWidth size="small" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <TextField label="Date" name="date" value={formData.date} onChange={handleChange} fullWidth size="small" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 3 }}>
+          <TextField label="Age" name="age" value={formData.age} onChange={handleChange} fullWidth size="small" />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField label="Source" name="src" value={formData.src} onChange={handleChange} fullWidth size="small" />
+        </Grid>
+        <Grid size={12}>
+          <FormControlLabel
+            control={<Checkbox checked={formData.problemList === 'True'} onChange={(e) => setFormData({ ...formData, problemList: e.target.checked ? 'True' : 'False' })} />}
+            label="Add to Problem List"
+          />
+        </Grid>
+        <Grid size={12}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Button onClick={() => onSave(formData)} variant="contained" color="primary" sx={{ mr: 1 }} size="small">Save</Button>
+              <Button onClick={() => onCancel(row)} variant="outlined" size="small">Cancel</Button>
+            </Box>
+            {!row.isNew && (
+              <Button
+                onClick={() => onDelete(row.id)}
+                variant="contained"
+                color="error"
+                startIcon={<DeleteIcon />}
+                size="small"
+              >
+                Delete
+              </Button>
+            )}
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+}
 
 export default function MedicalHistory() {
   const { useEncounter } = usePatient();
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
-
-  const [editingEntry, setEditingEntry] = useState(null);
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newEntry, setNewEntry] = useState({
-    id: null,
-    diagnosis: '',
-    date: '',
-    age: '',
-    src: '',
-    problemList: '',
-  });
+  const [expandedRowIds, setExpandedRowIds] = useState(new Set());
   const [reviewed, setReviewed] = useState(false);
 
-  const handleEdit = (entry) => {
-    setEditingEntry(entry);
-    setNewEntry(entry);
+  const handleAddNew = () => {
+    const newId = (medicalHx ?? []).length > 0 ? Math.max(...medicalHx.map(e => e.id)) + 1 : 1;
+    const newEntry = { id: newId, diagnosis: '', date: '', age: '', src: '', problemList: 'False', isNew: true };
+    setMedicalHx([...(medicalHx ?? []), newEntry]);
+    setExpandedRowIds(new Set([newId]));
+  };
+
+  const handleEdit = (id) => {
+    setExpandedRowIds(new Set([id]));
   };
 
   const handleDelete = (id) => {
-    const updatedHistory = medicalHx.filter(entry => entry.id !== id);
-    setMedicalHx(updatedHistory);
+    setMedicalHx((prev) => prev.filter((row) => row.id !== id));
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewEntry({ ...newEntry, [name]: value });
+  const handleSave = (updatedRow) => {
+    setMedicalHx((prev) =>
+      prev.map((row) => (row.id === updatedRow.id ? { ...updatedRow, isNew: false } : row))
+    );
+    setExpandedRowIds(new Set());
   };
 
-  const handleSave = () => {
-    let updatedHistory = [];
-    if (editingEntry) {
-      updatedHistory = medicalHx.map(entry =>
-        entry.id === editingEntry.id ? { ...newEntry, id: entry.id } : entry
-      );
-    } else {
-      const newId = medicalHx.length > 0 ? Math.max(...medicalHx.map(e => e.id)) + 1 : 1;
-      updatedHistory = [...medicalHx, { ...newEntry, id: newId }];
+  const handleCancel = (row) => {
+    if (row.isNew) {
+      setMedicalHx((prev) => prev.filter((r) => r.id !== row.id));
     }
-    setMedicalHx(updatedHistory);
-
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      diagnosis: '',
-      date: '',
-      age: '',
-      src: '',
-      problemList: '',
-    });
-  };
-
-  const handleCancel = () => {
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      diagnosis: '',
-      date: '',
-      age: '',
-      src: '',
-      problemList: '',
-    });
+    setExpandedRowIds(new Set());
   };
 
   const handleReviewedChange = (e) => {
     setReviewed(e.target.checked);
   };
 
+  const columns = [
+    { field: 'diagnosis', headerName: 'Diagnosis', flex: 1 },
+    { field: 'date', headerName: 'Date', width: 120 },
+    { field: 'age', headerName: 'Age', width: 120 },
+    { field: 'src', headerName: 'Source', width: 200 },
+    {
+      field: 'problemList',
+      headerName: 'Problem List',
+      width: 150,
+      renderCell: (params) => (
+        <Checkbox
+          checked={params.value === 'True'}
+          disabled
+          color="primary"
+          icon={<CheckCircleOutlineIcon />}
+          checkedIcon={<CheckCircleOutlineIcon />}
+        />
+      )
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 70,
+      sortable: false,
+      renderCell: (params) => (
+        <Box>
+          <IconButton onClick={() => handleEdit(params.row.id)} color="primary">
+            <EditIcon />
+          </IconButton>
+        </Box>
+      )
+    }
+  ];
+
+  const getDetailPanelContent = React.useCallback(
+    ({ row }) => (
+      <MedicalHistoryDetailPanel
+        row={row}
+        onSave={handleSave}
+        onCancel={handleCancel}
+        onDelete={handleDelete}
+      />
+    ),
+    [handleSave, handleCancel, handleDelete],
+  );
+
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Label variant="h6" sx={{ fontWeight: 'bold' }}>Medical History</Label>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setIsAddingNew(true)}
-          sx={{ backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }}
-        >
-          New
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medical History</>} color="#9F3494">
+      <Box sx={{ mb: 2 }}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddNew} size="small">
+          Add History
         </Button>
       </Box>
-      <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
-        <Table sx={{ minWidth: 650 }} aria-label="medical history table">
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Diagnosis</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Age</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Source</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Added to Problem List</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(medicalHx ?? []).map((entry, index) => (
-              <StyledTableRow key={index}>
-                <TableCell component="th" scope="row">
-                  {entry.date}
-                </TableCell>
-                <TableCell>{entry.diagnosis}</TableCell>
-                <TableCell>{entry.age}</TableCell>
-                <TableCell>{entry.src}</TableCell>
-                <TableCell>
-                  <Checkbox
-                    checked={entry.problemList === 'True'}
-                    disabled
-                    color="primary"
-                    icon={<CheckCircleOutlineIcon />}
-                    checkedIcon={<CheckCircleOutlineIcon />}
-                  />
-                </TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEdit(entry)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(entry.id)} color="secondary">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <Box sx={{ height: 500, width: '100%' }}>
+        <DataGrid
+          rows={medicalHx ?? []}
+          columns={columns}
+          getRowId={(row) => row.id || `medical-${row.diagnosis}-${row.date}-${row.age}`}
+          initialState={{
+            columns: {
+              columnVisibilityModel: {
+                __detail_panel_toggle__: false,
+              },
+            },
+          }}
+          hideFooter
+          disableRowSelectionOnClick
+          getDetailPanelHeight={() => 'auto'}
+          getDetailPanelContent={getDetailPanelContent}
+          detailPanelExpandedRowIds={expandedRowIds}
+          onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
+        />
       </Box>
-      {(isAddingNew || editingEntry) && (
-        <Box sx={{ p: 2, mt: 4, border: '1px solid #e0e0e0' }}>
-          <Label variant="h6" gutterBottom>
-            {editingEntry ? 'Edit Entry' : 'Add New Entry'}
-          </Label>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Diagnosis" name="diagnosis" value={newEntry.diagnosis} onChange={handleChange} fullWidth placeholder="e.g. Chronic kidney disease" />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <TextField label="Date" name="date" value={newEntry.date} onChange={handleChange} fullWidth placeholder="mm/dd/yyyy" />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 3 }}>
-              <TextField label="Age" name="age" value={newEntry.age} onChange={handleChange} fullWidth placeholder="e.g. 65 years old" />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField label="Source" name="src" value={newEntry.src} onChange={handleChange} fullWidth placeholder="e.g. Hospital record" />
-            </Grid>
-            <Grid size={12}>
-              <FormControlLabel
-                control={<Checkbox checked={newEntry.problemList === 'True'} onChange={(e) => setNewEntry({ ...newEntry, problemList: e.target.checked ? 'True' : 'False' })} />}
-                label="Add to Problem List"
-              />
-            </Grid>
-            <Grid size={12}>
-              <Button onClick={handleSave} variant="contained" color="primary" sx={{ mr: 1 }}>Save</Button>
-              <Button onClick={handleCancel} variant="outlined">Cancel</Button>
-            </Grid>
-          </Grid>
-        </Box>
-      )}
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
+      <Stack direction="row" alignItems="center">
         <FormControlLabel
           control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
           label="Mark as Reviewed"
@@ -205,7 +199,7 @@ export default function MedicalHistory() {
             All medical history entries have been reviewed.
           </Label>
         )}
-      </Box>
-    </Box>
+      </Stack>
+    </TitledCard>
   );
 }

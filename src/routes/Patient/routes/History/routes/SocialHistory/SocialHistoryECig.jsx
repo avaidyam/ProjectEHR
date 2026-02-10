@@ -5,6 +5,8 @@ import {
   Button,
   TextField,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Grid,
@@ -82,10 +84,7 @@ export default function ECigaretteVapingHistory() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        E-cigarette/Vaping
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> E-cigarette/Vaping</>} color="#9F3494">
       {/* Main E-cigarette/Vaping Section */}
       <SectionPaper>
         <SectionHeader>E-cigarette/Vaping</SectionHeader>
@@ -579,6 +578,6 @@ export default function ECigaretteVapingHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-    </Box>
+    </TitledCard>
   );
 }

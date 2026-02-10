@@ -3,6 +3,8 @@ import React, { useState, useMemo } from 'react';
 import {
   Box,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   FormControlLabel,
@@ -68,10 +70,7 @@ export default function PapTracking() {
   // If no Pap tests found, show blank panel
   if (papTests.length === 0) {
     return (
-      <Box>
-        <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-          Pap Tracking
-        </Label>
+      <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Pap Tracking</>} color="#9F3494">
 
         <SectionPaper>
           <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
@@ -90,15 +89,12 @@ export default function PapTracking() {
             </Label>
           )}
         </Box>
-      </Box>
+      </TitledCard>
     );
   }
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Pap Tracking
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Pap Tracking</>} color="#9F3494">
 
       <SectionPaper>
         <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#1976d2' }}>
@@ -214,6 +210,6 @@ export default function PapTracking() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

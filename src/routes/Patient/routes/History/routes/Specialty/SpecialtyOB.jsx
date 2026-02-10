@@ -4,6 +4,8 @@ import {
   Button,
   TextField,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Grid,
@@ -86,10 +88,7 @@ export default function SpecialtyOB() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        OB/Gyn History
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> OB/Gyn History</>} color="#9F3494">
       {/* Obstetric History */}
       <SectionPaper>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -346,6 +345,6 @@ export default function SpecialtyOB() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

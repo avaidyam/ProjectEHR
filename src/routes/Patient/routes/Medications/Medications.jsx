@@ -1,141 +1,163 @@
-import React, { useState } from 'react';
-import { Checkbox, Table, TableHead, TableRow, TableCell, Icon, Box, TextField, Button, TableBody, Typography } from '@mui/material';
+// Medications.jsx
+import React, { useState, useCallback } from 'react';
+import {
+  Box,
+  Stack,
+  Button,
+  Icon,
+  IconButton,
+  TextField,
+  Label,
+  DataGrid,
+  TitledCard,
+  Grid,
+} from 'components/ui/Core.jsx';
+import {
+  Checkbox,
+} from '@mui/material';
 import MedicationItemEditor from './components/MedicationItemEditor.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import ClearIcon from '@mui/icons-material/Clear';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function Medications() {
-  const { useChart, useEncounter } = usePatient();
+  const { useEncounter } = usePatient();
   const [medications, setMedications] = useEncounter().medications();
-  const [editingMedication, setEditingMedication] = useState(null);
+  const [expandedRowIds, setExpandedRowIds] = useState(new Set());
 
-  const handleEdit = (medication) => {
-    setEditingMedication(medication);
+  const handleEdit = (id) => {
+    setExpandedRowIds(new Set([id]));
   };
 
   const handleSave = (updatedMedication) => {
-    setMedications((prevMedications) =>
-      prevMedications?.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
+    setMedications((prev) =>
+      prev?.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
     );
-    setEditingMedication(null);
+    setExpandedRowIds(new Set());
   };
 
   const handleCancel = () => {
-    setEditingMedication(null);
+    setExpandedRowIds(new Set());
   };
 
+  const handleDelete = (id) => {
+    setMedications((prev) => prev?.filter((med) => med.id !== id));
+  };
+
+  const columns = [
+    {
+      field: 'name',
+      headerName: 'Medication',
+      flex: 1,
+      renderCell: (params) => (
+        <Box sx={{ py: 1 }}>
+          <Label variant="body1" color="primary" bold>
+            {params.row.name} ({params.row.brandName}) {params.row.dose}{params.row.unit} {params.row.route}
+          </Label>
+          <Label variant="body2" color="textSecondary">
+            {[
+              params.row.frequency && `${params.row.frequency}`,
+              params.row.startDate && `${params.row.startDate}`,
+              params.row.endDate && `${params.row.endDate}`,
+              params.row.activePrnReasons?.length > 0 && `PRN: ${params.row.activePrnReasons.join(', ')}`
+            ].filter(Boolean).join(', ')}
+          </Label>
+        </Box>
+      )
+    },
+    {
+      field: 'timeActions',
+      headerName: 'Timing',
+      width: 400,
+      renderCell: () => (
+        <Stack direction="row" spacing={0.5}>
+          <Button variant="outlined" size="small">Today</Button>
+          <Button variant="outlined" size="small">Yesterday</Button>
+          <Button variant="outlined" size="small">Past Week</Button>
+          <Button variant="outlined" size="small">Past Month</Button>
+          <Button variant="outlined" size="small">{'>'} Month</Button>
+          <Button variant="outlined" size="small">Unknown</Button>
+        </Stack>
+      )
+    },
+    {
+      field: 'lastDose',
+      headerName: 'Last Dose',
+      width: 150,
+      renderCell: () => <TextField disabled size="small" fullWidth color="error" />
+    },
+    {
+      field: 'taking',
+      headerName: 'Taking?',
+      width: 80,
+      renderCell: () => <Checkbox />
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      sortable: false,
+      renderCell: (params) => (
+        <Stack direction="row" spacing={0.5}>
+          <IconButton onClick={() => handleEdit(params.row.id)} color="primary" size="small">
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)} color="error" size="small">
+            <ClearIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+      )
+    }
+  ];
+
+  const getDetailPanelContent = useCallback(
+    ({ row }) => (
+      <Box paper sx={{ p: 2, mx: 4, my: 1, border: '1px solid #e0e0e0' }}>
+        <MedicationItemEditor
+          medication={row}
+          onSave={handleSave}
+          onCancel={handleCancel}
+        />
+      </Box>
+    ),
+    [handleSave, handleCancel],
+  );
+
   return (
-    <Box>
-      <div>
-        <div style={{ display: "flex" }}>
-          <TextField
-            label="New Medication"
-            variant="outlined"
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>medication</Icon> Home Medications</>} color="#9F3494" sx={{ m: 2 }}>
+      <Stack spacing={2}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <TextField label="New Medication" variant="outlined" size="small" />
+            <Button variant="contained" startIcon={<AddTaskIcon />}>Add</Button>
+          </Stack>
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" size="small">Check Interactions</Button>
+            <Button variant="outlined" size="small">Informants</Button>
+            <Button variant="outlined" size="small">Find Medications Needing Review</Button>
+            <Button variant="outlined" size="small">Mark all Unselected Today</Button>
+            <Button variant="outlined" size="small">Mark all Unselected Yesterday</Button>
+          </Stack>
+        </Box>
+
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={medications ?? []}
+            columns={columns}
+            getRowId={(row) => row.id || `medication-${row.name}-${row.brandName}-${row.dose}`}
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            initialState={{ columns: { columnVisibilityModel: { __detail_panel_toggle__: false } } }}
+            hideFooter
+            disableRowSelectionOnClick
+            getDetailPanelHeight={() => 'auto'}
+            getDetailPanelContent={getDetailPanelContent}
+            detailPanelExpandedRowIds={expandedRowIds}
+            onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
           />
-          <Button variant="outlined">
-            <Icon color="success">add_task</Icon>Add
-          </Button>
-          <div style={{ marginLeft: "auto" }}>
-            <Button variant="outlined">
-              Check Interactions
-            </Button>
-            <Button variant="outlined">
-              Informants
-            </Button>
-            <Button variant="outlined">
-              Find Medications Needing Review
-            </Button>
-            <Button variant="outlined">
-              Mark all Unselected Today 
-            </Button>
-            <Button variant="outlined">
-              Mark all Unselected Yesterday 
-            </Button>
-          </div>
-        </div>
-        <div style={{ display: 'flex', overflowX: 'auto' }}>
-          <div style={{ flex: '1', transition: 'max-width 0.5s', overflow: 'auto' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Medication</TableCell>
-                  <TableCell />
-                  <TableCell>Last Dose</TableCell>
-                  <TableCell>Taking?</TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(medications ?? []).map((medication) => (
-                  <React.Fragment key={medication.id}>
-                    <TableRow>
-                      <TableCell>
-                        <Button onClick={() => handleEdit(medication)} style={{ textAlign: 'left' }}>
-                          <Box>
-                            <Typography variant="body1" color="primary">
-                              {medication.name} ({medication.brandName}) {medication.dose}{medication.unit} {medication.route}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary">
-                              {[
-                                medication.frequency && `${medication.frequency}`,
-                                medication.startDate && `${medication.startDate}`,
-                                medication.endDate && `${medication.endDate}`,
-                                medication.activePrnReasons.length > 0 && `PRN: ${medication.activePrnReasons.join(', ')}`
-                              ].filter(Boolean).join(', ')}
-                            </Typography>
-                          </Box>
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="outlined">
-                          Today
-                        </Button>
-                        <Button variant="outlined">
-                          Yesterday
-                        </Button>
-                        <Button variant="outlined">
-                          Past Week
-                        </Button>
-                        <Button variant="outlined">
-                          Past Month
-                        </Button>
-                        <Button variant="outlined">
-                          {'>'} Month
-                        </Button>
-                        <Button variant="outlined">
-                          Unknown
-                        </Button>
-                      </TableCell>
-                      <TableCell>
-                        <TextField
-                          disabled
-                          color="error"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell>
-                        <Button><Icon>clear</Icon></Button>
-                      </TableCell>
-                    </TableRow>
-                    {editingMedication && editingMedication.id === medication.id && (
-                      <TableRow>
-                        <TableCell colSpan={5}>
-                          <MedicationItemEditor
-                            medication={editingMedication}
-                            onSave={handleSave}
-                            onCancel={handleCancel}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-      </div>
-    </Box>
+        </Box>
+      </Stack>
+    </TitledCard>
   );
 }

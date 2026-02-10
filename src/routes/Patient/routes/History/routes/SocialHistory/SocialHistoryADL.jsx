@@ -4,6 +4,8 @@ import {
   Box,
   Button,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Grid,
@@ -103,10 +105,7 @@ export default function SocialHistoryADL() {
   );
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Social History - ADL
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Social History - ADL</>} color="#9F3494">
       <SectionPaper>
         <Grid container spacing={2}>
           {/* Left Column */}
@@ -135,6 +134,6 @@ export default function SocialHistoryADL() {
           </Label>
         )}
       </Box>
-    </Box>
+    </TitledCard>
   );
 }

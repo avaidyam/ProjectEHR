@@ -5,6 +5,8 @@ import {
   Button,
   TextField,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Checkbox,
@@ -116,10 +118,7 @@ export default function SubstanceAndSexualHistory() {
   };
 
   return (
-    <Box>
-      <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Substance & Sexual Activity
-      </Label>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Substance & Sexual Activity</>} color="#9F3494">
       {/* Tobacco Section */}
       <SectionPaper>
         <SectionHeader>Tobacco</SectionHeader>
@@ -474,6 +473,6 @@ export default function SubstanceAndSexualHistory() {
           </Grid>
         </Grid>
       </SectionPaper>
-    </Box>
+    </TitledCard>
   );
 }

@@ -11,6 +11,8 @@ import {
   TableHead,
   TableRow,
   Label,
+  TitledCard,
+  Icon,
 } from 'components/ui/Core.jsx';
 import {
   Checkbox,
@@ -216,10 +218,7 @@ export default function FamilyHistory() {
   const hasProblem = (member, problem) => member.problems.some(p => p.description === problem);
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Label variant="h6" sx={{ fontWeight: 'bold' }}>Family History</Label>
-      </Box>
+    <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color="#9F3494">
 
       <Box sx={{ boxShadow: 'none' }}>
         <Table sx={{ minWidth: 650 }}>
@@ -369,6 +368,6 @@ export default function FamilyHistory() {
           <Button onClick={handleSaveComments} variant="contained" color="primary">Save</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </TitledCard>
   );
 }
