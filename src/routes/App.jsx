@@ -1,5 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { ErrorBoundary } from "react-error-boundary";
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Box } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { DatabaseProvider } from 'components/contexts/PatientContext';
@@ -45,54 +47,58 @@ export const App = () => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatabaseProvider>
-        {isLoggedIn && <Titlebar onLogout={handleLogout} />}
-        <Routes>
-          <Route
-            path="/"
-            element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/schedule"
-            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/schedule/:department"
-            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/schedule/:department/:date"
-            element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/list"
-            element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/list/:listId"
-            element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/patient/:mrn"
-            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/patient/:mrn/encounter/:enc"
-            element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/snapboard"
-            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/snapboard/:department"
-            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route
-            path="/snapboard/:department/:date"
-            element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-          />
-          <Route path="*" render={() => <Navigate replace to="/" />} />
-        </Routes>
+        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+          {isLoggedIn && <Titlebar onLogout={handleLogout} />}
+        </ErrorBoundary>
+        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+          <Routes>
+            <Route
+              path="/"
+              element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/schedule"
+              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/schedule/:department"
+              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/schedule/:department/:date"
+              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/list"
+              element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/list/:listId"
+              element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/patient/:mrn"
+              element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/patient/:mrn/encounter/:enc"
+              element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/snapboard"
+              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/snapboard/:department"
+              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route
+              path="/snapboard/:department/:date"
+              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+            />
+            <Route path="*" render={() => <Navigate replace to="/" />} />
+          </Routes>
+        </ErrorBoundary>
       </DatabaseProvider>
     </LocalizationProvider>
   )

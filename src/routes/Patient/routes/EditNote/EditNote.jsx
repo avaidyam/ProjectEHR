@@ -48,7 +48,7 @@ const EditNote = () => {
     }
 
     const handleAccept = () => {
-        setNotes(prev => [...prev, {
+        setNotes(prev => [...(prev ?? []), {
             id: crypto.randomUUID(),
             serviceDate: activeNote.date.toString(),
             date: activeNote.date.toString(),
