@@ -47,6 +47,7 @@ const TabWithMenu = ({ onMove, onClose, isSelected, ...props }) => {
         {...props}
         iconPosition="end"
         icon={<IconButton
+          component="span"
           size="small"
           onClick={(e) => {
             e.stopPropagation()

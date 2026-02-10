@@ -69,7 +69,6 @@ export const ListsSidebar = () => {
         selectedItems={selectedListId ? [selectedListId] : []}
         onItemClick={handleItemClick}
         itemsReordering={true}
-        experimentalFeatures={{ indentationAtItemLevel: true, itemsReordering: true }}
         disableSelection
         sx={{
           p: 1,

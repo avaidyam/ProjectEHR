@@ -217,7 +217,7 @@ export const Titlebar = ({ onLogout }) => {
               <Tab onClick={() => navigate(pathname)} key={pathname} value={pathname} label={
                 <span>
                   {pathnameToTab(pathname)}
-                  <IconButton size="small" sx={{ p: 0, ml: 1 }} onClick={(e) => { e.stopPropagation(); removePathnameFromHistory(pathname) }}>close</IconButton>
+                  <IconButton component="span" size="small" sx={{ p: 0, ml: 1 }} onClick={(e) => { e.stopPropagation(); removePathnameFromHistory(pathname) }}>close</IconButton>
                 </span>
               } />
             ))}
