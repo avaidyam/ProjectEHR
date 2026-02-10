@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ErrorBoundary } from "react-error-boundary";
 import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
 import { Icon } from 'components/ui/Core.jsx';
 import { SplitView } from 'components/ui/SplitView.jsx';
@@ -114,7 +115,9 @@ export const Patient = ({ ...props }) => {
             },
           }}
         >
-          <Storyboard />
+          <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+            <Storyboard />
+          </ErrorBoundary>
         </Drawer>
         <Box sx={{ flexGrow: 1, overflowY: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <Box sx={{ flexGrow: 1, overflowY: 'hidden' }}>
@@ -181,14 +184,18 @@ export const Patient = ({ ...props }) => {
           <EncounterAlert />
         </Box>
       </Box>
-      <OrderPicker
-        open={isOrderPickerOpen}
-        onSelect={() => setIsOrderPickerOpen(false)}
-      />
-      <DiagnosisPicker
-        open={isDiagnosisPickerOpen}
-        onSelect={() => setIsDiagnosisPickerOpen(false)}
-      />
+      <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+        <OrderPicker
+          open={isOrderPickerOpen}
+          onSelect={() => setIsOrderPickerOpen(false)}
+        />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={<p>⚠️Something went wrong</p>}>
+        <DiagnosisPicker
+          open={isDiagnosisPickerOpen}
+          onSelect={() => setIsDiagnosisPickerOpen(false)}
+        />
+      </ErrorBoundary>
     </PatientProvider>
   )
 }
