@@ -8,10 +8,10 @@ import patient_sample from 'util/data/patient_sample.json'
 import orderables from 'util/data/orderables.json'
 
 // 
-export type DatabaseContextValue = any;
+export type DatabaseContextValue = ReturnType<typeof createStore<Database.Root>>['useStore'];
 export interface PatientContextValue {
-  useChart: () => any;
-  useEncounter: () => any;
+  useChart: () => DatabaseContextValue['patients'][string];
+  useEncounter: () => DatabaseContextValue['patients'][string]['encounters'][string];
 }
 
 export const DatabaseContext = React.createContext<DatabaseContextValue | undefined>(undefined)
@@ -19,14 +19,14 @@ export const PatientContext = React.createContext<PatientContextValue | undefine
 
 // 
 const initialStore: Database.Root = {
-  departments: (patient_sample as Database.Root).departments,
-  patients: (patient_sample as Database.Root).patients,
-  schedules: (patient_sample as Database.Root).schedules,
-  lists: (patient_sample as Database.Root).lists,
-  providers: (patient_sample as Database.Root).providers,
-  locations: (patient_sample as Database.Root).locations,
+  departments: (patient_sample as unknown as Database.Root).departments,
+  patients: (patient_sample as unknown as Database.Root).patients,
+  schedules: (patient_sample as unknown as Database.Root).schedules,
+  lists: (patient_sample as unknown as Database.Root).lists,
+  providers: (patient_sample as unknown as Database.Root).providers,
+  locations: (patient_sample as unknown as Database.Root).locations,
   orderables: orderables,
-  flowsheets: (patient_sample as Database.Root).flowsheets
+  flowsheets: (patient_sample as unknown as Database.Root).flowsheets
 }
 const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
   // TODO: ...
@@ -47,8 +47,8 @@ export const DatabaseProvider: React.FC<{
 // We need to actually useEffect() to set the "database" value to the new patient data.
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider: React.FC<{
-  patient: any;
-  encounter: any;
+  patient: string;
+  encounter: string;
   children: React.ReactNode;
 }> = ({ patient, encounter, children }) => {
   const useStore1 = useDatabase()

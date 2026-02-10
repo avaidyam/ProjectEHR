@@ -105,11 +105,12 @@ export const Flowsheet = () => {
             new Date(a.date).getTime() - new Date(b.date).getTime()
         );
 
-        const persistedColumns: TimeColumn[] = sortedData.map((d: any) => ({
+        const persistedColumns: TimeColumn[] = sortedData.map((d: any, index: number) => ({
             id: d.id,
             timestamp: d.date,
             displayTime: DateHelpers.convertToDateTime(d.date).toFormat('HHmm'), // Format nicely
             isCurrentTime: false,
+            index: index,
         }));
 
         return [...persistedColumns, nowColumn];
@@ -183,11 +184,12 @@ export const Flowsheet = () => {
                     // other fields empty initially
                 };
 
-                setFlowsheetData((prev: any[]) => {
+                setFlowsheetData((prev: any[] | undefined) => {
                     // Check if exists (shouldn't)
-                    const exists = prev.find(d => d.id === nowColumn.id);
+                    const currentPrev = prev || [];
+                    const exists = currentPrev.find(d => d.id === nowColumn.id);
                     if (exists) return prev;
-                    return [...(prev || []), newEntryObject];
+                    return [...currentPrev, newEntryObject];
                 });
 
                 // note: we don't update nowColumn state here because we expect `handleAddTimeColumn` to spawn a NEW one immediately after
@@ -198,7 +200,7 @@ export const Flowsheet = () => {
         } else {
             // Updating a persisted column (e.g. editing time manually)
             // Not yet implemented in UI but good to have logic
-            setFlowsheetData((prev: any[]) => prev.map(d =>
+            setFlowsheetData((prev: any[] | undefined) => (prev || []).map(d =>
                 d.id === id ? { ...d, date: updates.timestamp || d.date } : d
             ));
         }
@@ -211,11 +213,12 @@ export const Flowsheet = () => {
 
     const handleAddEntry = useCallback((entry: Omit<FlowsheetEntry, 'id'>) => {
         // entry: { rowId, columnId, value }
-        setFlowsheetData((prev: any[]) => {
+        setFlowsheetData((prev: any[] | undefined) => {
             // Find the time column object
-            const exists = prev.find(d => d.id === entry.columnId);
+            const currentPrev = prev || [];
+            const exists = currentPrev.find(d => d.id === entry.columnId);
             if (exists) {
-                return prev.map(d => d.id === entry.columnId ? { ...d, [entry.rowId]: entry.value } : d);
+                return currentPrev.map(d => d.id === entry.columnId ? { ...d, [entry.rowId]: entry.value } : d);
             }
 
             const newObj = {
@@ -224,7 +227,7 @@ export const Flowsheet = () => {
                 flowsheet: activeGroup?.id,
                 [entry.rowId]: entry.value
             };
-            return [...(prev || []), newObj];
+            return [...currentPrev, newObj];
         });
     }, [activeGroup, setFlowsheetData]);
 
@@ -232,7 +235,7 @@ export const Flowsheet = () => {
         const [columnId, rowId] = id.split('::');
 
         if (columnId && rowId && updates.value !== undefined) {
-            setFlowsheetData((prev: any[]) => prev.map(d =>
+            setFlowsheetData((prev: any[] | undefined) => (prev || []).map(d =>
                 d.id === columnId ? { ...d, [rowId]: updates.value } : d
             ));
         }

@@ -180,23 +180,28 @@ export interface DispenseHistory {
 }
 
 export interface History {
-  BirthHistory?: BirthHistory
-  ECigaretteVaping?: EcigaretteVaping
-  OBGynHistory?: ObgynHistory
-  SocialDocumentation?: SocialDocumentation
-  Socioeconomic?: Socioeconomic
+  medical?: MedicalHistoryItem[]
+  surgical?: SurgicalHistoryItem[]
+  family?: FamilyHistoryItem[]
   SubstanceSexualHealth?: SubstanceSexualHealth
-  family?: Family[]
-  medical?: Medical[]
-  surgical?: Surgical[]
-}
-
-export interface BirthHistory {
-  birthComplications?: string
-  birthWeight?: string
-  deliveryMethod?: string
-  gestationalAge?: string
-  hospitalStay?: string
+  Socioeconomic?: {
+    demographics?: Demographics
+    employer?: string
+    occupation?: string
+    occupationalHistory?: OccupationalHistory[]
+  }
+  ECigaretteVaping?: any
+  SocialDocumentation?: {
+    textbox: string
+  }
+  OBGynHistory?: any
+  BirthHistory?: {
+    birthComplications?: string
+    birthWeight?: string
+    deliveryMethod?: string
+    gestationalAge?: string
+    hospitalStay?: string
+  }
 }
 
 export interface Component {
@@ -220,28 +225,7 @@ export interface Demographics {
   yearsOfEducation: any
 }
 
-export interface DrinksPerWeek {
-  beer?: number
-  beerCans?: number
-  drinksContainingAlcohol?: number
-  liquor?: number
-  liquorShots?: number
-  mixedDrinks?: number
-  standardDrinks: number
-  wine?: number
-  wineGlasses?: number
-}
-
-export interface Drugs {
-  comments: string
-  drugStatus?: string
-  drugTypes?: string[] | any[]
-  types?: any[]
-  use?: string
-  usePerWeek: number | string
-}
-
-export interface Family {
+export interface FamilyHistoryItem {
   age?: number | null
   comment?: string
   name: string
@@ -268,16 +252,6 @@ export interface Flowsheet {
   spo2?: any
   temp?: number
   weight?: any
-}
-
-export interface GynecologicalHistory {
-  comments: string
-  lastMenstrualPeriod: string
-  menarche: string
-  menstrualCycleDuration: string
-  menstrualCycleFrequency: string
-  menstrualFlow: string
-  regularity: string
 }
 
 export interface Imaging {
@@ -317,7 +291,7 @@ export interface Lab {
   test: string
 }
 
-export interface Medical {
+export interface MedicalHistoryItem {
   age?: string
   comment?: string
   date?: string
@@ -390,44 +364,68 @@ export interface Row {
   type: string
 }
 
-export interface Sexual {
-  comments: string
-  sexuallyActive: string
-}
-
-export interface SexualActivity {
-  active: string
-  birthControl: any[]
-  comments: string
-  partners: any[]
-}
-
-export interface SmokelessStatus {
-  comments: string
-  smokelessStatus: string
-}
-
-export interface SocialDocumentation {
-  textbox: string
-}
-
-export interface Socioeconomic {
-  demographics?: Demographics
-  employer?: string
-  occupation?: string
-  occupationalHistory?: OccupationalHistory[]
-}
-
 export interface SubstanceSexualHealth {
-  alcohol?: Alcohol
-  drugs?: Drugs
-  gynecologicalHistory?: GynecologicalHistory
-  sexual?: Sexual
-  sexualActivity?: SexualActivity
-  tobacco?: Tobacco
+  alcohol?: {
+    alcoholStatus?: string
+    comments?: string
+    drinksPerWeek: {
+      beer?: number
+      beerCans?: number
+      drinksContainingAlcohol?: number
+      liquor?: number
+      liquorShots?: number
+      mixedDrinks?: number
+      standardDrinks: number
+      wine?: number
+      wineGlasses?: number
+    }
+    use?: string
+  }
+  drugs?: {
+    comments: string
+    drugStatus?: string
+    drugTypes?: string[] | any[]
+    types?: any[]
+    use?: string
+    usePerWeek: number | string
+  }
+  gynecologicalHistory?: {
+    comments: string
+    lastMenstrualPeriod: string
+    menarche: string
+    menstrualCycleDuration: string
+    menstrualCycleFrequency: string
+    menstrualFlow: string
+    regularity: string
+  }
+  sexual?: {
+    comments: string
+    sexuallyActive: string
+  }
+  sexualActivity?: {
+    active: string
+    birthControl: any[]
+    comments: string
+    partners: any[]
+  }
+  tobacco?: {
+    comments?: string
+    packYears: any
+    packsPerDay: any
+    passiveExposure?: string
+    smokeless?: string
+    smokelessStatus?: {
+      comments: string
+      smokelessStatus: string
+    }
+    smokingStatus?: string
+    startDate: any
+    status?: string
+    types?: any[] | string[]
+  }
 }
 
-export interface Surgical {
+export interface SurgicalHistoryItem {
   age: string
   comment?: string
   date: string
@@ -435,25 +433,4 @@ export interface Surgical {
   notes?: string
   procedure: string
   src?: string
-}
-
-export interface Tobacco {
-  comments?: string
-  packYears: any
-  packsPerDay: any
-  passiveExposure?: string
-  smokeless?: string
-  smokelessStatus?: SmokelessStatus
-  smokingStatus?: string
-  startDate: any
-  status?: string
-  types?: any[] | string[]
-}
-
-
-export interface Alcohol {
-  alcoholStatus?: string
-  comments?: string
-  drinksPerWeek: DrinksPerWeek
-  use?: string
 }
