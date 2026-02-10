@@ -5,7 +5,7 @@ import { Icon } from 'components/ui/Core';
 import { SplitView } from 'components/ui/SplitView';
 import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext';
 
-import { Storyboard } from './components/Storyboard'
+import { Storyboard } from './routes/Storyboard/Storyboard'
 import { ChartReview } from './routes/ChartReview/ChartReview'
 import ProblemListTabContent from './routes/ProblemList/ProblemList'
 import SnapshotTabContent from './routes/Snapshot/Snapshot'
