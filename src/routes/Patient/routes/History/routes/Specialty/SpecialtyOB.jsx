@@ -86,7 +86,7 @@ export default function SpecialtyOB() {
   };
 
   return (
-    <Box sx={{ p: 2, backgroundColor: 'white' }}>
+    <Box>
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         OB/Gyn History
       </Label>

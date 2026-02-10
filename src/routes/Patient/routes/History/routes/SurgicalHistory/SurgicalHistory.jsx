@@ -189,7 +189,7 @@ export default function SurgicalHistory() {
   };
 
   return (
-    <Box sx={{ p: 2, backgroundColor: 'white' }}>
+    <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Label variant="h6" sx={{ fontWeight: 'bold' }}>Surgical History</Label>
         <Button
@@ -201,9 +201,6 @@ export default function SurgicalHistory() {
           Add
         </Button>
       </Box>
-      <Label variant="subtitle1" sx={{ mb: 2, color: '#1976d2', fontWeight: 'bold' }}>
-        Past Surgical History
-      </Label>
       <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
         <Table sx={{ minWidth: 650 }} aria-label="surgical history table">
           <TableHead>
@@ -244,7 +241,7 @@ export default function SurgicalHistory() {
         </Table>
       </Box>
       {(isAddingNew || editingEntry) && (
-        <Box sx={{ p: 3, mt: 3, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f9f9f9' }}>
+        <Box sx={{ p: 3, mt: 3, border: '1px solid #e0e0e0', borderRadius: 1, }}>
           <Label variant="h6" gutterBottom sx={{ mb: 3 }}>
             {editingEntry ? 'Edit Surgical Entry' : 'Add New Surgical Entry'}
           </Label>

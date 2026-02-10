@@ -68,7 +68,7 @@ export default function PapTracking() {
   // If no Pap tests found, show blank panel
   if (papTests.length === 0) {
     return (
-      <Box sx={{ p: 2, backgroundColor: 'white' }}>
+      <Box>
         <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
           Pap Tracking
         </Label>
@@ -95,7 +95,7 @@ export default function PapTracking() {
   }
 
   return (
-    <Box sx={{ p: 2, backgroundColor: 'white' }}>
+    <Box>
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Pap Tracking
       </Label>

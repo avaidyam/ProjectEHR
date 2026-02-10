@@ -109,7 +109,7 @@ export default function MedicalHistory() {
   };
 
   return (
-    <Box sx={{ p: 2, backgroundColor: 'white' }}>
+    <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Label variant="h6" sx={{ fontWeight: 'bold' }}>Medical History</Label>
         <Button

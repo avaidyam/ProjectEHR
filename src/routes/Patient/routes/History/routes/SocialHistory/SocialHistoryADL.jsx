@@ -103,7 +103,7 @@ export default function SocialHistoryADL() {
   );
 
   return (
-    <Box sx={{ p: 2, backgroundColor: 'white' }}>
+    <Box>
       <Label variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>
         Social History - ADL
       </Label>
