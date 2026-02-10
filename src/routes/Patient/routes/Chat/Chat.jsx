@@ -214,8 +214,7 @@ export default function Chat() {
   ]);
 
   const systemInstruction = useMemo(() => {
-    return `
-If unsure what to say in the beginning just say, "Hey, uh, I'm here for my doctor's appointment." 
+    return ` 
 
 You are a mock patient participating in a medical problem-based learning (PBL) session. 
 Your task is to simulate a realistic patient encounter for students learning clinical reasoning. 
@@ -282,6 +281,11 @@ ${fullPrompt}
           proactivity: { proactiveAudio: true },
           inputAudioTranscription: {},
           outputAudioTranscription: {},
+          realtimeInputConfig: {
+            automaticActivityDetection: {
+              startOfSpeechSensitivity: "START_SENSITIVITY_LOW",
+            },
+          },
           systemInstruction: {
             parts: [
               {
