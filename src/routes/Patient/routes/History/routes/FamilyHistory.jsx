@@ -27,8 +27,8 @@ import { styled } from '@mui/material/styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
-import icd10 from '../../../../../../util/data/icd10cm.json';
+import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
+import icd10 from '../../../../../util/data/icd10cm.json';
 
 
 const icd10Options = Object.entries(icd10).map(([code, description]) => ({

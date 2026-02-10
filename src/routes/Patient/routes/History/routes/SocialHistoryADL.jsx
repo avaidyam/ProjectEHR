@@ -13,7 +13,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),

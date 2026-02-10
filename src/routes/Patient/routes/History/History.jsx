@@ -5,17 +5,17 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Label, Stack } from 'components/ui/Core.jsx';
 import { usePatient } from '../../../../components/contexts/PatientContext.jsx';
 
-import MedicalHistory from './routes/MedicalHistory/MedicalHistory.jsx';
-import SurgicalHistory from './routes/SurgicalHistory/SurgicalHistory.jsx';
-import FamilyHistory from './routes/FamilyHistory/FamilyHistory.jsx';
-import SocialHistorySubstance from './routes/SocialHistory/SocialHistorySubstance.jsx';
-import SocialHistoryECig from './routes/SocialHistory/SocialHistoryECig.jsx';
-import SocialHistorySocioeconomic from './routes/SocialHistory/SocialHistorySocioeconomic.jsx';
-import SocialHistoryADL from './routes/SocialHistory/SocialHistoryADL.jsx';
-import SocialHistoryDocumentation from './routes/SocialHistory/SocialHistoryDocumentation.jsx';
-import SocialHistoryBirth from './routes/Specialty/SpecialtyBirth.jsx';
-import SpecialtyOB from './routes/Specialty/SpecialtyOB.jsx';
-import SpecialtyPap from './routes/Specialty/SpecialtyPap.jsx';
+import MedicalHistory from './routes/MedicalHistory.jsx';
+import SurgicalHistory from './routes/SurgicalHistory.jsx';
+import FamilyHistory from './routes/FamilyHistory.jsx';
+import SocialHistorySubstance from './routes/SocialHistorySubstance.jsx';
+import SocialHistoryECig from './routes/SocialHistoryECig.jsx';
+import SocialHistorySocioeconomic from './routes/SocialHistorySocioeconomic.jsx';
+import SocialHistoryADL from './routes/SocialHistoryADL.jsx';
+import SocialHistoryDocumentation from './routes/SocialHistoryDocumentation.jsx';
+import SocialHistoryBirth from './routes/SpecialtyBirth.jsx';
+import SpecialtyOB from './routes/SpecialtyOB.jsx';
+import SpecialtyPap from './routes/SpecialtyPap.jsx';
 
 
 export default function HistoryTabContent() {

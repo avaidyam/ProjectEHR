@@ -20,7 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
   const [formData, setFormData] = useState({ ...row });

@@ -17,7 +17,7 @@ import {
   InputLabel,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../../components/contexts/PatientContext.jsx';
+import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 import { Editor } from 'components/ui/Editor.jsx';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
