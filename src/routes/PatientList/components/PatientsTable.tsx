@@ -65,6 +65,11 @@ export const PatientsTable = () => {
       navigate(
         `/patient/${patient.encounterData.patientId}/encounter/${patient.encounterData.encounterId}`
       );
+    } else if (patient.encounters && Object.keys(patient.encounters).length > 0) {
+      const encounters = Object.values(patient.encounters);
+      const sortedEncounters = encounters.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+      const latestEncounter = sortedEncounters[0];
+      navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
     } else {
       navigate(`/patient/${patient.id}`);
     }
