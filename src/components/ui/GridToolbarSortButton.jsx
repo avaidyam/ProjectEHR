@@ -8,7 +8,7 @@ import {
   gridSortModelSelector,
   gridColumnDefinitionsSelector,
 } from '@mui/x-data-grid-premium';
-import SwapVertIcon from '@mui/icons-material/SwapVert';
+import { Icon } from './Core.jsx';
 import {
   Button,
   Badge,
@@ -43,7 +43,7 @@ export function GridToolbarSortButton() {
         size="small"
         startIcon={
           <Badge badgeContent={sortModel.length} color="primary" variant="dot">
-            <SwapVertIcon fontSize="small" />
+            <Icon size={20}>swap_vert</Icon>
           </Badge>
         }
         onClick={(e) => setAnchorEl(e.currentTarget)}

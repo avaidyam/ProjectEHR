@@ -16,10 +16,6 @@ import {
   FormControlLabel,
   Grid,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
@@ -64,7 +60,7 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
                 onClick={() => onDelete(row.id)}
                 variant="contained"
                 color="error"
-                startIcon={<DeleteIcon />}
+                startIcon={<Icon>delete</Icon>}
                 size="small"
               >
                 Delete
@@ -130,8 +126,8 @@ export default function MedicalHistory() {
           checked={params.value === 'True'}
           disabled
           color="primary"
-          icon={<CheckCircleOutlineIcon />}
-          checkedIcon={<CheckCircleOutlineIcon />}
+          icon={<Icon>radio_button_unchecked</Icon>}
+          checkedIcon={<Icon>check_circle</Icon>}
         />
       )
     },
@@ -143,7 +139,7 @@ export default function MedicalHistory() {
       renderCell: (params) => (
         <Box>
           <IconButton onClick={() => handleEdit(params.row.id)} color="primary">
-            <EditIcon />
+            edit
           </IconButton>
         </Box>
       )
@@ -165,7 +161,7 @@ export default function MedicalHistory() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medical History</>} color="#9F3494">
       <Box sx={{ mb: 2 }}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddNew} size="small">
+        <Button variant="contained" startIcon={<Icon>add</Icon>} onClick={handleAddNew} size="small">
           Add History
         </Button>
       </Box>

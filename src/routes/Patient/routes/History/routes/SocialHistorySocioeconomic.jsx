@@ -19,9 +19,6 @@ import {
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 
@@ -187,7 +184,7 @@ export default function SocialHistorySocioeconomic() {
           <SectionHeader>Occupation History</SectionHeader>
           <Button
             variant="contained"
-            startIcon={<AddIcon />}
+            startIcon={<Icon>add</Icon>}
             onClick={() => setIsAddingNew(true)}
             sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
           >
@@ -217,10 +214,10 @@ export default function SocialHistorySocioeconomic() {
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleEdit(entry)} color="primary" size="small">
-                      <EditIcon />
+                      edit
                     </IconButton>
                     <IconButton onClick={() => handleDelete(entry.id)} color="secondary" size="small">
-                      <DeleteIcon />
+                      delete
                     </IconButton>
                   </TableCell>
                 </StyledTableRow>

@@ -17,9 +17,6 @@ import {
 } from '@mui/material';
 import MedicationItemEditor from './components/MedicationItemEditor.jsx';
 import { usePatient } from 'components/contexts/PatientContext.jsx';
-import AddTaskIcon from '@mui/icons-material/AddTask';
-import ClearIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
 
 export default function Medications() {
   const { useEncounter } = usePatient();
@@ -101,10 +98,10 @@ export default function Medications() {
       renderCell: (params) => (
         <Stack direction="row" spacing={0.5}>
           <IconButton onClick={() => handleEdit(params.row.id)} color="primary" size="small">
-            <EditIcon fontSize="small" />
+            edit
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)} color="error" size="small">
-            <ClearIcon fontSize="small" />
+            delete
           </IconButton>
         </Stack>
       )
@@ -130,7 +127,7 @@ export default function Medications() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Stack direction="row" spacing={1} alignItems="center">
             <TextField label="New Medication" variant="outlined" size="small" />
-            <Button variant="contained" startIcon={<AddTaskIcon />}>Add</Button>
+            <Button variant="contained" startIcon={<Icon>add_task</Icon>}>Add</Button>
           </Stack>
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" size="small">Check Interactions</Button>

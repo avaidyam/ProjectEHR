@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
-import { KeyboardArrowRight, Search } from '@mui/icons-material';
+import { Icon } from '../../../../../components/ui/Core';
 import { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
@@ -74,7 +74,7 @@ const LeftRail: React.FC<LeftRailProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
-              startAdornment: <Search fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />,
+              startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
             }}
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
           />

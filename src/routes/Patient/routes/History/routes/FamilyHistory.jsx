@@ -24,9 +24,6 @@ import {
   Autocomplete,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 import icd10 from '../../../../../util/data/icd10cm.json';
 
@@ -277,21 +274,21 @@ export default function FamilyHistory() {
                 </StyledTableCell>
                 <StyledActionCell onClick={() => toggleProblem(member, 'No Pertinent History')}>
                   {hasProblem(member, 'No Pertinent History') ? (
-                    <CheckCircleOutlineIcon sx={{ color: '#00c853' }} />
+                    <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
                   ) : (
                     ''
                   )}
                 </StyledActionCell>
                 <StyledActionCell onClick={() => handleOpenAddProblem(member)}>
-                  <AddCircleOutlineIcon sx={{ color: '#00c853' }} />
+                  <Icon sx={{ color: '#00c853' }}>add_circle</Icon>
                 </StyledActionCell>
                 <StyledActionCell onClick={() => handleOpenComments(member)}>
-                  <InsertDriveFileIcon sx={{ color: '#546E7A' }} />
+                  <Icon sx={{ color: '#546E7A' }}>description</Icon>
                 </StyledActionCell>
                 {uniqueProblems.map((problem) => (
                   <StyledProblemCell key={problem} onClick={() => toggleProblem(member, problem)}>
                     {hasProblem(member, problem) ? (
-                      <CheckCircleOutlineIcon sx={{ color: '#d50000' }} />
+                      <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
                     ) : (
                       ''
                     )}
@@ -306,7 +303,7 @@ export default function FamilyHistory() {
       <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
         <Button
           variant="outlined"
-          startIcon={<AddCircleOutlineIcon />}
+          startIcon={<Icon>add_circle</Icon>}
           onClick={handleAddFamilyMember}
         >
           Add Family Member

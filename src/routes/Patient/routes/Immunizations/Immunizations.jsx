@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { 
-  Icon, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableRow, 
-  TableHead, 
-  Paper, 
-  IconButton, 
-  Collapse, 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  TableHead,
+  Paper,
+  IconButton,
+  Collapse,
   Typography,
   colors
 } from '@mui/material';
-import { Box, Label, Button, TitledCard } from 'components/ui/Core.jsx';
-import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
+import { Box, Label, Button, TitledCard, Icon } from 'components/ui/Core.jsx';
+
 import { usePatient } from 'components/contexts/PatientContext.jsx';
 import ImmunizationItemEditor from './components/ImmunizationItemEditor.jsx';
 import {
@@ -97,16 +96,16 @@ export default function Immunizations() {
   };
 
   return (
-    <Box sx={{height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper'}}>
-      <Box sx={{ bgcolor: 'grey.100',pt: 4, pb: 1, px:3, borderRadius: 1, mb: 1 }}>
-        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold' , color: colors.blue[500]}}> 
+    <Box sx={{ height: '95vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.paper' }}>
+      <Box sx={{ bgcolor: 'grey.100', pt: 4, pb: 1, px: 3, borderRadius: 1, mb: 1 }}>
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: colors.blue[500] }}>
           Immunizations - All Types
         </Typography>
 
         <Box display="flex" alignItems="center" mb={1} gap={2}>
           <Button
             variant="outlined"
-            startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>} 
+            startIcon={<Icon sx={{ color: 'green' }}>add_task</Icon>}
             onClick={handleAddNew}
             sx={{
               color: colors.blue[500],
@@ -121,7 +120,7 @@ export default function Immunizations() {
         </Box>
       </Box>
 
-      <Box sx={{flexGrow: 1, overflowY: 'auto',px: 3, py:1 , mb: 1}}>
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', px: 3, py: 1, mb: 1 }}>
         <Box sx={{ mt: 2 }}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="immunizations table">
@@ -138,7 +137,7 @@ export default function Immunizations() {
                   // Sort records by date, most recent first
                   const sortedRecords = sortImmunizationsByDate(records);
                   const adminDates = sortedRecords.map(r => formatDate(r.received)).join(', ');
-                  
+
                   return (
                     <React.Fragment key={vaccine}>
                       <TableRow
@@ -159,7 +158,7 @@ export default function Immunizations() {
                             e.stopPropagation();
                             toggleGroup(vaccine);
                           }}>
-                            {openGroups[vaccine] ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                            {openGroups[vaccine] ? <Icon>expand_less</Icon> : <Icon>expand_more</Icon>}
                           </IconButton>
                         </TableCell>
                         <TableCell
@@ -248,10 +247,10 @@ export default function Immunizations() {
                                         </TableCell>
                                       </TableRow>
                                       {editingImmunization && (() => {
-                                          const editingId = editingImmunization.id || editingImmunization.vaccine + editingImmunization.received;
-                                          const recordId = record.id || record.vaccine + record.received;
-                                          return editingId === recordId;
-                                        })() && (
+                                        const editingId = editingImmunization.id || editingImmunization.vaccine + editingImmunization.received;
+                                        const recordId = record.id || record.vaccine + record.received;
+                                        return editingId === recordId;
+                                      })() && (
                                           <TableRow>
                                             <TableCell colSpan={9}>
                                               <ImmunizationItemEditor

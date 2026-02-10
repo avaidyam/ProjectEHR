@@ -20,9 +20,6 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { usePatient } from '../../../../../components/contexts/PatientContext.jsx';
 
 const procedures = [
@@ -102,7 +99,7 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }) {
               <Button onClick={() => onCancel(row)} variant="outlined" size="small">Cancel</Button>
             </Box>
             {!row.isNew && (
-              <Button onClick={() => onDelete(row.id)} variant="contained" color="error" startIcon={<DeleteIcon />} size="small">Delete</Button>
+              <Button onClick={() => onDelete(row.id)} variant="contained" color="error" startIcon={<Icon>delete</Icon>} size="small">Delete</Button>
             )}
           </Box>
         </Grid>
@@ -163,7 +160,7 @@ export default function SurgicalHistory() {
       width: 70,
       sortable: false,
       renderCell: (params) => (
-        <IconButton onClick={() => handleEdit(params.row.id)} color="primary"><EditIcon /></IconButton>
+        <IconButton onClick={() => handleEdit(params.row.id)} color="primary">edit</IconButton>
       )
     }
   ];
@@ -178,7 +175,7 @@ export default function SurgicalHistory() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Surgical History</>} color="#9F3494">
       <Box sx={{ mb: 2 }}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddNew} size="small">Add History</Button>
+        <Button variant="contained" startIcon={<Icon>add</Icon>} onClick={handleAddNew} size="small">Add History</Button>
       </Box>
       <Box sx={{ height: 500, width: '100%' }}>
         <DataGrid
