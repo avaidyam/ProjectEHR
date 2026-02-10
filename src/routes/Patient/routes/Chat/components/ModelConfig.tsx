@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, MenuItem, IconButton, Label, Autocomplete, Stack } from 'components/ui/Core';
+import { Box, MenuItem, IconButton, Label, Autocomplete, Stack, TextField } from 'components/ui/Core';
 
 const VOICE_OPTIONS: Record<string, string> = {
   "Zephyr": "Bright, Higher pitch",
@@ -34,9 +34,25 @@ const VOICE_OPTIONS: Record<string, string> = {
   "Sulafat": "Warm, Middle pitch"
 };
 
-export const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
+export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePrompt, fullPrompt }: any) => {
   const [playingVoice, setPlayingVoice] = React.useState<string | null>(null);
+  const [localPrompt, setLocalPrompt] = React.useState(systemPrompt);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
+
+  React.useEffect(() => {
+    setLocalPrompt(systemPrompt);
+  }, [systemPrompt]);
+
+  const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalPrompt(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (onChangePrompt) onChangePrompt(localPrompt);
+    }
+  };
 
   const playSample = (voiceId: string) => {
     if (playingVoice === voiceId) {
@@ -113,6 +129,19 @@ export const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
           }
         }}
       />
+      <TextField
+        label="System Prompt"
+        multiline
+        minRows={6}
+        maxRows={12}
+        value={localPrompt}
+        onChange={handlePromptChange}
+        onKeyDown={handleKeyDown}
+        helperText="Press Enter to update settings"
+        fullWidth
+        sx={{ mt: 2 }}
+      />
+      <Label sx={{ mt: 2, mb: 1 }}>Full System Instruction (Read Only)</Label>
       <Box
         component="pre"
         sx={{
@@ -128,7 +157,7 @@ export const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
           wordBreak: 'break-word',
         }}
       >
-        {fullPrompt}
+        {`${systemPrompt}\n\n${fullPrompt}`}
       </Box>
     </Stack>
   );
