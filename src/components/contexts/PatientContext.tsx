@@ -10,8 +10,8 @@ import orderables from 'util/data/orderables.json'
 // 
 export type DatabaseContextValue = ReturnType<typeof createStore<Database.Root>>['useStore'];
 export interface PatientContextValue {
-  useChart: () => DatabaseContextValue['patients'][string];
-  useEncounter: () => DatabaseContextValue['patients'][string]['encounters'][string];
+  useChart: () => DatabaseContextValue['patients'][Database.Patient.ID];
+  useEncounter: () => DatabaseContextValue['patients'][Database.Patient.ID]['encounters'][Database.Encounter.ID];
 }
 
 export const DatabaseContext = React.createContext<DatabaseContextValue | undefined>(undefined)
@@ -47,8 +47,8 @@ export const DatabaseProvider: React.FC<{
 // We need to actually useEffect() to set the "database" value to the new patient data.
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider: React.FC<{
-  patient: string;
-  encounter: string;
+  patient: Database.Patient.ID;
+  encounter: Database.Encounter.ID;
   children: React.ReactNode;
 }> = ({ patient, encounter, children }) => {
   const useStore1 = useDatabase()

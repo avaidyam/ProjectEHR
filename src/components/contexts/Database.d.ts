@@ -1,99 +1,155 @@
+declare const __brand: unique symbol
+type Brand<B> = { [__brand]: B }
+export type Branded<T, B> = T & Brand<B>
+
+export type UUID = string
+export type JSONDate = string | Date
+
 export interface Root {
   departments: Department[]
   locations: Location[]
   providers: Provider[]
-  flowsheets: FlowsheetDefinition[]
+  flowsheets: Flowsheet.Definition[]
   lists: PatientList[]
   schedules: Schedule[]
   patients: {
-    [key: string]: Patient;
+    [key: Patient.ID]: Patient;
   },
   orderables?: any
 }
 
 export interface Department {
-  id: number
-  identityId?: number
-  location?: string
+  id: Department.ID
   name: string
-  serviceArea?: string
+  location?: string
   specialty: string
+  identityId?: number // remove
+  serviceArea?: string // should be facility!
+}
+
+export namespace Department {
+  export type ID = Branded<UUID, 'Department.ID'>
 }
 
 export interface Location {
-  departmentId: number
-  id: string
+  departmentId: Department.ID
+  id: Location.ID
   name: string
-  status: string
   type: string
+  status: string
+}
+
+export namespace Location {
+  export type ID = Branded<UUID, 'Location.ID'>
 }
 
 export interface Provider {
-  department: number
-  id: string
+  department: Department.ID
+  id: Provider.ID
   name: string
   role: string
   specialty: string
 }
 
-export interface FlowsheetDefinition {
-  id: string
-  name?: string
-  rows?: Row[]
+export namespace Provider {
+  export type ID = Branded<UUID, 'Provider.ID'>
+}
+
+export namespace Flowsheet {
+  export interface Definition {
+    id: Flowsheet.Definition.ID
+    name?: string
+    rows?: Flowsheet.Definition.Row[]
+  }
+
+  export namespace Definition {
+    export type ID = Branded<UUID, 'Flowsheet.Definition.ID'>
+
+    export interface Row {
+      description?: string
+      label: string
+      name: string
+      options?: string[]
+      type: string
+    }
+  }
+
+  export interface Entry {
+    id: Flowsheet.Entry.ID
+    flowsheet?: Flowsheet.Definition.ID
+    date?: JSONDate
+    [key: string]: any;
+  }
+
+  export namespace Entry {
+    export type ID = Branded<UUID, 'Flowsheet.Entry.ID'>
+  }
 }
 
 export interface PatientList {
-  columns: PatientListColumn[]
   id: string
   name: string
-  patients: string[]
   type: string
+  patients: Patient.ID[]
+  columns: PatientList.Column[]
 }
 
-export interface PatientListColumn {
-  id: string
-  label: string
-  order: number
-  selected: boolean
+export namespace PatientList {
+  export type ID = Branded<UUID, 'PatientList.ID'>
+
+  export interface Column {
+    id: string
+    label: string
+    order: number
+    selected: boolean
+  }
 }
 
 export interface Schedule {
+  department: Department.ID
   appointments: Appointment[]
-  department: number
 }
 
 export interface Appointment {
-  apptTime: string
-  cc: string
-  checkinTime?: string
-  checkoutTime: any
-  id: number
-  location?: string
-  notes: string
-  officeStatus: string
+  id: Appointment.ID
   patient: {
-    mrn: string,
-    enc: string
+    mrn: Patient.ID,
+    enc: Encounter.ID
   }
   type: string
+  location?: string
+  apptTime: string
+  cc: string
+  notes: string
+  checkinTime?: string
+  checkoutTime: any
+  officeStatus: string
+}
+
+export namespace Appointment {
+  export type ID = Branded<UUID, 'Appointment.ID'>
 }
 
 export interface Patient {
-  address?: any
-  avatarUrl?: any
-  birthdate?: string
-  careTeam?: CareTeam[]
-  enc?: string
-  encounters?: {
-    [key: string]: Encounter;
-  }
+  id?: Patient.ID
   firstName?: string
-  gender?: string
-  id?: string
-  insurance?: Insurance
   lastName?: string
-  mrn?: string
+  birthdate?: JSONDate
+  gender?: string
+  avatarUrl?: any
+  address?: any
   preferredLanguage?: string
+  insurance?: {
+    carrierName: string
+  }
+  careTeam?: CareTeam[]
+  encounters?: {
+    [key: Encounter.ID]: Encounter;
+  }
+}
+
+export namespace Patient {
+  export type ID = Branded<UUID, 'Patient.ID'>
 }
 
 export interface Encounter {
@@ -102,11 +158,11 @@ export interface Encounter {
   conditionals?: any
   department: number
   diagnoses?: string[]
-  dispenseHistory?: DispenseHistory[]
-  endDate: string
-  flowsheets?: Flowsheet[]
+  dispenseHistory?: Medication.DispenseLog[]
+  endDate: JSONDate
+  flowsheets?: Flowsheet.Entry[]
   history: History
-  id: string
+  id: Encounter.ID
   imaging?: Imaging[]
   immunizations?: Immunization[]
   labs?: Lab[]
@@ -115,13 +171,17 @@ export interface Encounter {
   problems?: Problem[]
   provider: string
   smartData?: SmartData
-  startDate: string
+  startDate: JSONDate
   status: string
   type: string
 }
 
+export namespace Encounter {
+  export type ID = Branded<UUID, 'Encounter.ID'>
+}
+
 export interface CareTeam {
-  provider: string
+  provider: Provider.ID
   role: string
 }
 
@@ -129,14 +189,24 @@ export interface SmartData {
   chat: {
     custom_prompt: string
     patient_perspective: string
-    voice: string
+    voice: SmartData.Voice
   }
 }
 
+export namespace SmartData {
+  export type Voice =
+    | "Achernar" | "Achird" | "Algenib" | "Algieba" | "Alnilam"
+    | "Aoede" | "Autonoe" | "Callirrhoe" | "Charon" | "Despina"
+    | "Enceladus" | "Erinome" | "Fenrir" | "Gacrux" | "Iapetus"
+    | "Kore" | "Laomedeia" | "Leda" | "Orus" | "Puck"
+    | "Pulcherrima" | "Rasalgethi" | "Sadachbia" | "Sadaltager" | "Schedar"
+    | "Sulafat" | "Umbriel" | "Vindemiatrix" | "Zephyr" | "Zubenelgenubi";
+}
+
 export interface Allergy {
+  id: Allergy.ID
   allergen: string
   comment: any
-  id: string
   reaction: any
   recorded: string
   recorder: string
@@ -146,13 +216,17 @@ export interface Allergy {
   verified: boolean
 }
 
+export namespace Allergy {
+  export type ID = Branded<UUID, 'Allergy.ID'>
+}
+
 export interface Immunization {
   administeredBy?: string
   age?: string
-  date?: string
+  date?: JSONDate
   dose?: string
-  expirationDate?: string
-  id?: string
+  expirationDate?: JSONDate
+  id?: Immunization.ID
   lot?: any
   lotNumber?: string
   manufacturer?: any
@@ -166,17 +240,120 @@ export interface Immunization {
   vaccine: string
 }
 
-export interface DispenseHistory {
-  dispensed: string
-  dosage: string
-  drug: string
+export namespace Immunization {
+  export type ID = Branded<UUID, 'Immunization.ID'>
+}
+
+export interface Imaging {
+  id?: Imaging.ID
+  date: JSONDate
+  abnormal?: string
+  accessionNumber?: string
+  acuity?: string
+  image?: string
+  performedBy?: string
+  provider: string
+  status: string
+  statusDate: JSONDate
+  test: string
+}
+
+export namespace Imaging {
+  export type ID = Branded<UUID, 'Imaging.ID'>
+}
+
+export interface Lab {
+  id?: Lab.ID
+  date: JSONDate
+  abnormal: string
+  accessionNumber?: string
+  acuity?: string
+  collected: string
+  comment?: any
+  components: Lab.Component[]
+  expectedDate?: JSONDate
+  expirationDate?: JSONDate
+  provider?: string
+  resulted?: any
+  resultingAgency: any
+  status: string
+  statusDate?: JSONDate
+  test: string
+}
+
+export namespace Lab {
+  export type ID = Branded<UUID, 'Lab.ID'>
+
+  export interface Component {
+    name: string
+    value?: any
+    units?: string | null
+    high?: number | null
+    low?: number | null
+    comment?: any
+  }
+}
+
+export interface Medication {
+  id: Medication.ID
+  activePrnReasons: string[]
+  brandName?: string | null
+  dose?: number
+  endDate: JSONDate
+  frequency: string
   name: string
-  pharmacy: string
-  prescriber: string
-  quantity: number
-  refills: number
-  supply: number
-  written: any
+  possiblePrnReasons: string[]
+  route: string
+  startDate: JSONDate
+  status?: string
+  statusNote?: string
+  unit?: string
+}
+
+export namespace Medication {
+  export type ID = Branded<UUID, 'Medication.ID'>
+
+  export interface DispenseLog {
+    dispensed: string
+    dosage: string
+    drug: string
+    name: string
+    pharmacy: string
+    prescriber: string
+    quantity: number
+    refills: number
+    supply: number
+    written: any
+  }
+}
+
+export interface Note {
+  id: Note.ID
+  date: JSONDate
+  type: string
+  author: string
+  serviceDate: JSONDate
+  status: string
+  summary: string
+  content: string
+}
+
+export namespace Note {
+  export type ID = Branded<UUID, 'Note.ID'>
+}
+
+export interface Order {
+  id: Order.ID
+  date: JSONDate
+  name: string
+  dose: string
+  frequency: string
+  route: string
+  endDate: JSONDate
+}
+
+export namespace Order {
+  export type ID = Branded<UUID, 'Order.ID'>
 }
 
 export interface History {
@@ -204,15 +381,6 @@ export interface History {
   }
 }
 
-export interface Component {
-  comment?: any
-  high?: number | null
-  low?: number | null
-  name: string
-  units?: string | null
-  value?: any
-}
-
 export interface Demographics {
   ethnicGroup: string
   highestEducationLevel: any
@@ -237,64 +405,10 @@ export interface FamilyHistoryItem {
   status: string
 }
 
-export interface Flowsheet {
-  bmi?: any
-  date?: string
-  dbp?: number
-  flowsheet?: string
-  height?: any
-  hr?: number
-  id: string
-  name?: string
-  rows?: Row[]
-  rr?: any
-  sbp?: number
-  spo2?: any
-  temp?: number
-  weight?: any
-}
-
-export interface Imaging {
-  abnormal?: string
-  accessionNumber?: string
-  acuity?: string
-  date: string
-  id?: string
-  image?: string
-  performedBy?: string
-  provider: string
-  status: string
-  statusDate: string
-  test: string
-}
-
-export interface Insurance {
-  carrierName: any
-}
-
-export interface Lab {
-  abnormal: string
-  accessionNumber?: string
-  acuity?: string
-  collected: string
-  comment?: any
-  components: Component[]
-  date: string
-  expectedDate?: string
-  expirationDate?: any
-  id?: string
-  provider?: string
-  resulted?: any
-  resultingAgency: any
-  status: string
-  statusDate?: string
-  test: string
-}
-
 export interface MedicalHistoryItem {
   age?: string
   comment?: string
-  date?: string
+  date?: JSONDate
   diagnosis: string
   notes?: string
   problemList?: string
@@ -302,31 +416,14 @@ export interface MedicalHistoryItem {
   status?: string
 }
 
-export interface Medication {
-  activePrnReasons: string[]
-  brandName?: string | null
-  dose?: number
-  endDate: any
-  frequency: string
-  id: string
-  name: string
-  possiblePrnReasons: string[]
-  route: string
-  startDate: any
-  status?: string
-  statusNote?: string
-  unit?: string
-}
-
-export interface Note {
-  author: string
-  content: string
-  date: string
-  id: string
-  serviceDate: string
-  status: string
-  summary: string
-  type: string
+export interface SurgicalHistoryItem {
+  age: string
+  comment?: string
+  date: JSONDate
+  laterality: string
+  notes?: string
+  procedure: string
+  src?: string
 }
 
 export interface OccupationalHistory {
@@ -334,34 +431,16 @@ export interface OccupationalHistory {
   occupation: string
 }
 
-export interface Order {
-  date: string
-  dose: string
-  endDate: any
-  frequency: string
-  id: string
-  name: string
-  route: string
-}
-
 export interface Problem {
   class: string
-  diagnosedDate?: any
+  diagnosedDate?: JSONDate
   diagnosis: string
   display: string
   isChronicCondition: boolean
   isShareWithPatient: boolean
-  notedDate?: any
+  notedDate?: JSONDate
   priority: string
-  resolvedDate?: any
-}
-
-export interface Row {
-  description?: string
-  label: string
-  name: string
-  options?: string[]
-  type: string
+  resolvedDate?: JSONDate
 }
 
 export interface SubstanceSexualHealth {
@@ -419,18 +498,8 @@ export interface SubstanceSexualHealth {
       smokelessStatus: string
     }
     smokingStatus?: string
-    startDate: any
+    startDate: JSONDate
     status?: string
     types?: any[] | string[]
   }
-}
-
-export interface SurgicalHistoryItem {
-  age: string
-  comment?: string
-  date: string
-  laterality: string
-  notes?: string
-  procedure: string
-  src?: string
 }
