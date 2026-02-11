@@ -316,7 +316,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     return Object.entries(groups).map(([date, fields]) => ({
       groupId: date,
       headerName: date,
-      headerAlign: 'center',
+      headerAlign: 'center' as 'center',
       children: fields.map(field => ({ field })),
       headerClassName: 'flowsheet-group-header'
     }));

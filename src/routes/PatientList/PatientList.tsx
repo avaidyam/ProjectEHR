@@ -1,0 +1,167 @@
+import {
+  Box,
+  Button,
+  Typography,
+  Toolbar,
+  IconButton,
+  Tooltip,
+  Divider,
+  Icon
+} from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { PatientListsContext } from 'components/contexts/PatientListContext';
+import { useDatabase } from 'components/contexts/PatientContext';
+import { ListFormModal } from './components/ListFormModal';
+import { PatientsTable } from './components/PatientsTable';
+import { ListsSidebar } from './components/ListsSidebar';
+import { PrintPreviewDialog } from './components/PrintPreviewDialog';
+
+function PatientLists() {
+  const { listId } = useParams();
+  const navigate = useNavigate();
+  const [lists, setLists] = useDatabase().lists();
+
+  const selectedListId = listId;
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+
+  const selectedList = lists.find((list: any) => list.id === selectedListId);
+
+  const handleCreateList = (name: string, columns: any[]) => {
+    const columnConfig = columns.map((col: any, index: number) => ({
+      id: col.id,
+      label: col.label,
+      selected: col.selected,
+      order: index,
+    }));
+
+    const newList = {
+      id: `my-${Date.now()}`,
+      name,
+      type: 'my',
+      patients: [],
+      columns: columnConfig,
+    };
+
+    setLists((prevLists: any[]) => [...prevLists, newList]);
+    setIsCreateModalOpen(false);
+    navigate(`/list/${newList.id}`);
+  };
+
+  const handleEditList = (name: string, columns: any[]) => {
+    setLists((prevLists: any[]) =>
+      prevLists.map((list: any) =>
+        list.id === selectedListId
+          ? { ...list, name, columns }
+          : list
+      )
+    );
+    setIsEditModalOpen(false);
+  };
+
+  // Cmd/Ctrl+P shortcut to open print preview
+  useEffect(() => {
+    const handlePrintShortcut = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        setIsPrintPreviewOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handlePrintShortcut);
+    return () => window.removeEventListener('keydown', handlePrintShortcut);
+  }, []);
+
+  const contextValue = { selectedListId, lists, setLists };
+
+  return (
+    <PatientListsContext.Provider value={contextValue}>
+      <Box sx={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', p: 2, gap: 2 }}>
+        <Box sx={{ borderRadius: 1 }}>
+          <Box sx={{ p: 2 }}>
+            <Typography variant="h5" gutterBottom>Patient Lists</Typography>
+          </Box>
+
+          <Toolbar variant="dense" sx={{ bgcolor: 'background.paper', borderRadius: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                size="small"
+                startIcon={<Icon>add</Icon>}
+                onClick={() => setIsCreateModalOpen(true)}
+              >
+                New List
+              </Button>
+              <Button
+                size="small"
+                startIcon={<Icon>edit</Icon>}
+                onClick={() => setIsEditModalOpen(true)}
+                disabled={!selectedList || selectedList.type !== 'my'}
+              >
+                Edit List
+              </Button>
+            </Box>
+            <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Tooltip title="Print">
+                <IconButton size="small" onClick={() => setIsPrintPreviewOpen(true)}>
+                  <Icon>print</Icon>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Refresh">
+                <IconButton size="small">
+                  <Icon>refresh</Icon>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Filter">
+                <IconButton size="small">
+                  <Icon>filter_list</Icon>
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Search">
+                <IconButton size="small">
+                  <Icon>search</Icon>
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Box sx={{ flexGrow: 1 }} />
+            <Tooltip title="More options">
+              <IconButton size="small">
+                <Icon>more_vert</Icon>
+              </IconButton>
+            </Tooltip>
+          </Toolbar>
+        </Box>
+
+        <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
+          <ListsSidebar />
+          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: "80vh" }}>
+            <PatientsTable />
+          </Box>
+        </Box>
+
+        <ListFormModal
+          open={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateList}
+        />
+        {selectedList && (
+          <ListFormModal
+            open={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onSubmit={handleEditList}
+            initialData={selectedList}
+          />
+        )}
+
+        <PrintPreviewDialog
+          open={isPrintPreviewOpen}
+          onClose={() => setIsPrintPreviewOpen(false)}
+          list={selectedList}
+        />
+      </Box>
+    </PatientListsContext.Provider>
+  );
+}
+
+export { PatientLists };

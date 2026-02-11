@@ -66,6 +66,7 @@ export namespace Flowsheet {
     export type ID = Branded<UUID, 'Flowsheet.Definition.ID'>
 
     export interface Row {
+      category?: string
       description?: string
       label: string
       name: string
@@ -173,6 +174,7 @@ export interface Encounter {
   smartData?: SmartData
   startDate: JSONDate
   status: string
+  specialty?: string
   type: string
 }
 
@@ -186,10 +188,16 @@ export interface CareTeam {
 }
 
 export interface SmartData {
-  chat: {
+  chat?: {
     custom_prompt: string
     patient_perspective: string
     voice: SmartData.Voice
+  }
+  handoff?: {
+    [key: Department.ID]: {
+      summary: string;
+      todo: string;
+    };
   }
 }
 

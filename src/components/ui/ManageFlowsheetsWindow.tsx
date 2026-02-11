@@ -1,0 +1,373 @@
+import React, { useState } from 'react';
+import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
+import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton, Divider } from './Core';
+import { useDatabase } from '../contexts/PatientContext';
+import * as Database from '../contexts/Database';
+
+interface ManageFlowsheetsWindowProps {
+    open: boolean;
+    onClose: () => void;
+}
+
+interface ContextMenuState {
+    mouseX: number;
+    mouseY: number;
+    type: 'group' | 'row';
+    id: string; // Group ID or Row Name
+    parentId?: string; // Group ID if row
+}
+
+interface GroupData {
+    id: string;
+    name: string;
+}
+
+interface RowData {
+    name: string;
+    label: string;
+    category: string;
+    type: string;
+    targetGroupId: string;
+}
+
+export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ open, onClose }) => {
+    // Flowsheets is Definition[]
+    const [flowsheets, setFlowsheets] = useDatabase().flowsheets() as [Database.Flowsheet.Definition[], any];
+
+    const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+    // Dialog/Form states
+    const [isAddingGroup, setIsAddingGroup] = useState(false);
+    const [isEditingGroup, setIsEditingGroup] = useState(false);
+    const [isAddingRow, setIsAddingRow] = useState(false);
+    const [isEditingRow, setIsEditingRow] = useState(false);
+
+    // Form Data for Group
+    const [groupData, setGroupData] = useState<GroupData>({ id: "", name: "" });
+
+    // Form Data for Row
+    const [rowData, setRowData] = useState<RowData>({
+        name: "", // check unique within group? or globally? assuming globally or within group.
+        label: "",
+        category: "",
+        type: "number",
+        targetGroupId: ""
+    });
+
+    const handleContextMenu = (event: React.MouseEvent, type: 'group' | 'row', id: string, parentId?: string) => {
+        event.preventDefault();
+        event.stopPropagation();
+        setContextMenu(
+            contextMenu === null
+                ? {
+                    mouseX: event.clientX + 2,
+                    mouseY: event.clientY - 6,
+                    type,
+                    id,
+                    parentId
+                }
+                : null,
+        );
+    };
+
+    const handleCloseContextMenu = () => {
+        setContextMenu(null);
+    };
+
+    // --- GROUP ACTIONS ---
+
+    const handleAddGroup = () => {
+        if (!groupData.name) return;
+        const newGroup: Database.Flowsheet.Definition = {
+            id: Math.floor(Math.random() * 100000000).toString() as any,
+            name: groupData.name,
+            rows: []
+        };
+        setFlowsheets((prev: Database.Flowsheet.Definition[]) => [...prev, newGroup]);
+        setGroupData({ id: "", name: "" });
+        setIsAddingGroup(false);
+    };
+
+    const handleEditGroup = () => {
+        if (!groupData.name || !groupData.id) return;
+        setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.map((g: Database.Flowsheet.Definition) => g.id === groupData.id ? { ...g, name: groupData.name } : g));
+        setGroupData({ id: "", name: "" });
+        setIsEditingGroup(false);
+    };
+
+    const handleDeleteGroup = (groupId: string) => {
+        if (window.confirm("Are you sure you want to delete this group and all its rows?")) {
+            setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.filter((g: Database.Flowsheet.Definition) => g.id !== groupId));
+        }
+        handleCloseContextMenu();
+    };
+
+    const startAddGroup = () => {
+        setGroupData({ id: "", name: "" });
+        setIsAddingGroup(true);
+        handleCloseContextMenu();
+    }
+    const startEditGroup = (groupId: string) => {
+        const group = flowsheets.find(g => g.id === groupId);
+        if (group) {
+            setGroupData({ id: group.id, name: group.name || "" });
+            setIsEditingGroup(true);
+        }
+        handleCloseContextMenu();
+    };
+
+    // --- ROW ACTIONS ---
+
+    const handleAddRow = () => {
+        if (!rowData.name || !rowData.label || !rowData.targetGroupId) return;
+
+        setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.map((g: Database.Flowsheet.Definition) => {
+            if (g.id === rowData.targetGroupId) {
+                // Check name uniqueness in group
+                if (g.rows?.some((r: Database.Flowsheet.Definition.Row) => r.name === rowData.name)) {
+                    window.alert("Row Name must be unique within the group.");
+                    return g; // TODO: prevent proper return?
+                }
+                const newRow: Database.Flowsheet.Definition.Row = {
+                    name: rowData.name,
+                    label: rowData.label,
+                    category: rowData.category,
+                    type: rowData.type as any, // Cast to specific union if known
+                    options: []
+                };
+                return {
+                    ...g,
+                    rows: [...(g.rows || []), newRow]
+                };
+            }
+            return g;
+        }));
+
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: "" });
+        setIsAddingRow(false);
+    };
+
+    const handleEditRow = () => {
+        if (!rowData.name || !rowData.label || !rowData.targetGroupId) return; // targetGroupId here acts as the parent group ID we are editing in
+
+        setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.map((g: Database.Flowsheet.Definition) => {
+            if (g.id === rowData.targetGroupId) {
+                return {
+                    ...g,
+                    rows: g.rows?.map((r: Database.Flowsheet.Definition.Row) => r.name === rowData.name ? { ...r, label: rowData.label, category: rowData.category, type: rowData.type as any } : r)
+                };
+            }
+            return g;
+        }));
+
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: "" });
+        setIsEditingRow(false);
+    };
+
+    const handleDeleteRow = (rowName: string, groupId: string) => {
+        if (window.confirm("Are you sure you want to delete this row?")) {
+            setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.map((g: Database.Flowsheet.Definition) => {
+                if (g.id === groupId) {
+                    return { ...g, rows: g.rows?.filter((r: Database.Flowsheet.Definition.Row) => r.name !== rowName) };
+                }
+                return g;
+            }));
+        }
+        handleCloseContextMenu();
+    };
+
+    const startAddRow = (groupId: string) => {
+        setRowData({ name: "", label: "", category: "", type: "number", targetGroupId: groupId });
+        setIsAddingRow(true);
+        handleCloseContextMenu();
+    };
+
+    const startEditRow = (rowName: string, groupId: string) => {
+        const group = flowsheets.find(g => g.id === groupId);
+        const row = group?.rows?.find(r => r.name === rowName);
+        if (row) {
+            setRowData({
+                name: row.name,
+                label: row.label,
+                category: row.category || "",
+                type: row.type || "number",
+                targetGroupId: groupId
+            });
+            setIsEditingRow(true);
+        }
+        handleCloseContextMenu();
+    };
+
+
+    const renderForm = () => {
+        if (isAddingGroup || isEditingGroup) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                        label="Group Name"
+                        value={groupData.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGroupData(prev => ({ ...prev, name: e.target.value }))}
+                        autoFocus
+                    />
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Button onClick={() => { setIsAddingGroup(false); setIsEditingGroup(false); }}>Cancel</Button>
+                        <Button variant="contained" onClick={isAddingGroup ? handleAddGroup : handleEditGroup}>
+                            {isAddingGroup ? "Add Group" : "Save Group"}
+                        </Button>
+                    </Box>
+                </Box>
+            );
+        }
+
+        if (isAddingRow || isEditingRow) {
+            return (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField
+                        label="Name (ID)"
+                        value={rowData.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, name: e.target.value }))}
+                        disabled={isEditingRow} // Name key cannot change
+                        required
+                    />
+                    <TextField
+                        label="Label (Display Name)"
+                        value={rowData.label}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, label: e.target.value }))}
+                        required
+                        autoFocus={isEditingRow}
+                    />
+                    <TextField
+                        label="Category"
+                        value={rowData.category}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, category: e.target.value }))}
+                    />
+                    <FormControl fullWidth>
+                        <InputLabel>Type</InputLabel>
+                        <Select
+                            value={rowData.type}
+                            label="Type"
+                            onChange={(e) => setRowData(prev => ({ ...prev, type: e.target.value as string }))}
+                        >
+                            <MenuItem value="number">Number</MenuItem>
+                            <MenuItem value="string">String</MenuItem>
+                            <MenuItem value="select">Select</MenuItem>
+                            {/* Add other types if found in usage */}
+                        </Select>
+                    </FormControl>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Button onClick={() => { setIsAddingRow(false); setIsEditingRow(false); }}>Cancel</Button>
+                        <Button variant="contained" onClick={isAddingRow ? handleAddRow : handleEditRow}>
+                            {isAddingRow ? "Add Row" : "Save Row"}
+                        </Button>
+                    </Box>
+                </Box>
+            );
+        }
+
+        return (
+            <TreeView
+                aria-label="flowsheet definitions"
+                defaultCollapseIcon={<Icon>expand_more</Icon>}
+                defaultExpandIcon={<Icon>chevron_right</Icon>}
+                sx={{ overflowY: 'auto', flexGrow: 1 }}
+            >
+                {flowsheets && flowsheets.map((group) => (
+                    <TreeItem
+                        key={`group-${group.id}`}
+                        itemId={`group-${group.id}`}
+                        label={
+                            <Box
+                                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}
+                                onContextMenu={(e: any) => handleContextMenu(e, 'group', group.id)}
+                            >
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Icon sx={{ mr: 1, fontSize: 20 }}>folder</Icon>
+                                    <span style={{ fontWeight: 500 }}>{group.name}</span>
+                                </Box>
+                                <IconButton size="small" onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    handleContextMenu(e, 'group', group.id);
+                                }}>
+                                    <Icon sx={{ fontSize: 16 }}>more_vert</Icon>
+                                </IconButton>
+                            </Box>
+                        }
+                    >
+                        {group.rows?.map(row => (
+                            <TreeItem
+                                key={`row-${row.name}`}
+                                itemId={`row-${row.name}`}
+                                label={
+                                    <Box
+                                        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}
+                                        onContextMenu={(e: any) => handleContextMenu(e, 'row', row.name, group.id)}
+                                    >
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Icon sx={{ mr: 1, fontSize: 20 }}>description</Icon>
+                                            {row.label}
+                                            <span style={{ opacity: 0.6, fontSize: '0.85em', marginLeft: 8 }}>({row.type})</span>
+                                        </Box>
+                                        <IconButton size="small" onClick={(e: any) => {
+                                            e.stopPropagation();
+                                            handleContextMenu(e, 'row', row.name, group.id);
+                                        }}>
+                                            <Icon sx={{ fontSize: 16 }}>more_vert</Icon>
+                                        </IconButton>
+                                    </Box>
+                                }
+                            />
+                        ))}
+                    </TreeItem>
+                ))}
+            </TreeView>
+        );
+    };
+
+    return (
+        <Window
+            open={open}
+            onClose={onClose}
+            title="Flowsheet Definitions"
+            fullWidth
+            maxWidth="md"
+        >
+            <Box sx={{ mb: 2, display: 'flex', gap: 1 }}>
+                {!isAddingGroup && !isEditingGroup && !isAddingRow && !isEditingRow && (
+                    <Button variant="contained" startIcon={<Icon>create_new_folder</Icon>} onClick={startAddGroup}>
+                        Add Group
+                    </Button>
+                )}
+            </Box>
+
+            {renderForm()}
+
+            <Menu
+                open={contextMenu !== null}
+                onClose={handleCloseContextMenu}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    contextMenu !== null
+                        ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                        : undefined
+                }
+            >
+                {contextMenu?.type === 'group' && (
+                    <Box>
+                        <MenuItem onClick={() => startAddRow(contextMenu.id)}>Add Row</MenuItem>
+                        <MenuItem onClick={() => startEditGroup(contextMenu.id)}>Rename Group</MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => handleDeleteGroup(contextMenu.id)} sx={{ color: 'error.main' }}>Delete Group</MenuItem>
+                    </Box>
+                )}
+                {contextMenu?.type === 'row' && (
+                    <Box>
+                        <MenuItem onClick={() => startEditRow(contextMenu.id, contextMenu.parentId!)}>Edit Row</MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => handleDeleteRow(contextMenu.id, contextMenu.parentId!)} sx={{ color: 'error.main' }}>Delete Row</MenuItem>
+                    </Box>
+                )}
+            </Menu>
+        </Window>
+    );
+};

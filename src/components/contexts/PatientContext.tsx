@@ -8,7 +8,7 @@ import patient_sample from 'util/data/patient_sample.json'
 import orderables from 'util/data/orderables.json'
 
 // 
-export type DatabaseContextValue = ReturnType<typeof createStore<Database.Root>>['useStore'];
+export type DatabaseContextValue = ReturnType<typeof createStore>['useStore'];
 export interface PatientContextValue {
   useChart: () => DatabaseContextValue['patients'][Database.Patient.ID];
   useEncounter: () => DatabaseContextValue['patients'][Database.Patient.ID]['encounters'][Database.Encounter.ID];
@@ -28,7 +28,7 @@ const initialStore: Database.Root = {
   orderables: orderables,
   flowsheets: (patient_sample as unknown as Database.Root).flowsheets
 }
-const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
+const { useStore } = createStore(initialStore, ({ store, prevStore }: { store: any, prevStore: any }) => {
   // TODO: ...
 })
 
@@ -118,11 +118,11 @@ export const usePatient = () => {
 
  Usage: `const [patientMRN, setPatientMRN] = usePatientMRN()`
  */
-export const usePatientMRN = (): [string | undefined, (value: string) => void] => {
-  const { mrn } = useParams<{ mrn: string }>()
+export const usePatientMRN = (): [Database.Patient.ID, (value: string) => void] => {
+  const { mrn } = useParams() as { mrn: string }
   const navigate = useNavigate()
   return [
-    mrn,
+    mrn as Database.Patient.ID,
     (value: string) => navigate(generatePath('/patient/:mrn', { mrn: value })),
   ]
 }
@@ -132,11 +132,11 @@ export const usePatientMRN = (): [string | undefined, (value: string) => void] =
  * *must* be used from within a functional component
  * Usage: `const [encounterID, setEncounterID] = useEncounterID()`
  */
-export const useEncounterID = (): [string | undefined, (value: string) => void] => {
-  const { mrn, enc } = useParams<{ mrn: string; enc: string }>()
+export const useEncounterID = (): [Database.Encounter.ID, (value: string) => void] => {
+  const { mrn, enc } = useParams() as { mrn: string; enc: string }
   const navigate = useNavigate()
   return [
-    enc,
+    enc as Database.Encounter.ID,
     (value: string) => navigate(generatePath('/patient/:mrn/encounter/:enc', { mrn: mrn ?? null, enc: value })),
   ]
 }
