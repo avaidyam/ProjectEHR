@@ -7,34 +7,34 @@ import { PatientProvider, usePatientMRN, useEncounterID } from 'components/conte
 
 import { Storyboard } from './routes/Storyboard/Storyboard'
 import { ChartReview } from './routes/ChartReview/ChartReview'
-import ProblemListTabContent from './routes/ProblemList/ProblemList'
-import SnapshotTabContent from './routes/Snapshot/Snapshot'
-import NotesTabContent from './routes/NoteWriter/NoteWriter'
-import HistoryTabContent from './routes/History/History'
+import { ProblemListTabContent } from './routes/ProblemList/ProblemList'
+import { SnapshotTabContent } from './routes/Snapshot/Snapshot'
+import { NoteWriter } from './routes/NoteWriter/NoteWriter'
+import { HistoryTabContent } from './routes/History/History'
 import { OrderCart } from './routes/OrderCart/OrderCart';
 import { OrderPicker } from './routes/OrderCart/components/OrderPicker';
 import { DiagnosisPicker } from './routes/ProblemList/components/DiagnosisPicker';
-import OrdersMgmt from './routes/OrdersManagement/OrdersManagement';
-import Medications from './routes/Medications/Medications';
-import ResultsReview from "./routes/Results/Results";
-import Pdmp from './routes/PDMP/PDMP';
-import Immunizations from './routes/Immunizations/Immunizations';
+import { OrdersMgmt } from './routes/OrdersManagement/OrdersManagement';
+import { Medications } from './routes/Medications/Medications';
+import { ResultsReview } from "./routes/Results/Results";
+import { Pdmp } from './routes/PDMP/PDMP';
+import { Immunizations } from './routes/Immunizations/Immunizations';
 import { Allergies } from './routes/Allergies/Allergies';
-import Chat from "./routes/Chat/Chat";
-import ReportViewer from './routes/ReportViewer/ReportViewer';
+import { Chat } from "./routes/Chat/Chat";
+import { ReportViewer } from './routes/ReportViewer/ReportViewer';
 import { ImagingViewer } from './routes/ImagingViewer/ImagingViewer';
-import NoteViewer from './routes/NoteViewer/NoteViewer';
-import NotesList from './routes/NotesList/NotesList';
-import ClinicalImpressions from './routes/ClinicalImpressions/ClinicalImpressions';
-import Handoff from './routes/Handoff/Handoff';
-import Demographics from './routes/Demographics/Demographics';
+import { NoteViewer } from './routes/NoteViewer/NoteViewer';
+import { NotesList } from './routes/NotesList/NotesList';
+import { ClinicalImpressions } from './routes/ClinicalImpressions/ClinicalImpressions';
+import { Handoff } from './routes/Handoff/Handoff';
+import { Demographics } from './routes/Demographics/Demographics';
 import { EncounterAlert } from './components/EncounterAlert'
 import { Flowsheet } from './routes/Flowsheet/Flowsheet';
-import EditNote from './routes/EditNote/EditNote';
+import { EditNote } from './routes/EditNote/EditNote';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk';
 import { EditResult } from './routes/EditResult/EditResult';
 import { EventLog } from './routes/EventLog/EventLog';
-import MAR from './routes/MAR/MAR';
+import { MAR } from './routes/MAR/MAR';
 
 const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "SnapShot": (props: any) => <SnapshotTabContent {...props} />,
@@ -44,7 +44,7 @@ const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "Medications": (props: any) => <Medications {...props} />,
   "Orders": (props: any) => <OrderCart {...props} />,
   "Orders Mgmt": (props: any) => <OrdersMgmt {...props} />,
-  "NoteWriter": (props: any) => <NotesTabContent {...props} />,
+  "NoteWriter": (props: any) => <NoteWriter {...props} />,
   "Results Review": (props: any) => <ResultsReview {...props} />,
   "PDMP": (props: any) => <Pdmp {...props} />,
   "Immunizations": (props: any) => <Immunizations {...props} />,

@@ -21,7 +21,7 @@ const SectionPaper = styled(Box)(({ theme }) => ({
   boxShadow: 'none',
 }));
 
-export default function SocialHistoryDocumentation() {
+export function SocialHistoryDocumentation() {
   const { useEncounter } = usePatient();
   const [socialDocData, setSocialDocData] = useEncounter().history.SocialDocumentation();
   const [reviewed, setReviewed] = useState(false);

@@ -4,7 +4,7 @@ import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
 import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
-import ProblemListEditor from './components/ProblemListEditor';
+import { ProblemListEditor } from './components/ProblemListEditor';
 import { DiagnosisPicker } from './components/DiagnosisPicker';
 
 const CustomToolbar = () => {
@@ -16,7 +16,7 @@ const CustomToolbar = () => {
   );
 };
 
-const ProblemListTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
+export const ProblemListTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
   const { useEncounter } = usePatient()
   const [problems, setProblems] = (useEncounter() as any).problems([])
 
@@ -278,5 +278,3 @@ const ProblemListTabContent = ({ children, ...other }: { children?: React.ReactN
     </Box>
   );
 };
-
-export default ProblemListTabContent;

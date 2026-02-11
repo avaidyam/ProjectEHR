@@ -2,7 +2,7 @@ import React from 'react';
 import { DataGrid, Box, dayjs, useGridApiRef, useKeepGroupedColumnsHidden, TitledCard, Icon } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
-function Pdmp() {
+export function Pdmp() {
   const { useEncounter } = usePatient();
   const [dispenseHistory] = (useEncounter() as any).dispenseHistory([]);
   const [providers] = (useDatabase() as any).providers();
@@ -57,5 +57,3 @@ function Pdmp() {
     </TitledCard>
   );
 }
-
-export default Pdmp;

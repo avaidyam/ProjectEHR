@@ -3,7 +3,7 @@ import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from '
 import { usePatient } from 'components/contexts/PatientContext';
 import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
 
-const ClinicalImpressions = () => {
+export const ClinicalImpressions = () => {
 
   const { useEncounter } = usePatient()
   const [encounter, setEncounter] = (useEncounter() as any)()
@@ -146,5 +146,3 @@ const ClinicalImpressions = () => {
     </Stack>
   );
 };
-
-export default ClinicalImpressions;

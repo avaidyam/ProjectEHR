@@ -30,7 +30,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
   fontSize: '1.1rem',
 }));
 
-export default function SpecialtyOB() {
+export function SpecialtyOB() {
   const { useEncounter } = usePatient();
   const [obgynData, setObgynData] = useEncounter().history.OBGynHistory({});
   const [reviewed, setReviewed] = useState(false);

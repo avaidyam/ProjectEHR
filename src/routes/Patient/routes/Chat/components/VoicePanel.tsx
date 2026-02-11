@@ -4,9 +4,9 @@ import { Icon, Box, Label, Button, Divider } from 'components/ui/Core';
 import { usePatient } from "components/contexts/PatientContext";
 import { AudioRecorder } from '../utils/AudioRecorder';
 import { useGeminiAPIContext } from '../utils/GeminiAPI';
-import ChatPanel from './ChatPanel';
+import { ChatPanel } from './ChatPanel';
 
-function VoicePanel({ onSettings }: { onSettings: () => void }) {
+export function VoicePanel({ onSettings }: { onSettings: () => void }) {
   const [inVolume, setInVolume] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [audioRecorder] = useState(() => new AudioRecorder());
@@ -273,5 +273,3 @@ function VoicePanel({ onSettings }: { onSettings: () => void }) {
     </Box>
   );
 }
-
-export default memo(VoicePanel);

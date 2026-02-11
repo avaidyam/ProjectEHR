@@ -28,7 +28,7 @@ const ResultItem = styled(Box)(({ theme }) => ({
   backgroundColor: '#fafafa',
 }));
 
-export default function PapTracking() {
+export function PapTracking() {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
   const [reviewed, setReviewed] = useState(false);

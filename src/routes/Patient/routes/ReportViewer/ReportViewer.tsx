@@ -31,7 +31,7 @@ const isValueOutsideRange = (value: any, low: any, high: any) => {
   return false;
 };
 
-const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any }) => {
+export const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any }) => {
   const { openTab }: any = useSplitView();
   const isAbnormal = hasLowOrHighValues(data?.components ?? [])
 
@@ -218,5 +218,3 @@ const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any }) => {
     </Stack>
   );
 };
-
-export default ReportViewer;

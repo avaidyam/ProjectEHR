@@ -1,4 +1,3 @@
-// SubstanceAndSexualHistory.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -34,7 +33,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
   fontSize: '1.1rem',
 }));
 
-export default function SubstanceAndSexualHistory() {
+export function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
   const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth({});
 

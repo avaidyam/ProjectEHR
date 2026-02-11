@@ -44,7 +44,7 @@ const PrnFormGroup = styled(FormGroup)({
   maxHeight: 150,
 });
 
-export default function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
+export function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
   const [orderables] = (useDatabase() as any).orderables()
   const [editedMedication, setEditedMedication] = useState({
     ...medication,

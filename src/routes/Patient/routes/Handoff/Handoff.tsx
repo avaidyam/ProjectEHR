@@ -12,7 +12,7 @@ interface HandoffData {
   [key: string]: HandoffDeptData;
 }
 
-const Handoff: React.FC = () => {
+export const Handoff: React.FC = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useEncounter } = usePatient();
   const [handoffData, setHandoffData] = useEncounter().smartData.handoff({});
@@ -111,4 +111,3 @@ const Handoff: React.FC = () => {
     </Stack>
   );
 };
-export default Handoff;

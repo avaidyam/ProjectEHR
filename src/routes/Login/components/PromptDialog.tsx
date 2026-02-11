@@ -9,7 +9,7 @@ interface PromptDialogProps {
   placeholder?: string;
 }
 
-const PromptDialog: React.FC<PromptDialogProps> = ({ open, onClose, onConfirm, title, placeholder = '' }) => {
+export const PromptDialog: React.FC<PromptDialogProps> = ({ open, onClose, onConfirm, title, placeholder = '' }) => {
   const [inputValue, setInputValue] = useState('');
 
   // Reset input value whenever the dialog opens
@@ -56,5 +56,3 @@ const PromptDialog: React.FC<PromptDialogProps> = ({ open, onClose, onConfirm, t
     </Window>
   );
 };
-
-export default PromptDialog;

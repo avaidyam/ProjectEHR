@@ -22,7 +22,7 @@ const NOTE_TYPES = [
     "Significant Event"
 ];
 
-const EditNote = () => {
+export const EditNote = () => {
     const { useEncounter } = usePatient();
     const [_, setNotes] = (useEncounter() as any).notes([]);
     const [activeNote, setActiveNote] = (useEncounter() as any).smartData.activeNote();
@@ -194,5 +194,3 @@ const EditNote = () => {
         </Box>
     );
 };
-
-export default EditNote;

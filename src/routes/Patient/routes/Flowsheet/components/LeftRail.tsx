@@ -11,7 +11,7 @@ interface LeftRailProps {
   className?: string;
 }
 
-const LeftRail: React.FC<LeftRailProps> = ({
+export const LeftRail: React.FC<LeftRailProps> = ({
   rows,
   visibleRows,
   onToggleRow,
@@ -131,5 +131,3 @@ const LeftRail: React.FC<LeftRailProps> = ({
     </Box>
   );
 };
-
-export default React.memo(LeftRail);

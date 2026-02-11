@@ -44,7 +44,7 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
   );
 };
 
-const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: { data: any; index: number; expandedRows: any; onDelete: any; onOpenModal: any }) => {
+export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: { data: any; index: number; expandedRows: any; onDelete: any; onOpenModal: any }) => {
   /**
    * ProblemListEditor component for editing problem details.
    *
@@ -192,5 +192,3 @@ const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }:
     </Grid>
   );
 };
-
-export default ProblemListEditor;

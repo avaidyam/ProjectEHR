@@ -12,7 +12,7 @@ interface ConfigureDialogProps {
   encounterCounts: Record<string, number>;
 }
 
-const ConfigureDialog: React.FC<ConfigureDialogProps> = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
+export const ConfigureDialog: React.FC<ConfigureDialogProps> = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
   const [selectedEncounters, setSelectedEncounters] = useState<Record<string, number | null>>({});
 
   // Handle selecting an encounter for a patient
@@ -98,5 +98,3 @@ const ConfigureDialog: React.FC<ConfigureDialogProps> = ({ open, onClose, onSubm
     </Window>
   );
 };
-
-export default ConfigureDialog;

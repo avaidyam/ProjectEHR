@@ -265,7 +265,7 @@ export const effectiveStartOfWeekIdx = (datetime) =>
 /**
  * Always returns a Luxon DateTime object.
  */
-const DateHelpers = {
+export const DateHelpers = {
   getCurrentDatetime() {
     return DateTime.local();
   },
@@ -370,5 +370,3 @@ const DateHelpers = {
       : datetimeA.diff(datetimeB).toObject().milliseconds;
   },
 };
-
-export default DateHelpers;

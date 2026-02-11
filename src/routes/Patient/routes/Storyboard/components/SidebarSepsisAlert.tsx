@@ -1,5 +1,5 @@
 import React from 'react';
-import DateHelpers from 'util/helpers.js';
+import { DateHelpers } from 'util/helpers.js';
 import { Alert } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers.js';

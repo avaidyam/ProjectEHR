@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Paper, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextareaAutosize } from '@mui/material';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext.js';
+import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import Draggable from 'react-draggable';
 import { Icon } from 'components/ui/Core';
 import * as Database from 'components/contexts/Database';

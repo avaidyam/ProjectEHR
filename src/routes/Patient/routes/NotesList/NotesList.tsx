@@ -6,7 +6,7 @@ import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
-import NoteViewer from '../NoteViewer/NoteViewer';
+import { NoteViewer } from '../NoteViewer/NoteViewer';
 
 export const NotesList = () => {
   const { useEncounter } = usePatient();
@@ -266,5 +266,3 @@ export const NotesList = () => {
     </Stack>
   );
 };
-
-export default NotesList;

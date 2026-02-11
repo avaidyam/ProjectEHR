@@ -6,7 +6,7 @@ import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, 
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core';
 import { useRouter } from 'util/helpers.js';
-import Notification from '../Login/components/Notification';
+import { Notification } from '../Login/components/Notification';
 import { useDatabase } from 'components/contexts/PatientContext'
 
 // filter bar

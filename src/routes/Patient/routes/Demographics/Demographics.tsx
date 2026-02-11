@@ -13,7 +13,7 @@ import { usePatient } from 'components/contexts/PatientContext';
  * Uncomment the relevant lines in handleSave() when the data structure is updated.
  */
 
-const Demographics = () => {
+export const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
   const [{
     id,
@@ -1229,5 +1229,3 @@ const Demographics = () => {
     </Box>
   );
 };
-
-export default Demographics;

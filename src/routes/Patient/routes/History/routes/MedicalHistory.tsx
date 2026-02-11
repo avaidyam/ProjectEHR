@@ -73,7 +73,7 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: a
   );
 }
 
-export default function MedicalHistory() {
+export function MedicalHistory() {
   const { useEncounter } = usePatient();
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
   const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());

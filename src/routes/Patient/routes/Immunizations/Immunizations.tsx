@@ -499,5 +499,3 @@ export const Immunizations = () => {
     </Stack>
   );
 };
-
-export default Immunizations;

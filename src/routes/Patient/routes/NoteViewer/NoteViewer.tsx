@@ -29,5 +29,3 @@ export const NoteViewer = ({ data }: { data: any }) => {
     </Stack>
   )
 }
-
-export default NoteViewer;

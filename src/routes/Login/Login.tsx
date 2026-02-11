@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import { AuthContext, AuthContextType } from 'components/contexts/AuthContext';
 import { AlertColor } from '@mui/material';
-import ConfigureDialog from './components/ConfigureDialog'; // Import the dialog component
-import Notification from './components/Notification';
-import PromptDialog from './components/PromptDialog';
+import { ConfigureDialog } from './components/ConfigureDialog'; // Import the dialog component
+import { Notification } from './components/Notification';
+import { PromptDialog } from './components/PromptDialog';
 import * as Database from 'components/contexts/Database';
 
 import { useDatabase } from 'components/contexts/PatientContext';

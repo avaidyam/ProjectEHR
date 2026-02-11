@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DateHelpers from 'util/helpers.js';
+import { DateHelpers } from 'util/helpers.js';
 import { Fade, Paper, Popper, Typography } from '@mui/material';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers.js';

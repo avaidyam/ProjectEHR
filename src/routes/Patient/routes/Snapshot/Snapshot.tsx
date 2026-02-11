@@ -8,7 +8,7 @@ import { usePatient } from 'components/contexts/PatientContext';
 // At some point I will need to use a URLBuilder to link the title to corresponding pages
 // Leaving it for now because I don't know if that's within scope
 
-const SnapshotTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
+export const SnapshotTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
   const { useChart, useEncounter } = usePatient()
   const [{
     firstName,
@@ -126,5 +126,3 @@ const SnapshotTabContent = ({ children, ...other }: { children?: React.ReactNode
     </Box>
   )
 }
-
-export default SnapshotTabContent

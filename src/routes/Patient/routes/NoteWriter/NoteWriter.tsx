@@ -614,7 +614,7 @@ const GenericNoteWriterTab = ({ data, state, updateState }: { data: any[]; state
   );
 };
 
-export const Notewriter = () => {
+export const NoteWriter = () => {
   const { useEncounter } = usePatient()
   const [activeNote, setActiveNote] = (useEncounter() as any).smartData.activeNote()
   const [selectedTabLabel, setSelectedTabLabel] = useState(Object.keys(systemsTemplate)[0] ?? '')
@@ -705,4 +705,3 @@ export const Notewriter = () => {
     </div>
   );
 };
-export default Notewriter;

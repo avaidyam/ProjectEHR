@@ -1,4 +1,3 @@
-// ECigaretteVapingHistory.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -35,7 +34,7 @@ const SubSectionHeader = styled(Label)(({ theme }) => ({
   fontSize: '0.9rem',
 }));
 
-export default function ECigaretteVapingHistory() {
+export function ECigaretteVapingHistory() {
   const { useEncounter } = usePatient();
   const [ecigaretteData, setEcigaretteData] = useEncounter().history.ECigaretteVaping();
 

@@ -8,7 +8,7 @@ interface NotificationProps {
   severity?: AlertColor;
 }
 
-const Notification: React.FC<NotificationProps> = ({ open, onClose, message, severity = 'info' }) => {
+export const Notification: React.FC<NotificationProps> = ({ open, onClose, message, severity = 'info' }) => {
   return (
     <Snackbar
       open={open}
@@ -22,5 +22,3 @@ const Notification: React.FC<NotificationProps> = ({ open, onClose, message, sev
     </Snackbar>
   );
 };
-
-export default Notification;

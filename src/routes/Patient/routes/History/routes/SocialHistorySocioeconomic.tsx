@@ -48,7 +48,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function SocialHistorySocioeconomic() {
+export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
   const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic();
 

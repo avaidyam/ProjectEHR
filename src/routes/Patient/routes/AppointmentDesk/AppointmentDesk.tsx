@@ -280,5 +280,3 @@ export const AppointmentDesk = () => {
         </Box>
     );
 };
-
-export default AppointmentDesk;

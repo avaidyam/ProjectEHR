@@ -303,7 +303,7 @@ function ResultsGrid({ components }: { components: any[] }) {
   );
 }
 
-export default function ResultsReview() {
+export function ResultsReview() {
   const categories: any[] = useNormalizedResults();
   const { openTab }: any = useSplitView();
   const [viewMode, setViewMode] = useState("table");

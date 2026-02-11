@@ -442,7 +442,7 @@ const DrugBox: React.FC<DrugBoxProps> = ({ order, hours, administrations, onAddA
   );
 };
 
-const MAR: React.FC = () => {
+export const MAR: React.FC = () => {
   const [rxnorm] = (useDatabase() as any).orderables.rxnorm();
 
   const resolveMedication = (code: string, db: any[]) => {
@@ -721,5 +721,3 @@ const MAR: React.FC = () => {
     </Stack>
   );
 };
-
-export default MAR;

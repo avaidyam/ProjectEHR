@@ -34,7 +34,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
   fontSize: '1.1rem',
 }));
 
-export default function BirthHistory() {
+export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
   const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory({});

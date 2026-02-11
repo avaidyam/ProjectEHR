@@ -8,7 +8,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric'
 })
 
-export default function OrdersMgmt() {
+export function OrdersMgmt() {
   const { useChart, useEncounter } = usePatient()
   // eslint-disable-next-line dot-notation
   const [orderCart, setOrderCart] = (useEncounter() as any).orderCart["_currentUser"]([])

@@ -5,20 +5,19 @@ import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Label, Stack } from 'components/ui/Core';
 import { usePatient } from '../../../../components/contexts/PatientContext';
 
-import MedicalHistory from './routes/MedicalHistory';
-import SurgicalHistory from './routes/SurgicalHistory';
-import FamilyHistory from './routes/FamilyHistory';
-import SocialHistorySubstance from './routes/SocialHistorySubstance';
-import SocialHistoryECig from './routes/SocialHistoryECig';
-import SocialHistorySocioeconomic from './routes/SocialHistorySocioeconomic';
-import SocialHistoryADL from './routes/SocialHistoryADL';
-import SocialHistoryDocumentation from './routes/SocialHistoryDocumentation';
-import SocialHistoryBirth from './routes/SpecialtyBirth';
-import SpecialtyOB from './routes/SpecialtyOB';
-import SpecialtyPap from './routes/SpecialtyPap';
+import { MedicalHistory } from './routes/MedicalHistory';
+import { SurgicalHistory } from './routes/SurgicalHistory';
+import { FamilyHistory } from './routes/FamilyHistory';
+import { SubstanceAndSexualHistory } from './routes/SocialHistorySubstance';
+import { ECigaretteVapingHistory } from './routes/SocialHistoryECig';
+import { SocialHistorySocioeconomic } from './routes/SocialHistorySocioeconomic';
+import { SocialHistoryADL } from './routes/SocialHistoryADL';
+import { SocialHistoryDocumentation } from './routes/SocialHistoryDocumentation';
+import { BirthHistory } from './routes/SpecialtyBirth';
+import { SpecialtyOB } from './routes/SpecialtyOB';
+import { PapTracking } from './routes/SpecialtyPap';
 
-
-export default function HistoryTabContent() {
+export function HistoryTabContent() {
   const { useChart } = usePatient();
   const [gender] = useChart().gender();
   const [value, setValue] = useState("Medical")
@@ -75,10 +74,10 @@ export default function HistoryTabContent() {
             <FamilyHistory />
           </TabPanel>
           <TabPanel value="Substance & Sexual History">
-            <SocialHistorySubstance />
+            <SubstanceAndSexualHistory />
           </TabPanel>
           <TabPanel value="E-cigarette/Vaping">
-            <SocialHistoryECig />
+            <ECigaretteVapingHistory />
           </TabPanel>
           <TabPanel value="Socioeconomic">
             <SocialHistorySocioeconomic />
@@ -90,7 +89,7 @@ export default function HistoryTabContent() {
             <SocialHistoryDocumentation />
           </TabPanel>
           <TabPanel value="Birth">
-            <SocialHistoryBirth />
+            <BirthHistory />
           </TabPanel>
           {gender === 'Female' && (
             <TabPanel value="OB/Gyn">
@@ -98,7 +97,7 @@ export default function HistoryTabContent() {
             </TabPanel>
           )}
           <TabPanel value="Pap Tracking">
-            <SpecialtyPap />
+            <PapTracking />
           </TabPanel>
         </Box>
       </TabContext>

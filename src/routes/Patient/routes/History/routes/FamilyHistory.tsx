@@ -104,7 +104,7 @@ const getUniqueProblems = (familyHistory: any[]) => {
   return [...problemsSet].sort();
 };
 
-export default function FamilyHistory() {
+export function FamilyHistory() {
   const { useEncounter } = usePatient();
   const [familyHx, setFamilyHx] = useEncounter().history.family([]);
   const [familyData, setFamilyData] = useState(

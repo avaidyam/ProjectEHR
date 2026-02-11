@@ -22,7 +22,7 @@ const SectionPaper = styled(Box)(({ theme }) => ({
   boxShadow: 'none',
 }));
 
-export default function SocialHistoryADL() {
+export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
   const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL();
   const [reviewed, setReviewed] = useState(false);

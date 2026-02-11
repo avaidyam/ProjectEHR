@@ -15,10 +15,10 @@ import {
 import {
   Checkbox,
 } from '@mui/material';
-import MedicationItemEditor from './components/MedicationItemEditor';
+import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { usePatient } from 'components/contexts/PatientContext';
 
-export default function Medications() {
+export function Medications() {
   const { useEncounter } = usePatient();
   const [medications, setMedications] = (useEncounter() as any).medications();
   const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());

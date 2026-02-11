@@ -34,7 +34,7 @@ const VOICE_OPTIONS: Record<string, string> = {
   "Sulafat": "Warm, Middle pitch"
 };
 
-const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
+export const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
   const [playingVoice, setPlayingVoice] = useState<string | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
@@ -133,5 +133,3 @@ const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
     </Stack>
   );
 };
-
-export default ModelConfig;

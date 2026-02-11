@@ -429,5 +429,3 @@ export const Allergies = () => {
     </Stack>
   );
 };
-
-export default Allergies;

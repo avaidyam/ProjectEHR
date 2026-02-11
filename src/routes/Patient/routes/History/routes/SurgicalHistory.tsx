@@ -108,7 +108,7 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
   );
 }
 
-export default function SurgicalHistory() {
+export function SurgicalHistory() {
   const { useEncounter } = usePatient();
   const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical([]);
   const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
