@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as React from 'react';
-import { PatientListsContext } from 'components/contexts/PatientListContext';
+
 import { useDatabase } from 'components/contexts/PatientContext';
 import { ListFormModal } from './components/ListFormModal';
 import { PatientsTable } from './components/PatientsTable';
@@ -73,10 +73,10 @@ function PatientLists() {
     return () => window.removeEventListener('keydown', handlePrintShortcut);
   }, []);
 
-  const contextValue = { selectedListId, lists, setLists };
+
 
   return (
-    <PatientListsContext.Provider value={contextValue}>
+    <>
       <Box sx={{ height: '100%', flex: 1, display: 'flex', flexDirection: 'column', p: 2, gap: 2 }}>
         <Box sx={{ borderRadius: 1 }}>
           <Box sx={{ p: 2 }}>
@@ -134,9 +134,16 @@ function PatientLists() {
         </Box>
 
         <Box sx={{ display: 'flex', flexGrow: 1, gap: 2 }}>
-          <ListsSidebar />
+          <ListsSidebar
+            lists={lists}
+            selectedListId={selectedListId}
+          />
           <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', height: "80vh" }}>
-            <PatientsTable />
+            <PatientsTable
+              lists={lists}
+              selectedList={selectedList}
+              setLists={setLists}
+            />
           </Box>
         </Box>
 
@@ -160,7 +167,7 @@ function PatientLists() {
           list={selectedList}
         />
       </Box>
-    </PatientListsContext.Provider>
+    </>
   );
 }
 

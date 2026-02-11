@@ -1,21 +1,19 @@
 import * as React from 'react'
 import { useNavigate, generatePath, useParams } from 'react-router-dom';
 import createStore from "teaful";
+
 import * as Database from './Database'
+export * as Database from './Database'
 
 // 
 import patient_sample from 'util/data/patient_sample.json'
 import orderables from 'util/data/orderables.json'
 
 // 
-export type DatabaseContextValue = ReturnType<typeof createStore>['useStore'];
-export interface PatientContextValue {
-  useChart: () => DatabaseContextValue['patients'][Database.Patient.ID];
-  useEncounter: () => DatabaseContextValue['patients'][Database.Patient.ID]['encounters'][Database.Encounter.ID];
-}
-
-export const DatabaseContext = React.createContext<DatabaseContextValue | undefined>(undefined)
-export const PatientContext = React.createContext<PatientContextValue | undefined>(undefined)
+// 
+// 
+// Contexts moved below types for proper initialization
+//
 
 // 
 const initialStore: Database.Root = {
@@ -28,9 +26,18 @@ const initialStore: Database.Root = {
   orderables: orderables,
   flowsheets: (patient_sample as unknown as Database.Root).flowsheets
 }
-const { useStore } = createStore(initialStore, ({ store, prevStore }: { store: any, prevStore: any }) => {
+const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
   // TODO: ...
 })
+
+export type DatabaseContextValue = typeof useStore;
+export interface PatientContextValue {
+  useChart: () => DatabaseContextValue['patients'][Database.Patient.ID];
+  useEncounter: () => DatabaseContextValue['patients'][Database.Patient.ID]['encounters'][Database.Encounter.ID];
+}
+
+export const DatabaseContext = React.createContext<DatabaseContextValue | undefined>(undefined);
+export const PatientContext = React.createContext<PatientContextValue | undefined>(undefined);
 
 // Usage: `<DatabaseProvider>{...}</DatabaseProvider>`
 export const DatabaseProvider: React.FC<{
@@ -53,7 +60,7 @@ export const PatientProvider: React.FC<{
 }> = ({ patient, encounter, children }) => {
   const useStore1 = useDatabase()
   /*const [initialStore, setStore] = useDatabase().patients[patient]()
-
+ 
   // 
   //const initialStore = patient_sample.patients[patient]
   const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
@@ -96,7 +103,7 @@ export const useDatabase = () => {
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
   ```
-
+ 
   Usage: 
   ```
   const [medicalHx, setMedicalHx] = useEncounter().history.medical()

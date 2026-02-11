@@ -6,9 +6,7 @@ import { AlertColor } from '@mui/material';
 import { ConfigureDialog } from './components/ConfigureDialog'; // Import the dialog component
 import { Notification } from './components/Notification';
 import { PromptDialog } from './components/PromptDialog';
-import * as Database from 'components/contexts/Database';
-
-import { useDatabase } from 'components/contexts/PatientContext';
+import { useDatabase, Database } from 'components/contexts/PatientContext';
 
 interface LoginProps {
   setIsLoggedIn: (value: boolean) => void;
@@ -55,15 +53,15 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
 
   // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
   React.useEffect(() => {
-    const allAppointments = schedules.flatMap((s: any) => s.appointments);
-    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt: any) => appt.patient.mrn))) as string[];
+    const allAppointments = schedules.flatMap((s) => s.appointments)
+    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn)))
 
     // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
       const patientInfo = patientsDB[mrn];
-      acc[mrn] = patientInfo?.encounters?.length || 0; // Use MRN as key and number of encounters as value
+      acc[mrn] = Object.keys(patientInfo.encounters).length; // Use MRN as key and number of encounters as value
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<Database.Patient.ID, number>);
 
     setEncounterCounts(encountersHash); // Update state with the hash
   }, [schedules, patientsDB]);

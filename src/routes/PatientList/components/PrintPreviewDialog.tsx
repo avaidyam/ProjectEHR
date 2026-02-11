@@ -13,20 +13,18 @@ import {
   TableBody,
   Box,
   Typography,
-  useTheme,
   GlobalStyles,
 } from '@mui/material';
-import { useDatabase } from 'components/contexts/PatientContext';
+import { Database, useDatabase } from 'components/contexts/PatientContext';
 
-export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onClose: () => void; list: any }) => {
-  const theme = useTheme();
+export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onClose: () => void; list: Database.PatientList }) => {
   const [patientsDB] = useDatabase().patients();
 
   const patients = React.useMemo(() => {
     if (!list) return [];
     if (list.id === 'all-patients') return Object.values(patientsDB);
 
-    return (list.patients || []).map((p: any) => {
+    return (list.patients || []).map((p) => {
       if (typeof p === 'string') {
         return patientsDB[p];
       }
@@ -45,10 +43,8 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
     }
   };
 
-  const getNameWithMrn = (p: any) => {
-    const name = p.name || `${p.firstName || ''} ${p.lastName || ''}`.trim();
-    const mrn = p.mrn || p.id || '';
-    return mrn ? `${name} (${mrn})` : name;
+  const getNameWithMrn = (p: Database.Patient) => {
+    return `${p.firstName} ${p.lastName} (${p.id})`
   };
 
   // Listen for Cmd+P / Ctrl+P
@@ -150,7 +146,8 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
                 printColorAdjust: 'exact',
               },
               '& .MuiTableCell-root': {
-                border: `1px solid ${theme.palette.divider}`,
+                border: `1px solid divider`,
+                borderColor: "divider",
                 padding: '8px 10px',
               },
             }}

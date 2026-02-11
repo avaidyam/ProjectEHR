@@ -47,7 +47,7 @@ export function PapTracking() {
       }
       return false;
     });
-  }, [encounter?.labs, encounter?.notes, encounter?.scanDocs, encounter?.others]);
+  }, [encounter?.labs, encounter?.notes]);
 
   // Calculate next Pap due date (typically 3 years from last normal Pap)
   const getNextPapDue = (lastPapDate: any) => {

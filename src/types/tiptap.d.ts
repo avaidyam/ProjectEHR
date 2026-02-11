@@ -37,10 +37,6 @@ declare module 'prosemirror-state';
 declare module 'prosemirror-view';
 declare module 'prosemirror-transform';
 
-declare module 'teaful' {
-    export default function createStore<T>(initial: T, onUpdate?: (ctx: { store: any, prevStore: any }) => void): { useStore: any, getStore: any, setStore: any, withStore: any };
-}
-
 declare module '@google/genai' {
     export class GoogleGenAI {
         constructor(options: any);

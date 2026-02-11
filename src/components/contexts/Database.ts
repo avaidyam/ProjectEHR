@@ -5,6 +5,28 @@ export type Branded<T, B> = T & Brand<B>
 export type UUID = string
 export type JSONDate = string | Date
 
+export namespace Units {
+  export enum Mass {
+    MG = 'mg',
+    G = 'g',
+    MC = 'mcg',
+    MGML = 'mg/ml',
+    MGKG = 'mg/kg'
+  }
+
+  export enum Volume {
+    ML = 'ml',
+    L = 'L',
+    CC = 'cc'
+  }
+
+  export enum Time {
+    MIN = 'minutes',
+    HR = 'hours',
+    DAY = 'days'
+  }
+}
+
 export interface Root {
   departments: Department[]
   locations: Location[]
@@ -29,6 +51,9 @@ export interface Department {
 
 export namespace Department {
   export type ID = Branded<UUID, 'Department.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Location {
@@ -41,6 +66,9 @@ export interface Location {
 
 export namespace Location {
   export type ID = Branded<UUID, 'Location.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Provider {
@@ -53,6 +81,9 @@ export interface Provider {
 
 export namespace Provider {
   export type ID = Branded<UUID, 'Provider.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export namespace Flowsheet {
@@ -64,6 +95,9 @@ export namespace Flowsheet {
 
   export namespace Definition {
     export type ID = Branded<UUID, 'Flowsheet.Definition.ID'>
+    export namespace ID {
+      export const create = (): ID => crypto.randomUUID() as ID
+    }
 
     export interface Row {
       category?: string
@@ -84,6 +118,9 @@ export namespace Flowsheet {
 
   export namespace Entry {
     export type ID = Branded<UUID, 'Flowsheet.Entry.ID'>
+    export namespace ID {
+      export const create = (): ID => crypto.randomUUID() as ID
+    }
   }
 }
 
@@ -97,6 +134,9 @@ export interface PatientList {
 
 export namespace PatientList {
   export type ID = Branded<UUID, 'PatientList.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 
   export interface Column {
     id: string
@@ -129,28 +169,34 @@ export interface Appointment {
 
 export namespace Appointment {
   export type ID = Branded<UUID, 'Appointment.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Patient {
-  id?: Patient.ID
-  firstName?: string
-  lastName?: string
-  birthdate?: JSONDate
-  gender?: string
-  avatarUrl?: any
+  id: Patient.ID
+  firstName: string
+  lastName: string
+  birthdate: JSONDate
+  gender: string
+  avatarUrl?: string
   address?: any
   preferredLanguage?: string
   insurance?: {
     carrierName: string
   }
   careTeam?: CareTeam[]
-  encounters?: {
+  encounters: {
     [key: Encounter.ID]: Encounter;
   }
 }
 
 export namespace Patient {
   export type ID = Branded<UUID, 'Patient.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Encounter {
@@ -165,11 +211,12 @@ export interface Encounter {
   history: History
   id: Encounter.ID
   imaging?: Imaging[]
-  immunizations?: Immunization[]
+  immunizations: Immunization[]
   labs?: Lab[]
   medications?: Medication[]
   notes: Note[]
   problems?: Problem[]
+  orders: Order[]
   provider: string
   smartData?: SmartData
   startDate: JSONDate
@@ -180,6 +227,9 @@ export interface Encounter {
 
 export namespace Encounter {
   export type ID = Branded<UUID, 'Encounter.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface CareTeam {
@@ -216,23 +266,90 @@ export interface Allergy {
   allergen: string
   comment: any
   reaction: any
+  reactionType: Allergy.ReactionType
   recorded: string
   recorder: string
   resovled: boolean
-  severity: any
-  type: string
+  severity: Allergy.Severity
+  type: Allergy.Type
   verified: boolean
+  isNew?: boolean
 }
 
 export namespace Allergy {
   export type ID = Branded<UUID, 'Allergy.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+
+  export enum Type {
+    Drug = 'Drug',
+    Ingredient = 'Drug Ingredient',
+    Environmental = 'Environmental',
+    Food = 'Food',
+    Other = 'Other'
+  }
+
+  export enum Severity {
+    Low = 'Low',
+    Moderate = 'Moderate',
+    High = 'High',
+    NotSpecified = 'Not Specified'
+  }
+
+  export enum ReactionType {
+    Immediate = 'Immediate',
+    Delayed = 'Delayed',
+    Unknown = 'Unknown',
+    Systemic = 'Systemic',
+    Topical = 'Topical',
+    Intolerance = 'Intolerance',
+    NotVerified = 'Not Verified'
+  }
+
+  export enum Reaction {
+    Rash = 'Rash',
+    Anaphylaxis = 'Anaphylaxis',
+    Hives = 'Hives',
+    Itching = 'Itching',
+    Swelling = 'Swelling',
+    Nausea = 'Nausea',
+    Vomiting = 'Vomiting',
+    Dyspnea = 'Dyspnea',
+    Hypotension = 'Hypotension',
+    Other = 'Other',
+    AtopicDermatitis = 'Atopic Dermatitis',
+    BloodPressureDrop = 'Blood Pressure Drop',
+    ContactDermatitis = 'Contact Dermatitis',
+    Cough = 'Cough',
+    Diarrhea = 'Diarrhea',
+    Dizzy = 'Dizzy',
+    ExcessiveDrowsiness = 'Excessive drowsiness',
+    GICramps = 'GI Cramps',
+    GIUpset = 'GI upset',
+    Hallucinations = 'Hallucinations',
+    Headache = 'Headache',
+    LossOfConsciousness = 'Loss of Consciousness',
+    MuscleMyalgia = 'Muscle Myalgia',
+    OcularItchingAndSwelling = 'Ocular Itching and/or Swelling',
+    Palpitations = 'Palpitations',
+    Rhinitis = 'Rhinitis',
+    NauseaAndVomiting = 'Nausea & Vomiting'
+  }
 }
 
 export interface Immunization {
   administeredBy?: string
   age?: string
   date?: JSONDate
-  dose?: string
+  dose?: {
+    value: number
+    unit: {
+      mass: string
+      volume: string
+      time: string
+    }
+  }
   expirationDate?: JSONDate
   id?: Immunization.ID
   lot?: any
@@ -246,10 +363,36 @@ export interface Immunization {
   site?: any
   status?: string
   vaccine: string
+  facility?: string
 }
 
 export namespace Immunization {
   export type ID = Branded<UUID, 'Immunization.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+
+  export enum Route {
+    IM = 'Intramuscular (IM)',
+    SC = 'Subcutaneous (SC)',
+    ID = 'Intradermal (ID)',
+    IN = 'Intranasal (IN)',
+    PO = 'Oral (PO)',
+    IV = 'Intravenous (IV)'
+  }
+
+  export enum Site {
+    LEFT_DELTOID = 'Left deltoid',
+    RIGHT_DELTOID = 'Right deltoid',
+    LEFT_THIGH = 'Left thigh',
+    RIGHT_THIGH = 'Right thigh',
+    LEFT_ARM = 'Left arm',
+    RIGHT_ARM = 'Right arm',
+    LEFT_GLUTE = 'Left gluteal',
+    RIGHT_GLUTE = 'Right gluteal',
+    ORAL = 'Oral',
+    NASAL = 'Nasal'
+  }
 }
 
 export interface Imaging {
@@ -268,6 +411,9 @@ export interface Imaging {
 
 export namespace Imaging {
   export type ID = Branded<UUID, 'Imaging.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Lab {
@@ -291,6 +437,9 @@ export interface Lab {
 
 export namespace Lab {
   export type ID = Branded<UUID, 'Lab.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 
   export interface Component {
     name: string
@@ -320,6 +469,9 @@ export interface Medication {
 
 export namespace Medication {
   export type ID = Branded<UUID, 'Medication.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 
   export interface DispenseLog {
     dispensed: string
@@ -348,6 +500,9 @@ export interface Note {
 
 export namespace Note {
   export type ID = Branded<UUID, 'Note.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface Order {
@@ -362,12 +517,15 @@ export interface Order {
 
 export namespace Order {
   export type ID = Branded<UUID, 'Order.ID'>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }
 
 export interface History {
-  medical?: MedicalHistoryItem[]
-  surgical?: SurgicalHistoryItem[]
-  family?: FamilyHistoryItem[]
+  medical: MedicalHistoryItem[]
+  surgical: SurgicalHistoryItem[]
+  family: FamilyHistoryItem[]
   SubstanceSexualHealth?: SubstanceSexualHealth
   Socioeconomic?: {
     demographics?: Demographics
@@ -375,6 +533,7 @@ export interface History {
     occupation?: string
     occupationalHistory?: OccupationalHistory[]
   }
+  SocialHistoryADL?: any
   ECigaretteVaping?: any
   SocialDocumentation?: {
     textbox: string
@@ -382,14 +541,30 @@ export interface History {
   OBGynHistory?: any
   BirthHistory?: {
     birthComplications?: string
+    birthLength?: string
     birthWeight?: string
     deliveryMethod?: string
     gestationalAge?: string
     hospitalStay?: string
+    gestationWeeks?: string
+    gestationDays?: string
+    apgar1?: string
+    apgar5?: string
+    apgar10?: string
+    birthTime?: string
+    birthHeadCirc?: string
+    dischargeWeight?: string
+    durationOfLabor?: string
+    feedingMethod?: string
+    dateInHospital?: string
+    hospitalName?: string
+    hospitalLocation?: string
+    comments?: string
   }
 }
 
 export interface Demographics {
+  religion?: string
   ethnicGroup: string
   highestEducationLevel: any
   maritalStatus: string
@@ -506,6 +681,7 @@ export interface SubstanceSexualHealth {
       smokelessStatus: string
     }
     smokingStatus?: string
+    counselingGiven?: boolean
     startDate: JSONDate
     status?: string
     types?: any[] | string[]

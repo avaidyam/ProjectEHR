@@ -299,7 +299,7 @@ export const Demographics = () => {
         alert('Last name is required')
         return
       }
-      if (!formData.birthdate.trim()) {
+      if (!formData.birthdate) {
         alert('Date of birth is required')
         return
       }

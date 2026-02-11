@@ -21,11 +21,11 @@ export function Chat() {
   const { useChart, useEncounter } = usePatient();
 
   // Chart-level demographics (like in your SnapshotTabContent)
-  const [chart] = useChart()(); // chart has firstName, lastName, birthdate, address, maybe gender
+  const [chart] = useChart()();
   const firstName = chart?.firstName ?? '';
   const lastName = chart?.lastName ?? '';
   const birthdate = chart?.birthdate ?? '';
-  const gender = chart?.gender ?? chart?.sex ?? ''; // try both if your model uses 'sex'
+  const gender = chart?.gender ?? '';
 
   // Encounter object for concerns (like in your SnapshotTabContent)
   const [currentEncounter] = useEncounter()();

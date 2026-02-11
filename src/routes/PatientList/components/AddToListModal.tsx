@@ -1,17 +1,20 @@
 import * as React from 'react';
 import { Stack, Button, Label, Window } from 'components/ui/Core';
-import { usePatientLists } from 'components/contexts/PatientListContext';
+
 
 export const AddToListModal = ({
   open,
   onClose,
   patient,
+  lists,
+  setLists,
 }: {
   open: boolean;
   onClose: () => void;
   patient: any;
+  lists: any[];
+  setLists: any;
 }) => {
-  const { lists, setLists } = usePatientLists();
   const userLists = lists.filter((list: any) => list.type === 'my');
 
   const handleAddToList = (targetList: any) => {

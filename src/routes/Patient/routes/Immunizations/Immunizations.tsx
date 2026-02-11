@@ -14,53 +14,7 @@ import {
 } from 'components/ui/Core';
 import { Checkbox, FormControlLabel } from '@mui/material';
 import dayjs from 'dayjs';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext';
-// Common immunization routes
-const IMMUNIZATION_ROUTES = {
-  IM: 'Intramuscular (IM)',
-  SC: 'Subcutaneous (SC)',
-  ID: 'Intradermal (ID)',
-  IN: 'Intranasal (IN)',
-  PO: 'Oral (PO)',
-  IV: 'Intravenous (IV)'
-};
-
-// Common immunization sites
-const IMMUNIZATION_SITES = {
-  'left_deltoid': 'Left deltoid',
-  'right_deltoid': 'Right deltoid',
-  'left_thigh': 'Left thigh',
-  'right_thigh': 'Right thigh',
-  'left_arm': 'Left arm',
-  'right_arm': 'Right arm',
-  'left_glute': 'Left gluteal',
-  'right_glute': 'Right gluteal',
-  'oral': 'Oral',
-  'nasal': 'Nasal'
-};
-
-// Common mass units
-const MASS_UNITS = {
-  'mg': 'mg',
-  'g': 'g',
-  'mcg': 'mcg',
-  'mg/ml': 'mg/ml',
-  'mg/kg': 'mg/kg'
-};
-
-// Common volume units
-const VOLUME_UNITS = {
-  'ml': 'ml',
-  'l': 'L',
-  'cc': 'cc'
-};
-
-// Common time units
-const TIME_UNITS = {
-  'min': 'minutes',
-  'hr': 'hours',
-  'day': 'days'
-};
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
 // Format dose for display
 const formatDose = (dose: any) => {
@@ -246,7 +200,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
               <Autocomplete
                 size="small"
                 sx={{ width: 100 }}
-                options={Object.keys(MASS_UNITS)}
+                options={Object.values(Database.Units.Mass)}
                 value={formData.dose?.unit?.mass}
                 onChange={(e, newVal) => handleUnitChange('mass', newVal)}
                 renderInput={(params: any) => <TextField {...params} label="Mass" />}
@@ -255,7 +209,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
               <Autocomplete
                 size="small"
                 sx={{ width: 100 }}
-                options={Object.keys(VOLUME_UNITS)}
+                options={Object.values(Database.Units.Volume)}
                 value={formData.dose?.unit?.volume}
                 onChange={(e, newVal) => handleUnitChange('volume', newVal)}
                 renderInput={(params: any) => <TextField {...params} label="Vol" />}
@@ -270,7 +224,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                   <Autocomplete
                     fullWidth
                     size="small"
-                    options={Object.values(IMMUNIZATION_SITES)}
+                    options={Object.values(Database.Immunization.Site)}
                     value={formData.site}
                     onChange={(e, newVal) => handleChange('site', newVal)}
                     renderInput={(params: any) => <TextField {...params} />}
@@ -281,7 +235,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                   <Autocomplete
                     fullWidth
                     size="small"
-                    options={Object.values(IMMUNIZATION_ROUTES)}
+                    options={Object.values(Database.Immunization.Route)}
                     value={formData.route}
                     onChange={(e, newVal) => handleChange('route', newVal)}
                     renderInput={(params: any) => <TextField {...params} />}
@@ -382,25 +336,23 @@ export const Immunizations = () => {
   };
 
   const handleAddClick = () => {
-    const newId = (immunizations || []).length > 0 ? Math.max(...immunizations.map((a: any) => Number.isFinite(Number(a.id)) ? Number(a.id) : 0)) + 1 : 1;
-    const newEntry = {
-      id: newId,
+    const newEntry: Database.Immunization = {
+      id: Database.Immunization.ID.create(),
       vaccine: '',
       received: dayjs().format('YYYY-MM-DD'),
       recorder: '',
       recorded: dayjs().format('YYYY-MM-DD'),
-      given_by: '',
+      administeredBy: '',
       facility: '',
       dose: { value: 0, unit: { mass: '', volume: '', time: '' } },
       site: '',
       route: '',
       lot: '',
-      manufacturer: '',
-      isNew: true
+      manufacturer: ''
     };
 
     setImmunizations([...(immunizations || []), newEntry]);
-    setExpandedRowIds(new Set([newId]));
+    setExpandedRowIds(new Set([newEntry.id]));
   };
 
   const handleReviewedChange = (e: any) => {
@@ -419,7 +371,7 @@ export const Immunizations = () => {
       valueFormatter: (params: any) => formatDate(params.value)
     },
     { field: 'recorder', headerName: 'Recorder', width: 150 },
-    { field: 'given_by', headerName: 'Given By', width: 150 },
+    { field: 'administeredBy', headerName: 'Given By', width: 150 },
     { field: 'facility', headerName: 'Facility', width: 150 },
     {
       field: 'dose',

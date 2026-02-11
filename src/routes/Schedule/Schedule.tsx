@@ -336,7 +336,7 @@ export function Schedule() {
                 },
                 valueGetter: (value: any, row: any) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.mrn}) ${(new Date(data.birthdate) as any).age()
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate) as any).age()
                     } years old / ${data.gender}`;
                 },
               },
@@ -388,7 +388,7 @@ export function Schedule() {
                 width: 200,
                 valueGetter: (value: any, row: any) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.insurance.carrierName}`;
+                  return `${data.insurance?.carrierName ?? "No insurance on file"}`;
                 },
               },
             ]}

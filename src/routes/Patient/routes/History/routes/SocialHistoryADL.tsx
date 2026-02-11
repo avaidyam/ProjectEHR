@@ -24,7 +24,7 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
-  const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL();
+  const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL({});
   const [reviewed, setReviewed] = React.useState(false);
 
   const leftColumnItems = [

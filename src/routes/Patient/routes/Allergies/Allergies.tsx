@@ -14,33 +14,22 @@ import {
 } from 'components/ui/Core';
 import { Checkbox, FormControlLabel, colors } from '@mui/material';
 import dayjs from 'dayjs';
-import { usePatient } from 'components/contexts/PatientContext';
-
-const allergenTypes = ['Drug', 'Drug Ingredient', 'Environmental', 'Food', 'Other'];
-const severityLevels = ['Low', 'Moderate', 'High', 'Not Specified'];
-const reactionTypes = ['Immediate', 'Delayed', 'Unknown', 'Systemic', 'Topical', 'Intolerance', 'Not Verified'];
-const reactions = [
-  'Rash', 'Anaphylaxis', 'Hives', 'Itching', 'Swelling', 'Nausea', 'Vomiting',
-  'Dyspnea', 'Hypotension', 'Other, see comment', 'Atopic Dermatitis', 'Blood Pressure Drop',
-  'Contact Dermatitis', 'Cough', 'Diarrhea', 'Dizzy', 'Excessive drowsiness', 'GI Cramps',
-  'GI upset', 'Hallucinations', 'Headache', 'Loss of Consciousness', 'Muscle Myalgia',
-  'Ocular Itching and/or Swelling', 'Other; see comment', 'Palpitations', 'Rhinitis', 'Nausea & Vomiting'
-];
+import { usePatient, Database } from 'components/contexts/PatientContext';
 
 const dummyAgents = [
-  { allergen: 'Penicillin', type: 'Drug' },
-  { allergen: 'Peanuts', type: 'Food' },
-  { allergen: 'Latex', type: 'Environmental' },
-  { allergen: 'Crab', type: 'Food' },
-  { allergen: 'Metoprolol', type: 'Drug Ingredient' },
-  { allergen: 'Codeine', type: 'Drug Ingredient' },
-  { allergen: 'Demerol [Meperidine]', type: 'Drug Ingredient' },
-  { allergen: 'Xanax [Alprazolam]', type: 'Drug Ingredient' },
-  { allergen: 'Aspirin', type: 'Drug' },
-  { allergen: 'Dust Mites', type: 'Environmental' },
-  { allergen: 'Bee Venom', type: 'Insect' },
-  { allergen: 'Amoxicillin-potassium clavulanate', type: 'Drug' },
-  { allergen: 'Other', type: 'Other' },
+  { allergen: 'Penicillin', type: Database.Allergy.Type.Drug },
+  { allergen: 'Peanuts', type: Database.Allergy.Type.Food },
+  { allergen: 'Latex', type: Database.Allergy.Type.Environmental },
+  { allergen: 'Crab', type: Database.Allergy.Type.Food },
+  { allergen: 'Metoprolol', type: Database.Allergy.Type.Ingredient },
+  { allergen: 'Codeine', type: Database.Allergy.Type.Ingredient },
+  { allergen: 'Demerol [Meperidine]', type: Database.Allergy.Type.Ingredient },
+  { allergen: 'Xanax [Alprazolam]', type: Database.Allergy.Type.Ingredient },
+  { allergen: 'Aspirin', type: Database.Allergy.Type.Drug },
+  { allergen: 'Dust Mites', type: Database.Allergy.Type.Environmental },
+  { allergen: 'Bee Venom', type: 'Insect' as any },
+  { allergen: 'Amoxicillin-potassium clavulanate', type: Database.Allergy.Type.Drug },
+  { allergen: 'Other', type: Database.Allergy.Type.Other },
 ];
 
 function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
@@ -122,7 +111,7 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; o
                   <Autocomplete
                     fullWidth
                     size="small"
-                    options={reactions}
+                    options={Object.values(Database.Allergy.Reaction)}
                     value={formData.reaction}
                     onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, reaction: newVal }))}
                     renderInput={(params: any) => <TextField {...params} />}
@@ -135,7 +124,7 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; o
                     <Autocomplete
                       fullWidth
                       size="small"
-                      options={severityLevels}
+                      options={Object.values(Database.Allergy.Severity)}
                       value={formData.severity}
                       onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, severity: newVal }))}
                       renderInput={(params: any) => <TextField {...params} />}
@@ -162,7 +151,7 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; o
                 <Autocomplete
                   sx={{ width: '40%' }}
                   size="small"
-                  options={reactionTypes}
+                  options={Object.values(Database.Allergy.ReactionType)}
                   value={formData.reactionType}
                   onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, reactionType: newVal }))}
                   renderInput={(params: any) => <TextField {...params} />}
@@ -279,21 +268,23 @@ export const Allergies = () => {
 
 
   const handleAddClick = () => {
-    const newId = (allergies || []).length > 0 ? Math.max(...allergies.map((a: any) => Number.isFinite(Number(a.id)) ? Number(a.id) : 0)) + 1 : 1;
-    const newEntry = {
-      id: newId,
+    const newEntry: Database.Allergy = {
+      id: Database.Allergy.ID.create(),
       allergen: '',
-      type: '',
+      type: Database.Allergy.Type.Other,
       reaction: '',
-      severity: 'Not Specified',
-      reactionType: '',
+      severity: Database.Allergy.Severity.NotSpecified,
+      reactionType: Database.Allergy.ReactionType.Unknown,
       recorded: '',
       comment: '',
+      resovled: false,
+      verified: false,
+      recorder: '',
       isNew: true
     };
 
     setAllergies([...(allergies || []), newEntry]);
-    setExpandedRowIds(new Set([newId]));
+    setExpandedRowIds(new Set([newEntry.id]));
   };
 
   const handleReviewedChange = (e: React.ChangeEvent<HTMLInputElement>) => {

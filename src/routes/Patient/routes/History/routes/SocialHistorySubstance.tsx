@@ -152,15 +152,15 @@ export function SubstanceAndSexualHistory() {
               {smokelessOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.tobacco?.smokeless === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.tobacco?.smokeless === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('tobacco', 'smokeless', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.tobacco?.smokeless === option ? '#1976d2' : 'transparent',
-                    color: substanceData.tobacco?.smokeless === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.tobacco?.smokeless === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.tobacco?.smokeless === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.tobacco?.smokeless === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.tobacco?.smokeless === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
@@ -175,7 +175,7 @@ export function SubstanceAndSexualHistory() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={substanceData.tobacco?.counselingGiven || false}
+                  checked={substanceData?.tobacco?.counselingGiven || false}
                   onChange={(e) => handleDataChange('tobacco', 'counselingGiven', e.target.checked)}
                 />
               }
@@ -189,15 +189,15 @@ export function SubstanceAndSexualHistory() {
               {exposureOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.tobacco?.passiveExposure === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.tobacco?.passiveExposure === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('tobacco', 'passiveExposure', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.tobacco?.passiveExposure === option ? '#1976d2' : 'transparent',
-                    color: substanceData.tobacco?.passiveExposure === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.tobacco?.passiveExposure === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.tobacco?.passiveExposure === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.tobacco?.passiveExposure === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.tobacco?.passiveExposure === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
@@ -213,7 +213,7 @@ export function SubstanceAndSexualHistory() {
               multiline
               rows={2}
               fullWidth
-              value={substanceData.tobacco?.comments || ''}
+              value={substanceData?.tobacco?.comments || ''}
               onChange={(e) => handleDataChange('tobacco', 'comments', e.target.value)}
             />
           </Grid>
@@ -229,15 +229,15 @@ export function SubstanceAndSexualHistory() {
               {useOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.alcohol?.use === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.alcohol?.use === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('alcohol', 'use', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.alcohol?.use === option ? '#1976d2' : 'transparent',
-                    color: substanceData.alcohol?.use === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.alcohol?.use === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.alcohol?.use === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.alcohol?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.alcohol?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
@@ -258,7 +258,7 @@ export function SubstanceAndSexualHistory() {
               label="Glasses of wine"
               type="number"
               fullWidth
-              value={substanceData.alcohol?.drinksPerWeek?.wine || ''}
+              value={substanceData?.alcohol?.drinksPerWeek?.wine || ''}
               onChange={(e) => handleDrinksChange('wine', e.target.value)}
               inputProps={{ min: 0 }}
             />
@@ -269,7 +269,7 @@ export function SubstanceAndSexualHistory() {
               label="Cans of beer"
               type="number"
               fullWidth
-              value={substanceData.alcohol?.drinksPerWeek?.beer || ''}
+              value={substanceData?.alcohol?.drinksPerWeek?.beer || ''}
               onChange={(e) => handleDrinksChange('beer', e.target.value)}
               inputProps={{ min: 0 }}
             />
@@ -280,7 +280,7 @@ export function SubstanceAndSexualHistory() {
               label="Shots of liquor"
               type="number"
               fullWidth
-              value={substanceData.alcohol?.drinksPerWeek?.liquor || ''}
+              value={substanceData?.alcohol?.drinksPerWeek?.liquor || ''}
               onChange={(e) => handleDrinksChange('liquor', e.target.value)}
               inputProps={{ min: 0 }}
             />
@@ -291,7 +291,7 @@ export function SubstanceAndSexualHistory() {
               label="Drinks containing 1.5 oz of alcohol"
               type="number"
               fullWidth
-              value={substanceData.alcohol?.drinksPerWeek?.mixedDrinks || ''}
+              value={substanceData?.alcohol?.drinksPerWeek?.mixedDrinks || ''}
               onChange={(e) => handleDrinksChange('mixedDrinks', e.target.value)}
               inputProps={{ min: 0 }}
             />
@@ -302,7 +302,7 @@ export function SubstanceAndSexualHistory() {
               label="Standard drinks or equivalent"
               type="number"
               fullWidth
-              value={substanceData.alcohol?.drinksPerWeek?.standardDrinks || ''}
+              value={substanceData?.alcohol?.drinksPerWeek?.standardDrinks || ''}
               onChange={(e) => handleDrinksChange('standardDrinks', e.target.value)}
               inputProps={{ min: 0 }}
             />
@@ -314,7 +314,7 @@ export function SubstanceAndSexualHistory() {
               multiline
               rows={2}
               fullWidth
-              value={substanceData.alcohol?.comments || ''}
+              value={substanceData?.alcohol?.comments || ''}
               onChange={(e) => handleDataChange('alcohol', 'comments', e.target.value)}
             />
           </Grid>
@@ -330,15 +330,15 @@ export function SubstanceAndSexualHistory() {
               {useOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.drugs?.use === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.drugs?.use === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('drugs', 'use', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.drugs?.use === option ? '#1976d2' : 'transparent',
-                    color: substanceData.drugs?.use === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.drugs?.use === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.drugs?.use === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.drugs?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.drugs?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
@@ -353,7 +353,7 @@ export function SubstanceAndSexualHistory() {
               label="Use/week"
               type="number"
               fullWidth
-              value={substanceData.drugs?.usePerWeek || ''}
+              value={substanceData?.drugs?.usePerWeek || ''}
               onChange={(e) => handleDataChange('drugs', 'usePerWeek', parseInt(e.target.value) || 0)}
               inputProps={{ min: 0 }}
             />
@@ -367,7 +367,7 @@ export function SubstanceAndSexualHistory() {
                   key={type}
                   control={
                     <Checkbox
-                      checked={(substanceData.drugs?.types || []).includes(type)}
+                      checked={(substanceData?.drugs?.types || []).includes(type)}
                       onChange={() => handleArrayToggle('drugs', 'types', type)}
                     />
                   }
@@ -384,7 +384,7 @@ export function SubstanceAndSexualHistory() {
               multiline
               rows={2}
               fullWidth
-              value={substanceData.drugs?.comments || ''}
+              value={substanceData?.drugs?.comments || ''}
               onChange={(e) => handleDataChange('drugs', 'comments', e.target.value)}
             />
           </Grid>
@@ -400,15 +400,15 @@ export function SubstanceAndSexualHistory() {
               {sexualActivityOptions.map(option => (
                 <Button
                   key={option}
-                  variant={substanceData.sexualActivity?.active === option ? 'contained' : 'outlined'}
+                  variant={substanceData?.sexualActivity?.active === option ? 'contained' : 'outlined'}
                   onClick={() => handleDataChange('sexualActivity', 'active', option)}
                   size="small"
                   sx={{
-                    backgroundColor: substanceData.sexualActivity?.active === option ? '#1976d2' : 'transparent',
-                    color: substanceData.sexualActivity?.active === option ? 'white' : '#1976d2',
+                    backgroundColor: substanceData?.sexualActivity?.active === option ? '#1976d2' : 'transparent',
+                    color: substanceData?.sexualActivity?.active === option ? 'white' : '#1976d2',
                     borderColor: '#1976d2',
                     '&:hover': {
-                      backgroundColor: substanceData.sexualActivity?.active === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
+                      backgroundColor: substanceData?.sexualActivity?.active === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
                     }
                   }}
                 >
@@ -426,7 +426,7 @@ export function SubstanceAndSexualHistory() {
                   key={method}
                   control={
                     <Checkbox
-                      checked={(substanceData.sexualActivity?.birthControl || []).includes(method)}
+                      checked={(substanceData?.sexualActivity?.birthControl || []).includes(method)}
                       onChange={() => handleArrayToggle('sexualActivity', 'birthControl', method)}
                     />
                   }
@@ -442,7 +442,7 @@ export function SubstanceAndSexualHistory() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={(substanceData.sexualActivity?.partners || []).includes('Female')}
+                  checked={(substanceData?.sexualActivity?.partners || []).includes('Female')}
                   onChange={() => handleArrayToggle('sexualActivity', 'partners', 'Female')}
                 />
               }
@@ -452,7 +452,7 @@ export function SubstanceAndSexualHistory() {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={(substanceData.sexualActivity?.partners || []).includes('Male')}
+                  checked={(substanceData?.sexualActivity?.partners || []).includes('Male')}
                   onChange={() => handleArrayToggle('sexualActivity', 'partners', 'Male')}
                 />
               }
@@ -466,7 +466,7 @@ export function SubstanceAndSexualHistory() {
               multiline
               rows={2}
               fullWidth
-              value={substanceData.sexualActivity?.comments || ''}
+              value={substanceData?.sexualActivity?.comments || ''}
               onChange={(e) => handleDataChange('sexualActivity', 'comments', e.target.value)}
             />
           </Grid>

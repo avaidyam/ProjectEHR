@@ -243,7 +243,7 @@ export const ChartReview = ({ ...props }: any) => {
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
   const [conditionals] = useEncounter().conditionals()
-  const [orders] = useEncounter().orders()
+  const [orders] = useEncounter().orders([])
   const [departments] = useDatabase().departments()
   const [providers] = useDatabase().providers()
   const { openTab } = useSplitView()

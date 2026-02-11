@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Icon, TreeView } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
-import { usePatientLists } from 'components/contexts/PatientListContext';
+
 
 const ExpandMoreIcon = () => <Icon>expand_more</Icon>
 const ChevronRightIcon = () => <Icon>chevron_right</Icon>
@@ -33,9 +33,8 @@ const createTreeItems = (lists: any[]) => {
   ];
 };
 
-export const ListsSidebar = () => {
+export const ListsSidebar = ({ lists, selectedListId }: { lists: any[], selectedListId?: string }) => {
   const navigate = useNavigate();
-  const { lists, selectedListId } = usePatientLists();
   const [expandedItems, setExpandedItems] = React.useState(['my-lists', 'available-lists']);
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {

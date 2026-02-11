@@ -9,8 +9,8 @@ import {
   DataGrid
 } from 'components/ui/Core';
 import { Paper } from '@mui/material'
-import { usePatientLists } from 'components/contexts/PatientListContext';
-import { useDatabase } from 'components/contexts/PatientContext';
+
+import { Database, useDatabase } from 'components/contexts/PatientContext';
 import { AddToListModal } from './AddToListModal';
 
 // Helper function to get status color
@@ -29,20 +29,25 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const PatientsTable = () => {
+export const PatientsTable = ({
+  lists,
+  selectedList,
+  setLists,
+}: {
+  lists: Database.PatientList[];
+  selectedList?: Database.PatientList;
+  setLists: (lists: Database.PatientList[]) => void;
+}) => {
   const navigate = useNavigate();
-  const { selectedListId, lists } = usePatientLists();
   const [patientsDB] = useDatabase().patients();
   const [selectedPatient, setSelectedPatient] = React.useState<any>(null);
   const [ready, setReady] = React.useState(false);
 
-  const selectedList = lists.find((list: any) => list.id === selectedListId);
-
   const listPatients = React.useMemo(() => {
     if (!selectedList) return [];
-    if (selectedList.id === 'all-patients') return Object.values(patientsDB as any);
+    if (selectedList.id === 'all-patients') return Object.values(patientsDB);
 
-    return (selectedList.patients || []).map((p: any) => {
+    return (selectedList.patients || []).map((p) => {
       if (typeof p === 'string') {
         return patientsDB[p];
       }
@@ -85,7 +90,7 @@ export const PatientsTable = () => {
   ];
 
   const columns = React.useMemo(() => {
-    const defaultCols = columnsConfig
+    const defaultCols: any[] = columnsConfig
       .filter((col: any) => col.selected)
       .sort((a: any, b: any) => a.order - b.order)
       .map((col: any) => {
@@ -176,7 +181,7 @@ export const PatientsTable = () => {
     return defaultCols;
   }, [columnsConfig, selectedList?.type]);
 
-  if (!selectedListId || !selectedList || !ready) {
+  if (!selectedList || !ready) {
     return (
       <Box
         sx={{
@@ -222,6 +227,8 @@ export const PatientsTable = () => {
           open={Boolean(selectedPatient)}
           onClose={() => setSelectedPatient(null)}
           patient={selectedPatient}
+          lists={lists}
+          setLists={setLists}
         />
       )}
     </>

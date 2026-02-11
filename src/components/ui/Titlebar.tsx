@@ -165,6 +165,7 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
                   firstName: "Doe",
                   lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
                   birthdate: "1890-01-01",
+                  gender: "Unknown",
                   encounters: { [encID]: { id: encID } as any }
                 }
                 setPatientsDB((prev: any) => ({ ...prev, [pt.id as string]: pt }))
