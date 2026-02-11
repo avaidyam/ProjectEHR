@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import * as React from 'react'
 import { ErrorBoundary } from "react-error-boundary";
 import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
 import { Icon } from 'components/ui/Core';
@@ -86,9 +86,9 @@ export const Patient = ({ ...props }: any) => {
   const [patientMRN] = usePatientMRN();
 
   const drawerWidth = 250
-  const [storyboardOpen, setStoryboardOpen] = useState(true)
-  const [isOrderPickerOpen, setIsOrderPickerOpen] = useState(false)
-  const [isDiagnosisPickerOpen, setIsDiagnosisPickerOpen] = useState(false)
+  const [storyboardOpen, setStoryboardOpen] = React.useState(true)
+  const [isOrderPickerOpen, setIsOrderPickerOpen] = React.useState(false)
+  const [isDiagnosisPickerOpen, setIsDiagnosisPickerOpen] = React.useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (

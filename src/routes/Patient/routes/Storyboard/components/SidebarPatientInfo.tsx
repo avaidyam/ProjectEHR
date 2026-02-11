@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { DateHelpers } from 'util/helpers.js';
 import { Alert, Avatar, Box, colors } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';

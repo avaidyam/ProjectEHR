@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
 import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton, Divider } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
@@ -34,19 +34,19 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     // Flowsheets is Definition[]
     const [flowsheets, setFlowsheets] = useDatabase().flowsheets() as [Database.Flowsheet.Definition[], any];
 
-    const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+    const [contextMenu, setContextMenu] = React.useState<ContextMenuState | null>(null);
 
     // Dialog/Form states
-    const [isAddingGroup, setIsAddingGroup] = useState(false);
-    const [isEditingGroup, setIsEditingGroup] = useState(false);
-    const [isAddingRow, setIsAddingRow] = useState(false);
-    const [isEditingRow, setIsEditingRow] = useState(false);
+    const [isAddingGroup, setIsAddingGroup] = React.useState(false);
+    const [isEditingGroup, setIsEditingGroup] = React.useState(false);
+    const [isAddingRow, setIsAddingRow] = React.useState(false);
+    const [isEditingRow, setIsEditingRow] = React.useState(false);
 
     // Form Data for Group
-    const [groupData, setGroupData] = useState<GroupData>({ id: "", name: "" });
+    const [groupData, setGroupData] = React.useState<GroupData>({ id: "", name: "" });
 
     // Form Data for Row
-    const [rowData, setRowData] = useState<RowData>({
+    const [rowData, setRowData] = React.useState<RowData>({
         name: "", // check unique within group? or globally? assuming globally or within group.
         label: "",
         category: "",

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { DataGrid, Box, dayjs, useGridApiRef, useKeepGroupedColumnsHidden, TitledCard, Icon } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 

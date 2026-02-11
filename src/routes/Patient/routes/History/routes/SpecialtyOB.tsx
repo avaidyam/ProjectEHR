@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Button,
@@ -33,7 +33,7 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 export function SpecialtyOB() {
   const { useEncounter } = usePatient();
   const [obgynData, setObgynData] = useEncounter().history.OBGynHistory({});
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   // Obstetric History handlers
   const handleObstetricChange = (field: string, value: any) => {

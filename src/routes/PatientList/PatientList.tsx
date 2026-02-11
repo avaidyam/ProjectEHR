@@ -9,7 +9,7 @@ import {
   Icon
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { PatientListsContext } from 'components/contexts/PatientListContext';
 import { useDatabase } from 'components/contexts/PatientContext';
 import { ListFormModal } from './components/ListFormModal';
@@ -23,9 +23,9 @@ function PatientLists() {
   const [lists, setLists] = useDatabase().lists();
 
   const selectedListId = listId;
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = React.useState(false);
 
   const selectedList = lists.find((list: any) => list.id === selectedListId);
 
@@ -62,7 +62,7 @@ function PatientLists() {
   };
 
   // Cmd/Ctrl+P shortcut to open print preview
-  useEffect(() => {
+  React.useEffect(() => {
     const handlePrintShortcut = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
         e.preventDefault();

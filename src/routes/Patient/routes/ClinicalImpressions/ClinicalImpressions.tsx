@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
@@ -10,10 +10,10 @@ export const ClinicalImpressions = () => {
 
   // If encounter exists, initialize clinical impressions
   const initialClinicalImpressions = encounter?.clinicalImpressions || [];
-  const [clinicalImpressions, setClinicalImpressions] = useState<any[]>(initialClinicalImpressions);
+  const [clinicalImpressions, setClinicalImpressions] = React.useState<any[]>(initialClinicalImpressions);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const updateClinicalImpressions = (updated: any) => {
     setClinicalImpressions(updated);

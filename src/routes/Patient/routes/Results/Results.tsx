@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect, useRef } from "react";
+import * as React from 'react';
 // @ts-ignore
 import groupBy from 'lodash/groupBy';
 import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core";
@@ -35,7 +35,7 @@ function useNormalizedResults() {
   const visibleLabs = filterDocuments(labDocs as any[], conditionals, orders);
   const visibleImaging = filterDocuments(imagingDocs as any[], conditionals, orders);
 
-  return useMemo(() => {
+  return React.useMemo(() => {
     const categories: Record<string, any> = {
       Laboratory: {},
       Imaging: {},
@@ -156,13 +156,13 @@ const ResultCell = ({ cell }: { cell: any }) => {
 
 function ResultsNavigator({ treeItems, onComponentsChange }: { treeItems: any[]; onComponentsChange: (components: any[]) => void }) {
   const categories = useNormalizedResults();
-  const [query, setQuery] = useState("");
-  const [treeSelection, setTreeSelection] = useState(['cat:Laboratory', 'cat:Imaging', 'cat:Cardiac']);
+  const [query, setQuery] = React.useState("");
+  const [treeSelection, setTreeSelection] = React.useState(['cat:Laboratory', 'cat:Imaging', 'cat:Cardiac']);
 
-  const allParents = useMemo(() => [...treeItems.map((x: any) => x.id), ...treeItems.flatMap((x: any) => x.children.flatMap((y: any) => y.id))], [treeItems])
-  const allItems = useMemo(() => treeItems.flatMap((x: any) => x.children.flatMap((y: any) => y.children.map((z: any) => z.label))), [treeItems])
+  const allParents = React.useMemo(() => [...treeItems.map((x: any) => x.id), ...treeItems.flatMap((x: any) => x.children.flatMap((y: any) => y.id))], [treeItems])
+  const allItems = React.useMemo(() => treeItems.flatMap((x: any) => x.children.flatMap((y: any) => y.children.map((z: any) => z.label))), [treeItems])
 
-  const selectedComponents = useMemo(() => {
+  const selectedComponents = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     const selectedIds = new Set(treeSelection);
 
@@ -179,8 +179,8 @@ function ResultsNavigator({ treeItems, onComponentsChange }: { treeItems: any[];
   }, [categories, treeSelection, query]);
 
   // Use a ref to make sure we aren't looping our render infinitely.
-  const lastComponentsKeyRef = useRef("");
-  useEffect(() => {
+  const lastComponentsKeyRef = React.useRef("");
+  React.useEffect(() => {
     const key = (selectedComponents as any[]).map((c) => c.name).sort().join(",");
     if (key !== lastComponentsKeyRef.current) {
       lastComponentsKeyRef.current = key;
@@ -215,13 +215,13 @@ function ResultsNavigator({ treeItems, onComponentsChange }: { treeItems: any[];
 }
 
 function ResultsGraph({ components }: { components: any[] }) {
-  const timeKeys = useMemo(() => {
+  const timeKeys = React.useMemo(() => {
     const times = new Set<string>();
     components.forEach((t) => (t.results as any[]).forEach((r) => times.add(r.time)));
     return [...times].sort((a, b) => (new Date(b) as any) - (new Date(a) as any)).slice(0, 6);
   }, [components]);
 
-  const graphData = useMemo(() => {
+  const graphData = React.useMemo(() => {
     const timesAsc = [...timeKeys].sort((a, b) => (new Date(a) as any) - (new Date(b) as any));
     return timesAsc.map((iso) => {
       const row: Record<string, any> = { time: iso };
@@ -255,13 +255,13 @@ function ResultsGraph({ components }: { components: any[] }) {
 }
 
 function ResultsGrid({ components }: { components: any[] }) {
-  const timeKeys = useMemo(() => {
+  const timeKeys = React.useMemo(() => {
     const times = new Set<string>();
     components.forEach((t) => (t.results as any[]).forEach((r: any) => times.add(r.time)));
     return [...times].sort((a, b) => (new Date(b) as any) - (new Date(a) as any)).slice(0, 6);
   }, [components]);
 
-  const rows = useMemo(
+  const rows = React.useMemo(
     () =>
       components.map((t: any, idx: number) => {
         const row: Record<string, any> = { id: idx + 1, test: t.name };
@@ -276,7 +276,7 @@ function ResultsGrid({ components }: { components: any[] }) {
     [components, timeKeys]
   );
 
-  const columns = useMemo(() => {
+  const columns = React.useMemo(() => {
     const timeCols = timeKeys.map((iso: string, i: number) => {
       const [datePart, timePart] = formatDate(iso, "short").split(" ");
       return {
@@ -306,10 +306,10 @@ function ResultsGrid({ components }: { components: any[] }) {
 export function ResultsReview() {
   const categories: any[] = useNormalizedResults();
   const { openTab }: any = useSplitView();
-  const [viewMode, setViewMode] = useState("table");
-  const [selectedComponents, setSelectedComponents] = useState<any[]>([]);
+  const [viewMode, setViewMode] = React.useState("table");
+  const [selectedComponents, setSelectedComponents] = React.useState<any[]>([]);
 
-  const treeItems = useMemo(() => categories.map((cat: any) => ({
+  const treeItems = React.useMemo(() => categories.map((cat: any) => ({
     id: `cat:${cat.category}`,
     label: cat.category,
     children: (cat.panels as any[]).map((p: any) => ({

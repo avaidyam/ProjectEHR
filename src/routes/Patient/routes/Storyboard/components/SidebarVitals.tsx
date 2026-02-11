@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { DateHelpers } from 'util/helpers.js';
 import { Fade, Paper, Popper, Typography } from '@mui/material';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
@@ -7,8 +7,8 @@ import { filterDocuments } from 'util/helpers.js';
 const _isBPProblematic = ({ systolic, diastolic }: any) => systolic > 130 || diastolic > 90;
 
 export const VitalsPopup = ({ vitals, definition, ...props }: any) => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [open, setOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [open, setOpen] = React.useState(false);
     const handleMenuOpen = (e: any) => {
         setOpen(true);
         setAnchorEl(e.currentTarget);

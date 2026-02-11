@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, Typography, Card, CardContent, Grid, FormControl, Select, MenuItem, Chip, Avatar } from '@mui/material';
@@ -18,8 +18,8 @@ export function Snapboard() {
     const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
     const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
 
-    const [selectedDate, setSelectedDate] = useState(initialDate);
-    const [selectedDept, setSelectedDept] = useState(initialDept);
+    const [selectedDate, setSelectedDate] = React.useState(initialDate);
+    const [selectedDept, setSelectedDept] = React.useState(initialDept);
 
     // Update URL function
     const updateUrl = (dept: any, dateObj: any) => {
@@ -39,7 +39,7 @@ export function Snapboard() {
     };
 
     // Effect to sync state if URL changes externally
-    useEffect(() => {
+    React.useEffect(() => {
         if (department) {
             setSelectedDept(parseInt(department));
         }

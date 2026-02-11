@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext';
@@ -157,7 +157,7 @@ export function Schedule() {
   const [preview, setPreview] = React.useState(100); // set width of table
   const [hide, setHide] = React.useState(0); // patient info hidden, will incr when checkbox marked
   const [filterElem, setFilterElem] = React.useState(null); // for filter
-  const { enabledEncounters } = useContext(AuthContext) as any; // Access the enabled encounters
+  const { enabledEncounters } = React.useContext(AuthContext) as any; // Access the enabled encounters
 
   const { department, date } = useParams();
   const navigate = useNavigate();
@@ -189,7 +189,7 @@ export function Schedule() {
   };
 
   // Effect to sync state if URL changes externally (e.g. back button)
-  useEffect(() => {
+  React.useEffect(() => {
     if (department) {
       setSelectedDept(parseInt(department));
     }
@@ -208,7 +208,7 @@ export function Schedule() {
   };
 
 
-  const [notification, setNotification] = useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
+  const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
 
   const showNotification = (message: string, severity: 'info' | 'warning' | 'error' | 'success' = 'info') => {
     setNotification({ open: true, message, severity });

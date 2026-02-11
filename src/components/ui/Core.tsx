@@ -337,7 +337,7 @@ export const Tab: React.FC<TabProps> = ({ children, ...props }) => (
   </MUITab>
 )
 
-// TODO: Automate the useState()/onChange() so the client does not need to worry
+// TODO: Automate the React.useState()/onChange() so the client does not need to worry
 export const TabList: React.FC<TabListProps> = ({ children, ...props }) => (
   <MUITabList
     variant="scrollable"

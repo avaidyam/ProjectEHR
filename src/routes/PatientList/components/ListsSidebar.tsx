@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Icon, TreeView } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
@@ -36,7 +36,7 @@ const createTreeItems = (lists: any[]) => {
 export const ListsSidebar = () => {
   const navigate = useNavigate();
   const { lists, selectedListId } = usePatientLists();
-  const [expandedItems, setExpandedItems] = useState(['my-lists', 'available-lists']);
+  const [expandedItems, setExpandedItems] = React.useState(['my-lists', 'available-lists']);
 
   const handleItemClick = (event: React.MouseEvent, itemId: string) => {
     if (itemId !== 'my-lists' && itemId !== 'available-lists') {

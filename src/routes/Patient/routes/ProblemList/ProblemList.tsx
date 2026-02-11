@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { TextField, Checkbox, IconButton } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
@@ -20,10 +20,10 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
   const { useEncounter } = usePatient()
   const [problems, setProblems] = (useEncounter() as any).problems([])
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
-  const [indexToUpdate, setIndexToUpdate] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [indexToUpdate, setIndexToUpdate] = React.useState<number | null>(null);
 
   const handleExpandRow = (rowIndex: any) => {
     setExpandedRowIds(prev => {

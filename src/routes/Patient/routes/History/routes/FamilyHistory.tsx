@@ -1,5 +1,5 @@
 // FamilyHistory.jsx
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import {
   Box,
   Button,
@@ -107,15 +107,15 @@ const getUniqueProblems = (familyHistory: any[]) => {
 export function FamilyHistory() {
   const { useEncounter } = usePatient();
   const [familyHx, setFamilyHx] = useEncounter().history.family([]);
-  const [familyData, setFamilyData] = useState(
+  const [familyData, setFamilyData] = React.useState(
     familyHx && familyHx.length > 0 ? familyHx : defaultFamilyMembers
   );
-  const [isAddProblemOpen, setIsAddProblemOpen] = useState(false);
-  const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<any>(null);
-  const [selectedProblem, setSelectedProblem] = useState<any>(null);
-  const [commentText, setCommentText] = useState('');
-  const [newRelationship, setNewRelationship] = useState<string | null>('');
+  const [isAddProblemOpen, setIsAddProblemOpen] = React.useState(false);
+  const [isCommentsOpen, setIsCommentsOpen] = React.useState(false);
+  const [selectedMember, setSelectedMember] = React.useState<any>(null);
+  const [selectedProblem, setSelectedProblem] = React.useState<any>(null);
+  const [commentText, setCommentText] = React.useState('');
+  const [newRelationship, setNewRelationship] = React.useState<string | null>('');
 
   const uniqueProblems = getUniqueProblems(familyData);
 

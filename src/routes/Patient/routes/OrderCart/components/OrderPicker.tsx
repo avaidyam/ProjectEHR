@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
 

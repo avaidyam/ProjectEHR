@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Stack, Button, Label, Window } from 'components/ui/Core';
 import { usePatientLists } from 'components/contexts/PatientListContext';
 

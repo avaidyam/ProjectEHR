@@ -1,5 +1,5 @@
 // Medications.jsx
-import React, { useState, useCallback } from 'react';
+import * as React from 'react';
 import {
   Box,
   Stack,
@@ -21,7 +21,7 @@ import { usePatient } from 'components/contexts/PatientContext';
 export function Medications() {
   const { useEncounter } = usePatient();
   const [medications, setMedications] = (useEncounter() as any).medications();
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
 
   const handleEdit = (id: any) => {
     setExpandedRowIds(new Set([id]));
@@ -108,7 +108,7 @@ export function Medications() {
     }
   ];
 
-  const getDetailPanelContent = useCallback(
+  const getDetailPanelContent = React.useCallback(
     ({ row }: { row: any }) => (
       <Box paper sx={{ p: 2, mx: 4, my: 1, border: '1px solid #e0e0e0' }}>
         <MedicationItemEditor

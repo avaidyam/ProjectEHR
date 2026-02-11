@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Avatar, Box, Divider, FormControl, InputLabel, MenuItem, Select, Typography, colors } from '@mui/material';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { Window, Button, TextField, Icon, IconButton } from 'components/ui/Core';
@@ -10,9 +10,9 @@ const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }: 
     setCareTeam: (careTeam: any[]) => void;
     allProviders: any[];
 }) => {
-    const [localCareTeam, setLocalCareTeam] = useState(careTeam || []);
-    const [newProviderId, setNewProviderId] = useState('');
-    const [newProviderRole, setNewProviderRole] = useState('');
+    const [localCareTeam, setLocalCareTeam] = React.useState(careTeam || []);
+    const [newProviderId, setNewProviderId] = React.useState('');
+    const [newProviderRole, setNewProviderRole] = React.useState('');
 
     React.useEffect(() => {
         setLocalCareTeam(careTeam || []);
@@ -125,7 +125,7 @@ export const SidebarCareTeam = () => {
     const [careTeam, setCareTeam] = (useChart() as any).careTeam();
     const [providers] = (useDatabase() as any).providers();
     const [insurance] = (useChart() as any).insurance();
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
 
     return (
         <>

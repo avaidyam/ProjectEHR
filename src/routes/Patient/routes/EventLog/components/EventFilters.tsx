@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Box, Stack, Icon, TreeView, TreeItem, Button, Label } from 'components/ui/Core';
 
 const buildFilterTree = (filters: any[]) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Tooltip } from '@mui/material'; // FIXME: REMOVE!
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
@@ -247,8 +247,8 @@ export const ChartReview = ({ ...props }: any) => {
   const [departments] = useDatabase().departments()
   const [providers] = useDatabase().providers()
   const { openTab } = useSplitView()
-  const [selectedTabLabel, setSelectedTabLabel] = useState('Encounters');
-  const [rowSelectionModel, setRowSelectionModel] = useState<any>({ type: 'include' as const, ids: new Set() });
+  const [selectedTabLabel, setSelectedTabLabel] = React.useState('Encounters');
+  const [rowSelectionModel, setRowSelectionModel] = React.useState<any>({ type: 'include' as const, ids: new Set() });
 
   const enrichDocs = (docs: any, kind: string, enc: any) => (docs || []).map((d: any) => {
     const authorProv = d.author ? providers.find((p: any) => p.id === d.author) : null;

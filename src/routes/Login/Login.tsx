@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
 import { AuthContext, AuthContextType } from 'components/contexts/AuthContext';
@@ -19,24 +19,24 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const [schedules] = useDatabase().schedules();
   const [departments] = useDatabase().departments();
 
-  const [displayDepts, setDisplayDepts] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [department, setDepartment] = useState<Database.Department>();
+  const [displayDepts, setDisplayDepts] = React.useState(false);
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [department, setDepartment] = React.useState<Database.Department>();
   const navigate = useNavigate();
-  const { login, verifyPassword, updateEncounters, enabledEncounters } = useContext(AuthContext) as AuthContextType;
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal open state
+  const { login, verifyPassword, updateEncounters, enabledEncounters } = React.useContext(AuthContext) as AuthContextType;
+  const [isModalOpen, setIsModalOpen] = React.useState(false); // Modal open state
 
-  const [patients, setPatients] = useState<string[]>([]); // State to store the extracted patients
-  const [encounterCounts, setEncounterCounts] = useState<Record<string, number>>({}); // State as a hash object
+  const [patients, setPatients] = React.useState<string[]>([]); // State to store the extracted patients
+  const [encounterCounts, setEncounterCounts] = React.useState<Record<string, number>>({}); // State as a hash object
 
-  const [notification, setNotification] = useState<{ open: boolean; message: string; severity: AlertColor }>({ open: false, message: '', severity: 'info' });
+  const [notification, setNotification] = React.useState<{ open: boolean; message: string; severity: AlertColor }>({ open: false, message: '', severity: 'info' });
 
   const showNotification = (message: string, severity: AlertColor = 'info') => {
     setNotification({ open: true, message, severity });
   };
 
-  const [promptState, setPromptState] = useState<{ open: boolean; title: string; placeholder: string; onConfirm: ((value: string) => void) | null }>({ open: false, title: '', placeholder: '', onConfirm: null });
+  const [promptState, setPromptState] = React.useState<{ open: boolean; title: string; placeholder: string; onConfirm: ((value: string) => void) | null }>({ open: false, title: '', placeholder: '', onConfirm: null });
 
   const showPrompt = (title: string, placeholder: string, onConfirm: (value: string) => void) => {
     setPromptState({ open: true, title, placeholder, onConfirm });
@@ -47,14 +47,14 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   };
 
   // Extract unique MRNs from patient_sample.json -> schedules
-  useEffect(() => {
+  React.useEffect(() => {
     const allAppointments = schedules.flatMap((s: any) => s.appointments);
     const uniqueMRNs = Array.from(new Set(allAppointments.map((appt: any) => appt.patient.mrn))) as string[];
     setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
   }, [schedules]);
 
   // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
-  useEffect(() => {
+  React.useEffect(() => {
     const allAppointments = schedules.flatMap((s: any) => s.appointments);
     const uniqueMRNs = Array.from(new Set(allAppointments.map((appt: any) => appt.patient.mrn))) as string[];
 
@@ -68,7 +68,7 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     setEncounterCounts(encountersHash); // Update state with the hash
   }, [schedules, patientsDB]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (Object.keys(enabledEncounters).length === 0 && patients.length > 0) {
       const defaultEncounters: Record<string, number | null> = {};
       patients.forEach((mrn) => {

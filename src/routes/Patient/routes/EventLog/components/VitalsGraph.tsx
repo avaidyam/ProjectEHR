@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Box, Stack, Button } from '@mui/material';
 import { LineChart } from '@mui/x-charts/LineChart';
 
@@ -12,7 +12,7 @@ const VITALS_CONFIG = [
 ];
 
 export const VitalsGraph = ({ data }: { data: any[] }) => {
-  const [hiddenSeries, setHiddenSeries] = useState<string[]>([]);
+  const [hiddenSeries, setHiddenSeries] = React.useState<string[]>([]);
 
   const toggleSeries = (key: string) => {
     setHiddenSeries((prev: string[]) =>

@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import * as React from 'react';
 // Clear specific localStorage items on refresh
 // localStorage.removeItem('adminPassword'); // Removes only the admin password - helpful for testing purposes
 
@@ -13,19 +13,19 @@ export interface AuthContextType {
   logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = React.createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
     return !!localStorage.getItem('userLoginDetails')
   });
 
   // Check if a password is already set in localStorage
-  const [isPasswordSet, setIsPasswordSet] = useState(() => {
+  const [isPasswordSet, setIsPasswordSet] = React.useState(() => {
     return !!localStorage.getItem('adminPassword'); // True if a password exists
   });
 
-  const [enabledEncounters, setEnabledEncounters] = useState<Record<string, boolean>>(() => {
+  const [enabledEncounters, setEnabledEncounters] = React.useState<Record<string, boolean>>(() => {
     const storedEncounters = localStorage.getItem('enabledEncounters');
     // Parse stored encounters or initialize an empty object
     return storedEncounters ? JSON.parse(storedEncounters) : {};

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import * as React from 'react';
 import { Box, Stack, Tabs, Tab, Typography, Toolbar, Button, Icon } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, Spacer } from 'components/ui/Core';
@@ -15,15 +15,15 @@ export const NotesList = () => {
   const [conditionals] = (useEncounter() as any).conditionals();
   const [orders] = (useEncounter() as any).orders();
   const [providers] = (useDatabase() as any).providers();
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedNote, setSelectedNote] = useState<any>(null);
+  const [selectedCategory, setSelectedCategory] = React.useState('All');
+  const [selectedNote, setSelectedNote] = React.useState<any>(null);
 
-  const visibleNotes = useMemo(() => {
+  const visibleNotes = React.useMemo(() => {
     return filterDocuments(notes, conditionals, orders);
   }, [notes, conditionals, orders]);
 
   // Extract unique categories from notes
-  const categories = useMemo(() => {
+  const categories = React.useMemo(() => {
     const categorySet = new Set(['All']);
     (visibleNotes || []).forEach((note: any) => {
       if (note.type) {
@@ -34,7 +34,7 @@ export const NotesList = () => {
   }, [visibleNotes]);
 
   // Filter notes by selected category
-  const filteredNotes = useMemo(() => {
+  const filteredNotes = React.useMemo(() => {
     if (!visibleNotes) return [];
     if (selectedCategory === 'All') return visibleNotes;
     return visibleNotes.filter((note: any) => note.type === selectedCategory);

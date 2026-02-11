@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 // THIS FILE IS COPIED FROM: https://github.com/sjdemartini/mui-tiptap/tree/main
 
-import React, { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import * as React from 'react';
 import { useTheme, Box, Button, Stack, Typography, Icon } from "@mui/material";
 
 import { Blockquote } from "@tiptap/extension-blockquote";
@@ -134,7 +134,7 @@ function fileListToImageFiles(fileList: FileList): File[] {
  * editor.
  */
 function useExtensions({ placeholder }: { placeholder?: string } = {}) {
-  return useMemo(() => {
+  return React.useMemo(() => {
     return [
       // We incorporate all of the functionality that's part of
       // https://tiptap.dev/api/extensions/starter-kit, plus a few additional
@@ -400,18 +400,18 @@ export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter 
   const extensions = useExtensions({
     placeholder: placeholder,
   });
-  const rteRef = useRef<any>(null);
-  const [isEditable, setIsEditable] = useState(true);
-  const [showMenuBar, setShowMenuBar] = useState(true);
-  const [submittedContent, setSubmittedContent] = useState(initialContent);
+  const rteRef = React.useRef<any>(null);
+  const [isEditable, setIsEditable] = React.useState(true);
+  const [showMenuBar, setShowMenuBar] = React.useState(true);
+  const [submittedContent, setSubmittedContent] = React.useState(initialContent);
 
-  const handleUpdate = useCallback(({ editor }: { editor: any }) => {
+  const handleUpdate = React.useCallback(({ editor }: { editor: any }) => {
     if (onUpdate) {
       onUpdate(editor.getHTML());
     }
   }, [onUpdate]);
 
-  const handleNewImageFiles = useCallback(
+  const handleNewImageFiles = React.useCallback(
     (files: File[], insertPosition?: number) => {
       if (!rteRef.current?.editor) {
         return;
@@ -441,7 +441,7 @@ export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter 
 
   // Allow for dropping images into the editor
   const handleDrop =
-    useCallback(
+    React.useCallback(
       (view: any, event: Event, _slice: any, _moved: boolean) => {
         if (!(event instanceof DragEvent) || !event.dataTransfer) {
           return false;
@@ -469,7 +469,7 @@ export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter 
 
   // Allow for pasting images
   const handlePaste =
-    useCallback(
+    React.useCallback(
       (_view: any, event: ClipboardEvent, _slice: any) => {
         if (!event.clipboardData) {
           return false;

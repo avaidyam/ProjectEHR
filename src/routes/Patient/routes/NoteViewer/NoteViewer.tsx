@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Box, Stack, Divider, Label, RichText } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
 

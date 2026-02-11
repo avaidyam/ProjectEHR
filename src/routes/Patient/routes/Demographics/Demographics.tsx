@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, TextField, Autocomplete } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 

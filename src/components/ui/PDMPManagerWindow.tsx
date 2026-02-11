@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete, IconButton } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
@@ -150,9 +150,9 @@ const PDMPManagerContent: React.FC<PDMPManagerContentProps> = ({ mrn, encounterI
     const dbHook = useDatabase() as any;
     const [dispenseHistory, setDispenseHistory] = dbHook.patients[mrn].encounters[encounterId].dispenseHistory();
 
-    const [view, setView] = useState<'list' | 'add'>('list');
+    const [view, setView] = React.useState<'list' | 'add'>('list');
 
-    const [newItem, setNewItem] = useState({
+    const [newItem, setNewItem] = React.useState({
         name: '',
         route: '',
         dosage: '',

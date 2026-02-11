@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import * as React from 'react';
 import { Paper, Box, TextField, Button, Typography, Stack } from "@mui/material";
 import { useGeminiAPIContext } from "../utils/GeminiAPI";
 
 export function ChatPanel() {
   const { sendMessage, getHistory } = useGeminiAPIContext();
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [input, setInput] = React.useState("");
+  const [messages, setMessages] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   const sendMessage2 = async () => {
     if (!input.trim()) return;

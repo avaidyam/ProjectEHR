@@ -1,5 +1,5 @@
 // SocialHistoryADL.jsx
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Button,
@@ -25,7 +25,7 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
   const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL();
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   const leftColumnItems = [
     { key: 'backCare', label: 'Back Care' },

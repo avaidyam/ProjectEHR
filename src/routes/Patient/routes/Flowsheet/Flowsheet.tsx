@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import * as React from 'react';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
@@ -58,17 +58,17 @@ export const Flowsheet = () => {
     const [flowsheetDefs] = useDatabase().flowsheets();
 
     // Default active tab
-    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'vitals');
+    const [activeTab, setActiveTab] = React.useState(searchParams.get('tab') || 'vitals');
 
     // Context Data
     const { useEncounter } = usePatient();
     const [flowsheetData, setFlowsheetData] = useEncounter().flowsheets();
 
     // Local state for the "Now" column which is not yet saved to DB
-    const [nowColumn, setNowColumn] = useState<TimeColumn>(createNowColumn());
+    const [nowColumn, setNowColumn] = React.useState<TimeColumn>(createNowColumn());
 
     // Update active tab if search params change
-    useEffect(() => {
+    React.useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab) setActiveTab(tab);
     }, [searchParams]);
@@ -79,7 +79,7 @@ export const Flowsheet = () => {
     };
 
     // Prepare tab list from definitions
-    const tabs = useMemo(() => (flowsheetDefs || []).map((group: any) => {
+    const tabs = React.useMemo(() => (flowsheetDefs || []).map((group: any) => {
         if (group.rows && Array.isArray(group.rows)) {
             return {
                 id: group.id || group.name, // Use ID if available, fall back to name
@@ -90,12 +90,12 @@ export const Flowsheet = () => {
         return null;
     }).filter((t: any) => t !== null), [flowsheetDefs]);
 
-    const activeGroup = useMemo(() => tabs.find((t: any) => t.id === activeTab) || tabs[0], [tabs, activeTab]);
+    const activeGroup = React.useMemo(() => tabs.find((t: any) => t.id === activeTab) || tabs[0], [tabs, activeTab]);
 
     // --- Derived State ---
 
     // 1. Time Columns: Persisted (from flowsheetData) + Now Column
-    const timeColumns = useMemo(() => {
+    const timeColumns = React.useMemo(() => {
         if (!activeGroup) return [nowColumn];
 
         // Filter data for this flowsheet group
@@ -117,7 +117,7 @@ export const Flowsheet = () => {
     }, [flowsheetData, activeGroup, nowColumn]);
 
     // 2. Entries: Flattened list from flowsheetData
-    const entries = useMemo(() => {
+    const entries = React.useMemo(() => {
         if (!activeGroup) return [];
 
         if (!flowsheetData) return [];
@@ -144,7 +144,7 @@ export const Flowsheet = () => {
     }, [flowsheetData, activeGroup]);
 
     // 3. Last Filed Values
-    const lastFiledValues = useMemo(() => {
+    const lastFiledValues = React.useMemo(() => {
         if (!activeGroup || !flowsheetData) return {};
 
         const groupData = (flowsheetData || [])
@@ -169,7 +169,7 @@ export const Flowsheet = () => {
     // --- Handlers ---
 
     // Update the "Now" column's timestamp (called by timer) OR convert to persisted
-    const handleUpdateTimeColumn = useCallback((id: string, updates: Partial<TimeColumn>) => {
+    const handleUpdateTimeColumn = React.useCallback((id: string, updates: Partial<TimeColumn>) => {
         if (id === nowColumn.id) {
             if (updates.isCurrentTime === false) {
                 // Formatting "Now" to a saved column
@@ -206,12 +206,12 @@ export const Flowsheet = () => {
         }
     }, [nowColumn, activeGroup, setFlowsheetData]);
 
-    const handleAddTimeColumn = useCallback((column: TimeColumn) => {
+    const handleAddTimeColumn = React.useCallback((column: TimeColumn) => {
         // This is called by Grid to spawn the NEW "Now" column
         setNowColumn(column);
     }, []);
 
-    const handleAddEntry = useCallback((entry: Omit<FlowsheetEntry, 'id'>) => {
+    const handleAddEntry = React.useCallback((entry: Omit<FlowsheetEntry, 'id'>) => {
         // entry: { rowId, columnId, value }
         setFlowsheetData((prev: any[] | undefined) => {
             // Find the time column object
@@ -231,7 +231,7 @@ export const Flowsheet = () => {
         });
     }, [activeGroup, setFlowsheetData]);
 
-    const handleUpdateEntry = useCallback((id: string, updates: Partial<FlowsheetEntry>) => {
+    const handleUpdateEntry = React.useCallback((id: string, updates: Partial<FlowsheetEntry>) => {
         const [columnId, rowId] = id.split('::');
 
         if (columnId && rowId && updates.value !== undefined) {
@@ -242,16 +242,16 @@ export const Flowsheet = () => {
     }, [setFlowsheetData]);
 
     // --- Visibility State ---
-    const [visibleRows, setVisibleRows] = useState<string[]>([]);
+    const [visibleRows, setVisibleRows] = React.useState<string[]>([]);
 
     // Reset visible rows when active group changes
-    useEffect(() => {
+    React.useEffect(() => {
         if (activeGroup?.rows) {
             setVisibleRows(activeGroup.rows.map((r: any) => r.name));
         }
     }, [activeGroup]);
 
-    const handleToggleRow = useCallback((rowName: string) => {
+    const handleToggleRow = React.useCallback((rowName: string) => {
         setVisibleRows(prev => {
             if (prev.includes(rowName)) {
                 return prev.filter(r => r !== rowName);
@@ -260,7 +260,7 @@ export const Flowsheet = () => {
         });
     }, []);
 
-    const handleToggleCategory = useCallback((category: string, allSelected: boolean) => {
+    const handleToggleCategory = React.useCallback((category: string, allSelected: boolean) => {
         if (!activeGroup?.rows) return;
 
         const categoryRows = activeGroup.rows.filter((r: any) =>

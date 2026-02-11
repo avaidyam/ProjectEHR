@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, MouseEvent } from 'react';
+import * as React from 'react';
 import { ErrorBoundary } from "react-error-boundary";
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material'
@@ -21,8 +21,8 @@ interface AuthContextType {
 
 export const App: React.FC = () => {
   const navigate = useNavigate()
-  const { isAuthenticated, logout } = useContext(AuthContext) as AuthContextType
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(isAuthenticated)
+  const { isAuthenticated, logout } = React.useContext(AuthContext) as AuthContextType
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(isAuthenticated)
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
     navigate('/');
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     let lastRightClickTime = 0;
 
     const handleContextMenu = (e: any) => {

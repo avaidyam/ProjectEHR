@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { Box, Label, Icon, Stack, Button } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';

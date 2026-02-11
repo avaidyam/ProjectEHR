@@ -1,6 +1,6 @@
 // This module represents the login configure modal popup that allows the admin to select the viewable pts and encounter values
 
-import React, { useState } from 'react';
+import * as React from 'react';
 import { MenuItem, Select } from '@mui/material';
 import { Box, Label, Button, Window } from 'components/ui/Core';
 
@@ -13,7 +13,7 @@ interface ConfigureDialogProps {
 }
 
 export const ConfigureDialog: React.FC<ConfigureDialogProps> = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
-  const [selectedEncounters, setSelectedEncounters] = useState<Record<string, number | null>>({});
+  const [selectedEncounters, setSelectedEncounters] = React.useState<Record<string, number | null>>({});
 
   // Handle selecting an encounter for a patient
   const handleSelectEncounter = (patient: string, encounter: string | number) => {

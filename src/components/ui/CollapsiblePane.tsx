@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Box, Collapse, SxProps, Theme } from '@mui/material';
 import { Icon, IconButton } from './Core';
 
@@ -11,7 +11,7 @@ interface CollapsiblePaneProps {
 }
 
 export const CollapsiblePane: React.FC<CollapsiblePaneProps> = ({ children, width = 250, defaultOpen = true, side = 'left', sx }) => {
-    const [isOpen, setIsOpen] = useState(defaultOpen);
+    const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     const isLeft = side === 'left';
 

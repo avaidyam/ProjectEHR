@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Box, Button, MenuItem, Tab, TabList, TabPanel, TabView, TextField } from 'components/ui/Core';
 import { FormControl, Select, IconButton, Grid, Checkbox, Typography, Icon, Popover } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
@@ -428,8 +428,8 @@ const generateHTML = (systemsState: Record<string, any>, sectionToGenerate: stri
 };
 
 const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUpdate }: { title: string; subsections: any[]; state: any; onUpdate: (subTitle: string | null, type: string, key: string | null, val: any) => void }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [tempNote, setTempNote] = useState('');
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [tempNote, setTempNote] = React.useState('');
 
   const handleCustomNoteClick = (event: React.MouseEvent<HTMLElement>) => {
     setTempNote(state?.custom || '');
@@ -617,7 +617,7 @@ const GenericNoteWriterTab = ({ data, state, updateState }: { data: any[]; state
 export const NoteWriter = () => {
   const { useEncounter } = usePatient()
   const [activeNote, setActiveNote] = (useEncounter() as any).smartData.activeNote()
-  const [selectedTabLabel, setSelectedTabLabel] = useState(Object.keys(systemsTemplate)[0] ?? '')
+  const [selectedTabLabel, setSelectedTabLabel] = React.useState(Object.keys(systemsTemplate)[0] ?? '')
 
   const systemsState = activeNote?.systems || {};
 

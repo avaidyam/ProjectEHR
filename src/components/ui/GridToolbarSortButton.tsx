@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import type { GridSortDirection } from '@mui/x-data-grid-premium';
 import {
   useGridApiContext,
@@ -30,7 +30,7 @@ import {
  * @returns 
  */
 export function GridToolbarSortButton() {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const apiRef = useGridApiContext();
   const rootProps = useGridRootProps();
   const fields = useGridSelector(apiRef, gridColumnDefinitionsSelector);

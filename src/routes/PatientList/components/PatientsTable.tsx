@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Button,
@@ -33,12 +33,12 @@ export const PatientsTable = () => {
   const navigate = useNavigate();
   const { selectedListId, lists } = usePatientLists();
   const [patientsDB] = useDatabase().patients();
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
-  const [ready, setReady] = useState(false);
+  const [selectedPatient, setSelectedPatient] = React.useState<any>(null);
+  const [ready, setReady] = React.useState(false);
 
   const selectedList = lists.find((list: any) => list.id === selectedListId);
 
-  const listPatients = useMemo(() => {
+  const listPatients = React.useMemo(() => {
     if (!selectedList) return [];
     if (selectedList.id === 'all-patients') return Object.values(patientsDB as any);
 
@@ -51,7 +51,7 @@ export const PatientsTable = () => {
   }, [selectedList, patientsDB]);
 
   // Wait until patients with sticky notes are fully loaded
-  useEffect(() => {
+  React.useEffect(() => {
     if (listPatients.length) {
       setReady(true);
     }
@@ -79,7 +79,7 @@ export const PatientsTable = () => {
     { id: 'status', label: 'Status', selected: true, order: 4 },
   ];
 
-  const columns = useMemo(() => {
+  const columns = React.useMemo(() => {
     const defaultCols = columnsConfig
       .filter((col: any) => col.selected)
       .sort((a: any, b: any) => a.order - b.order)

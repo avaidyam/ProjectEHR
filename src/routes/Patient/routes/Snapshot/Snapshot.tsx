@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 // @ts-ignore
 import groupBy from 'lodash/groupBy';
 import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core';
@@ -24,7 +24,7 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
   const [familyHx, setFamilyHx]: [any[], any] = (useEncounter() as any).history.family()
   const [medicationHx, setMedicationHx]: [any[], any] = (useEncounter() as any).medications()
 
-  // const { enabledEncounters } = useContext(AuthContext); // Access the enabled encounters
+  // const { enabledEncounters } = React.useContext(AuthContext); // Access the enabled encounters
 
   const isSectionEmpty = (section: any[] | null | undefined) => {
     return !section || section.length === 0;

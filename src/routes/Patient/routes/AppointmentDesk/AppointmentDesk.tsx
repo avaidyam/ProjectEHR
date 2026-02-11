@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Box, DataGrid, Label, Button, Window, IconButton } from 'components/ui/Core';
 import { useDatabase, usePatient } from 'components/contexts/PatientContext';
 import dayjs from 'dayjs';
@@ -14,9 +14,9 @@ export const AppointmentDesk = () => {
     const [locations] = useDatabase().locations();
     const [patientsDB] = useDatabase().patients();
 
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-    const [editingAppointment, setEditingAppointment] = useState<any>(null);
-    const [deleteConfirmation, setDeleteConfirmation] = useState<any>(null);
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
+    const [editingAppointment, setEditingAppointment] = React.useState<any>(null);
+    const [deleteConfirmation, setDeleteConfirmation] = React.useState<any>(null);
 
     // 1. Flatten all appointments from all schedules
     // 2. Filter for the current patient

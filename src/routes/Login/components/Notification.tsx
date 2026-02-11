@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Snackbar, Alert, AlertColor } from '@mui/material';
 
 interface NotificationProps {

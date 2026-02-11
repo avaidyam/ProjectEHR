@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import * as React from 'react';
 import { DataGrid } from 'components/ui/Core'
 import { Box, TextField, Select, MenuItem, Autocomplete } from '@mui/material';
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
@@ -75,8 +75,8 @@ const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
 };
 
 export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [tempValue, setTempValue] = React.useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
 
   const handleDoubleClick = () => {
     setTempValue(dayjs(column.timestamp));
@@ -156,7 +156,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
   onUpdateTimeColumn
 }) => {
   // "Now" column logic
-  useEffect(() => {
+  React.useEffect(() => {
     const updateCurrentTime = () => {
       const currentColumn = timeColumns.find((col: TimeColumn) => col.isCurrentTime);
       if (currentColumn) {
@@ -180,7 +180,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     return () => clearInterval(intervalId);
   }, [timeColumns, onUpdateTimeColumn]);
 
-  const entriesMap = useMemo(() => {
+  const entriesMap = React.useMemo(() => {
     const map = new Map<string, Map<string, any>>();
     entries.forEach((entry: FlowsheetEntry) => {
       if (!map.has(entry.rowId)) {
@@ -192,7 +192,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
   }, [entries]);
 
   // Prepare data for DataGrid with Grouping
-  const rows = useMemo(() => {
+  const rows = React.useMemo(() => {
     const finalRows: any[] = [];
     const groups: { [key: string]: FlowsheetRow[] } = {};
 
@@ -244,7 +244,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     return finalRows;
   }, [rowsDefinition, timeColumns, entriesMap, visibleRows, lastFiledValues]);
 
-  const columns = useMemo(() => {
+  const columns = React.useMemo(() => {
     const cols: any[] = [
       {
         field: 'label',
@@ -300,7 +300,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     return cols;
   }, [timeColumns]);
 
-  const columnGroupingModel = useMemo(() => {
+  const columnGroupingModel = React.useMemo(() => {
     const groups: { [key: string]: string[] } = {};
 
     timeColumns.forEach((col) => {

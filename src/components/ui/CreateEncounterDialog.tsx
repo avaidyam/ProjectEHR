@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { Box, Button, Window, TextField } from './Core';
 import * as Database from '../contexts/Database';
@@ -38,7 +38,7 @@ interface EncounterFormData {
 }
 
 export const CreateEncounterDialog: React.FC<CreateEncounterDialogProps> = ({ open, onClose, onSubmit, departments, providers }) => {
-    const [formData, setFormData] = useState<EncounterFormData>({
+    const [formData, setFormData] = React.useState<EncounterFormData>({
         startDate: new Date().toISOString().slice(0, 16), // Default to now
         endDate: new Date(new Date().getTime() + 30 * 60000).toISOString().slice(0, 16), // Default +30m
         department: '',

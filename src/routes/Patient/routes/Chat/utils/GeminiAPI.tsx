@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import * as React from "react";
 import { EventEmitter } from "eventemitter3";
 import {
   Content,
@@ -22,7 +22,7 @@ import { VolMeterWorket } from "../worklets/VolMeterWorklet";
 // alternative to lodash's _.difference()
 const difference = (arrayA: any[], arrayB: any[]) => arrayA.filter((x) => !arrayB.includes(x))
 
-const GeminiAPIContext = createContext<UseGeminiAPIResults | undefined>(undefined);
+const GeminiAPIContext = React.createContext<UseGeminiAPIResults | undefined>(undefined);
 
 export type LiveClientOptions = GoogleGenAIOptions & {
   apiKey: string,
@@ -56,7 +56,7 @@ export type ClientContentLog = {
 };
 
 export type GeminiAPIProviderProps = {
-  children: ReactNode;
+  children: React.ReactNode;
   options: LiveClientOptions;
 };
 
@@ -75,7 +75,7 @@ export type UseGeminiAPIResults = {
   setSpeakerDevice: (deviceId: string) => Promise<void>;
 };
 
-export const GeminiAPIProvider: FC<GeminiAPIProviderProps> = ({
+export const GeminiAPIProvider: React.FC<GeminiAPIProviderProps> = ({
   options,
   children,
 }) => {
@@ -89,7 +89,7 @@ export const GeminiAPIProvider: FC<GeminiAPIProviderProps> = ({
 };
 
 export const useGeminiAPIContext = () => {
-  const context = useContext(GeminiAPIContext);
+  const context = React.useContext(GeminiAPIContext);
   if (!context) {
     throw new Error("useGeminiAPIContext must be used wihin a LiveAPIProvider");
   }
@@ -97,16 +97,16 @@ export const useGeminiAPIContext = () => {
 };
 
 export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
-  const client = useMemo(() => new GenAILiveClient(options), [options]);
-  const audioStreamerRef = useRef<AudioStreamer | null>(null);
+  const client = React.useMemo(() => new GenAILiveClient(options), [options]);
+  const audioStreamerRef = React.useRef<AudioStreamer | null>(null);
 
-  const [model, setModel] = useState<string>(options.model ?? "models/gemini-2.0-flash");
-  const [config, setConfig] = useState<LiveConnectConfig>(options.config ?? {});
-  const [connected, setConnected] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const [model, setModel] = React.useState<string>(options.model ?? "models/gemini-2.0-flash");
+  const [config, setConfig] = React.useState<LiveConnectConfig>(options.config ?? {});
+  const [connected, setConnected] = React.useState(false);
+  const [volume, setVolume] = React.useState(0);
 
   // register audio for streaming server -> speakers
-  useEffect(() => {
+  React.useEffect(() => {
     if (!audioStreamerRef.current) {
       audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
         audioStreamerRef.current = new AudioStreamer(audioCtx);
@@ -121,7 +121,7 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     }
   }, [audioStreamerRef]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onOpen = () => {
       setConnected(true);
     };
@@ -157,7 +157,7 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     };
   }, [client]);
 
-  const connect = useCallback(async () => {
+  const connect = React.useCallback(async () => {
     if (!config) {
       throw new Error("config has not been set");
     }
@@ -165,20 +165,20 @@ export function useGeminiAPI(options: LiveClientOptions): UseGeminiAPIResults {
     await client.connect(model, config);
   }, [client, config, model]);
 
-  const disconnect = useCallback(async () => {
+  const disconnect = React.useCallback(async () => {
     client.disconnect();
     setConnected(false);
   }, [setConnected, client]);
 
-  const sendMessage = useCallback(async (message: string): Promise<string> => {
+  const sendMessage = React.useCallback(async (message: string): Promise<string> => {
     return await client.sendMessage(message, model, config)
   }, [client, config, model])
 
-  const getHistory = useCallback((): any[] => {
+  const getHistory = React.useCallback((): any[] => {
     return client?.history ?? []
   }, [client, config, model])
 
-  const setSpeakerDevice = useCallback(async (deviceId: string) => {
+  const setSpeakerDevice = React.useCallback(async (deviceId: string) => {
     await audioStreamerRef.current?.setSinkId(deviceId);
   }, []);
 

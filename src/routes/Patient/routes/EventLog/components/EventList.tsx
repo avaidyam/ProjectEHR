@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { List, Popover, Typography } from '@mui/material';
 import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { formatComponentDate } from 'util/componentHistory';
 
 const ComponentPopover = ({ item, historyData }: { item: any; historyData: any }) => {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const isAbnormal = item.flag === 'H' || item.flag === 'L';
   const componentName = item.name || item.label;
   const history = historyData?.[componentName] || { encounter: [], chart: [] };

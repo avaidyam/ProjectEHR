@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography, styled } from '@mui/material';
 import { useDatabase } from 'components/contexts/PatientContext'
 
@@ -46,12 +46,12 @@ const PrnFormGroup = styled(FormGroup)({
 
 export function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
   const [orderables] = (useDatabase() as any).orderables()
-  const [editedMedication, setEditedMedication] = useState({
+  const [editedMedication, setEditedMedication] = React.useState({
     ...medication,
     unit: unitMap[medication.unit] || medication.unit,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     const selectedMedication = orderables.rxnorm.find((med: any) => med.name === editedMedication.name);
     const brand = selectedMedication?.brand || ''; // FIXME
     const possiblePrnReasons = selectedMedication?.prnReasons || []; // FIXME

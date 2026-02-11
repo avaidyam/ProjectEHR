@@ -1,5 +1,5 @@
 // MedicalHistory.jsx
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Stack,
@@ -19,7 +19,7 @@ import {
 import { usePatient } from '../../../../../components/contexts/PatientContext';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
-  const [formData, setFormData] = useState({ ...row });
+  const [formData, setFormData] = React.useState({ ...row });
 
   const handleChange = (e: any) => {
     setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -76,8 +76,8 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: a
 export function MedicalHistory() {
   const { useEncounter } = usePatient();
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
-  const [reviewed, setReviewed] = useState(false);
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [reviewed, setReviewed] = React.useState(false);
 
   const handleAddNew = () => {
     const newId = (medicalHx ?? []).length > 0 ? Math.max(...medicalHx.map((e: any) => e.id)) + 1 : 1;

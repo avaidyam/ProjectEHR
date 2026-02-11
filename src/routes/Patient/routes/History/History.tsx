@@ -1,5 +1,5 @@
 // HistoryTabContent.jsx
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Tab, Divider } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Label, Stack } from 'components/ui/Core';
@@ -20,7 +20,7 @@ import { PapTracking } from './routes/SpecialtyPap';
 export function HistoryTabContent() {
   const { useChart } = usePatient();
   const [gender] = useChart().gender();
-  const [value, setValue] = useState("Medical")
+  const [value, setValue] = React.useState("Medical")
 
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', height: '100%', flexDirection: 'column' }}>

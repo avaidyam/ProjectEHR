@@ -44,7 +44,7 @@ export const DatabaseProvider: React.FC<{
 }
 
 // FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
-// We need to actually useEffect() to set the "database" value to the new patient data.
+// We need to actually React.useEffect() to set the "database" value to the new patient data.
 // Usage: `<PatientProvider patient={123} encounter={123}>{...}</PatientProvider>`
 export const PatientProvider: React.FC<{
   patient: Database.Patient.ID;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import * as React from 'react';
 import PropTypes from 'prop-types';
 import {
   Dialog,
@@ -52,7 +52,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
   };
 
   // Listen for Cmd+P / Ctrl+P
-  useEffect(() => {
+  React.useEffect(() => {
     if (!open) return;
 
     const handlePrintShortcut = (e: KeyboardEvent) => {

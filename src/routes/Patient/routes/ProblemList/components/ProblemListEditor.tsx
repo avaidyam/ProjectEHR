@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
 import { DatePicker } from 'components/ui/Core';
 
@@ -58,7 +58,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
    */
 
   // Since there is an accept button, we need to use a tempstate that we can modify and then accept or cancel
-  const [tempData, setTempData] = useState({ ...data });
+  const [tempData, setTempData] = React.useState({ ...data });
 
 
   const handleEditorTempChange = (key: string, value: any) => {
@@ -80,7 +80,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
     expandedRows(index);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     setTempData({ ...data });
   }, [data]);
 

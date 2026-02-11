@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Box, MenuItem, IconButton, Label, Autocomplete, Stack } from 'components/ui/Core';
 
 const VOICE_OPTIONS: Record<string, string> = {
@@ -35,7 +35,7 @@ const VOICE_OPTIONS: Record<string, string> = {
 };
 
 export const ModelConfig = ({ voiceName, setVoiceName, fullPrompt }: any) => {
-  const [playingVoice, setPlayingVoice] = useState<string | null>(null);
+  const [playingVoice, setPlayingVoice] = React.useState<string | null>(null);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   const playSample = (voiceId: string) => {

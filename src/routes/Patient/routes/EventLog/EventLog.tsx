@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import * as React from 'react';
 import { Box, Stack, Button, Typography, Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
@@ -30,7 +30,7 @@ const CATEGORIES = [
 ];
 
 export const EventLog = () => {
-  const eventListRef = useRef<HTMLDivElement>(null);
+  const eventListRef = React.useRef<HTMLDivElement>(null);
   const { useEncounter, useChart } = usePatient();
   const [notes] = (useEncounter() as any).notes();
   const [labs] = (useEncounter() as any).labs();
@@ -43,12 +43,12 @@ export const EventLog = () => {
   const [providers] = (useDatabase() as any).providers();
 
   // Generate component history for popover display
-  const componentHistory = useMemo(() => {
+  const componentHistory = React.useMemo(() => {
     return getComponentHistory(labs, chartLabs);
   }, [labs, chartLabs]);
 
   // Generate flowsheet history for popover display
-  const flowsheetHistory = useMemo(() => {
+  const flowsheetHistory = React.useMemo(() => {
     return getFlowsheetHistory(flowsheets, chartFlowsheets, flowsheetDefs);
   }, [flowsheets, chartFlowsheets, flowsheetDefs]);
 
@@ -58,15 +58,15 @@ export const EventLog = () => {
     return provider ? provider.name : providerId;
   };
 
-  const [selectedFilters, setSelectedFilters] = useState([
+  const [selectedFilters, setSelectedFilters] = React.useState([
     'flowsheets', 'ldas', 'mar', 'mar_scheduled', 'mar_continuous', 'mar_prn',
     'narrator', 'notes', 'notes_staff', 'orders', 'patient_movement',
     'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedDate, setSelectedDate] = React.useState(dayjs());
 
   // Normalize Data
-  const events = useMemo(() => {
+  const events = React.useMemo(() => {
     const allEvents: any[] = [];
 
     // Process Labs
@@ -172,7 +172,7 @@ export const EventLog = () => {
   }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers, orders]);
 
   // Transform Flowsheets for VitalsGraph
-  const vitalsGraphData = useMemo(() => {
+  const vitalsGraphData = React.useMemo(() => {
     return (flowsheets || []).map((entry: any) => ({
       time: new Date(entry.date),
       temp: entry.temp,
@@ -192,7 +192,7 @@ export const EventLog = () => {
   });
 
   // Get available date keys from events for date picker
-  const availableDateKeys = useMemo(() => {
+  const availableDateKeys = React.useMemo(() => {
     const dateSet = new Set<string>();
     filteredEvents.forEach((event: any) => {
       const date = new Date(event.timestamp);

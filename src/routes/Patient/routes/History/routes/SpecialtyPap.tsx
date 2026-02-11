@@ -1,5 +1,5 @@
 // PapTracking.jsx
-import React, { useState, useMemo } from 'react';
+import * as React from 'react';
 import {
   Box,
   Label,
@@ -31,10 +31,10 @@ const ResultItem = styled(Box)(({ theme }) => ({
 export function PapTracking() {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   // Search for Pap tests in the encounter labs
-  const papTests = useMemo(() => {
+  const papTests = React.useMemo(() => {
     // Collect potential labs from relevant categories
     const labs = (encounter?.labs || []);
 

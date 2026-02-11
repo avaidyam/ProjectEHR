@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import * as React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
 import { Button, Stack, Label, IconButton, Divider, Icon } from './Core'
@@ -34,20 +34,20 @@ interface TitlebarProps {
 export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [open, setOpen] = useState<HTMLElement | null>(null)
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const [open, setOpen] = React.useState<HTMLElement | null>(null)
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
 
   // teaful hooks return [value, setValue]
   const [patientsDB, setPatientsDB] = useDatabase().patients() as [Record<string, Database.Patient>, (val: any) => void];
   const [departments] = useDatabase().departments() as [Database.Department[], any];
   const [providers] = useDatabase().providers() as [Database.Provider[], any];
 
-  const [createEncounterOpen, setCreateEncounterOpen] = useState(false)
-  const [manageDeptsOpen, setManageDeptsOpen] = useState(false)
-  const [manageFlowsheetsOpen, setManageFlowsheetsOpen] = useState(false)
-  const [dbManagementOpen, setDbManagementOpen] = useState(false)
-  const [openPatientChartOpen, setOpenPatientChartOpen] = useState(false)
-  const [pdmpManagerOpen, setPdmpManagerOpen] = useState(false)
+  const [createEncounterOpen, setCreateEncounterOpen] = React.useState(false)
+  const [manageDeptsOpen, setManageDeptsOpen] = React.useState(false)
+  const [manageFlowsheetsOpen, setManageFlowsheetsOpen] = React.useState(false)
+  const [dbManagementOpen, setDbManagementOpen] = React.useState(false)
+  const [openPatientChartOpen, setOpenPatientChartOpen] = React.useState(false)
+  const [pdmpManagerOpen, setPdmpManagerOpen] = React.useState(false)
 
   // Extract MRN and EncounterID from URL if present
   const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/);
@@ -109,8 +109,8 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
     navigate(`/patient/${mrn}/encounter/${newEncID}`);
   };
 
-  const [tabHistory, setTabHistory] = useState<string[]>([])
-  useEffect(() => {
+  const [tabHistory, setTabHistory] = React.useState<string[]>([])
+  React.useEffect(() => {
     if (tabHistory.find(tab => tab === location.pathname) === undefined)
       setTabHistory((prev) => [...new Set([...prev, location.pathname])])
     // eslint-disable-next-line react-hooks/exhaustive-deps

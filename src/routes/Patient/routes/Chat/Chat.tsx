@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import * as React from 'react';
 import { Box, IconButton, Icon, Window } from "components/ui/Core";
 import { GeminiAPIProvider } from "./utils/GeminiAPI";
 import { VoicePanel } from "./components/VoicePanel";
@@ -12,10 +12,10 @@ let _PWD: string | null = null;
 export function Chat() {
   const [apiKey, setApiKey] = React.useState(_API_KEY);
   // Default to "voice" now that LLM chat is disabled
-  const [tab, setTab] = useState("voice");
-  const [configUnlocked, setConfigUnlocked] = useState(false);
-  const [voiceName, setVoiceName] = useState("Charon");
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [tab, setTab] = React.useState("voice");
+  const [configUnlocked, setConfigUnlocked] = React.useState(false);
+  const [voiceName, setVoiceName] = React.useState("Charon");
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   // Pull the same data the ModelConfig uses (demographics + encounter)
   const { useChart, useEncounter } = usePatient();
@@ -78,7 +78,7 @@ export function Chat() {
   const socialDocumentation = history?.SocialDocumentation || null;
 
   // 🧠 Compose the full prompt
-  const fullPrompt = useMemo(() => {
+  const fullPrompt = React.useMemo(() => {
     let text = "'''\n";
 
     // Patient header
@@ -213,7 +213,7 @@ export function Chat() {
     socialDocumentation, medications, immunizations, allergies
   ]);
 
-  const systemInstruction = useMemo(() => {
+  const systemInstruction = React.useMemo(() => {
     return `
 If unsure what to say in the beginning just say, "Hey, uh, I'm here for my doctor's appointment." 
 

@@ -1,5 +1,5 @@
 // SocialDocumentation.jsx
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Label,
@@ -24,7 +24,7 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 export function SocialHistoryDocumentation() {
   const { useEncounter } = usePatient();
   const [socialDocData, setSocialDocData] = useEncounter().history.SocialDocumentation();
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   const handleSave = (content: any) => {
     setSocialDocData((prev: any) => ({

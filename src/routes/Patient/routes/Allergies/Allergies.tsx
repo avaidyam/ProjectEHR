@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
 import {
   Box,
   Stack,
@@ -44,7 +44,7 @@ const dummyAgents = [
 ];
 
 function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
-  const [formData, setFormData] = useState<any>({ ...row });
+  const [formData, setFormData] = React.useState<any>({ ...row });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -229,13 +229,13 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; o
 export const Allergies = () => {
   const { useEncounter } = usePatient();
   const [allergies, setAllergies] = useEncounter().allergies([]);
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
-  const [reviewed, setReviewed] = useState(false);
-  const [lastReviewed, setLastReviewed] = useState<string | null>(null);
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [reviewed, setReviewed] = React.useState(false);
+  const [lastReviewed, setLastReviewed] = React.useState<string | null>(null);
 
   const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (allergies) {
       const normalized = allergies.map((raw: any, idx: number) => ({
         ...raw,
@@ -358,7 +358,7 @@ export const Allergies = () => {
     }
   ];
 
-  const getDetailPanelContent = useCallback(
+  const getDetailPanelContent = React.useCallback(
     ({ row }: any) => (
       <AllergiesDetailPanel
         row={row}

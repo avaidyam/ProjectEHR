@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import * as React from 'react';
 import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core';
 import { Typography } from '@mui/material';
 
@@ -602,30 +602,30 @@ const getNonCalculableDescription = (formulation: string | null) => {
 };
 
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }: { medication: any; open: any; onSelect: (item: any) => void;[key: string]: any }) => {
-  const [params, setParams] = useState<Record<string, any>>({})
-  const [doseAmount, setDoseAmount] = useState('') // The numeric dose amount (e.g., "1600")
-  const [doseUnit, setDoseUnit] = useState('mg') // The unit for the dose amount
-  const [selectedFormulation, setSelectedFormulation] = useState('') // The selected package/formulation (e.g., "800 mg Tab")
+  const [params, setParams] = React.useState<Record<string, any>>({})
+  const [doseAmount, setDoseAmount] = React.useState('') // The numeric dose amount (e.g., "1600")
+  const [doseUnit, setDoseUnit] = React.useState('mg') // The unit for the dose amount
+  const [selectedFormulation, setSelectedFormulation] = React.useState('') // The selected package/formulation (e.g., "800 mg Tab")
 
   // Handle both standard medication objects and "unpacked" ones with routesMap
-  const effectiveRoutes = useMemo(() => {
+  const effectiveRoutes = React.useMemo(() => {
     return tempMed?.routesMap || tempMed?.route || {}
   }, [tempMed])
 
   const effectiveName = tempMed?.originalName || tempMed?.name || ''
 
   // Get available formulations for the selected route
-  const availableFormulations = useMemo(() => {
+  const availableFormulations = React.useMemo(() => {
     return Object.values(effectiveRoutes?.[params["Route"]] ?? {})
   }, [effectiveRoutes, params["Route"]])
 
   // Check if dose calculation makes sense for this medication/route
-  const isDoseCalculable = useMemo(() => {
+  const isDoseCalculable = React.useMemo(() => {
     return hasCalculableFormulations(availableFormulations);
   }, [availableFormulations])
 
   // set the default route when medication changes
-  useEffect(() => {
+  React.useEffect(() => {
     const initialRoute = (typeof tempMed?.route === 'string' && effectiveRoutes[tempMed.route])
       ? tempMed.route
       : (Object.keys(effectiveRoutes)?.[0] ?? '')
@@ -636,7 +636,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
   }, [tempMed, effectiveRoutes])
 
   // set the default formulation when route changes
-  useEffect(() => {
+  React.useEffect(() => {
     const formulations = Object.values(effectiveRoutes?.[params["Route"]] ?? {})
     if (tempMed?.dose && formulations.includes(tempMed.dose) && params["Route"] === tempMed.route) {
       setSelectedFormulation(tempMed.dose)
@@ -648,16 +648,16 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
   }, [tempMed, effectiveRoutes, params["Route"]])
 
   // Parse the selected formulation and calculate units needed
-  const parsedFormulation = useMemo(() => {
+  const parsedFormulation = React.useMemo(() => {
     return parseDoseString(selectedFormulation);
   }, [selectedFormulation])
 
-  const calculatedDose = useMemo(() => {
+  const calculatedDose = React.useMemo(() => {
     if (!doseAmount || !parsedFormulation) return null;
     return calculateDose(parseFloat(doseAmount), doseUnit, parsedFormulation);
   }, [doseAmount, doseUnit, parsedFormulation])
 
-  const calculatedDoseDisplay = useMemo(() => formatCalculatedDose(calculatedDose), [calculatedDose])
+  const calculatedDoseDisplay = React.useMemo(() => formatCalculatedDose(calculatedDose), [calculatedDose])
 
   // if this is an Rx then substitute the Route and Dose options
   // Push a default Comments field that exists for ALL orders.

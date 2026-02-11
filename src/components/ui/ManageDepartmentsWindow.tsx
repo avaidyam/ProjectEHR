@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
 import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
@@ -32,32 +32,32 @@ export const ManageDepartmentsWindow: React.FC<ManageDepartmentsWindowProps> = (
     const [departments, setDepartments] = useDatabase().departments() as [Database.Department[], any];
     const [providers, setProviders] = useDatabase().providers() as [Database.Provider[], any];
 
-    const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+    const [contextMenu, setContextMenu] = React.useState<ContextMenuState | null>(null);
 
     // Dialog/Form states
-    const [isAddingDept, setIsAddingDept] = useState(false);
-    const [isAddingProvider, setIsAddingProvider] = useState(false);
-    const [isMovingProvider, setIsMovingProvider] = useState(false);
-    const [isEditingDept, setIsEditingDept] = useState(false);
-    const [isEditingProvider, setIsEditingProvider] = useState(false);
+    const [isAddingDept, setIsAddingDept] = React.useState(false);
+    const [isAddingProvider, setIsAddingProvider] = React.useState(false);
+    const [isMovingProvider, setIsMovingProvider] = React.useState(false);
+    const [isEditingDept, setIsEditingDept] = React.useState(false);
+    const [isEditingProvider, setIsEditingProvider] = React.useState(false);
 
     // Form Data
-    const [deptName, setDeptName] = useState("");
-    const [editingDeptId, setEditingDeptId] = useState<any>(null); // Dept ID
+    const [deptName, setDeptName] = React.useState("");
+    const [editingDeptId, setEditingDeptId] = React.useState<any>(null); // Dept ID
 
-    const [providerData, setProviderData] = useState<ProviderFormData>({
+    const [providerData, setProviderData] = React.useState<ProviderFormData>({
         name: "",
         specialty: "",
         department: ""
     });
-    const [editingProviderId, setEditingProviderId] = useState<string | null>(null);
+    const [editingProviderId, setEditingProviderId] = React.useState<string | null>(null);
 
-    const [moveProviderData, setMoveProviderData] = useState<MoveProviderData>({
+    const [moveProviderData, setMoveProviderData] = React.useState<MoveProviderData>({
         providerId: null,
         targetDeptId: ""
     });
 
-    const [draggedProviderId, setDraggedProviderId] = useState<string | null>(null);
+    const [draggedProviderId, setDraggedProviderId] = React.useState<string | null>(null);
 
     const handleDragStart = (e: React.DragEvent, providerId: string) => {
         setDraggedProviderId(providerId);

@@ -1,5 +1,5 @@
 // BirthHistory.jsx
-import React, { useState, useMemo } from 'react';
+import * as React from 'react';
 import {
   Box,
   TextField,
@@ -38,7 +38,7 @@ export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
   const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory({});
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   const deliveryMethodOptions = [
     'Biochemical',
@@ -62,7 +62,7 @@ export function BirthHistory() {
   ];
 
   // Calculate age from chart birthdate
-  const patientAge = useMemo(() => {
+  const patientAge = React.useMemo(() => {
     if (!birthdate) return '';
 
     try {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import * as React from 'react'
 import { Window, Button, Stack, Label, Icon, Box } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
@@ -19,7 +19,7 @@ export const DatabaseManagementWindow: React.FC<DatabaseManagementWindowProps> =
   // Returns useStore hook, which returns [store, setStore]
   const useStore = useDatabase();
   const [db, setDb] = useStore() as [Database.Root, any]; // Type the store, and setter
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   const handleExport = () => {
     const url = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }))

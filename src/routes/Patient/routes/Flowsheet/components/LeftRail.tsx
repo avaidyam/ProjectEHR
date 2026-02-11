@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import * as React from 'react';
 import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
 import { Icon } from '../../../../../components/ui/Core';
 import { FlowsheetRow } from '../Flowsheet';
@@ -18,11 +18,11 @@ export const LeftRail: React.FC<LeftRailProps> = ({
   onToggleCategory,
   className,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [debouncedSearch, setDebouncedSearch] = React.useState('');
 
   // Debounce search
-  useEffect(() => {
+  React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 300);
@@ -30,7 +30,7 @@ export const LeftRail: React.FC<LeftRailProps> = ({
   }, [searchTerm]);
 
   // Group rows by category
-  const categorizedRows = useMemo(() => {
+  const categorizedRows = React.useMemo(() => {
     const groups: { [key: string]: FlowsheetRow[] } = {};
     rows.forEach((row) => {
       const category = row.category || row.group || 'Uncategorized';
@@ -43,7 +43,7 @@ export const LeftRail: React.FC<LeftRailProps> = ({
   }, [rows]);
 
   // Handle Search
-  const filteredCategories = useMemo(() => {
+  const filteredCategories = React.useMemo(() => {
     if (!debouncedSearch.trim()) return categorizedRows;
 
     const query = debouncedSearch.toLowerCase();

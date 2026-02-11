@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Window, TextField, Stack, Label, Icon, IconButton, Divider } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
@@ -13,8 +13,8 @@ interface OpenPatientChartDialogProps {
 export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ open, onClose }) => {
     const navigate = useNavigate();
     const [patients] = useDatabase().patients() as [Record<string, Database.Patient>, any];
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedPatientMRN, setSelectedPatientMRN] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const [selectedPatientMRN, setSelectedPatientMRN] = React.useState<string | null>(null);
 
     // Reset state when closing or opening
     const handleClose = () => {
@@ -23,7 +23,7 @@ export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ 
         onClose();
     };
 
-    const patientList = useMemo(() => {
+    const patientList = React.useMemo(() => {
         if (!searchQuery) return Object.values(patients);
         const lowerQuery = searchQuery.toLowerCase();
         return Object.values(patients).filter((p: Database.Patient) =>

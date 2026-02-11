@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Grid, Autocomplete } from '@mui/material';
 import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, Label } from 'components/ui/Core';
 import { dayjs } from 'components/ui/Core';
@@ -37,10 +37,10 @@ const VISIT_STATUSES = [
 ];
 
 export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, departments, providers, locations, appointment, currentPatientId }: any) => {
-    const [selectedPatientId, setSelectedPatientId] = useState(appointment?.patient?.mrn || currentPatientId || null);
-    const [selectedEncounterId, setSelectedEncounterId] = useState(appointment?.patient?.enc || null);
-    const [showAdvanced, setShowAdvanced] = useState(false);
-    const [formData, setFormData] = useState({
+    const [selectedPatientId, setSelectedPatientId] = React.useState(appointment?.patient?.mrn || currentPatientId || null);
+    const [selectedEncounterId, setSelectedEncounterId] = React.useState(appointment?.patient?.enc || null);
+    const [showAdvanced, setShowAdvanced] = React.useState(false);
+    const [formData, setFormData] = React.useState({
         department: appointment ? appointment.department : null,
         provider: appointment ? appointment.provider : null,
         location: appointment ? appointment.location : null,

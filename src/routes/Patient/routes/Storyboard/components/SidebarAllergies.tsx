@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Alert } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
 

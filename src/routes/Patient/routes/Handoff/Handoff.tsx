@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { Box, Label, Stack, Button, Spacer, Autocomplete, TextField, RichTextEditor } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import * as Database from 'components/contexts/Database';
@@ -16,11 +16,11 @@ export const Handoff: React.FC = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useEncounter } = usePatient();
   const [handoffData, setHandoffData] = useEncounter().smartData.handoff({});
-  const [currentDepartment, setCurrentDepartment] = useState<string>('');
+  const [currentDepartment, setCurrentDepartment] = React.useState<string>('');
 
   // Local state for current department's data
-  const [localSummary, setLocalSummary] = useState<string>('');
-  const [localTodo, setLocalTodo] = useState<string>('');
+  const [localSummary, setLocalSummary] = React.useState<string>('');
+  const [localTodo, setLocalTodo] = React.useState<string>('');
 
   // Helper functions for department data management
   const getDepartmentData = (dept: string): HandoffDeptData => {
@@ -35,7 +35,7 @@ export const Handoff: React.FC = () => {
   };
 
   // Load department-specific data when department changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (currentDepartment) {
       const data = getDepartmentData(currentDepartment);
       setLocalSummary(data.summary);
@@ -47,7 +47,7 @@ export const Handoff: React.FC = () => {
   }, [currentDepartment, handoffData]);
 
   // Auto-save when local data changes (only if department is selected)
-  useEffect(() => {
+  React.useEffect(() => {
     if (!currentDepartment) {
       return;
     }

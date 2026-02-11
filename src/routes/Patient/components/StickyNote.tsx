@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { Paper, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextareaAutosize } from '@mui/material';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
@@ -46,7 +46,7 @@ export const StickyNote = () => {
   const deptWindow = useStickyWindow('department', (stickyNotes?.selectedDepartment && stickyNotes?.[stickyNotes.selectedDepartment]), 360, 200, 240, -30);
 
   // Department specific state
-  const [selectedDepartment, setSelectedDepartment] = useState(stickyNotes?.selectedDepartment || '');
+  const [selectedDepartment, setSelectedDepartment] = React.useState(stickyNotes?.selectedDepartment || '');
 
   const persistNow = (type: 'private' | 'department' | 'selectedDepartment', dept: string, content: string) => {
     if (type === 'private') {
@@ -59,7 +59,7 @@ export const StickyNote = () => {
   };
 
   // Sync content when stickyNotes or selectedDepartment update
-  useEffect(() => {
+  React.useEffect(() => {
     if (privateWindow.isOpen) {
       const dbContent = stickyNotes?.["__PRIVATE__"] || '';
       privateWindow.syncContent(dbContent);
@@ -71,7 +71,7 @@ export const StickyNote = () => {
   }, [stickyNotes, selectedDepartment, privateWindow.isOpen, deptWindow.isOpen]);
 
   // Persist on close or timeout
-  useEffect(() => {
+  React.useEffect(() => {
     // Debounced save
     const timeout = setTimeout(() => {
       if (privateWindow.isOpen) persistNow('private', '', privateWindow.content);
@@ -191,13 +191,13 @@ export const StickyNote = () => {
 
 // Custom hook for managing window state
 const useStickyWindow = (type: string, initialContent: string | undefined, defaultW: number, defaultH: number, offsetX: number, offsetY: number): WindowState => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState(initialContent || '');
-  const [pos, setPos] = useState<{ left: number | null; top: number | null }>({ left: null, top: null });
-  const [size, setSize] = useState({ width: defaultW, height: defaultH });
-  const [zIndex, setZIndex] = useState(globalTopZ);
-  const nodeRef = useRef<HTMLDivElement>(null!);
-  const resizingRef = useRef({ startX: 0, startY: 0, startW: 0, startH: 0 });
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [content, setContent] = React.useState(initialContent || '');
+  const [pos, setPos] = React.useState<{ left: number | null; top: number | null }>({ left: null, top: null });
+  const [size, setSize] = React.useState({ width: defaultW, height: defaultH });
+  const [zIndex, setZIndex] = React.useState(globalTopZ);
+  const nodeRef = React.useRef<HTMLDivElement>(null!);
+  const resizingRef = React.useRef({ startX: 0, startY: 0, startW: 0, startH: 0 });
 
   const open = () => {
     // Set position if not set

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Box, Stack, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core';
 
 const availableColumns = [

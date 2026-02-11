@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Box, TextField, IconButton, Button, Autocomplete, Typography } from '@mui/material';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import { Label, Stack, Icon, Window, RichTextEditor } from 'components/ui/Core';
@@ -29,7 +29,7 @@ export const EditNote = () => {
     const [departments] = (useDatabase() as any).departments();
     const { closeTab } = useSplitView();
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!activeNote) {
             setActiveNote({
                 editorState: "",
@@ -61,7 +61,7 @@ export const EditNote = () => {
         closeTabs();
     };
 
-    const [isUnsavedDialogVisible, setIsUnsavedDialogVisible] = useState(false);
+    const [isUnsavedDialogVisible, setIsUnsavedDialogVisible] = React.useState(false);
 
     const handleCancel = () => {
         if (activeNote?.editorState || activeNote?.summary || activeNote?.noteType || activeNote?.service) {

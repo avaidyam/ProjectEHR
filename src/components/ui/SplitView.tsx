@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import * as React from 'react'
 import { ErrorBoundary } from "react-error-boundary";
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
 import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } from '@mui/material'
@@ -107,16 +107,16 @@ if (!Number.prototype.clamp) {
 
 export const SplitView: React.FC<SplitViewProps> = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
-  const [isCollapsed, setCollapsed] = useState(false)
+  const [isCollapsed, setCollapsed] = React.useState(false)
   const sidePanelRef = React.useRef<any>(null)
 
   // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
 
-  const [mainTabs, setMainTabs] = useState<TabObject[]>(defaultMainTabs)
-  const [sideTabs, setSideTabs] = useState<TabObject[]>(defaultSideTabs)
-  const [selectedMainTab, setSelectedMainTab] = useState(0)
-  const [selectedSideTab, setSelectedSideTab] = useState(0)
-  const [overflowMenuAnchor, setOverflowMenuAnchor] = useState<null | HTMLElement>(null)
+  const [mainTabs, setMainTabs] = React.useState<TabObject[]>(defaultMainTabs)
+  const [sideTabs, setSideTabs] = React.useState<TabObject[]>(defaultSideTabs)
+  const [selectedMainTab, setSelectedMainTab] = React.useState(0)
+  const [selectedSideTab, setSelectedSideTab] = React.useState(0)
+  const [overflowMenuAnchor, setOverflowMenuAnchor] = React.useState<null | HTMLElement>(null)
 
   const closeMainTab = (index: number) => {
     const newTabs = mainTabs.filter((_, i) => i !== index)

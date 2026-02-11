@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { Tab, Tabs, IconButton, Toolbar, Paper, Chip, Collapse, InputAdornment } from '@mui/material';
 import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimePicker, Autocomplete } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext';
@@ -155,17 +155,17 @@ interface AdminFormPanelProps {
 }
 
 const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onSave, onCancel }) => {
-  const [status, setStatus] = useState<string>(admin?.status || 'Given');
-  const [dateTime, setDateTime] = useState<dayjs.Dayjs>(() => {
+  const [status, setStatus] = React.useState<string>(admin?.status || 'Given');
+  const [dateTime, setDateTime] = React.useState<dayjs.Dayjs>(() => {
     if (admin?.timestamp) {
       return dayjs(admin.timestamp);
     }
     return hour.time.minute(0).second(0);
   });
-  const [dose, setDose] = useState<string>(admin ? admin.amount.split(' ')[0] : (order.dose || '').split(' ')[0] || '');
-  const [unit] = useState<string>(admin ? admin.amount.split(' ')[1] : (order.dose || '').split(' ')[1] || 'mg');
-  const [site, setSite] = useState<string>(admin?.site || '');
-  const [comment, setComment] = useState<string>(admin?.comment || '');
+  const [dose, setDose] = React.useState<string>(admin ? admin.amount.split(' ')[0] : (order.dose || '').split(' ')[0] || '');
+  const [unit] = React.useState<string>(admin ? admin.amount.split(' ')[1] : (order.dose || '').split(' ')[1] || 'mg');
+  const [site, setSite] = React.useState<string>(admin?.site || '');
+  const [comment, setComment] = React.useState<string>(admin?.comment || '');
 
   const handleSave = () => {
     onSave({
@@ -267,8 +267,8 @@ interface DrugBoxProps {
 }
 
 const DrugBox: React.FC<DrugBoxProps> = ({ order, hours, administrations, onAddAdmin, onUpdateAdmin }) => {
-  const [expanded, setExpanded] = useState(false);
-  const [activeFormContext, setActiveFormContext] = useState<{ hour: Hour; admin: MAREntry | null } | null>(null);
+  const [expanded, setExpanded] = React.useState(false);
+  const [activeFormContext, setActiveFormContext] = React.useState<{ hour: Hour; admin: MAREntry | null } | null>(null);
   const isStat = order.priority === 'STAT';
 
   // Compute lastAdmin dynamically
@@ -466,10 +466,10 @@ export const MAR: React.FC = () => {
     return { ...med, fullName, formDescription };
   };
 
-  const [activeTab, setActiveTab] = useState<string>('All');
-  const [startTime, setStartTime] = useState<dayjs.Dayjs>(dayjs().startOf('hour').subtract(4, 'hour'));
-  const [orders] = useState<MAROrder[]>(MOCK_ORDERS);
-  const [entries, setEntries] = useState<MAREntry[]>(MOCK_MAR_ENTRIES);
+  const [activeTab, setActiveTab] = React.useState<string>('All');
+  const [startTime, setStartTime] = React.useState<dayjs.Dayjs>(dayjs().startOf('hour').subtract(4, 'hour'));
+  const [orders] = React.useState<MAROrder[]>(MOCK_ORDERS);
+  const [entries, setEntries] = React.useState<MAREntry[]>(MOCK_MAR_ENTRIES);
 
   const medicationOrders = orders.map(order => {
     const medInfo = resolveMedication(order.medicationId, rxnorm) || {};

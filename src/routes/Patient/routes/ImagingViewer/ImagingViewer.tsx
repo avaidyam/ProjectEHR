@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import * as React from 'react';
 import { Popover, Switch, Slider } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Box, Label, Button, Icon, Stack, IconButton, Menu, MenuItem, Divider, Grid } from 'components/ui/Core';
@@ -31,14 +31,14 @@ const ImagingToolbar = ({
   onViewModeChange: (mode: string) => void;
   onPresetSelect?: (preset: any) => void;
 }) => {
-  const [layoutAnchorEl, setLayoutAnchorEl] = useState<HTMLElement | null>(null);
-  const [hoverLayout, setHoverLayout] = useState<string | null>(null);
-  const [showHideAnchorEl, setShowHideAnchorEl] = useState<HTMLElement | null>(null);
-  const [presetsAnchorEl, setPresetsAnchorEl] = useState<HTMLElement | null>(null);
-  const [viewModeAnchorEl, setViewModeAnchorEl] = useState<HTMLElement | null>(null);
+  const [layoutAnchorEl, setLayoutAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [hoverLayout, setHoverLayout] = React.useState<string | null>(null);
+  const [showHideAnchorEl, setShowHideAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [presetsAnchorEl, setPresetsAnchorEl] = React.useState<HTMLElement | null>(null);
+  const [viewModeAnchorEl, setViewModeAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const [fps, setFps] = useState(20);
-  const [fpsAnchorEl, setFpsAnchorEl] = useState<HTMLElement | null>(null);
+  const [fps, setFps] = React.useState(20);
+  const [fpsAnchorEl, setFpsAnchorEl] = React.useState<HTMLElement | null>(null);
   const handleFpsClick = (event: React.MouseEvent<HTMLElement>) => setFpsAnchorEl(event.currentTarget);
   const handleFpsClose = () => setFpsAnchorEl(null);
   const handleFpsChange = (event: any, newValue: any) => setFps(newValue);
@@ -396,15 +396,15 @@ const ImageView = ({
 }) => {
   const { useChart } = usePatient();
   const [chart] = (useChart() as any)();
-  const [selectedTool, setSelectedTool] = useState('Scroll');
-  const [contextMenu, setContextMenu] = useState<any>(null);
-  const [settings, setSettings] = useState<Record<string, any>>({});
+  const [selectedTool, setSelectedTool] = React.useState('Scroll');
+  const [contextMenu, setContextMenu] = React.useState<any>(null);
+  const [settings, setSettings] = React.useState<Record<string, any>>({});
 
   const zoom = settings.zoom ? settings.zoom.toFixed(2) : '1.00';
   const ww = settings.ww ? Math.round(settings.ww) : 100;
   const wl = settings.wl ? Math.round(settings.wl) : 100;
 
-  const handleViewerUpdate = useCallback((newSettings: any) => {
+  const handleViewerUpdate = React.useCallback((newSettings: any) => {
     setSettings((prev: Record<string, any>) => {
       // Avoid unnecessary updates if values haven't changed significantly
       if (
@@ -628,11 +628,11 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }: { data: any
   const dicomFiles = Array.from({ length: 21 }, (_, i) => `${basePath}image-${String(i).padStart(5, '0')}.dcm`);
   const images = data?.image ? [data?.image] : dicomFiles;
 
-  const [currentLayout, setCurrentLayout] = useState('1x1'); // "rows x cols"
+  const [currentLayout, setCurrentLayout] = React.useState('1x1'); // "rows x cols"
   const [currentRows, currentCols] = (currentLayout || '1x1').split('x').map(Number);
 
   // Refactored state to track images per viewer index
-  const [viewerImages, setViewerImages] = useState<Record<number, any[]>>({ 0: images });
+  const [viewerImages, setViewerImages] = React.useState<Record<number, any[]>>({ 0: images });
 
   const handleSeriesSelect = (seriesFiles: any) => {
     // For now, clicking a thumbnail updates the first viewer (or active if we had one)
@@ -646,8 +646,8 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }: { data: any
       setViewerImages((prev: Record<number, any[]>) => ({ ...prev, [viewerIndex]: seriesFiles }));
     }
   };
-  const [selectedViewMode, setSelectedViewMode] = useState('2D');
-  const [viewOptions, setViewOptions] = useState({
+  const [selectedViewMode, setSelectedViewMode] = React.useState('2D');
+  const [viewOptions, setViewOptions] = React.useState({
     showImageText: true,
     showAnnotationOverlays: true,
     showThumbnails: true,

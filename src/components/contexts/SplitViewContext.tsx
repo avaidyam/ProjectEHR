@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import * as React from 'react'
 
 interface TabObject {
   [key: string]: any;
@@ -21,7 +21,7 @@ export interface SplitViewContextType {
 
 export const SplitViewContext = React.createContext<SplitViewContextType | null>(null)
 
-export const SplitViewProvider = ({ children }: { children: ReactNode }) => {
+export const SplitViewProvider = ({ children }: { children: React.ReactNode }) => {
   const state = React.useState(null)
   return (
     <SplitViewContext.Provider value={state as any}>

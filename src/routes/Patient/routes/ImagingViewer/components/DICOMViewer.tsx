@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import * as React from 'react';
 import { App, WindowLevel, Scalar3D } from 'dwv';
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
@@ -80,17 +80,17 @@ export function b64ToFile(str: string) {
 }
 
 export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }: { images: any[]; convertMonochrome?: boolean; viewerId: string; tool: string; initialSettings?: any; onUpdate?: (settings: any) => void }) => {
-    const [dwvApp, setDwvApp] = useState<any>(null);
-    const [loadProgress, setLoadProgress] = useState(0);
-    const [dataLoaded, setDataLoaded] = useState(false);
+    const [dwvApp, setDwvApp] = React.useState<any>(null);
+    const [loadProgress, setLoadProgress] = React.useState(0);
+    const [dataLoaded, setDataLoaded] = React.useState(false);
     const viewerRef = React.useRef<HTMLDivElement>(null);
-    const onUpdateRef = useRef(onUpdate);
+    const onUpdateRef = React.useRef(onUpdate);
 
-    useEffect(() => {
+    React.useEffect(() => {
         onUpdateRef.current = onUpdate;
     }, [onUpdate]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         console.log(`DICOMViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
 
         const app = new App();
@@ -203,7 +203,7 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
         };
     }, [viewerRef, viewerId, images]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (dwvApp && tool) {
             dwvApp.setTool(tool);
             if (tool === 'Draw') {

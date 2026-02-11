@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import * as React from 'react';
 import { Avatar, MenuItem, Menu, ButtonGroup, Grow } from '@mui/material';
 import { Icon, Box, Label, Button, Divider } from 'components/ui/Core';
 import { usePatient } from "components/contexts/PatientContext";
@@ -7,12 +7,12 @@ import { useGeminiAPIContext } from '../utils/GeminiAPI';
 import { ChatPanel } from './ChatPanel';
 
 export function VoicePanel({ onSettings }: { onSettings: () => void }) {
-  const [inVolume, setInVolume] = useState(0);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [audioRecorder] = useState(() => new AudioRecorder());
-  const [muted, setMuted] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
+  const [inVolume, setInVolume] = React.useState(0);
+  const [chatOpen, setChatOpen] = React.useState(false);
+  const [audioRecorder] = React.useState(() => new AudioRecorder());
+  const [muted, setMuted] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [moreAnchorEl, setMoreAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const { client, connected, connect, disconnect, volume, setSpeakerDevice } = useGeminiAPIContext();
 
@@ -31,12 +31,12 @@ export function VoicePanel({ onSettings }: { onSettings: () => void }) {
     'P';
 
   // Audio Device Management
-  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
-  const [speakerDevices, setSpeakerDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState('');
-  const [selectedSpeakerId, setSelectedSpeakerId] = useState('');
+  const [audioDevices, setAudioDevices] = React.useState<MediaDeviceInfo[]>([]);
+  const [speakerDevices, setSpeakerDevices] = React.useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = React.useState('');
+  const [selectedSpeakerId, setSelectedSpeakerId] = React.useState('');
 
-  useEffect(() => {
+  React.useEffect(() => {
     audioRecorder.getDevices('audioinput').then((devices: MediaDeviceInfo[]) => {
       setAudioDevices(devices);
       if (devices.length > 0 && !selectedDeviceId) {
@@ -67,9 +67,9 @@ export function VoicePanel({ onSettings }: { onSettings: () => void }) {
   }, [audioRecorder, selectedDeviceId, selectedSpeakerId]);
 
   // Profile animation state
-  const [renderProfile, setRenderProfile] = useState(false);
+  const [renderProfile, setRenderProfile] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (connected) {
       setRenderProfile(true);
     } else {
@@ -80,7 +80,7 @@ export function VoicePanel({ onSettings }: { onSettings: () => void }) {
     }
   }, [connected]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const onData = (base64: string) => {
       client.sendRealtimeInput([{ mimeType: 'audio/pcm;rate=16000', data: base64 }]);
     };

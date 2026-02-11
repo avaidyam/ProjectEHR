@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { Box, Button, TextField, Window } from 'components/ui/Core';
 
 interface PromptDialogProps {
@@ -10,10 +10,10 @@ interface PromptDialogProps {
 }
 
 export const PromptDialog: React.FC<PromptDialogProps> = ({ open, onClose, onConfirm, title, placeholder = '' }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = React.useState('');
 
   // Reset input value whenever the dialog opens
-  useEffect(() => {
+  React.useEffect(() => {
     if (open) {
       setInputValue('');
     }

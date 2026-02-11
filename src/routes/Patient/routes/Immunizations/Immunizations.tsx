@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import * as React from 'react';
 import {
   Box,
   Stack,
@@ -97,7 +97,7 @@ const dummyVaccines = [
 
 function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
   const [providers] = useDatabase().providers();
-  const [formData, setFormData] = useState({ ...row });
+  const [formData, setFormData] = React.useState({ ...row });
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -354,9 +354,9 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
 export const Immunizations = () => {
   const { useEncounter } = usePatient();
   const [immunizations, setImmunizations] = useEncounter().immunizations([]);
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<any>>(new Set());
-  const [reviewed, setReviewed] = useState(false);
-  const [lastReviewed, setLastReviewed] = useState<string | null>(null);
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [reviewed, setReviewed] = React.useState(false);
+  const [lastReviewed, setLastReviewed] = React.useState<string | null>(null);
 
   const handleEdit = (id: any) => {
     setExpandedRowIds(new Set([id]));
@@ -440,7 +440,7 @@ export const Immunizations = () => {
     }
   ];
 
-  const getDetailPanelContent = useCallback(
+  const getDetailPanelContent = React.useCallback(
     ({ row }: any) => (
       <ImmunizationsDetailPanel
         row={row}

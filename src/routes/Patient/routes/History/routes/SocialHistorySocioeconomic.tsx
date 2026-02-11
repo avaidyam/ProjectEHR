@@ -1,5 +1,5 @@
 // SocioeconomicHistory.jsx
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
   Box,
   Button,
@@ -52,15 +52,15 @@ export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
   const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic();
 
-  const [editingEntry, setEditingEntry] = useState<any>(null);
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [newEntry, setNewEntry] = useState({
+  const [editingEntry, setEditingEntry] = React.useState<any>(null);
+  const [isAddingNew, setIsAddingNew] = React.useState(false);
+  const [newEntry, setNewEntry] = React.useState({
     id: null,
     occupation: '',
     employer: '',
     comment: '',
   });
-  const [reviewed, setReviewed] = useState(false);
+  const [reviewed, setReviewed] = React.useState(false);
 
   const maritalStatusOptions = [
     'Divorced',

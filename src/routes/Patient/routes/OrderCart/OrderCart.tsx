@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import * as React from 'react'
 import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
 import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
@@ -58,9 +58,9 @@ export const OrderCart = () => {
   const [conditionals] = (useEncounter() as any).conditionals({})
 
   const inputRef = React.useRef<HTMLInputElement>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [openSearchList, setOpenSearchList] = useState<any>(null)
-  const [openOrder, setOpenOrder] = useState<any>(null)
+  const [searchTerm, setSearchTerm] = React.useState('')
+  const [openSearchList, setOpenSearchList] = React.useState<any>(null)
+  const [openOrder, setOpenOrder] = React.useState<any>(null)
 
   const startSearch = () => {
     setSearchTerm(inputRef.current?.value ?? '')

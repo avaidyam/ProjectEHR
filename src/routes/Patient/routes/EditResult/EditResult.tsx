@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import {
     Box,
     Button,
@@ -44,15 +44,15 @@ export const EditResult = ({ ...props }) => {
     const procedures = Object.entries(orderables.procedures).map(([key, value]: [string, any]) => ({ label: value, id: key }));
     const componentList = Object.entries(orderables.components).map(([key, value]: [string, any]) => ({ label: value, id: key }));
 
-    const [testDate, setTestDate] = useState(new Date().toISOString().slice(0, 16));
-    const [selectedTest, setSelectedTest] = useState<any>(null);
-    const [results, setResults] = useState<any[]>([]);
+    const [testDate, setTestDate] = React.useState(new Date().toISOString().slice(0, 16));
+    const [selectedTest, setSelectedTest] = React.useState<any>(null);
+    const [results, setResults] = React.useState<any[]>([]);
 
     // Imaging specific state
-    const [status, setStatus] = useState('Final Result');
-    const [provider, setProvider] = useState('');
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [imageBase64, setImageBase64] = useState('');
+    const [status, setStatus] = React.useState('Final Result');
+    const [provider, setProvider] = React.useState('');
+    const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+    const [imageBase64, setImageBase64] = React.useState('');
 
     const handleAddRow = () => {
         setResults([...results, { id: Date.now(), component: null, value: '', units: '', low: '', high: '', comment: '' }]);

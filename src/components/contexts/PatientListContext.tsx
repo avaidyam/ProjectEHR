@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import * as React from 'react';
 
-export const PatientListsContext = createContext<any>(undefined);
-export const usePatientLists = () => useContext(PatientListsContext);
+export const PatientListsContext = React.createContext<any>(undefined);
+export const usePatientLists = () => React.useContext(PatientListsContext);
