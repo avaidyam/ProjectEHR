@@ -723,9 +723,9 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                     <ButtonGroup
                       exclusive
                       value={selectedFormulation}
-                      onChange={((event: any, value: any) => {
+                      onChange={((event, value) => {
                         if (value) setSelectedFormulation(value)
-                      }) as any}
+                      })}
                       sx={{ ml: 1 }}
                     >
                       {availableFormulations.slice(0, 4).map((form: any) => (
@@ -752,9 +752,9 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                     <ButtonGroup
                       exclusive
                       value={selectedFormulation}
-                      onChange={((event: any, value: any) => {
+                      onChange={((event, value) => {
                         if (value) setSelectedFormulation(value)
-                      }) as any}
+                      })}
                     >
                       {availableFormulations.slice(0, 4).map((form: any) => (
                         <Button
@@ -786,7 +786,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                       size="small"
                       options={x.options ?? []}
                       value={params[x.name] ?? null}
-                      onChange={(event: any, value: any) => setParams((prev: Record<string, any>) => ({ ...prev, [x.name]: value }))}
+                      onChange={(event, value) => setParams((prev) => ({ ...prev, [x.name]: value }))}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
@@ -795,14 +795,14 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                       fullWidth={false}
                       size="small"
                       value={params[x.name]}
-                      onChange={(event: any) => setParams((prev: Record<string, any>) => ({ ...prev, [x.name]: event.target.value }))}
+                      onChange={(event) => setParams((prev) => ({ ...prev, [x.name]: event.target.value }))}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
                   {x.type === "date" &&
                     <DatePicker
                       value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
-                      onChange={(event: any, value: any) => setParams((prev: Record<string, any>) => ({ ...prev, [x.name]: value }))}
+                      onChange={(event, value) => setParams((prev) => ({ ...prev, [x.name]: value }))}
                       slotProps={{ textField: { size: 'small' } }}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
@@ -811,7 +811,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                     <ButtonGroup
                       exclusive
                       value={params[x.name]}
-                      onChange={((event: any, value: any) => setParams((prev: Record<string, any>) => ({ ...prev, [x.name]: prev[x.name] !== value ? value : undefined }))) as any}
+                      onChange={((event, value) => setParams((prev) => ({ ...prev, [x.name]: prev[x.name] !== value ? value : undefined })))}
                     >
                       {x.options?.slice(0, 3).map((m: any) => (<Button key={m} value={m}>{m}</Button>))}
                     </ButtonGroup>

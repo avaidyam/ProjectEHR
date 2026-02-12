@@ -7,7 +7,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import { usePatient } from "components/contexts/PatientContext";
 import { useSplitView } from "components/contexts/SplitViewContext";
 import { Tooltip } from "@mui/material";
-import { filterDocuments } from "util/helpers.js";
+import { filterDocuments } from "util/helpers";
 
 const hashCode = (str: string) => {
   let h = 0;

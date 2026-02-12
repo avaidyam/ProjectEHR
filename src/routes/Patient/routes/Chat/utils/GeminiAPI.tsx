@@ -450,9 +450,9 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
           ...(this.config ?? {}),
           responseModalities: ["TEXT"],
           speechConfig: undefined,
-          inputAudioTranscription: undefined,
-          outputAudioTranscription: undefined
-        } as any,
+          //inputAudioTranscription: undefined,
+          //outputAudioTranscription: undefined
+        },
         history: [],
       });
     }

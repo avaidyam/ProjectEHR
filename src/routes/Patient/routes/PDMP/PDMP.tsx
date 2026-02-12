@@ -14,8 +14,8 @@ export function Pdmp() {
       id: index,
       ...item,
       drugName: item.name,
-      dispensedFormatted: item.dispensed ? (dayjs as any)(item.dispensed).format('MM/DD/YYYY') : '',
-      writtenFormatted: item.written ? (dayjs as any)(item.written).format('MM/DD/YYYY') : '',
+      dispensedFormatted: item.dispensed ? dayjs(item.dispensed).format('MM/DD/YYYY') : '',
+      writtenFormatted: item.written ? dayjs(item.written).format('MM/DD/YYYY') : '',
       providerName: provider ? provider.name : item.prescriber,
     };
   });

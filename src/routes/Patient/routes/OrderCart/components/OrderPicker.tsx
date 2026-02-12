@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
-import { useDatabase } from 'components/contexts/PatientContext'
+import { Database, useDatabase } from 'components/contexts/PatientContext'
 
 const BROWSE_CATEGORIES = {
   "Hematology": ["CBC", "ESR", "PTTP", "APTSC", "PTINRPOC", "FIBTP"],
@@ -40,15 +40,15 @@ const COLUMN_DEFS = {
   ]
 }
 
-const search_orders = (orderables: any, value = "", limit: number | null = null, category: string | null = null) => {
+const search_orders = (orderables: Database.Root['orderables'], value = "", limit: number | null = null, category: string | null = null) => {
   const query = value?.toLocaleLowerCase()?.trim() ?? ""
   if (!query && !category) return []
 
   // Helper getters
-  const getMeds = () => (orderables.rxnorm as any[])
+  const getMeds = () => orderables!.rxnorm
     .map((x: any, i: number) => ({ ...x, _idx: i, type: 'medication' }))
 
-  const getProcs = () => Object.entries(orderables.procedures || {})
+  const getProcs = () => Object.entries(orderables!.procedures)
     .map(([k, v]: [string, any], i: number) => {
       const isImaging = ["CT", "MRI", "XR"].some((t: string) => (v as string).toUpperCase().includes(t))
       return { id: `proc_${k}`, code: k, name: v, type: isImaging ? 'Imaging' : 'Lab' }
@@ -165,7 +165,7 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
           hideFooter
           disableColumnMenu
           density="compact"
-          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() } as any}
+          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
           onRowSelectionModelChange={(newModel: any) => {
             const ids = Array.from(newModel.ids as Set<any>);
             if (ids.length > 0) setSelection(ids[0])
@@ -198,7 +198,7 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
           hideFooter
           disableColumnMenu
           density="compact"
-          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() } as any}
+          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
           onRowSelectionModelChange={(newModel: any) => {
             const ids = Array.from(newModel.ids as Set<any>);
             if (ids.length > 0) setSelection(ids[0])

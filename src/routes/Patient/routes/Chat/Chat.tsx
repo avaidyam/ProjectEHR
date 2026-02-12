@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Box, IconButton, Icon, Window } from "components/ui/Core";
-import { GeminiAPIProvider } from "./utils/GeminiAPI";
+import { GeminiAPIProvider, GeminiAPIProviderProps, LiveClientOptions } from "./utils/GeminiAPI";
 import { VoicePanel } from "./components/VoicePanel";
 import { ModelConfig } from "./components/ModelConfig";
 import { XORcrypt } from "util/helpers";
 import { usePatient } from "components/contexts/PatientContext";
+import { Modality, StartSensitivity } from '@google/genai';
 
 const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u0003)O!<P\t\u000e&:V\u001fSDTW2(\u000e\u00020`;
 let _PWD: string | null = null;
@@ -234,11 +235,11 @@ Here is the standardized patient's chart information:`);
   React.useEffect(() => {
     if (!_PWD) {
       _PWD = window.prompt("Please enter your authorization code:");
-      setApiKey(XORcrypt(_API_KEY, _PWD));
+      setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
     }
   }, []);
 
-  const geminiOptions = React.useMemo(() => ({
+  const geminiOptions: LiveClientOptions = React.useMemo(() => ({
     httpOptions: { apiVersion: "v1alpha" },
     apiKey: apiKey,
     model: "models/gemini-2.5-flash-native-audio-preview-12-2025",
@@ -248,14 +249,14 @@ Here is the standardized patient's chart information:`);
         voiceConfig: { prebuiltVoiceConfig: { voiceName } },
       },
       thinkingConfig: { thinkingBudget: 0 }, // disable thinking
-      responseModalities: ["AUDIO"],
+      responseModalities: [Modality.AUDIO],
       enableAffectiveDialog: true,
       proactivity: { proactiveAudio: true },
       inputAudioTranscription: {},
       outputAudioTranscription: {},
       realtimeInputConfig: {
         automaticActivityDetection: {
-          startOfSpeechSensitivity: "START_SENSITIVITY_LOW",
+          startOfSpeechSensitivity: StartSensitivity.START_SENSITIVITY_LOW,
         },
       },
       systemInstruction: {

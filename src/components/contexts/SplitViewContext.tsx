@@ -1,7 +1,11 @@
 import * as React from 'react'
 
-interface TabObject {
+export interface TabObject {
   [key: string]: any;
+}
+
+export interface TabsDirectory {
+  [key: string]: (props: any) => React.ReactNode;
 }
 
 export interface SplitViewContextType {
@@ -19,17 +23,14 @@ export interface SplitViewContextType {
   openTab: (name: string, data: any, pane?: "main" | "side", selectIfExists?: boolean) => number;
 }
 
-export const SplitViewContext = React.createContext<SplitViewContextType | null>(null)
-
-export const SplitViewProvider = ({ children }: { children: React.ReactNode }) => {
-  const state = React.useState(null)
+export const SplitViewContext = React.createContext<SplitViewContextType>({} as SplitViewContextType)
+export const SplitViewProvider: React.FC<React.PropsWithChildren & { value: SplitViewContextType }> = ({ value, children }) => {
   return (
-    <SplitViewContext.Provider value={state as any}>
+    <SplitViewContext.Provider value={value}>
       {children}
     </SplitViewContext.Provider>
   )
 }
-
 export const useSplitView = (): SplitViewContextType => {
   const ctx = React.useContext(SplitViewContext)
   if (ctx === undefined || ctx === null) {

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { DateHelpers } from 'util/helpers.js';
+
 import { Alert } from '@mui/material';
 import { Database, usePatient } from 'components/contexts/PatientContext';
-import { filterDocuments } from 'util/helpers.js';
+import { filterDocuments } from 'util/helpers';
 
 export const SidebarSepsisAlert = () => {
   const { useEncounter } = usePatient();
@@ -15,7 +15,7 @@ export const SidebarSepsisAlert = () => {
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
   const labsFiltered = filterDocuments(labs!, conditionals, orders)
 
-  const _t = (x: Database.Flowsheet.Entry) => DateHelpers.convertToDateTime(x.date).toMillis()
+  const _t = (x: Database.Flowsheet.Entry) => new Date(x.date).getTime()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
   const wbcLabs = (labsFiltered ?? [])

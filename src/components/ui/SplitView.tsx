@@ -4,23 +4,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
 import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { SplitViewContext } from '../contexts/SplitViewContext';
-
-interface TabObject {
-  [key: string]: any;
-}
-
-interface TabsDirectory {
-  [key: string]: (props: any) => React.ReactNode;
-}
-
-interface SplitViewProps {
-  defaultMainTabs: TabObject[];
-  defaultSideTabs: TabObject[];
-  overflowMenuTabs?: TabObject[];
-  tabsDirectory: TabsDirectory;
-  accessories?: React.ReactNode;
-}
+import { SplitViewProvider, TabObject, TabsDirectory } from '../contexts/SplitViewContext';
 
 const DraggableTab: React.FC<{ index: number; value: number; label: string; child: React.ReactElement }> = ({ index, child, ...props }) => {
   return (
@@ -105,7 +89,13 @@ if (!Number.prototype.clamp) {
   };
 }
 
-export const SplitView: React.FC<SplitViewProps> = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }) => {
+export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }: {
+  defaultMainTabs: TabObject[];
+  defaultSideTabs: TabObject[];
+  overflowMenuTabs?: TabObject[];
+  tabsDirectory: TabsDirectory;
+  accessories?: React.ReactNode;
+}) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
   const [isCollapsed, setCollapsed] = React.useState(false)
   const sidePanelRef = React.useRef<any>(null)
@@ -226,7 +216,7 @@ export const SplitView: React.FC<SplitViewProps> = ({ defaultMainTabs, defaultSi
   }
 
   return (
-    <SplitViewContext.Provider value={providerState}>
+    <SplitViewProvider value={providerState}>
       <DragDropContext onDragEnd={({ source, destination }: any) => {
         if (destination == null) return;
         if (source.droppableId === "main" && destination.droppableId === "main") {
@@ -464,6 +454,6 @@ export const SplitView: React.FC<SplitViewProps> = ({ defaultMainTabs, defaultSi
           }
         </PanelGroup>
       </DragDropContext>
-    </SplitViewContext.Provider>
+    </SplitViewProvider>
   )
 }

@@ -79,7 +79,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
             }
           })
         } else {
-          const importedCollection = importedData[key] as any
+          const importedCollection = importedData[key] as any // FIXME
           // Arrays (lists, providers, locations, etc.)
           if (Array.isArray(importedCollection) && Array.isArray(newDb[key])) {
             newDb[key] = [...newDb[key]]

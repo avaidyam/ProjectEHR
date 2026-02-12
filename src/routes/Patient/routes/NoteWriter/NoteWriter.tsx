@@ -641,7 +641,7 @@ export const NoteWriter = () => {
   const TABS_CONFIG = Object.keys(systemsTemplate).map(key => ({
     id: key,
     label: key,
-    data: (systemsTemplate as any)[key],
+    data: systemsTemplate[key as keyof typeof systemsTemplate],
     state: activeSystems[key] || {},
     setter: (val: any) => setSystemState(key, val)
   }));

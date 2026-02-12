@@ -32,7 +32,7 @@ export function OrdersMgmt() {
 
   // only display active (i.e. non-discontinued) orders
   // ALSO filter out any secret hidden BICEP orders...
-  const visibleList = (orderList as any[]).filter((x: any) => !x.discontinueDate).filter((x: any) => x.name !== "__ADVANCE_PATIENT_BICEP_SLIDE__")
+  const visibleList = orderList.filter((x: any) => !x.discontinueDate).filter((x: any) => x.name !== "__ADVANCE_PATIENT_BICEP_SLIDE__")
 
   return (
     <TabView value={tab}>
@@ -60,7 +60,7 @@ export function OrdersMgmt() {
                     <Label variant="body2">{order.dose}, {order.route}, {order.frequency}, started on {!!order.date ? formatter.format(new Date(order.date)) : ""}</Label>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'right' }}>
-                    <ButtonGroup size="small" variant="outlined" onChange={((_: any, mode: any) => addOrder(order, mode)) as any}>
+                    <ButtonGroup size="small" variant="outlined" onChange={((_, mode) => addOrder(order, mode))}>
                       <Button value="Modify">Modify</Button>
                       {!order.holdDate && <Button value="Hold">Hold</Button>}
                       {!!order.holdDate && <Button value="Unhold">Unhold</Button>}
@@ -87,7 +87,7 @@ export function OrdersMgmt() {
         </TabPanel>
         <TabPanel value="Order History">
           Order History
-          <p>ADVANCED TO: {(orderList as any[]).filter((x: any) => x.name === "__ADVANCE_PATIENT_BICEP_SLIDE__").length}</p>
+          <p>ADVANCED TO: {orderList.filter((x: any) => x.name === "__ADVANCE_PATIENT_BICEP_SLIDE__").length}</p>
         </TabPanel>
       </Box>
     </TabView>

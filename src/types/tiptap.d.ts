@@ -36,23 +36,3 @@ declare module 'prosemirror-model';
 declare module 'prosemirror-state';
 declare module 'prosemirror-view';
 declare module 'prosemirror-transform';
-
-declare module '@google/genai' {
-    export class GoogleGenAI {
-        constructor(options: any);
-        [key: string]: any;
-    }
-    export type GoogleGenAIOptions = any;
-    export type LiveConnectConfig = any;
-    export type LiveServerMessage = any;
-    export type LiveClientToolResponse = any;
-    export type Part = any;
-    export type LiveServerContent = any;
-    export type LiveServerToolCall = any;
-    export type LiveServerToolCallCancellation = any;
-    export type Session = any;
-    export type Chat = any;
-    export type LiveCallbacks = any;
-    export type Content = any;
-    export type LiveClientEventTypes = any;
-}

@@ -117,41 +117,44 @@ export const OrderCart = () => {
             </Box>
           </Box>
         </Card>
-        {Object.keys(categories).filter((category: string) => (orderCart as any[]).filter((x: any) => getCategoryForOrder(x) === category).length > 0).map((category: string) => (
-          <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{(categories as any)[category].icon}</Icon> {(categories as any)[category].title}</>} color={(categories as any)[category].color}>
-            {(orderCart as any[]).filter((x: any) => getCategoryForOrder(x) === category).map((order: any) => (
-              <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha((categories as any)[category].color, 0.25) } }}>
-                <Typography variant="body1">{order.name}</Typography>
-                <Typography fontSize="9pt" sx={{ color: (categories as any)[category].color }}>
-                  {order.dose}
-                </Typography>
-                <Typography fontSize="8pt" color="grey">
-                  {order.route}, {order.frequency}, {order['Refills']} refills
-                </Typography>
-                <Button
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'right',
-                    padding: 0,
-                    minWidth: 'auto',
-                    border: '1px solid',
-                    borderColor: 'black'
-                  }}
-                  onClick={() => setOrderCart((prev: any[]) => prev.filter((x: any) => x !== order))}
-                >
-                  <Icon
+        {(Object.keys(categories) as (keyof typeof categories)[])
+          .filter(category => orderCart.filter((x: any) => getCategoryForOrder(x) === category).length > 0)
+          .map(category => (
+            <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
+              {orderCart.filter((x: any) => getCategoryForOrder(x) === category).map((order: any) => (
+                <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
+                  <Typography variant="body1">{order.name}</Typography>
+                  <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
+                    {order.dose}
+                  </Typography>
+                  <Typography fontSize="8pt" color="grey">
+                    {order.route}, {order.frequency}, {order['Refills']} refills
+                  </Typography>
+                  <Button
                     sx={{
-                      fontSize: '10pt',
-                      color: 'black'
+                      display: 'flex',
+                      justifyContent: 'right',
+                      padding: 0,
+                      minWidth: 'auto',
+                      border: '1px solid',
+                      borderColor: 'black'
                     }}
+                    onClick={() => setOrderCart((prev: any[]) => prev.filter((x: any) => x !== order))}
                   >
-                    close
-                  </Icon>
-                </Button>
-              </Box>
-            ))}
-          </TitledCard>
-        ))}
+                    <Icon
+                      sx={{
+                        fontSize: '10pt',
+                        color: 'black'
+                      }}
+                    >
+                      close
+                    </Icon>
+                  </Button>
+                </Box>
+              ))}
+            </TitledCard>
+          ))
+        }
         <Box sx={{ p: 1 }}>
           <Button variant="outlined" color="error" onClick={() => {
             setOrderCart([])

@@ -2,7 +2,7 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, GlobalStyles } from '@mui/material';
-import 'util/helpers.js';
+import 'util/helpers';
 
 import { App } from './routes/App';
 import { AuthProvider } from './components/contexts/AuthContext';

@@ -55,7 +55,8 @@ import {
   DialogProps,
   TabProps,
   MenuProps,
-  MenuItemProps
+  MenuItemProps,
+  ToggleButtonGroupProps
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -147,7 +148,7 @@ export const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, ..
   />
 )
 
-export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: any, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
+export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
     fullWidth
     options={options}
@@ -177,18 +178,18 @@ export const Button: React.FC<ButtonProps & { contained?: boolean, outlined?: bo
 
 // FIXME: Need to make sure `exclusive=false` mode works correctly!
 // Buttons inside this MUST have prop `toggle={true}`
-export const ButtonGroup: React.FC<ButtonGroupProps & { exclusive?: boolean, onChange?: (event: any, value: any) => void, value?: any }> = ({ exclusive = false, variant, value, onChange, children, ...props }) => {
+export const ButtonGroup: React.FC<Omit<ButtonGroupProps, 'onChange'> & { exclusive?: boolean, onChange?: (event: React.MouseEvent<HTMLElement>, value: any) => void, value?: any }> = ({ exclusive = false, variant, value, onChange, children, ...props }) => {
   const childrenWithProps = React.Children.map(children, child => {
     if (!React.isValidElement(child))
       return child
     // Must have value for parent ButtonGroup and child Button to be considered a toggle
     // If exclusive toggle, check array contains, else must equal
-    const childEl = child as React.ReactElement<any>;
+    const childEl = child as React.ReactElement<ButtonProps>;
     const isToggle = !!value && !!childEl.props.value
     const isSelected = isToggle && ((Array.isArray(value) && value.includes(childEl.props.value)) || (value === childEl.props.value))
     return React.cloneElement(childEl, {
       variant: isToggle ? (isSelected ? "contained" : "outlined") : variant,
-      onClick: (event: React.MouseEvent) => {
+      onClick: (event) => {
         // Call parent ButtonGroup onChange if requested, providing child Button 
         // value (click source), then call child Button onClick if necessary
         onChange?.(event, childEl.props.value)

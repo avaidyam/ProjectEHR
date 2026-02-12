@@ -48,12 +48,6 @@ const FilterItem = ({ filter, selectedFilters }: { filter: any; selectedFilters:
           {filter.label}
         </span>
       }
-      slotProps={{
-        checkbox: {
-          indeterminate: isIndeterminate,
-          checked: isSelected,
-        } as any
-      }}
       sx={{
         '& > .MuiTreeItem-content': {
           bgcolor: `${color}15`,

@@ -6,7 +6,7 @@ import { FlowsheetGrid } from './components/FlowsheetGrid';
 import { LeftRail } from './components/LeftRail';
 import { CollapsiblePane } from 'components/ui/CollapsiblePane';
 import { v4 as uuidv4 } from 'uuid';
-import { DateHelpers } from 'util/helpers.js';
+
 
 export interface FlowsheetEntry {
   id: string;
@@ -108,7 +108,12 @@ export const Flowsheet = () => {
     const persistedColumns: TimeColumn[] = sortedData.map((d: any, index: number) => ({
       id: d.id,
       timestamp: d.date,
-      displayTime: DateHelpers.convertToDateTime(d.date).toFormat('HHmm'), // Format nicely
+      displayTime: (() => {
+        const dObj = new Date(d.date);
+        const hours = String(dObj.getHours()).padStart(2, '0');
+        const minutes = String(dObj.getMinutes()).padStart(2, '0');
+        return `${hours}${minutes}`;
+      })(),
       isCurrentTime: false,
       index: index,
     }));

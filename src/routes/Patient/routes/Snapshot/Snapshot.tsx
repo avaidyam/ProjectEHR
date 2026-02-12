@@ -35,7 +35,7 @@ export const SnapshotTabContent: React.FC = () => {
       <Grid masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Patient</>} color='#5EA1F8'>
           <b>Name:</b> {`${firstName} ${lastName}`}<br />
-          <b>Age:</b> {(new Date(birthdate) as any).age()}<br />
+          <b>Age:</b> {(new Date(birthdate)).age()}<br />
           <b>Date of Birth:</b> {birthdate}<br />
           <b>Address:</b> {address}<br />
         </TitledCard>
@@ -60,7 +60,7 @@ export const SnapshotTabContent: React.FC = () => {
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
                 <span style={{ color: '#9F3494' }}>
-                  {(records as any)?.map?.((rec: any) => rec.received).join(', ')}
+                  {records?.map?.((rec: any) => rec.received).join(', ')}
                 </span>
               </div>
             ))

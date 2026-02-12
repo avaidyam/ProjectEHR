@@ -8,7 +8,7 @@ import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
 import { CollapsiblePane } from 'components/ui/CollapsiblePane';
-import { getComponentHistory, getFlowsheetHistory } from 'util/componentHistory';
+import { getComponentHistory, getFlowsheetHistory } from 'util/helpers';
 
 const CATEGORIES = [
   { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },

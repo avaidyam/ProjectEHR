@@ -4,9 +4,6 @@ import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimeP
 import { useDatabase } from 'components/contexts/PatientContext';
 import dayjs from 'dayjs';
 
-// Cast Autocomplete to any to avoid "renderInput is missing" since Core.jsx handles it
-const CoreAutocomplete = Autocomplete as any;
-
 interface MAROrder {
   id: string;
   medicationId: string;
@@ -180,7 +177,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
   return (
     <Box sx={{ p: 2, width: '100%' }}>
       <Stack direction="row" useFlexGap flexWrap="wrap" spacing={2} sx={{ gap: 2 }}>
-        <CoreAutocomplete
+        <Autocomplete
           label="Action"
           options={['Given', 'Not Given', 'Refused', 'Held', 'Missed']}
           value={status}
@@ -202,7 +199,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
             }
           }}
         />
-        <CoreAutocomplete
+        <Autocomplete
           label="Route"
           freeSolo
           options={['Oral', 'IV', 'Subcutaneous', 'Intramuscular', 'Transdermal']}
@@ -212,7 +209,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
           fullWidth={false}
           TextFieldProps={{ size: 'small' }}
         />
-        <CoreAutocomplete
+        <Autocomplete
           label="Site"
           freeSolo
           options={['Left Arm', 'Right Arm', 'Abdomen', 'Left Thigh', 'Right Thigh']}
@@ -222,7 +219,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
           fullWidth={false}
           TextFieldProps={{ size: 'small' }}
         />
-        <CoreAutocomplete
+        <Autocomplete
           label="Dose"
           freeSolo
           options={[]}
@@ -235,9 +232,9 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
             InputProps: {
               endAdornment: <InputAdornment position="end">{unit}</InputAdornment>,
             }
-          } as any}
+          }}
         />
-        <CoreAutocomplete
+        <Autocomplete
           label="Comment"
           freeSolo
           options={[]}
@@ -475,16 +472,16 @@ export const MAR: React.FC = () => {
     const medInfo = resolveMedication(order.medicationId, rxnorm) || {};
     const components = (order.components || []).map(comp => {
       const compInfo = resolveMedication(comp.code, rxnorm);
-      return compInfo ? { ...comp, name: (compInfo as any).fullName } : comp;
+      return compInfo ? { ...comp, name: compInfo.fullName } : comp;
     });
 
     return {
       ...order,
-      name: (medInfo as any).fullName || order.name,
+      name: medInfo.fullName || order.name,
       medication: medInfo,
       // If no components explicitly defined in the order, show the primary medication as the sole component
       components: components.length > 0 ? components : [
-        { name: (medInfo as any).fullName || (order as any).name, dose: order.orderedAdminDose, amount: order.orderedAmount }
+        { name: medInfo.fullName || order.name, dose: order.orderedAdminDose, amount: order.orderedAmount }
       ]
     };
   });
@@ -613,7 +610,7 @@ export const MAR: React.FC = () => {
                     borderBottomRightRadius: 0,
                   }
                 }
-              } as any
+              }
             }}
           />
           <Button

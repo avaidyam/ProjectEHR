@@ -12,6 +12,7 @@ import { Paper } from '@mui/material'
 
 import { Database, useDatabase } from 'components/contexts/PatientContext';
 import { AddToListModal } from './AddToListModal';
+import { GridColDef } from '@mui/x-data-grid';
 
 // Helper function to get status color
 const getStatusColor = (status: string) => {
@@ -62,24 +63,6 @@ export const PatientsTable = ({
     }
   }, [listPatients]);
 
-  const handlePatientClick = (params: any, event: any) => {
-    if (event.target.closest('button')) return;
-    const patient = params.row;
-
-    if (patient.encounterData) {
-      navigate(
-        `/patient/${patient.encounterData.patientId}/encounter/${patient.encounterData.encounterId}`
-      );
-    } else if (patient.encounters && Object.keys(patient.encounters).length > 0) {
-      const encounters = Object.values(patient.encounters);
-      const sortedEncounters = (encounters as any[]).sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
-      const latestEncounter = sortedEncounters[0];
-      navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
-    } else {
-      navigate(`/patient/${patient.id}`);
-    }
-  };
-
   /* Safe defaults for hooks */
   const columnsConfig = selectedList?.columns || [
     { id: 'name', label: 'Patient Name', selected: true, order: 0 },
@@ -89,7 +72,7 @@ export const PatientsTable = ({
     { id: 'status', label: 'Status', selected: true, order: 4 },
   ];
 
-  const columns = React.useMemo(() => {
+  const columns: GridColDef[] = React.useMemo(() => {
     const defaultCols: any[] = columnsConfig
       .filter((col: any) => col.selected)
       .sort((a: any, b: any) => a.order - b.order)
@@ -209,7 +192,18 @@ export const PatientsTable = ({
         <DataGrid
           rows={listPatients}
           columns={columns}
-          onRowClick={handlePatientClick}
+          onRowClick={(params, event) => {
+            //if (event.target.closest('button')) return;
+            const patient = params.row as Database.Patient;
+            if (patient.encounters && Object.keys(patient.encounters).length > 0) {
+              const encounters = Object.values(patient.encounters);
+              const sortedEncounters = encounters.sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+              const latestEncounter = sortedEncounters[0];
+              navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
+            } else {
+              navigate(`/patient/${patient.id}`);
+            }
+          }}
           disableRowSelectionOnClick
           hideFooter
           getRowHeight={() => 'auto'}

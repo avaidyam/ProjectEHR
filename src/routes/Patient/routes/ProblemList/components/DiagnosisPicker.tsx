@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
-import { getAllCategories, getCodesForChapter, searchICD10Codes } from 'util/icd10.js';
+import { getAllCategories, getCodesForChapter, searchICD10Codes } from 'util/helpers';
 
 const COLUMN_DEFS = {
   DIAGNOSIS: [
@@ -56,7 +56,7 @@ const DiagnosisSearchResults = ({ data, selection, setSelection, onSelect, queue
           hideFooter
           disableColumnMenu
           density="compact"
-          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() } as any}
+          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
           onRowSelectionModelChange={(newModel: any) => {
             const ids = Array.from(newModel.ids as Set<any>);
             if (ids.length > 0) setSelection(ids[0])
@@ -221,7 +221,7 @@ export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { sear
             }
           }}>Select and Stay</Button>
           <Button variant="outlined" onClick={() => onSelect(null)}>Cancel</Button>
-          <Button variant="contained" onClick={() => onSelect(queuedDiagnoses.length > 0 ? queuedDiagnoses : selectedItem ? { ...selectedItem as any, id: selectedItem.conceptId } : null)}>Accept</Button>
+          <Button variant="contained" onClick={() => onSelect(queuedDiagnoses.length > 0 ? queuedDiagnoses : selectedItem ? { ...selectedItem, id: selectedItem.conceptId } : null)}>Accept</Button>
         </>
       }
     >

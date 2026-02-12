@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { DateHelpers } from 'util/helpers.js';
+
 import { Fade, Paper, Popper, Typography } from '@mui/material';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
-import { filterDocuments } from 'util/helpers.js';
+import { filterDocuments } from 'util/helpers';
 
 const _isBPProblematic = ({ systolic, diastolic }: { systolic: number, diastolic: number }) => systolic > 130 || diastolic > 90;
 
@@ -68,7 +68,7 @@ export const VitalsPopup = ({ vitals, definition }: { vitals: Database.Flowsheet
                     key={entry.date?.toString()}
                     style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>{DateHelpers.convertToDateTime(entry.date).toFormat('MM/dd/yy')}</span>
+                    <span>{new Date(entry.date).toLocaleDateString('en-US', { year: '2-digit', month: '2-digit', day: '2-digit' })}</span>
                     {processedRows.map((row) => {
                       if (row.name === 'bp') {
                         const { sbp: sys, dbp: dia } = entry;
@@ -99,11 +99,10 @@ export const SidebarVitals = () => {
   const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339" as Database.Flowsheet.Definition.ID)
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
 
-  const _t = (x: Database.Flowsheet.Entry) => DateHelpers.convertToDateTime(x.date).toMillis()
+  const _t = (x: Database.Flowsheet.Entry) => new Date(x.date).getTime()
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
   const mostRecentDate = allVitals[0]?.date;
-  const mostRecentDT = DateHelpers.convertToDateTime(mostRecentDate);
-  const vitalsDateLabel = mostRecentDT && mostRecentDT.isValid ? ` ${DateHelpers.standardFormat(mostRecentDate)}` : '';
+  const vitalsDateLabel = mostRecentDate ? ` ${new Date(mostRecentDate).toLocaleDateString()}` : '';
 
   if (!vitalsDefinition) {
     return <i>No vitals definition found</i>

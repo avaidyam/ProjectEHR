@@ -5,7 +5,7 @@ import { AuthContext } from 'components/contexts/AuthContext';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
 import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core';
-import { useRouter } from 'util/helpers.js';
+import { useRouter } from 'util/helpers';
 import { Notification } from '../Login/components/Notification';
 import { useDatabase, Database } from 'components/contexts/PatientContext'
 
@@ -264,7 +264,7 @@ export function Schedule() {
               {selPatient ? (
                 <>
                   Name: {patientsDB[selPatient.patient.mrn].firstName} {patientsDB[selPatient.patient.mrn].lastName} <br />
-                  Age: {(new Date(patientsDB[selPatient.patient.mrn].birthdate) as any).age()} <br />
+                  Age: {(new Date(patientsDB[selPatient.patient.mrn].birthdate)).age()} <br />
                   Gender: {patientsDB[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
@@ -350,7 +350,7 @@ export function Schedule() {
                           {data.lastName}, {data.firstName} ({data.id})
                         </Typography>
                         <Typography color="textSecondary" fontSize="12px">
-                          {(new Date(data.birthdate) as any).age()} years old / {data.gender}
+                          {(new Date(data.birthdate)).age()} years old / {data.gender}
                         </Typography>
                       </Box>
                     </Box>
@@ -358,7 +358,7 @@ export function Schedule() {
                 },
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate) as any).age()
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate)).age()
                     } years old / ${data.gender}`;
                 },
               },
@@ -446,11 +446,11 @@ export function Schedule() {
               onHandleClickRoute(`patient/${selectedMRN}/encounter/${selectedEnc}`); // Proceed with routing if an encounter is selected
             }}
             showToolbar
-            slots={{ toolbar: customFilterBar as any }}
+            slots={{ toolbar: customFilterBar as any }} // FIXME
             slotProps={{
               panel: {
                 anchorEl: filterElem,
-              } as any,
+              } as any, // FIXME
               // Update slotProps to pass the wrapper setters
               toolbar: {
                 setFilterElem,
@@ -466,7 +466,7 @@ export function Schedule() {
                 setPreview,
                 hide,
                 setHide,
-              } as any,
+              } as any, // FIXME
             }}
             initialState={{
               pagination: {
