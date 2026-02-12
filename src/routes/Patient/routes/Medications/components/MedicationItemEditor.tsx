@@ -45,20 +45,18 @@ const PrnFormGroup = styled(FormGroup)({
 });
 
 export function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
-  const [orderables] = (useDatabase() as any).orderables()
+  const [orderables] = useDatabase().orderables()
   const [editedMedication, setEditedMedication] = React.useState({
     ...medication,
     unit: unitMap[medication.unit] || medication.unit,
   });
 
   React.useEffect(() => {
-    const selectedMedication = orderables.rxnorm.find((med: any) => med.name === editedMedication.name);
-    const brand = selectedMedication?.brand || ''; // FIXME
-    const possiblePrnReasons = selectedMedication?.prnReasons || []; // FIXME
+    const selectedMedication = orderables!.rxnorm.find((med: any) => med.name === editedMedication.name);
     setEditedMedication((prevState: any) => ({
       ...prevState,
-      brandName: brand,
-      possiblePrnReasons
+      brandName: '', // FIXME
+      possiblePrnReasons: [] // FIXME
     }));
   }, [editedMedication.name]);
 

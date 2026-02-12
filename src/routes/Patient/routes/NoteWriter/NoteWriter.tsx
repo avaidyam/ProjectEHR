@@ -616,13 +616,12 @@ const GenericNoteWriterTab = ({ data, state, updateState }: { data: any[]; state
 
 export const NoteWriter = () => {
   const { useEncounter } = usePatient()
-  const [activeNote, setActiveNote] = (useEncounter() as any).smartData.activeNote()
+  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
+  const [activeSystems, setActiveSystems] = useEncounter().smartData.activeSystems({})
   const [selectedTabLabel, setSelectedTabLabel] = React.useState(Object.keys(systemsTemplate)[0] ?? '')
 
-  const systemsState = activeNote?.systems || {};
-
   const setSystemState = (systemName: string, newStateOrFn: any) => {
-    setActiveNote((prev: any) => {
+    setActiveSystems((prev: any) => {
       if (!prev) return prev;
       const currentSystems = prev.systems || {};
       const currentSystemState = currentSystems[systemName] || {};
@@ -643,12 +642,12 @@ export const NoteWriter = () => {
     id: key,
     label: key,
     data: (systemsTemplate as any)[key],
-    state: systemsState[key] || {},
+    state: activeSystems[key] || {},
     setter: (val: any) => setSystemState(key, val)
   }));
 
   const handleCopy = async () => {
-    const html = generateHTML(systemsState);
+    const html = generateHTML(activeSystems);
     if (!html) return;
 
     try {

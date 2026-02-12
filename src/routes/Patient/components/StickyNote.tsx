@@ -37,6 +37,7 @@ interface StickyNoteWindowProps {
 export const StickyNote = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useChart } = usePatient();
+  const [] = useChart().smartData({} as any) // FIXME: force-init smartData object if null
   const [stickyNotes, setStickyNotes] = useChart().smartData.stickyNotes({});
   // Our data is located @ patient.smartData.stickyNotes.["__PRIVATE__"]
   // NOT patient.currentEncounter.* - this is very important to note!

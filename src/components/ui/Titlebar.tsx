@@ -46,9 +46,9 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const [pdmpManagerOpen, setPdmpManagerOpen] = React.useState(false)
 
   // Extract MRN and EncounterID from URL if present
-  const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/);
-  const currentMrn = match ? match[1] : null;
-  const currentEncID = match ? match[2] : null;
+  const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/) as string[]
+  const currentMrn = match?.[1]
+  const currentEncID = match?.[2]
 
   const handleOpenCreateEncounter = () => {
     // Check if we are on a patient chart
@@ -298,8 +298,8 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
       <PDMPManagerWindow
         open={pdmpManagerOpen}
         onClose={() => setPdmpManagerOpen(false)}
-        mrn={currentMrn}
-        encounterId={currentEncID}
+        mrn={currentMrn as Database.Patient.ID}
+        encounterId={currentEncID as Database.Patient.ID}
       />
     </>
   )

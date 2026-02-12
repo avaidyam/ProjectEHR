@@ -323,7 +323,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
 }
 
 export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTerm: string; open: any; onSelect: (selection: any) => void;[key: string]: any }) => {
-  const [orderables] = (useDatabase() as any).orderables()
+  const [orderables] = useDatabase().orderables()
   const [value, setValue] = React.useState(searchTerm)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [tab, setTab] = React.useState(searchTerm ? "preference" : "browse")

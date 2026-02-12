@@ -395,7 +395,7 @@ const ImageView = ({
   data: any;
 }) => {
   const { useChart } = usePatient();
-  const [chart] = (useChart() as any)();
+  const [chart] = useChart()();
   const [selectedTool, setSelectedTool] = React.useState('Scroll');
   const [contextMenu, setContextMenu] = React.useState<any>(null);
   const [settings, setSettings] = React.useState<Record<string, any>>({});

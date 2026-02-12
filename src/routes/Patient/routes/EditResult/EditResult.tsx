@@ -36,13 +36,13 @@ const ComponentEditCell = ({ componentList, id, value, field, api }: { component
 
 export const EditResult = ({ ...props }) => {
   const { closeTab } = useSplitView();
-  const [orderables] = (useDatabase() as any).orderables()
-  const [providers] = (useDatabase() as any).providers()
+  const [orderables] = useDatabase().orderables()
+  const [providers] = useDatabase().providers()
   const { useEncounter } = usePatient();
-  const [labs, setLabs] = (useEncounter() as any).labs();
-  const [imaging, setImaging] = (useEncounter() as any).labs();
-  const procedures = Object.entries(orderables.procedures).map(([key, value]: [string, any]) => ({ label: value, id: key }));
-  const componentList = Object.entries(orderables.components).map(([key, value]: [string, any]) => ({ label: value, id: key }));
+  const [labs, setLabs] = useEncounter().labs();
+  const [imaging, setImaging] = useEncounter().labs();
+  const procedures = Object.entries(orderables!.procedures).map(([key, value]) => ({ label: value, id: key }));
+  const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
   const [testDate, setTestDate] = React.useState(new Date().toISOString().slice(0, 16));
   const [selectedTest, setSelectedTest] = React.useState<any>(null);

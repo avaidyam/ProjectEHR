@@ -10,7 +10,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 
 export function OrdersMgmt() {
   const { useChart, useEncounter } = usePatient()
-  // eslint-disable-next-line dot-notation
+  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
   const [orderCart, setOrderCart] = useEncounter().smartData.orderCart["_currentUser"]([])
   const [orderList, setOrderList] = useEncounter().orders([])
   const [tab, setTab] = React.useState("Active")

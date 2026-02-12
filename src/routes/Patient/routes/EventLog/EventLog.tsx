@@ -3,7 +3,7 @@ import { Box, Stack, Button, Typography, Divider, ToggleButton, ToggleButtonGrou
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { Icon } from 'components/ui/Core';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext';
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
@@ -32,29 +32,27 @@ const CATEGORIES = [
 export const EventLog = () => {
   const eventListRef = React.useRef<HTMLDivElement>(null);
   const { useEncounter, useChart } = usePatient();
-  const [notes] = (useEncounter() as any).notes();
-  const [labs] = (useEncounter() as any).labs();
-  const [chartLabs] = (useChart() as any).labs();
-  const [imaging] = (useEncounter() as any).imaging();
-  const [flowsheets] = (useEncounter() as any).flowsheets();
-  const [chartFlowsheets] = (useChart() as any).flowsheets();
-  const [orders] = (useEncounter() as any).orders();
-  const [flowsheetDefs] = (useDatabase() as any).flowsheets();
-  const [providers] = (useDatabase() as any).providers();
+  const [notes] = useEncounter().notes();
+  const [labs] = useEncounter().labs();
+  const [imaging] = useEncounter().imaging();
+  const [flowsheets] = useEncounter().flowsheets();
+  const [orders] = useEncounter().orders();
+  const [flowsheetDefs] = useDatabase().flowsheets();
+  const [providers] = useDatabase().providers();
 
   // Generate component history for popover display
   const componentHistory = React.useMemo(() => {
-    return getComponentHistory(labs, chartLabs);
-  }, [labs, chartLabs]);
+    return getComponentHistory(labs!);
+  }, [labs]);
 
   // Generate flowsheet history for popover display
   const flowsheetHistory = React.useMemo(() => {
-    return getFlowsheetHistory(flowsheets, chartFlowsheets, flowsheetDefs);
-  }, [flowsheets, chartFlowsheets, flowsheetDefs]);
+    return getFlowsheetHistory(flowsheets!, flowsheetDefs);
+  }, [flowsheets, flowsheetDefs]);
 
   // Helper to look up provider name by ID
-  const getProviderName = (providerId: any) => {
-    const provider = (providers || []).find((p: any) => p.id === providerId);
+  const getProviderName = (providerId: Database.Provider.ID) => {
+    const provider = (providers || []).find(p => p.id === providerId);
     return provider ? provider.name : providerId;
   };
 
@@ -70,7 +68,7 @@ export const EventLog = () => {
     const allEvents: any[] = [];
 
     // Process Labs
-    (labs || []).forEach((item: any) => {
+    (labs || []).forEach(item => {
       allEvents.push({
         id: item.id || `lab - ${Math.random()} `,
         category: 'results_lab',
@@ -78,14 +76,14 @@ export const EventLog = () => {
         timestamp: item.date, // ISO string expected
         details: `${item.status}`,
         tag: item.abnormal ? 'Abnormal' : undefined,
-        author: getProviderName(item.provider) ?? "Unknown",
+        author: getProviderName(item.provider!) ?? "Unknown",
         data: item,
-        subItems: (item.components ?? []).map((x: any) => ({ label: x.name, value: x.value }))
+        subItems: (item.components ?? []).map(x => ({ label: x.name, value: x.value }))
       });
     });
 
     // Process Imaging
-    (imaging || []).forEach((item: any) => {
+    (imaging || []).forEach(item => {
       allEvents.push({
         id: item.id || `img - ${Math.random()} `,
         category: 'results_imaging',
@@ -100,14 +98,14 @@ export const EventLog = () => {
     });
 
     // Process Notes
-    (notes || []).forEach((item: any) => {
+    (notes || []).forEach(item => {
       allEvents.push({
-        id: item.id || `note - ${Math.random()} `,
+        id: item.id,
         category: 'notes',
         title: item.summary,
         timestamp: item.serviceDate,
         details: `${item.status}`,
-        author: getProviderName(item.authorName) ?? "Unknown",
+        author: getProviderName(item.author) ?? "Unknown",
         data: item,
         subItems: []
       });
@@ -115,11 +113,11 @@ export const EventLog = () => {
 
     // Process Flowsheets (Vitals)
     const flowsheetGroups: Record<string, any> = {};
-    (flowsheets || []).forEach((item: any) => {
-      const timeKey = item.date;
+    (flowsheets || []).forEach(item => {
+      const timeKey = item.date as string;
 
       // Look up group definition
-      const groupDef = (flowsheetDefs || []).find((g: any) => g.id === item.flowsheet);
+      const groupDef = (flowsheetDefs || []).find(g => g.id === item.flowsheet);
       const groupName = groupDef ? groupDef.name : item.flowsheet;
 
       if (!flowsheetGroups[timeKey]) {

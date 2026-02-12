@@ -2,8 +2,8 @@ declare const __brand: unique symbol
 type Brand<B> = { readonly [__brand]: B }
 export type Branded<T, B> = T & Brand<B>
 
-export type UUID = string
-export type JSONDate = string | Date
+export type UUID = Branded<string, 'UUID'>
+export type JSONDate = Branded<string, 'JSONDate'>
 
 export namespace Units {
   export enum Mass {
@@ -35,9 +35,28 @@ export interface Root {
   lists: PatientList[]
   schedules: Schedule[]
   patients: {
-    [key: Patient.ID]: Patient;
+    [key: Patient.ID]: Patient
   },
-  orderables?: any
+  orderables?: {
+    procedures: {
+      [key: string]: string
+    }
+    result_map: {
+      [key: string]: string[]
+    }
+    components: {
+      [key: string]: string
+    }
+    rxnorm: {
+      name: string
+      alias: string[]
+      route: {
+        [key: string]: {
+          [key: string]: string
+        }
+      }
+    }[]
+  }
 }
 
 export type Specialty = Branded<string, 'Specialty.Name'>
@@ -115,8 +134,8 @@ export namespace Flowsheet {
 
   export interface Entry {
     id: Flowsheet.Entry.ID
-    flowsheet?: Flowsheet.Definition.ID
-    date?: JSONDate
+    flowsheet: Flowsheet.Definition.ID
+    date: JSONDate
     [key: string]: any;
   }
 
@@ -312,6 +331,16 @@ export interface SmartData {
   orderCart?: {
     [key: string]: Order[];
   }
+  activeNote: {
+    date: JSONDate
+    editorState: string
+    summary: string
+    type: string | null
+    service: string | null
+  } | null
+  activeSystems: {
+    [key: string]: any
+  }
 }
 
 export namespace SmartData {
@@ -466,7 +495,7 @@ export interface Imaging {
   acuity?: string
   image?: string
   performedBy?: string
-  provider: string
+  provider: Provider.ID
   status: string
   statusDate: JSONDate
   test: string
@@ -492,7 +521,7 @@ export interface Lab {
   components: Lab.Component[]
   expectedDate?: JSONDate
   expirationDate?: JSONDate
-  provider?: string
+  provider?: Provider.ID
   resulted?: any
   resultingAgency: any
   status: string
@@ -557,7 +586,7 @@ export interface Note {
   id: Note.ID
   date: JSONDate
   type: string
-  author: string
+  author: Provider.ID
   serviceDate: JSONDate
   status: string
   summary: string
@@ -569,6 +598,24 @@ export namespace Note {
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
+
+  export const NOTE_TYPES = [
+    "ACP (Advance Care Planning)",
+    "Brief Op Note",
+    "Consults",
+    "Discharge Summary",
+    "ED Medical/PA Student Note",
+    "H&P",
+    "Lactation Note",
+    "OB ED/Admit Note",
+    "Outcome Summary",
+    "Patient Care Conference",
+    "Procedures",
+    "Progress Notes",
+    "Psych Limited Note",
+    "Psych Progress",
+    "Significant Event"
+  ];
 }
 
 export interface Order {

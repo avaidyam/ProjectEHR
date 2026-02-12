@@ -228,7 +228,7 @@ export const PatientsTable = ({
           onClose={() => setSelectedPatient(null)}
           patient={selectedPatient}
           lists={lists}
-          setLists={setLists}
+          setLists={() => setLists}
         />
       )}
     </>

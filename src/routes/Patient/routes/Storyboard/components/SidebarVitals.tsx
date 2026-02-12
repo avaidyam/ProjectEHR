@@ -95,8 +95,8 @@ export const SidebarVitals = () => {
   const [orders] = useEncounter().orders()
   const [flowsheetDefs] = useDatabase().flowsheets()
 
-  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
-  const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339")
+  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339" as Database.Flowsheet.Definition.ID) ?? []
+  const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339" as Database.Flowsheet.Definition.ID)
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
 
   const _t = (x: Database.Flowsheet.Entry) => DateHelpers.convertToDateTime(x.date).toMillis()

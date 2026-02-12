@@ -1,32 +1,15 @@
 import * as React from 'react';
 import { Box, TextField, IconButton, Button, Autocomplete, Typography } from '@mui/material';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext';
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import { Label, Stack, Icon, Window, RichTextEditor } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 
-const NOTE_TYPES = [
-  "ACP (Advance Care Planning)",
-  "Brief Op Note",
-  "Consults",
-  "Discharge Summary",
-  "ED Medical/PA Student Note",
-  "H&P",
-  "Lactation Note",
-  "OB ED/Admit Note",
-  "Outcome Summary",
-  "Patient Care Conference",
-  "Procedures",
-  "Progress Notes",
-  "Psych Limited Note",
-  "Psych Progress",
-  "Significant Event"
-];
-
 export const EditNote = () => {
   const { useEncounter } = usePatient();
-  const [_, setNotes] = (useEncounter() as any).notes([]);
-  const [activeNote, setActiveNote] = (useEncounter() as any).smartData.activeNote();
-  const [departments] = (useDatabase() as any).departments();
+  const [_, setNotes] = useEncounter().notes([]);
+  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
+  const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
+  const [departments] = useDatabase().departments();
   const { closeTab } = useSplitView();
 
   React.useEffect(() => {
@@ -34,7 +17,7 @@ export const EditNote = () => {
       setActiveNote({
         editorState: "",
         summary: '',
-        date: (() => { const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); return n.toISOString().slice(0, 16); })(),
+        date: (() => { const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); return n.toISOString().slice(0, 16) as Database.JSONDate })(),
         type: null,
         service: null
       });
@@ -47,15 +30,17 @@ export const EditNote = () => {
   }
 
   const handleAccept = () => {
-    setNotes((prev: any) => [...prev, {
-      id: crypto.randomUUID(),
-      serviceDate: activeNote.date.toString(),
-      date: activeNote.date.toString(),
-      summary: activeNote.summary,
-      author: "12",
+    if (!activeNote)
+      return
+    setNotes(prev => [...prev, {
+      id: Database.Note.ID.create(),
+      serviceDate: activeNote.date!.toString() as Database.JSONDate,
+      date: activeNote.date!.toString() as Database.JSONDate,
+      summary: activeNote.summary!,
+      author: "12" as Database.Provider.ID,
       status: "Signed",
-      type: activeNote.type,
-      content: activeNote.editorState
+      type: activeNote.type!,
+      content: activeNote.editorState!
     }])
     setActiveNote(null);
     closeTabs();
@@ -64,7 +49,7 @@ export const EditNote = () => {
   const [isUnsavedDialogVisible, setIsUnsavedDialogVisible] = React.useState(false);
 
   const handleCancel = () => {
-    if (activeNote?.editorState || activeNote?.summary || activeNote?.noteType || activeNote?.service) {
+    if (activeNote?.editorState || activeNote?.summary || activeNote?.type || activeNote?.service) {
       setIsUnsavedDialogVisible(true);
     } else {
       closeTabs();
@@ -99,16 +84,16 @@ export const EditNote = () => {
                 variant="standard"
                 size="small"
                 value={activeNote?.date ?? ""}
-                onChange={(e) => setActiveNote({ ...activeNote, date: e.target.value })}
+                onChange={(e) => setActiveNote({ ...activeNote!, date: e.target.value as Database.JSONDate })}
                 sx={{ width: 190 }}
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
               <Label variant="body2" color="text.secondary">Type:</Label>
               <Autocomplete
-                options={NOTE_TYPES}
+                options={Database.Note.NOTE_TYPES}
                 value={activeNote?.type ?? null}
-                onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote, type: newValue })}
+                onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote!, type: newValue })}
                 fullWidth
                 size="small"
                 renderInput={(params: any) => <TextField {...params} variant="standard" placeholder="Note Type" />}
@@ -120,7 +105,7 @@ export const EditNote = () => {
                 options={departments}
                 getOptionLabel={(option: any) => option.name || ""}
                 value={activeNote?.service ?? null}
-                onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote, service: newValue })}
+                onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote!, service: newValue })}
                 fullWidth
                 size="small"
                 renderInput={(params: any) => <TextField {...params} variant="standard" placeholder="Service" />}
@@ -135,7 +120,7 @@ export const EditNote = () => {
             variant="standard"
             fullWidth
             value={activeNote?.summary ?? ""}
-            onChange={(e) => setActiveNote({ ...activeNote, summary: e.target.value })}
+            onChange={(e) => setActiveNote({ ...activeNote!, summary: e.target.value })}
             InputProps={{ disableUnderline: false }}
           />
         </Box>
@@ -150,8 +135,8 @@ export const EditNote = () => {
         <RichTextEditor
           disableStickyFooter
           initialContent={activeNote?.editorState ?? ""}
-          onSave={(val: string) => setActiveNote((prev: any) => ({ ...prev, editorState: val }))}
-          onUpdate={(val: string) => setActiveNote((prev: any) => ({ ...prev, editorState: val }))}
+          onSave={(val: string) => setActiveNote(prev => ({ ...prev!, editorState: val }))}
+          onUpdate={(val: string) => setActiveNote(prev => ({ ...prev!, editorState: val }))}
           sx={{ height: "100%", overflow: "auto" }}
         />
       </Box>
@@ -170,7 +155,7 @@ export const EditNote = () => {
           defaultValue="Sign"
           size="small"
           sx={{ minWidth: 200 }}
-          renderInput={(params: any) => <TextField {...params} variant="outlined" />}
+          renderInput={params => <TextField {...params} variant="outlined" />}
         />
         <Button variant="outlined" color="success" startIcon={<Icon>check</Icon>} onClick={handleAccept}>Accept</Button>
         <Button variant="outlined" color="error" startIcon={<Icon>close</Icon>} onClick={handleCancel}>Cancel</Button>

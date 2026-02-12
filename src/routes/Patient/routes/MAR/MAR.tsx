@@ -443,7 +443,7 @@ const DrugBox: React.FC<DrugBoxProps> = ({ order, hours, administrations, onAddA
 };
 
 export const MAR: React.FC = () => {
-  const [rxnorm] = (useDatabase() as any).orderables.rxnorm();
+  const [rxnorm] = useDatabase().orderables.rxnorm();
 
   const resolveMedication = (code: string, db: any[]) => {
     if (!code || !db) return null;

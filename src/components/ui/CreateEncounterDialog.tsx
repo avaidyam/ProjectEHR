@@ -74,7 +74,7 @@ export const CreateEncounterDialog = ({
           label="Start Date/Time"
           type="datetime-local"
           value={formData.startDate}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('startDate', e.target.value)}
+          onChange={(e) => handleChange('startDate', e.target.value)}
           fullWidth
           InputLabelProps={{ shrink: true }}
         />
@@ -83,7 +83,7 @@ export const CreateEncounterDialog = ({
           label="End Date/Time"
           type="datetime-local"
           value={formData.endDate}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('endDate', e.target.value)}
+          onChange={(e) => handleChange('endDate', e.target.value)}
           fullWidth
           InputLabelProps={{ shrink: true }}
         />
@@ -91,7 +91,7 @@ export const CreateEncounterDialog = ({
         <FormControl fullWidth>
           <InputLabel>Department</InputLabel>
           <Select
-            value={formData.department}
+            value={formData.department as string}
             label="Department"
             onChange={(e) => handleChange('department', e.target.value)}
           >
@@ -117,16 +117,16 @@ export const CreateEncounterDialog = ({
         <TextField
           label="Specialty"
           value={formData.specialty}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('specialty', e.target.value)}
+          onChange={(e) => handleChange('specialty', e.target.value)}
           fullWidth
         />
 
         <FormControl fullWidth>
           <InputLabel>Provider</InputLabel>
           <Select
-            value={formData.provider}
+            value={formData.provider as string}
             label="Provider"
-            onChange={(e) => handleChange('provider', e.target.value)}
+            onChange={(e) => handleChange('provider', e.target.value as string)}
           >
             {providers && providers
               .filter(prov => {

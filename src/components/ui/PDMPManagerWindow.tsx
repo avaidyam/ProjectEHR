@@ -41,7 +41,7 @@ const DrugPicker = ({ value, onChange }: {
   const drugOptions = orderables?.rxnorm || [];
   const routeOptions = selectedDrug ? Object.keys(selectedDrug.route || {}) : [];
   const dosageOptions = (selectedDrug && selectedRoute && selectedDrug.route[selectedRoute])
-    ? Object.entries(selectedDrug.route[selectedRoute]).map(([code, label]) => ({ code: code as string, label: label as string }))
+    ? Object.entries(selectedDrug.route[selectedRoute]).map(([code, label]) => ({ code, label }))
     : [];
 
   const currentDosageOption = dosageOptions.find((d) => d.label === value.dosage) || null;

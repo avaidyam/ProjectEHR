@@ -16,7 +16,7 @@ import {
   FormControlLabel,
   Grid,
 } from '@mui/material';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
   const [formData, setFormData] = React.useState({ ...row });
@@ -81,7 +81,7 @@ export function MedicalHistory() {
 
   const handleAddNew = () => {
     const newId = (medicalHx ?? []).length > 0 ? Math.max(...medicalHx.map((e: any) => e.id)) + 1 : 1;
-    const newEntry = { id: newId, diagnosis: '', date: '', age: '', src: '', problemList: 'False', isNew: true };
+    const newEntry = { id: newId, diagnosis: '', date: '' as Database.JSONDate, age: '', src: '', problemList: 'False', isNew: true };
     setMedicalHx([...(medicalHx ?? []), newEntry]);
     setExpandedRowIds(new Set([newId]));
   };

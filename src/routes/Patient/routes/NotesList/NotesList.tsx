@@ -11,10 +11,10 @@ import { NoteViewer } from '../NoteViewer/NoteViewer';
 export const NotesList = () => {
   const { useEncounter } = usePatient();
   const { openTab } = useSplitView();
-  const [notes] = (useEncounter() as any).notes();
-  const [conditionals] = (useEncounter() as any).conditionals();
-  const [orders] = (useEncounter() as any).orders();
-  const [providers] = (useDatabase() as any).providers();
+  const [notes] = useEncounter().notes();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
+  const [providers] = useDatabase().providers();
   const [selectedCategory, setSelectedCategory] = React.useState('All');
   const [selectedNote, setSelectedNote] = React.useState<any>(null);
 

@@ -52,10 +52,10 @@ const getCategoryForOrder = (order: any) => {
 
 export const OrderCart = () => {
   const { useChart, useEncounter } = usePatient()
-  // eslint-disable-next-line dot-notation
-  const [orderList, setOrderList] = (useEncounter() as any).orders([])
-  const [orderCart, setOrderCart] = (useEncounter() as any).orderCart["_currentUser"]([])
-  const [conditionals] = (useEncounter() as any).conditionals({})
+  const [orderList, setOrderList] = useEncounter().orders([])
+  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
+  const [orderCart, setOrderCart] = useEncounter().smartData.orderCart["_currentUser"]([])
+  const [conditionals] = useEncounter().conditionals({})
 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [searchTerm, setSearchTerm] = React.useState('')

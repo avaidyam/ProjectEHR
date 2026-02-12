@@ -3,10 +3,9 @@
  * the current encounter and the entire chart.
  * 
  * @param {Array} encounterLabs - Labs from the current encounter
- * @param {Array} chartLabs - All labs from the patient's chart
  * @returns {Object} - Map of component name to { encounter: [], chart: [] }
  */
-export function getComponentHistory(encounterLabs, chartLabs) {
+export function getComponentHistory(encounterLabs) {
   const componentMap = {};
 
   // Helper to add a component value to the map
@@ -26,14 +25,6 @@ export function getComponentHistory(encounterLabs, chartLabs) {
     const labDate = lab.date;
     (lab.components || []).forEach(component => {
       addComponent(component.name, component.value, labDate, 'encounter');
-    });
-  });
-
-  // Process all chart labs
-  (chartLabs || []).forEach(lab => {
-    const labDate = lab.date;
-    (lab.components || []).forEach(component => {
-      addComponent(component.name, component.value, labDate, 'chart');
     });
   });
 
@@ -69,11 +60,10 @@ export function formatComponentDate(date) {
  * the current encounter and the entire chart.
  * 
  * @param {Array} encounterFlowsheets - Flowsheets from the current encounter
- * @param {Array} chartFlowsheets - All flowsheets from the patient's chart
  * @param {Array} flowsheetDefs - Flowsheet definitions for row label lookup
  * @returns {Object} - Map of row name to { encounter: [], chart: [] }
  */
-export function getFlowsheetHistory(encounterFlowsheets, chartFlowsheets, flowsheetDefs) {
+export function getFlowsheetHistory(encounterFlowsheets, flowsheetDefs) {
   const flowsheetMap = {};
 
   // Helper to get row label from definitions
@@ -105,16 +95,6 @@ export function getFlowsheetHistory(encounterFlowsheets, chartFlowsheets, flowsh
       if (['id', 'date', 'flowsheet'].includes(key)) return;
       const rowLabel = getRowLabel(item.flowsheet, key);
       addFlowsheetValue(rowLabel, item[key], itemDate, 'encounter');
-    });
-  });
-
-  // Process all chart flowsheets
-  (chartFlowsheets || []).forEach(item => {
-    const itemDate = item.date;
-    Object.keys(item).forEach(key => {
-      if (['id', 'date', 'flowsheet'].includes(key)) return;
-      const rowLabel = getRowLabel(item.flowsheet, key);
-      addFlowsheetValue(rowLabel, item[key], itemDate, 'chart');
     });
   });
 

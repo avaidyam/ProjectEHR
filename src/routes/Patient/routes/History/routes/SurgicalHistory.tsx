@@ -20,7 +20,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
 
 const procedures = [
   "Appendectomy", "Cholecystectomy", "Hernia Repair - Inguinal", "Hernia Repair - Umbilical",
@@ -116,7 +116,7 @@ export function SurgicalHistory() {
 
   const handleAddNew = () => {
     const newId = (surgicalHx ?? []).length > 0 ? Math.max(...surgicalHx.map((e: any) => e.id)) + 1 : 1;
-    const newEntry = { id: newId, procedure: '', date: '', age: '', laterality: 'N/A', src: '', notes: '', isNew: true };
+    const newEntry = { id: newId, procedure: '', date: '' as Database.JSONDate, age: '', laterality: 'N/A', src: '', notes: '', isNew: true };
     setSurgicalHx([...(surgicalHx ?? []), newEntry]);
     setExpandedRowIds(new Set([newId]));
   };

@@ -15,6 +15,7 @@ interface HandoffData {
 export const Handoff: React.FC = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useEncounter } = usePatient();
+  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
   const [handoffData, setHandoffData] = useEncounter().smartData.handoff({});
   const [currentDepartment, setCurrentDepartment] = React.useState<string>('');
 

@@ -203,7 +203,7 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
           <TextField
             label="Department Name"
             value={deptName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeptName(e.target.value)}
+            onChange={(e) => setDeptName(e.target.value)}
             autoFocus
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
@@ -220,7 +220,7 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
           <TextField
             label="Department Name"
             value={deptName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeptName(e.target.value)}
+            onChange={(e) => setDeptName(e.target.value)}
             autoFocus
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
@@ -237,18 +237,18 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
           <TextField
             label="Provider Name"
             value={providerData.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
             autoFocus
           />
           <TextField
             label="Specialty"
             value={providerData.specialty}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
+            onChange={(e) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
           />
           <FormControl fullWidth>
             <InputLabel>Department</InputLabel>
             <Select
-              value={providerData.department}
+              value={providerData.department! as string}
               label="Department"
               onChange={(e) => setProviderData(prev => ({ ...prev, department: e.target.value as Database.Department.ID }))}
             >
@@ -271,18 +271,18 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
           <TextField
             label="Provider Name"
             value={providerData.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
             autoFocus
           />
           <TextField
             label="Specialty"
             value={providerData.specialty}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
+            onChange={(e) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
           />
           <FormControl fullWidth>
             <InputLabel>Department</InputLabel>
             <Select
-              value={providerData.department}
+              value={providerData.department! as string}
               label="Department"
               onChange={(e) => setProviderData(prev => ({ ...prev, department: e.target.value as Database.Department.ID }))}
             >

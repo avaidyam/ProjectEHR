@@ -16,20 +16,21 @@ import {
   Checkbox,
 } from '@mui/material';
 import { MedicationItemEditor } from './components/MedicationItemEditor';
-import { usePatient } from 'components/contexts/PatientContext';
+import { Database, usePatient } from 'components/contexts/PatientContext';
+import { GridColDef } from '@mui/x-data-grid';
 
 export function Medications() {
   const { useEncounter } = usePatient();
-  const [medications, setMedications] = (useEncounter() as any).medications();
-  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [medications, setMedications] = useEncounter().medications();
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<Database.Medication.ID>>(new Set());
 
-  const handleEdit = (id: any) => {
+  const handleEdit = (id: Database.Medication.ID) => {
     setExpandedRowIds(new Set([id]));
   };
 
-  const handleSave = (updatedMedication: any) => {
-    setMedications((prev: any[]) =>
-      prev?.map((med: any) => (med.id === updatedMedication.id ? updatedMedication : med))
+  const handleSave = (updatedMedication: Database.Medication) => {
+    setMedications((prev) =>
+      prev?.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
     );
     setExpandedRowIds(new Set());
   };
@@ -38,16 +39,16 @@ export function Medications() {
     setExpandedRowIds(new Set());
   };
 
-  const handleDelete = (id: any) => {
-    setMedications((prev: any[]) => prev?.filter((med: any) => med.id !== id));
+  const handleDelete = (id: Database.Medication.ID) => {
+    setMedications((prev) => prev?.filter((med) => med.id !== id));
   };
 
-  const columns = [
+  const columns: GridColDef[] = [
     {
       field: 'name',
       headerName: 'Medication',
       flex: 1,
-      renderCell: (params: any) => (
+      renderCell: (params) => (
         <Box sx={{ py: 1 }}>
           <Label variant="body1" color="primary" bold>
             {params.row.name} ({params.row.brandName}) {params.row.dose}{params.row.unit} {params.row.route}
@@ -95,7 +96,7 @@ export function Medications() {
       headerName: 'Actions',
       width: 100,
       sortable: false,
-      renderCell: (params: any) => (
+      renderCell: (params) => (
         <Stack direction="row" spacing={0.5}>
           <IconButton onClick={() => handleEdit(params.row.id)} color="primary" size="small">
             edit

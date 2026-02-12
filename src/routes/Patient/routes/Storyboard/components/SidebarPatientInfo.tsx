@@ -6,7 +6,7 @@ import { StickyNote } from '../../../components/StickyNote';
 
 export const SidebarPatientInfo = () => {
   const { useChart } = usePatient();
-  const [mrn] = useChart().id();
+  const [{ id: mrn }] = useChart()();
   const [firstName] = useChart().firstName();
   const [lastName] = useChart().lastName();
   const [birthdate] = useChart().birthdate();
