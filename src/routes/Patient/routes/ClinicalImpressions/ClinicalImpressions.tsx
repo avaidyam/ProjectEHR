@@ -6,21 +6,11 @@ import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
 export const ClinicalImpressions = () => {
 
   const { useEncounter } = usePatient()
-  const [encounter, setEncounter] = (useEncounter() as any)()
-
-  // If encounter exists, initialize clinical impressions
-  const initialClinicalImpressions = encounter?.clinicalImpressions || [];
-  const [clinicalImpressions, setClinicalImpressions] = React.useState<any[]>(initialClinicalImpressions);
+  const [clinicalImpressions, setClinicalImpressions] = useEncounter().clinicalImpressions([])
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const updateClinicalImpressions = (updated: any) => {
-    setClinicalImpressions(updated);
-    setEncounter({ ...encounter, clinicalImpressions: updated });
-  };
-
-  // Modal handlers
   const handleOpenModal = (term = "") => {
     setSearchTerm(term);
     setIsModalOpen(true);
@@ -29,43 +19,34 @@ export const ClinicalImpressions = () => {
   const handleSelect = (selection: any) => {
     setIsModalOpen(false);
     if (!selection) return;
-
-    // Convert selection to array if it's a single object
     const selectedItems = Array.isArray(selection) ? selection : [selection];
-
     if (selectedItems.length === 0) return;
-
     const newImpressions = selectedItems.map((item: any) => ({
       name: item.name,
       code: item.conceptId,
       id: item.conceptId
     }));
-
-    // Check for duplicates before adding? Or just allow dupes?
-    // Let's filter out dupes based on duplicate ID/code invocation if we want, 
-    // but the initial logic allowed unchecked appending. Let's stick to appending.
-
-    const updated = [...clinicalImpressions, ...newImpressions];
-    updateClinicalImpressions(updated);
+    const updated = [...clinicalImpressions!, ...newImpressions];
+    setClinicalImpressions(updated);
   };
 
   const handleDelete = (index: number) => {
-    const updated = clinicalImpressions.filter((_: any, i: number) => i !== index);
-    updateClinicalImpressions(updated);
+    const updated = clinicalImpressions?.filter((_: any, i: number) => i !== index);
+    setClinicalImpressions(updated);
   };
 
   const moveUp = (index: number) => {
     if (index === 0) return;
-    const updated = [...clinicalImpressions];
+    const updated = [...clinicalImpressions!];
     [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-    updateClinicalImpressions(updated);
+    setClinicalImpressions(updated);
   };
 
   const moveDown = (index: number) => {
-    if (index === clinicalImpressions.length - 1) return;
-    const updated = [...clinicalImpressions];
+    if (index === (clinicalImpressions?.length ?? 0) - 1) return;
+    const updated = [...clinicalImpressions!];
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-    updateClinicalImpressions(updated);
+    setClinicalImpressions(updated);
   };
 
   return (
@@ -95,11 +76,11 @@ export const ClinicalImpressions = () => {
       </Stack>
 
       <Box paper sx={{ p: 2 }}>
-        {clinicalImpressions.length === 0 &&
+        {clinicalImpressions?.length === 0 &&
           <Label sx={{ color: 'text.secondary', fontStyle: 'italic' }}>No clinical impressions recorded.</Label>
         }
         <TreeView>
-          {clinicalImpressions.map((imp: any, index: number) => (
+          {clinicalImpressions?.map((imp: any, index: number) => (
             <TreeItem
               key={index}
               itemId={`impression-${index}`}
@@ -110,7 +91,7 @@ export const ClinicalImpressions = () => {
                     <Button
                       size="small"
                       sx={{ minWidth: 'auto', p: 0.5 }}
-                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); moveUp(index); }}
+                      onClick={(e) => { e.stopPropagation(); moveUp(index); }}
                       disabled={index === 0}
                     >
                       <Icon>arrow_upward</Icon>
@@ -118,8 +99,8 @@ export const ClinicalImpressions = () => {
                     <Button
                       size="small"
                       sx={{ minWidth: 'auto', p: 0.5 }}
-                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); moveDown(index); }}
-                      disabled={index === clinicalImpressions.length - 1}
+                      onClick={(e) => { e.stopPropagation(); moveDown(index); }}
+                      disabled={index === (clinicalImpressions?.length ?? 0) - 1}
                     >
                       <Icon>arrow_downward</Icon>
                     </Button>
@@ -127,7 +108,7 @@ export const ClinicalImpressions = () => {
                       size="small"
                       color="error"
                       sx={{ minWidth: 'auto', p: 0.5 }}
-                      onClick={(e: React.MouseEvent) => { e.stopPropagation(); handleDelete(index); }}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(index); }}
                     >
                       <Icon>close</Icon>
                     </Button>

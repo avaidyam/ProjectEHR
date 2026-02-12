@@ -7,43 +7,43 @@
  * @returns {Object} - Map of component name to { encounter: [], chart: [] }
  */
 export function getComponentHistory(encounterLabs, chartLabs) {
-    const componentMap = {};
+  const componentMap = {};
 
-    // Helper to add a component value to the map
-    const addComponent = (componentName, value, date, source) => {
-        if (!componentMap[componentName]) {
-            componentMap[componentName] = { encounter: [], chart: [] };
-        }
-        componentMap[componentName][source].push({
-            value,
-            date,
-            timestamp: new Date(date).getTime(),
-        });
-    };
-
-    // Process encounter labs
-    (encounterLabs || []).forEach(lab => {
-        const labDate = lab.date;
-        (lab.components || []).forEach(component => {
-            addComponent(component.name, component.value, labDate, 'encounter');
-        });
+  // Helper to add a component value to the map
+  const addComponent = (componentName, value, date, source) => {
+    if (!componentMap[componentName]) {
+      componentMap[componentName] = { encounter: [], chart: [] };
+    }
+    componentMap[componentName][source].push({
+      value,
+      date,
+      timestamp: new Date(date).getTime(),
     });
+  };
 
-    // Process all chart labs
-    (chartLabs || []).forEach(lab => {
-        const labDate = lab.date;
-        (lab.components || []).forEach(component => {
-            addComponent(component.name, component.value, labDate, 'chart');
-        });
+  // Process encounter labs
+  (encounterLabs || []).forEach(lab => {
+    const labDate = lab.date;
+    (lab.components || []).forEach(component => {
+      addComponent(component.name, component.value, labDate, 'encounter');
     });
+  });
 
-    // Sort each component's values by date descending (newest first)
-    Object.keys(componentMap).forEach(componentName => {
-        componentMap[componentName].encounter.sort((a, b) => b.timestamp - a.timestamp);
-        componentMap[componentName].chart.sort((a, b) => b.timestamp - a.timestamp);
+  // Process all chart labs
+  (chartLabs || []).forEach(lab => {
+    const labDate = lab.date;
+    (lab.components || []).forEach(component => {
+      addComponent(component.name, component.value, labDate, 'chart');
     });
+  });
 
-    return componentMap;
+  // Sort each component's values by date descending (newest first)
+  Object.keys(componentMap).forEach(componentName => {
+    componentMap[componentName].encounter.sort((a, b) => b.timestamp - a.timestamp);
+    componentMap[componentName].chart.sort((a, b) => b.timestamp - a.timestamp);
+  });
+
+  return componentMap;
 }
 
 /**
@@ -52,16 +52,16 @@ export function getComponentHistory(encounterLabs, chartLabs) {
  * @returns {string} - Formatted date string
  */
 export function formatComponentDate(date) {
-    const d = new Date(date);
-    if (isNaN(d.getTime())) return '';
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
 
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const year = String(d.getFullYear()).slice(-2);
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const year = String(d.getFullYear()).slice(-2);
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
 
-    return `${month}/${day}/${year} ${hours}${minutes}`;
+  return `${month}/${day}/${year} ${hours}${minutes}`;
 }
 
 /**
@@ -74,55 +74,55 @@ export function formatComponentDate(date) {
  * @returns {Object} - Map of row name to { encounter: [], chart: [] }
  */
 export function getFlowsheetHistory(encounterFlowsheets, chartFlowsheets, flowsheetDefs) {
-    const flowsheetMap = {};
+  const flowsheetMap = {};
 
-    // Helper to get row label from definitions
-    const getRowLabel = (flowsheetId, rowName) => {
-        const groupDef = (flowsheetDefs || []).find(g => g.id === flowsheetId);
-        if (groupDef && groupDef.rows) {
-            const rowDef = groupDef.rows.find(r => r.name === rowName);
-            if (rowDef) return rowDef.label;
-        }
-        return rowName;
-    };
+  // Helper to get row label from definitions
+  const getRowLabel = (flowsheetId, rowName) => {
+    const groupDef = (flowsheetDefs || []).find(g => g.id === flowsheetId);
+    if (groupDef && groupDef.rows) {
+      const rowDef = groupDef.rows.find(r => r.name === rowName);
+      if (rowDef) return rowDef.label;
+    }
+    return rowName;
+  };
 
-    // Helper to add a flowsheet value to the map
-    const addFlowsheetValue = (rowLabel, value, date, source) => {
-        if (!flowsheetMap[rowLabel]) {
-            flowsheetMap[rowLabel] = { encounter: [], chart: [] };
-        }
-        flowsheetMap[rowLabel][source].push({
-            value,
-            date,
-            timestamp: new Date(date).getTime(),
-        });
-    };
-
-    // Process encounter flowsheets
-    (encounterFlowsheets || []).forEach(item => {
-        const itemDate = item.date;
-        Object.keys(item).forEach(key => {
-            if (['id', 'date', 'flowsheet'].includes(key)) return;
-            const rowLabel = getRowLabel(item.flowsheet, key);
-            addFlowsheetValue(rowLabel, item[key], itemDate, 'encounter');
-        });
+  // Helper to add a flowsheet value to the map
+  const addFlowsheetValue = (rowLabel, value, date, source) => {
+    if (!flowsheetMap[rowLabel]) {
+      flowsheetMap[rowLabel] = { encounter: [], chart: [] };
+    }
+    flowsheetMap[rowLabel][source].push({
+      value,
+      date,
+      timestamp: new Date(date).getTime(),
     });
+  };
 
-    // Process all chart flowsheets
-    (chartFlowsheets || []).forEach(item => {
-        const itemDate = item.date;
-        Object.keys(item).forEach(key => {
-            if (['id', 'date', 'flowsheet'].includes(key)) return;
-            const rowLabel = getRowLabel(item.flowsheet, key);
-            addFlowsheetValue(rowLabel, item[key], itemDate, 'chart');
-        });
+  // Process encounter flowsheets
+  (encounterFlowsheets || []).forEach(item => {
+    const itemDate = item.date;
+    Object.keys(item).forEach(key => {
+      if (['id', 'date', 'flowsheet'].includes(key)) return;
+      const rowLabel = getRowLabel(item.flowsheet, key);
+      addFlowsheetValue(rowLabel, item[key], itemDate, 'encounter');
     });
+  });
 
-    // Sort each row's values by date descending (newest first)
-    Object.keys(flowsheetMap).forEach(rowName => {
-        flowsheetMap[rowName].encounter.sort((a, b) => b.timestamp - a.timestamp);
-        flowsheetMap[rowName].chart.sort((a, b) => b.timestamp - a.timestamp);
+  // Process all chart flowsheets
+  (chartFlowsheets || []).forEach(item => {
+    const itemDate = item.date;
+    Object.keys(item).forEach(key => {
+      if (['id', 'date', 'flowsheet'].includes(key)) return;
+      const rowLabel = getRowLabel(item.flowsheet, key);
+      addFlowsheetValue(rowLabel, item[key], itemDate, 'chart');
     });
+  });
 
-    return flowsheetMap;
+  // Sort each row's values by date descending (newest first)
+  Object.keys(flowsheetMap).forEach(rowName => {
+    flowsheetMap[rowName].encounter.sort((a, b) => b.timestamp - a.timestamp);
+    flowsheetMap[rowName].chart.sort((a, b) => b.timestamp - a.timestamp);
+  });
+
+  return flowsheetMap;
 }

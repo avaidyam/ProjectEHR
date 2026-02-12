@@ -8,21 +8,20 @@ import { usePatient } from 'components/contexts/PatientContext';
 // At some point I will need to use a URLBuilder to link the title to corresponding pages
 // Leaving it for now because I don't know if that's within scope
 
-export const SnapshotTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
+export const SnapshotTabContent: React.FC = () => {
   const { useChart, useEncounter } = usePatient()
   const [{
     firstName,
     lastName,
     birthdate,
     address
-  }, setChart]: [any, any] = (useChart() as any)()
-  const [encounter, setEncounter]: [any, any] = (useEncounter() as any)()
-  const [allergiesHx, setAllergiesHx]: [any[], any] = (useEncounter() as any).allergies()
-  const [immunizationHx, setImmunizationHx]: [any[], any] = (useEncounter() as any).immunizations()
-  const [medicalHx, setMedicalHx]: [any[], any] = (useEncounter() as any).history.medical()
-  const [surgicalHx, setSurgicalHx]: [any[], any] = (useEncounter() as any).history.surgical()
-  const [familyHx, setFamilyHx]: [any[], any] = (useEncounter() as any).history.family()
-  const [medicationHx, setMedicationHx]: [any[], any] = (useEncounter() as any).medications()
+  }] = useChart()()
+  const [allergiesHx] = useEncounter().allergies()
+  const [immunizationHx] = useEncounter().immunizations()
+  const [medicalHx] = useEncounter().history.medical()
+  const [surgicalHx] = useEncounter().history.surgical()
+  const [familyHx] = useEncounter().history.family()
+  const [medicationHx] = useEncounter().medications()
 
   // const { enabledEncounters } = React.useContext(AuthContext); // Access the enabled encounters
 
@@ -44,7 +43,7 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
           {isSectionEmpty(allergiesHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            allergiesHx.map((allergy: any) => (
+            allergiesHx?.map((allergy) => (
               <div key={`${allergy.allergen}-${allergy.reaction}`}>
                 <span style={{ color: '#9F3494' }}>{allergy.allergen}</span> {allergy.reaction}
               </div>
@@ -61,7 +60,7 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
                 <span style={{ color: '#9F3494' }}>
-                  {(records as any[]).map((rec: any) => rec.received).join(', ')}
+                  {(records as any)?.map?.((rec: any) => rec.received).join(', ')}
                 </span>
               </div>
             ))
@@ -71,10 +70,10 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
           {isSectionEmpty(medicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            medicalHx.map((condition: any) => (
+            medicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.diagnosis}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
-                  {condition.date}
+                  {condition?.date?.toString()}
                 </span>
                 <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
               </div>
@@ -84,7 +83,7 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>} color='#9E49E2'>
           {isSectionEmpty(medicationHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
-          ) : medicationHx.map((medication: any) => (
+          ) : medicationHx?.map((medication) => (
             <React.Fragment key={`${medication.name}-${medication.dose}`}>
               <span style={{ color: '#9E49E2' }}>
                 {medication.name}{" "}
@@ -100,10 +99,10 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
           {isSectionEmpty(surgicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            surgicalHx.map((condition: any) => (
+            surgicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.procedure}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
-                  {condition.date}
+                  {condition.date.toString()}
                 </span>
                 <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.procedure}</span>
               </div>
@@ -114,10 +113,10 @@ export const SnapshotTabContent = ({ children, ...other }: { children?: React.Re
           {isSectionEmpty(familyHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            familyHx.map((relative: any) => (
+            familyHx?.map((relative) => (
               <div key={`${relative.relationship}-${relative.problems.length}`}>
                 <span style={{ color: '#bbbbbb' }}>{relative.relationship}</span>
-                <span style={{ marginLeft: '35px' }}>{(relative.problems as any[]).map((x: any) => x.description).join(', ')}</span>
+                <span style={{ marginLeft: '35px' }}>{relative.problems?.map(x => x.description).join(', ')}</span>
               </div>
             ))
           )}

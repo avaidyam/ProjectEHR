@@ -27,13 +27,13 @@ const formatDate = (iso: any, format?: string) => {
 
 function useNormalizedResults() {
   const { useEncounter } = usePatient();
-  const [labDocs] = (useEncounter() as any).labs();
-  const [imagingDocs] = (useEncounter() as any).imaging();
-  const [conditionals] = (useEncounter() as any).conditionals();
-  const [orders] = (useEncounter() as any).orders();
+  const [labDocs] = useEncounter().labs();
+  const [imagingDocs] = useEncounter().imaging();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const visibleLabs = filterDocuments(labDocs as any[], conditionals, orders);
-  const visibleImaging = filterDocuments(imagingDocs as any[], conditionals, orders);
+  const visibleLabs = filterDocuments(labDocs!, conditionals, orders);
+  const visibleImaging = filterDocuments(imagingDocs!, conditionals, orders);
 
   return React.useMemo(() => {
     const categories: Record<string, any> = {
@@ -43,12 +43,12 @@ function useNormalizedResults() {
     };
 
     // Process Labs
-    for (const doc of (visibleLabs as any[]) || []) {
+    for (const doc of (visibleLabs || [])) {
       const panelName = doc.test || doc.Test || "Unknown Panel";
       const time = doc.date || doc.collected;
       if (!categories.Laboratory[panelName]) categories.Laboratory[panelName] = {};
 
-      for (const r of (doc.components as any[]) || []) {
+      for (const r of (doc.components || [])) {
         if (!categories.Laboratory[panelName][r.name]) {
           categories.Laboratory[panelName][r.name] = {
             name: r.name,
@@ -70,7 +70,7 @@ function useNormalizedResults() {
     }
 
     // Process Imaging
-    for (const doc of (visibleImaging as any[]) || []) {
+    for (const doc of (visibleImaging || [])) {
       const testName = doc.test || doc.Test || "Unknown Study";
       const time = doc.date || doc.statusDate || doc.collected;
       if (!categories.Imaging[testName]) {
@@ -92,14 +92,14 @@ function useNormalizedResults() {
 
     return Object.entries(categories).map(([catName, panels]) => ({
       category: catName,
-      panels: Object.entries(panels as Record<string, any>).map(([key, tests]) => {
+      panels: Object.entries(panels).map(([key, tests]) => {
         return {
           name: key,
           tests: catName === "Imaging"
             ? [tests]
             : Object.values(tests as Record<string, any>).map((t: any) => ({
               ...t,
-              results: (t.results as any[]).sort((a, b) => (new Date(a.time) as any) - (new Date(b.time) as any)),
+              results: t.results.sort((a: any, b: any) => (new Date(a.time) as any) - (new Date(b.time) as any)),
             })),
         };
       }),

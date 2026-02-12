@@ -7,10 +7,37 @@ import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-
 import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core';
 import { useRouter } from 'util/helpers.js';
 import { Notification } from '../Login/components/Notification';
-import { useDatabase } from 'components/contexts/PatientContext'
+import { useDatabase, Database } from 'components/contexts/PatientContext'
 
-// filter bar
-function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selectedDept, setSelectedDept, schedulesDB, departments, open, setOpen, preview, setPreview, hide, setHide }: any) {
+function customFilterBar({
+  setFilterElem,
+  selectedDate,
+  setSelectedDate,
+  selectedDept,
+  setSelectedDept,
+  schedulesDB,
+  departments,
+  open,
+  setOpen,
+  preview,
+  setPreview,
+  hide,
+  setHide
+}: {
+  setFilterElem: React.RefObject<HTMLButtonElement>,
+  selectedDate: dayjs.Dayjs,
+  setSelectedDate: (date: dayjs.Dayjs | null) => void,
+  selectedDept: string,
+  setSelectedDept: (dept: string) => void,
+  schedulesDB: Database.Schedule[],
+  departments: Database.Department[],
+  open: boolean,
+  setOpen: (open: boolean) => void,
+  preview: number,
+  setPreview: (preview: number) => void,
+  hide: number,
+  setHide: (hide: number) => void
+}) {
   return (
     <GridToolbarContainer sx={{ gap: 2, alignItems: 'center', justifyContent: "flex-start" }}>
       <GridToolbarFilterButton ref={setFilterElem} />
@@ -24,9 +51,9 @@ function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selecte
           onChange={(e) => setSelectedDept(e.target.value)}
           displayEmpty
         >
-          {schedulesDB.map((s: any) => (
+          {schedulesDB.map((s) => (
             <MenuItem key={s.department} value={s.department}>
-              {departments.find((d: any) => d.id === s.department)?.name || `Dept ${s.department}`}
+              {departments.find((d) => d.id === s.department)?.name || `Dept ${s.department}`}
             </MenuItem>
           ))}
         </Select>
@@ -45,7 +72,7 @@ function customFilterBar({ setFilterElem, selectedDate, setSelectedDate, selecte
 }
 
 // display circle badge by noted color
-function changeBadge(badgeColor: any) {
+function changeBadge(badgeColor: React.CSSProperties['color']) {
   return (
     <Badge>
       <Icon style={{ color: badgeColor }}>circle</Icon>
@@ -54,12 +81,12 @@ function changeBadge(badgeColor: any) {
 }
 
 // display bar by noted color and style
-function changeBarColor(statusColor: any) {
+function changeBarColor(statusColor: React.CSSProperties['color']) {
   return <div style={{ background: statusColor, height: '100%', width: '50%' }} />;
 }
 
 // text to display status w/ designated text color and concat string of additional info
-function changeTextColor(statusColor: any, statusName: any, secondaryStatus: any) {
+function changeTextColor(statusColor: React.CSSProperties['color'], statusName: string, secondaryStatus: string) {
   return (
     <>
       <Typography color={statusColor}>{statusName}</Typography>
@@ -69,76 +96,76 @@ function changeTextColor(statusColor: any, statusName: any, secondaryStatus: any
 }
 
 // decide on color of bar based on what status is
-function changeBarColorByStatus(officeStatus: any) {
-  if (officeStatus === 'Scheduled') {
+function changeBarColorByStatus(officeStatus: Database.Appointment.Status) {
+  if (officeStatus === Database.Appointment.Status.Scheduled) {
     return changeBarColor('blue');
   }
-  if (officeStatus === 'Arrived') {
+  if (officeStatus === Database.Appointment.Status.Arrived) {
     return changeBarColor('indigo');
   }
-  if (officeStatus === 'Rooming in Progress') {
+  if (officeStatus === Database.Appointment.Status.RoomingInProgress) {
     return changeBarColor('pink');
   }
-  if (officeStatus === 'Waiting') {
+  if (officeStatus === Database.Appointment.Status.Waiting) {
     return changeBarColor('orange');
   }
-  if (officeStatus === 'Visit in Progress') {
+  if (officeStatus === Database.Appointment.Status.VisitInProgress) {
     return changeBarColor('yellow');
   }
-  if (officeStatus === 'Visit Complete') {
+  if (officeStatus === Database.Appointment.Status.VisitComplete) {
     return changeBarColor('purple');
   }
-  if (officeStatus === 'Checked Out') {
+  if (officeStatus === Database.Appointment.Status.CheckedOut) {
     return changeBarColor('green');
   }
-  if (officeStatus === 'Signed') {
+  if (officeStatus === Database.Appointment.Status.Signed) {
     return changeBarColor('cyan');
   }
   return changeBarColor('gray');
 }
 
 // decide on color of text in status column based on what status is
-function changeTextByStatus(officeStatus: any, checkinTime: any, checkoutTime: any, locationId: any, locations: any) {
-  const roomName = locationId ? (locations.find((l: any) => l.id === locationId)?.name || 'Unknown Room') : 'Unknown Room';
+function changeTextByStatus(officeStatus: Database.Appointment.Status, checkinTime: string, checkoutTime: string, locationId: string, locations: Database.Location[]) {
+  const roomName = locationId ? (locations.find((l: Database.Location) => l.id === locationId)?.name || 'Unknown Room') : 'Unknown Room';
 
-  if (officeStatus === 'Scheduled') {
+  if (officeStatus === Database.Appointment.Status.Scheduled) {
     return changeTextColor('blue', officeStatus, '');
   }
-  if (officeStatus === 'Arrived') {
+  if (officeStatus === Database.Appointment.Status.Arrived) {
     return changeTextColor('indigo', officeStatus, 'Checked In: '.concat(checkinTime));
   }
-  if (officeStatus === 'Rooming in Progress') {
+  if (officeStatus === Database.Appointment.Status.RoomingInProgress) {
     return changeTextColor(
       'pink',
       officeStatus,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === 'Waiting') {
+  if (officeStatus === Database.Appointment.Status.Waiting) {
     return changeTextColor(
       'orange',
       officeStatus,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === 'Visit in Progress') {
+  if (officeStatus === Database.Appointment.Status.VisitInProgress) {
     return changeTextColor(
       'yellow',
       officeStatus,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === 'Visit Complete') {
+  if (officeStatus === Database.Appointment.Status.VisitComplete) {
     return changeTextColor(
       'green',
       officeStatus,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === 'Checked Out') {
+  if (officeStatus === Database.Appointment.Status.CheckedOut) {
     return changeTextColor('green', officeStatus, 'Checked Out: '.concat(checkoutTime));
   }
-  if (officeStatus === 'Signed') {
+  if (officeStatus === Database.Appointment.Status.Signed) {
     return changeTextColor('cyan', officeStatus, '');
   }
   return changeTextColor('gray', officeStatus, 'No Show');
@@ -162,28 +189,28 @@ export function Schedule() {
   const { department, date } = useParams();
   const navigate = useNavigate();
 
-  const [selPatient, setPatient] = React.useState<any>(null);
+  const [selPatient, setPatient] = React.useState<Database.Appointment | null>(null);
 
   // Initialize state from URL or defaults
-  const initialDept = department ? parseInt(department) : (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
   const initialDate = date ? dayjs(date) : dayjs()//dayjs('2026-01-01')
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
   const [selectedDate, setSelectedDate] = React.useState(initialDate);
 
   // Update URL function
-  const updateUrl = (dept: any, dateObj: any) => {
+  const updateUrl = (dept: Database.Department.ID, dateObj: dayjs.Dayjs) => {
     const dateStr = dateObj.format('YYYY-MM-DD');
     navigate(`/schedule/${dept}/${dateStr}`, { replace: true });
   };
 
   // Wrapper setters to sync with URL
-  const handleSetSelectedDept = (dept: any) => {
+  const handleSetSelectedDept = (dept: Database.Department.ID) => {
     setSelectedDept(dept);
     updateUrl(dept, selectedDate);
   };
 
-  const handleSetSelectedDate = (date: any) => {
+  const handleSetSelectedDate = (date: dayjs.Dayjs) => {
     setSelectedDate(date);
     updateUrl(selectedDept, date);
   };
@@ -191,7 +218,7 @@ export function Schedule() {
   // Effect to sync state if URL changes externally (e.g. back button)
   React.useEffect(() => {
     if (department) {
-      setSelectedDept(parseInt(department));
+      setSelectedDept(department);
     }
     if (date) {
       setSelectedDate(dayjs(date));
@@ -199,14 +226,9 @@ export function Schedule() {
   }, [department, date]);
 
   const scheduleDB = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find((s: any) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt: any) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+    const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
+    return deptSchedule.filter((appt) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
   }, [schedulesDB, selectedDept, selectedDate]);
-
-  const patientScheduleClick = (params: any) => {
-    setPatient(params.row);
-  };
-
 
   const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
 
@@ -292,7 +314,7 @@ export function Schedule() {
                 field: 'apptTime',
                 headerName: 'Time',
                 width: 100,
-                renderCell: (params: any) => (
+                renderCell: (params) => (
                   <Tooltip title={new Date(params.value).toLocaleString()}>
                     <span>{new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
                   </Tooltip>
@@ -302,7 +324,7 @@ export function Schedule() {
                 field: 'status',
                 headerName: 'Status',
                 width: 200,
-                renderCell: (params: any) => (
+                renderCell: (params) => (
                   <div>
                     {changeTextByStatus(
                       params.row.officeStatus,
@@ -318,7 +340,7 @@ export function Schedule() {
                 field: 'fullName',
                 headerName: 'Patient Name/MRN/Age/Gender',
                 width: 300,
-                renderCell: (params: any) => {
+                renderCell: (params) => {
                   const data = patientsDB[params.row.patient.mrn]
                   return (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -334,7 +356,7 @@ export function Schedule() {
                     </Box>
                   );
                 },
-                valueGetter: (value: any, row: any) => {
+                valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
                   return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate) as any).age()
                     } years old / ${data.gender}`;
@@ -344,7 +366,7 @@ export function Schedule() {
                 field: 'cc',
                 headerName: 'CC',
                 width: 100,
-                renderCell: (params: any) => (
+                renderCell: (params) => (
                   <Tooltip title={params.value}>
                     <span>{params.value}</span>
                   </Tooltip>
@@ -359,7 +381,7 @@ export function Schedule() {
                 field: 'notes',
                 headerName: 'Notes',
                 width: 200,
-                renderCell: (params: any) => (
+                renderCell: (params) => (
                   <Tooltip title={params.value}>
                     <span>{params.value}</span>
                   </Tooltip>
@@ -374,10 +396,10 @@ export function Schedule() {
                 field: 'fullProviderName',
                 headerName: 'Provider Name',
                 width: 200,
-                valueGetter: (value: any, row: any) => {
+                valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
                   const providerId = data.encounters[row.patient.enc]?.provider;
-                  const provider = providers.find((p: any) => p.id === providerId);
+                  const provider = providers.find((p) => p.id === providerId);
                   return provider ? provider.name : providerId;
                 },
               },
@@ -386,19 +408,21 @@ export function Schedule() {
                 field: 'insurName',
                 headerName: 'Coverage',
                 width: 200,
-                valueGetter: (value: any, row: any) => {
+                valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
                   return `${data.insurance?.carrierName ?? "No insurance on file"}`;
                 },
               },
             ]}
-            onRowClick={patientScheduleClick}
+            onRowClick={(params) => {
+              setPatient(params.row);
+            }}
             onRowDoubleClick={({
               row: {
                 patient: { mrn: selectedMRN, enc: selectedEnc },
               },
-            }: any) => {
-              if (!!enabledEncounters && Object.keys(enabledEncounters).length > 0 && (enabledEncounters as any)[selectedMRN] == null) {
+            }) => {
+              if (!!enabledEncounters && Object.keys(enabledEncounters).length > 0 && (enabledEncounters)[selectedMRN] == null) {
                 showNotification(
                   'You cannot view this chart because no encounter is associated with this MRN.',
                   'warning'
@@ -411,7 +435,7 @@ export function Schedule() {
               // } // FIXME later
               if (
                 !(Object.values(patientsDB[selectedMRN]
-                  .encounters)).map((x: any) => x.id)
+                  .encounters)).map((x) => x.id)
                   .includes(selectedEnc)
               ) {
                 alert(
@@ -422,7 +446,7 @@ export function Schedule() {
               onHandleClickRoute(`patient/${selectedMRN}/encounter/${selectedEnc}`); // Proceed with routing if an encounter is selected
             }}
             showToolbar
-            slots={{ toolbar: customFilterBar }}
+            slots={{ toolbar: customFilterBar as any }}
             slotProps={{
               panel: {
                 anchorEl: filterElem,

@@ -36,7 +36,7 @@ export function GridToolbarSortButton() {
   const fields = useGridSelector(apiRef, gridColumnDefinitionsSelector);
   const sortModel = useGridSelector(apiRef, gridSortModelSelector);
   const sortableFields = fields.filter((field) => field.sortable !== false);
-  const alwaysMultiSort = (rootProps as any).multipleColumnsSortingMode === 'always';
+  const alwaysMultiSort = rootProps.multipleColumnsSortingMode === 'always';
 
   return (
     <>

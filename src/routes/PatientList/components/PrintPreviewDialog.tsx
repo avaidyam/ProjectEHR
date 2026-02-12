@@ -1,20 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Box,
-  Typography,
-  GlobalStyles,
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Table, TableHead, TableRow, TableCell, TableBody, Box, Typography, GlobalStyles } from '@mui/material';
 import { Database, useDatabase } from 'components/contexts/PatientContext';
 
 export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onClose: () => void; list: Database.PatientList }) => {
@@ -32,7 +17,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
     }).filter(Boolean);
   }, [list, patientsDB]);
 
-  const formatDob = (val: any) => {
+  const formatDob = (val: string) => {
     if (!val) return '';
     try {
       const d = new Date(val);
@@ -50,14 +35,12 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
   // Listen for Cmd+P / Ctrl+P
   React.useEffect(() => {
     if (!open) return;
-
     const handlePrintShortcut = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
         e.preventDefault();
         window.print();
       }
     };
-
     window.addEventListener('keydown', handlePrintShortcut);
     return () => window.removeEventListener('keydown', handlePrintShortcut);
   }, [open]);
@@ -183,7 +166,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
                 </TableRow>
               )}
 
-              {patients.map((p: any, idx: number) => {
+              {patients.map((p, idx) => {
                 const rowBg = idx % 2 === 0 ? 'common.white' : 'grey.100';
 
                 return (
@@ -203,18 +186,14 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
                     }}
                   >
                     <TableCell>{getNameWithMrn(p)}</TableCell>
-                    <TableCell>{formatDob(p.birthdate || p.dob)}</TableCell>
+                    <TableCell>{formatDob(p.birthdate as string)}</TableCell>
                     <TableCell>
                       <Box>
-                        <Typography variant="body2">{p.location || p.room || p.roomNumber || ''}</Typography>
-                        {p.bedStatus && (
-                          <Typography variant="caption" color="text.secondary">
-                            {p.bedStatus}
-                          </Typography>
-                        )}
+                        <Typography variant="body2">Room unknown</Typography>
+                        <Typography variant="caption" color="text.secondary">Bed status unknown</Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>{p.status || p.codeStatus || ''}</TableCell>
+                    <TableCell>Status unknown</TableCell>
                     <TableCell> {p.smartData?.stickyNotes?.["__PRIVATE__"] ?? ""} </TableCell>
                   </TableRow>
                 );
@@ -233,19 +212,4 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
       </Dialog>
     </>
   );
-};
-
-PrintPreviewDialog.propTypes = {
-  open: PropTypes.bool,
-  onClose: PropTypes.func,
-  list: PropTypes.shape({
-    name: PropTypes.string,
-    patients: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
-  }),
-};
-
-PrintPreviewDialog.defaultProps = {
-  open: false,
-  onClose: () => { },
-  list: null,
-};
+}

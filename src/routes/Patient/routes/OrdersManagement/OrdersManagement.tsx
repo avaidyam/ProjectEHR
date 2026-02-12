@@ -11,8 +11,8 @@ const formatter = new Intl.DateTimeFormat('en-US', {
 export function OrdersMgmt() {
   const { useChart, useEncounter } = usePatient()
   // eslint-disable-next-line dot-notation
-  const [orderCart, setOrderCart] = (useEncounter() as any).orderCart["_currentUser"]([])
-  const [orderList, setOrderList] = (useEncounter() as any).orders([])
+  const [orderCart, setOrderCart] = useEncounter().smartData.orderCart["_currentUser"]([])
+  const [orderList, setOrderList] = useEncounter().orders([])
   const [tab, setTab] = React.useState("Active")
 
   const addOrder = (med: any, changeType: string) => {

@@ -1,5 +1,5 @@
 declare const __brand: unique symbol
-type Brand<B> = { [__brand]: B }
+type Brand<B> = { readonly [__brand]: B }
 export type Branded<T, B> = T & Brand<B>
 
 export type UUID = string
@@ -40,11 +40,15 @@ export interface Root {
   orderables?: any
 }
 
+export type Specialty = Branded<string, 'Specialty.Name'>
+
+export type ServiceArea = Branded<string, 'ServiceArea.Name'>
+
 export interface Department {
   id: Department.ID
   name: string
   location?: string
-  specialty: string
+  specialty: Specialty
   identityId?: number // remove
   serviceArea?: string // should be facility!
 }
@@ -76,7 +80,7 @@ export interface Provider {
   id: Provider.ID
   name: string
   role: string
-  specialty: string
+  specialty: Specialty
 }
 
 export namespace Provider {
@@ -158,19 +162,31 @@ export interface Appointment {
     enc: Encounter.ID
   }
   type: string
-  location?: string
+  location?: Location.ID
   apptTime: string
   cc: string
   notes: string
   checkinTime?: string
   checkoutTime: any
-  officeStatus: string
+  officeStatus: Appointment.Status
 }
 
 export namespace Appointment {
   export type ID = Branded<UUID, 'Appointment.ID'>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
+  }
+
+  export enum Status {
+    Scheduled = 'Scheduled',
+    Arrived = 'Arrived',
+    RoomingInProgress = 'Rooming in Progress',
+    Waiting = 'Waiting',
+    VisitInProgress = 'Visit in Progress',
+    VisitComplete = 'Visit Complete',
+    CheckedOut = 'Checked Out',
+    Signed = 'Signed',
+    NoShow = 'No Show'
   }
 }
 
@@ -190,12 +206,17 @@ export interface Patient {
   encounters: {
     [key: Encounter.ID]: Encounter;
   }
+  smartData?: {
+    stickyNotes?: {
+      [key: string]: string;
+    }
+  }
 }
 
 export namespace Patient {
   export type ID = Branded<UUID, 'Patient.ID'>
   export namespace ID {
-    export const create = (): ID => crypto.randomUUID() as ID
+    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
   }
 }
 
@@ -203,7 +224,7 @@ export interface Encounter {
   allergies?: Allergy[]
   concerns?: string[]
   conditionals?: any
-  department: number
+  department: Department.ID
   diagnoses?: string[]
   dispenseHistory?: Medication.DispenseLog[]
   endDate: JSONDate
@@ -212,6 +233,11 @@ export interface Encounter {
   id: Encounter.ID
   imaging?: Imaging[]
   immunizations: Immunization[]
+  clinicalImpressions?: {
+    id: string
+    code: string
+    name: string
+  }[]
   labs?: Lab[]
   medications?: Medication[]
   notes: Note[]
@@ -220,15 +246,49 @@ export interface Encounter {
   provider: string
   smartData?: SmartData
   startDate: JSONDate
-  status: string
-  specialty?: string
-  type: string
+  status: Encounter.Status
+  specialty?: Specialty
+  type: Encounter.VisitType
 }
 
 export namespace Encounter {
   export type ID = Branded<UUID, 'Encounter.ID'>
   export namespace ID {
-    export const create = (): ID => crypto.randomUUID() as ID
+    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
+  }
+
+  export enum Status {
+    CHECKED_IN = 'CHECKED_IN',
+    CHECKED_OUT = 'CHECKED_OUT',
+    IN_ROOM = 'IN_ROOM',
+    WAITING = 'WAITING',
+    CANCELLED = 'CANCELLED',
+    NO_SHOW = 'NO_SHOW',
+    RESCHEDULED = 'RESCHEDULED',
+    NO_CHARGE = 'NO_CHARGE',
+    NO_CHARGE_NO_SHOW = 'NO_CHARGE_NO_SHOW',
+    NO_CHARGE_RESCHEDULED = 'NO_CHARGE_RESCHEDULED',
+    NO_CHARGE_CANCELLED = 'NO_CHARGE_CANCELLED',
+    NO_CHARGE_NO_SHOW_RESCHEDULED = 'NO_CHARGE_NO_SHOW_RESCHEDULED',
+    NO_CHARGE_NO_SHOW_CANCELLED = 'NO_CHARGE_NO_SHOW_CANCELLED',
+    NO_CHARGE_RESCHEDULED_CANCELLED = 'NO_CHARGE_RESCHEDULED_CANCELLED',
+    NO_CHARGE_NO_SHOW_RESCHEDULED_CANCELLED = 'NO_CHARGE_NO_SHOW_RESCHEDULED_CANCELLED',
+  }
+
+  export enum VisitType {
+    Admission = "Admission",
+    Inpatient = "Inpatient",
+    Outpatient = "Outpatient",
+    Emergency = "Emergency",
+    Observation = "Observation",
+    AmbulatorySurgery = "Ambulatory Surgery",
+    EDVisit = "ED Visit",
+    OfficeVisit = "Office Visit",
+    HospitalAdmission = "Hospital Admission",
+    Physical = "Physical",
+    HospitalDischargeFollowup = "Hospital Discharge Followup",
+    PCPOfficeVisit = "PCP Office Visit",
+    EmergencyRoom = "Emergency Room"
   }
 }
 
@@ -248,6 +308,9 @@ export interface SmartData {
       summary: string;
       todo: string;
     };
+  }
+  orderCart?: {
+    [key: string]: Order[];
   }
 }
 
@@ -407,6 +470,8 @@ export interface Imaging {
   status: string
   statusDate: JSONDate
   test: string
+  narrative?: string
+  impression?: string
 }
 
 export namespace Imaging {
@@ -443,11 +508,11 @@ export namespace Lab {
 
   export interface Component {
     name: string
-    value?: any
+    value: number | string
     units?: string | null
     high?: number | null
     low?: number | null
-    comment?: any
+    comment?: string | null
   }
 }
 
@@ -477,6 +542,7 @@ export namespace Medication {
     dispensed: string
     dosage: string
     drug: string
+    route: string
     name: string
     pharmacy: string
     prescriber: string
@@ -619,8 +685,7 @@ export interface Problem {
   diagnosedDate?: JSONDate
   diagnosis: string
   display: string
-  isChronicCondition: boolean
-  isShareWithPatient: boolean
+  chronic: boolean
   notedDate?: JSONDate
   priority: string
   resolvedDate?: JSONDate

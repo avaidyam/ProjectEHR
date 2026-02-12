@@ -46,8 +46,8 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
 
   // Extract unique MRNs from patient_sample.json -> schedules
   React.useEffect(() => {
-    const allAppointments = schedules.flatMap((s: any) => s.appointments);
-    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt: any) => appt.patient.mrn))) as string[];
+    const allAppointments = schedules.flatMap((s) => s.appointments);
+    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn))) as string[];
     setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
   }, [schedules]);
 
@@ -111,17 +111,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     if (isAuthorized) {
       setIsModalOpen(true); // Open the configuration modal if authorized
     }
-  };
-
-  // Close the configuration dialog
-  const handleCloseDialog = () => {
-    setIsModalOpen(false);
-  };
-
-  // Handle submitting the selected encounters
-  const handleSubmitEncounters = (selectedEncounters: Record<string, number | null>) => {
-    updateEncounters(selectedEncounters as any);
-    handleCloseDialog();
   };
 
   return (
@@ -227,8 +216,13 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
       {/* Configure Dialog Component */}
       <ConfigureDialog
         open={isModalOpen}
-        onClose={handleCloseDialog}
-        onSubmit={handleSubmitEncounters}
+        onClose={() => {
+          setIsModalOpen(false)
+        }}
+        onSubmit={(selectedEncounters) => {
+          updateEncounters(selectedEncounters as any)
+          setIsModalOpen(false)
+        }}
         patients={patients}
         encounterCounts={encounterCounts}
       />

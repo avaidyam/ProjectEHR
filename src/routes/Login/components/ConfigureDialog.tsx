@@ -4,15 +4,13 @@ import * as React from 'react';
 import { MenuItem, Select } from '@mui/material';
 import { Box, Label, Button, Window } from 'components/ui/Core';
 
-interface ConfigureDialogProps {
+export const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (encounters: Record<string, number | null>) => void;
   patients: string[];
   encounterCounts: Record<string, number>;
-}
-
-export const ConfigureDialog: React.FC<ConfigureDialogProps> = ({ open, onClose, onSubmit, patients, encounterCounts }) => {
+}) => {
   const [selectedEncounters, setSelectedEncounters] = React.useState<Record<string, number | null>>({});
 
   // Handle selecting an encounter for a patient

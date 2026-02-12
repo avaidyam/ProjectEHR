@@ -16,9 +16,9 @@ const CustomToolbar = () => {
   );
 };
 
-export const ProblemListTabContent = ({ children, ...other }: { children?: React.ReactNode;[key: string]: any }) => {
+export const ProblemListTabContent: React.FC = () => {
   const { useEncounter } = usePatient()
-  const [problems, setProblems] = (useEncounter() as any).problems([])
+  const [problems, setProblems] = useEncounter().problems([])
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -58,7 +58,7 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
     if (indexToUpdate !== null && selectedItems.length > 0) {
       // UPDATE the existing problem
       const item = selectedItems[0];
-      const updatedProblems = (problems as any[]).map((problem, i) =>
+      const updatedProblems = problems!.map((problem, i) =>
         i === indexToUpdate ? { ...problem, diagnosis: item.name, code: item.conceptId } : problem
       );
       setProblems(updatedProblems);
@@ -68,13 +68,15 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
         diagnosis: item.name,
         code: item.conceptId,
         display: item.name,
-        // Add other properties as needed for the new problem row
+        class: '',
+        chronic: false,
+        priority: ''
       }));
-      const startIdx = (problems as any[]).length;
+      const startIdx = problems!.length;
       const newIds = newProblems.map((_, i) => startIdx + i);
 
-      setProblems([...(problems as any[]), ...newProblems]);
-      setExpandedRowIds((prev: Set<any>) => {
+      setProblems([...problems!, ...newProblems]);
+      setExpandedRowIds(prev => {
         const next = new Set(prev);
         newIds.forEach(id => next.add(id));
         return next;
@@ -84,9 +86,9 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
   };
 
   const handleDeleteProblem = (index: number) => {
-    const updatedProblems = (problems as any[]).filter((_, i) => i !== index);
+    const updatedProblems = problems!.filter((_, i) => i !== index);
     setProblems(updatedProblems);
-    setExpandedRowIds((prev: Set<any>) => {
+    setExpandedRowIds(prev => {
       const next = new Set();
       prev.forEach((id: any) => {
         if (id !== index) {
@@ -99,7 +101,7 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
 
   const columns = [
     {
-      field: 'isChronicCondition',
+      field: 'chronic',
       headerName: 'Chronic',
       width: 70,
       initialHidden: true,
@@ -247,11 +249,11 @@ export const ProblemListTabContent = ({ children, ...other }: { children?: React
                 columnVisibilityModel,
               },
             }}
-            rows={(problems ?? []).map((p: any, i: number) => ({ id: i, ...p }))}
-            columns={columns as any[]}
-            detailPanelExpandedRowIds={expandedRowIds as any}
-            onDetailPanelExpandedRowIdsChange={(ids: any) => setExpandedRowIds(ids)}
-            getDetailPanelContent={({ row }: { row: any }) => (
+            rows={problems!.map((p, i) => ({ id: i, ...p }))}
+            columns={columns}
+            detailPanelExpandedRowIds={expandedRowIds}
+            onDetailPanelExpandedRowIdsChange={ids => setExpandedRowIds(ids)}
+            getDetailPanelContent={({ row }) => (
               <Box sx={{ p: 2, width: '100%', bgcolor: 'background.paper' }}>
                 <ProblemListEditor
                   data={row}

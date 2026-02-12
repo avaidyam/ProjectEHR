@@ -27,12 +27,17 @@ const dummyAgents = [
   { allergen: 'Xanax [Alprazolam]', type: Database.Allergy.Type.Ingredient },
   { allergen: 'Aspirin', type: Database.Allergy.Type.Drug },
   { allergen: 'Dust Mites', type: Database.Allergy.Type.Environmental },
-  { allergen: 'Bee Venom', type: 'Insect' as any },
+  { allergen: 'Bee Venom', type: Database.Allergy.Type.Environmental },
   { allergen: 'Amoxicillin-potassium clavulanate', type: Database.Allergy.Type.Drug },
   { allergen: 'Other', type: Database.Allergy.Type.Other },
 ];
 
-function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
+function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
+  row: any
+  onSave: (row: any) => void
+  onCancel: (row: any) => void
+  onDelete: (id: any) => void
+}) {
   const [formData, setFormData] = React.useState<any>({ ...row });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

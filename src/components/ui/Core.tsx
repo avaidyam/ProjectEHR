@@ -12,6 +12,7 @@ import {
   Typography as MUITypography,
   TextField as MUITextField,
   Autocomplete as MUIAutocomplete,
+  AutocompleteRenderInputParams,
   Button as MUIButton,
   ButtonGroup as MUIButtonGroup,
   Icon as MUIIcon,
@@ -146,7 +147,7 @@ export const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, ..
   />
 )
 
-export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: any, renderInput?: any, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
+export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: any, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
     fullWidth
     options={options}
@@ -319,16 +320,12 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
-export const DatePicker: React.FC<DatePickerProps<any> & { children?: React.ReactNode }> = ({ children, ...props }) => (
-  <MUIDatePicker {...props}>
-    {children}
-  </MUIDatePicker>
+export const DatePicker: React.FC<DatePickerProps<any>> = ({ ...props }) => (
+  <MUIDatePicker {...props} />
 )
 
-export const DateTimePicker: React.FC<DateTimePickerProps<any> & { children?: React.ReactNode }> = ({ children, ...props }) => (
-  <MUIDateTimePicker {...props}>
-    {children}
-  </MUIDateTimePicker>
+export const DateTimePicker: React.FC<DateTimePickerProps<any>> = ({ ...props }) => (
+  <MUIDateTimePicker {...props} />
 )
 
 export const Tab: React.FC<TabProps> = ({ children, ...props }) => (

@@ -4,7 +4,7 @@ import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mu
 import { Button, Stack, Label, IconButton, Divider, Icon } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
-import { CreateEncounterDialog } from './CreateEncounterDialog'
+import { CreateEncounterDialog, EncounterFormData } from './CreateEncounterDialog'
 import { ManageDepartmentsWindow } from './ManageDepartmentsWindow'
 import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow'
 import { OpenPatientChartDialog } from './OpenPatientChartDialog'
@@ -25,22 +25,18 @@ const placeholders = [
   "Harness", "Reins", "Wagon", "Cart", "Ferry", "Sailboat", "Bicycle", "Skateboard",
   "Headphone", "Speaker", "Monitor", "Keyboard", "Mouse", "Router", "Battery", "Charger",
   "Wallet", "Purse", "Backpack", "Couch", "Stool", "Fountain", "Crystal", "Obsidian"
-];
+]
 
-interface TitlebarProps {
-  onLogout: () => void;
-}
-
-export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
+export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const [open, setOpen] = React.useState<HTMLElement | null>(null)
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
 
   // teaful hooks return [value, setValue]
-  const [patientsDB, setPatientsDB] = useDatabase().patients() as [Record<string, Database.Patient>, (val: any) => void];
-  const [departments] = useDatabase().departments() as [Database.Department[], any];
-  const [providers] = useDatabase().providers() as [Database.Provider[], any];
+  const [patientsDB, setPatientsDB] = useDatabase().patients()
+  const [departments] = useDatabase().departments()
+  const [providers] = useDatabase().providers()
 
   const [createEncounterOpen, setCreateEncounterOpen] = React.useState(false)
   const [manageDeptsOpen, setManageDeptsOpen] = React.useState(false)
@@ -65,33 +61,38 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
     setAnchorEl(null);
   }
 
-  const handleCreateEncounter = (data: any) => {
+  const handleCreateEncounter = (data: EncounterFormData) => {
     const match = location.pathname.match(/^\/patient\/(\d+)/);
     if (!match) return;
     const mrn = match[1];
 
-    const newEncID = Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString();
-
+    const newID = Database.Encounter.ID.create()
     setPatientsDB((prev: Record<string, Database.Patient>) => {
       const patient = prev[mrn];
       if (!patient) return prev; // Should not happen given check above
 
       const newEncounter: Database.Encounter = {
-        id: newEncID as any, // Cast to any to satisfy Branded type if needed, or strict casting
-        startDate: data.startDate.replace('T', ' '),
-        endDate: data.endDate.replace('T', ' '),
+        id: newID,
+        startDate: data.startDate,
+        endDate: data.endDate,
         type: data.type,
         status: data.status,
         department: data.department,
-        specialty: data.specialty, // This might not be in Encounter interface, need to check
+        specialty: data.specialty,
         provider: data.provider,
         concerns: [],
         diagnoses: [],
         problems: [],
         flowsheets: [],
         notes: [],
-        history: {}, // Added missing required property
-      } as any; // forceful casting to avoid loose typing issues for now
+        history: {
+          medical: [],
+          surgical: [],
+          family: []
+        },
+        immunizations: [],
+        orders: []
+      }
 
       return {
         ...prev,
@@ -99,14 +100,14 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
           ...patient,
           encounters: {
             ...patient.encounters,
-            [newEncID]: newEncounter
+            [newEncounter.id]: newEncounter
           }
         }
       };
     });
     setCreateEncounterOpen(false);
     // Navigate to the new encounter? Optional but nice.
-    navigate(`/patient/${mrn}/encounter/${newEncID}`);
+    navigate(`/patient/${mrn}/encounter/${newID}`);
   };
 
   const [tabHistory, setTabHistory] = React.useState<string[]>([])
@@ -129,9 +130,9 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
     }
   }
   const pathnameToTab = (path: string) => {
-    const mrn = path.split('/')?.[2] ?? null
-    if (!mrn || !patientsDB[mrn as any]) return 'Unknown Patient';
-    const info = patientsDB[mrn as any]
+    const mrn = path.split('/')?.[2] as Database.Patient.ID ?? null
+    if (!mrn || !patientsDB[mrn]) return 'Unknown Patient';
+    const info = patientsDB[mrn]
     return `${info.firstName} ${info.lastName}`
   }
 
@@ -159,18 +160,21 @@ export const Titlebar: React.FC<TitlebarProps> = ({ onLogout }) => {
             >
               <MenuItem onClick={() => setAnchorEl(null)} component="a" href="https://www.uptodate.com/" target="_blank">Open UpToDate</MenuItem>
               <MenuItem onClick={() => {
-                const encID = Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString()
-                const pt: Database.Patient = {
-                  id: Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as any,
-                  firstName: "Doe",
-                  lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
-                  birthdate: "1890-01-01",
-                  gender: "Unknown",
-                  encounters: { [encID]: { id: encID } as any }
-                }
-                setPatientsDB((prev: any) => ({ ...prev, [pt.id as string]: pt }))
+                const mrnID = Database.Patient.ID.create()
+                const encID = Database.Encounter.ID.create()
+                setPatientsDB((prev) => ({
+                  ...prev,
+                  [mrnID]: {
+                    id: mrnID,
+                    firstName: "Doe",
+                    lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
+                    birthdate: "1890-01-01",
+                    gender: "Unknown",
+                    encounters: { [encID]: { id: encID } }
+                  }
+                }))
                 setAnchorEl(null)
-                navigate(`/patient/${pt.id}/encounter/${encID}`)
+                navigate(`/patient/${mrnID}/encounter/${encID}`)
               }}>
                 Create Patient
               </MenuItem>

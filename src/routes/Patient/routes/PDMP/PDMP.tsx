@@ -4,12 +4,12 @@ import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
 export function Pdmp() {
   const { useEncounter } = usePatient();
-  const [dispenseHistory] = (useEncounter() as any).dispenseHistory([]);
-  const [providers] = (useDatabase() as any).providers();
+  const [dispenseHistory] = useEncounter().dispenseHistory([]);
+  const [providers] = useDatabase().providers();
   const apiRef = useGridApiRef();
 
-  const rows = (dispenseHistory as any[]).map((item: any, index: any) => {
-    const provider = (providers as any[]).find((p: any) => p.id === item.prescriber);
+  const rows = dispenseHistory?.map((item: any, index: any) => {
+    const provider = providers.find((p: any) => p.id === item.prescriber);
     return {
       id: index,
       ...item,

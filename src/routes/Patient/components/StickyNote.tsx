@@ -7,7 +7,7 @@ import { Icon } from 'components/ui/Core';
 import * as Database from 'components/contexts/Database';
 
 // Module-level z-index counter so clicked windows come to front
-// high z so notes appear above any route/tab content; portal will render to body
+// high z so notes appear above other route/tab content; portal will render to body
 let globalTopZ = 1200;
 
 interface WindowState {
@@ -37,7 +37,7 @@ interface StickyNoteWindowProps {
 export const StickyNote = () => {
   const [departmentsDB] = useDatabase().departments()
   const { useChart } = usePatient();
-  const [stickyNotes, setStickyNotes] = (useChart() as any).smartData.stickyNotes({});
+  const [stickyNotes, setStickyNotes] = useChart().smartData.stickyNotes({});
   // Our data is located @ patient.smartData.stickyNotes.["__PRIVATE__"]
   // NOT patient.currentEncounter.* - this is very important to note!
 
@@ -50,11 +50,11 @@ export const StickyNote = () => {
 
   const persistNow = (type: 'private' | 'department' | 'selectedDepartment', dept: string, content: string) => {
     if (type === 'private') {
-      setStickyNotes((prev: any) => ({ ...(prev || {}), ["__PRIVATE__"]: content }));
+      setStickyNotes((prev) => ({ ...(prev || {}), ["__PRIVATE__"]: content }));
     } else if (type === 'department' && dept) {
-      setStickyNotes((prev: any) => ({ ...(prev || {}), [dept]: content }));
+      setStickyNotes((prev) => ({ ...(prev || {}), [dept]: content }));
     } else if (type === 'selectedDepartment') {
-      setStickyNotes((prev: any) => ({ ...(prev || {}), selectedDepartment: dept }));
+      setStickyNotes((prev) => ({ ...(prev || {}), selectedDepartment: dept }));
     }
   };
 
@@ -153,7 +153,7 @@ export const StickyNote = () => {
 
       <StickyNoteWindow
         windowState={deptWindow}
-        title={(selectedDepartment ? (departmentsDB.find((d: any) => d.id === selectedDepartment)?.name || 'Department') : 'Department') + ' Comments'}
+        title={(selectedDepartment ? (departmentsDB.find((d) => d.id === selectedDepartment)?.name || 'Department') : 'Department') + ' Comments'}
         color="#2196f3"
         bgColor="#e3f2fd"
         onClose={handleDeptClose}
@@ -168,7 +168,7 @@ export const StickyNote = () => {
               sx={{ backgroundColor: 'background.paper', fontSize: '0.95rem', '& .MuiSelect-select': { padding: '6px 8px' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' } }}
             >
               <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
-              {departmentsDB.map((x: any) => (<MenuItem key={x.id} sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
+              {departmentsDB.map((x) => (<MenuItem key={x.id} sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
             </Select>
           </FormControl>
         </Box>
@@ -176,7 +176,7 @@ export const StickyNote = () => {
           minRows={2}
           value={deptWindow.content}
           onChange={(e) => deptWindow.setContent(e.target.value)}
-          placeholder={selectedDepartment ? `Enter notes for ${departmentsDB.find((d: any) => d.id === selectedDepartment)?.name || 'Department'}...` : "Please select a department first"}
+          placeholder={selectedDepartment ? `Enter notes for ${departmentsDB.find((d) => d.id === selectedDepartment)?.name || 'Department'}...` : "Please select a department first"}
           disabled={!selectedDepartment}
           style={{
             flex: 1, width: '100%', boxSizing: 'border-box', border: `1px solid ${selectedDepartment ? '#2196f3' : 'rgba(0,0,0,0.12)'}`,

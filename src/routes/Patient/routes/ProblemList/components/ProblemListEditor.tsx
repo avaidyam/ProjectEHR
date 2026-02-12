@@ -1,9 +1,17 @@
 import * as React from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
 import { DatePicker } from 'components/ui/Core';
+import dayjs from 'dayjs';
 
 // Quicker way to quickly generate generic Probelem List Editor inputs
-const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }: { label: any; typographyCols: any; textFieldCols: any; icon?: any; value: any; onChange: any }) => {
+const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }: {
+  label: string;
+  typographyCols: any;
+  textFieldCols: any;
+  icon?: string;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+}) => {
   return (
     <>
       <Grid size={typographyCols}>
@@ -30,7 +38,14 @@ const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onC
 };
 
 // For Noted, Diagnosed, and Resolved with Date Picker
-const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onChange }: { label: any; typographyCols: any; textFieldCols: any; value: any; onChange: any }) => {
+const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onChange }: {
+  label: string;
+  typographyCols: any;
+  textFieldCols: any;
+  icon?: string;
+  value: dayjs.Dayjs;
+  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+}) => {
   //
   return (
     <>
@@ -38,28 +53,32 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
         <Typography>{label}</Typography>
       </Grid>
       <Grid size={textFieldCols}>
-        <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } })} />
+        <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } } as any)} />
       </Grid>
     </>
   );
 };
 
-export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: { data: any; index: number; expandedRows: any; onDelete: any; onOpenModal: any }) => {
-  /**
-   * ProblemListEditor component for editing problem details.
-   *
-   * @param {Object} props - The component props.
-   * @param {Object} props.data - The data for the problem being edited.
-   * @param {number} props.index - The index of the problem in the list.
-   * @param {function} props.expandedRows - Function to handle row expansion.
-   * @param {function} props.onDelete - Function to handle deleting the problem.
-   * @param {function} props.onOpenModal - Function to open the modal for searching diagnosis.
-   * @returns {JSX.Element} The ProblemListEditor component.
-   */
-
+/**
+ * ProblemListEditor component for editing problem details.
+ *
+ * @param {Object} props - The component props.
+ * @param {Object} props.data - The data for the problem being edited.
+ * @param {number} props.index - The index of the problem in the list.
+ * @param {function} props.expandedRows - Function to handle row expansion.
+ * @param {function} props.onDelete - Function to handle deleting the problem.
+ * @param {function} props.onOpenModal - Function to open the modal for searching diagnosis.
+ * @returns {JSX.Element} The ProblemListEditor component.
+ */
+export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: {
+  data: any;
+  index: number;
+  expandedRows: any;
+  onDelete: any;
+  onOpenModal: any
+}) => {
   // Since there is an accept button, we need to use a tempstate that we can modify and then accept or cancel
   const [tempData, setTempData] = React.useState({ ...data });
-
 
   const handleEditorTempChange = (key: string, value: any) => {
     setTempData({
@@ -111,7 +130,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
         typographyCols={2}
         textFieldCols={10}
         value={tempData.display}
-        onChange={(e: any) => handleEditorTempChange('display', e.target.value)}
+        onChange={e => handleEditorTempChange('display', e.target.value)}
       />
       <Grid size={2}>
         <Button
@@ -139,7 +158,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
             select
             label="Priority"
             value={tempData.priority}
-            onChange={(e: any) => handleEditorTempChange('priority', e.target.value)}
+            onChange={e => handleEditorTempChange('priority', e.target.value)}
           >
             <MenuItem value=''>N/A</MenuItem>
             <MenuItem value='Low'>Low</MenuItem>
@@ -153,28 +172,28 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
         typographyCols={2}
         textFieldCols={4}
         value={tempData.class}
-        onChange={(e: any) => handleEditorTempChange('class', e.target.value)}
+        onChange={e => handleEditorTempChange('class', e.target.value)}
       />
       <EditorDateGridItem
         label="Noted"
         typographyCols={1}
         textFieldCols={3}
         value={tempData.notedDate}
-        onChange={(e: any) => handleEditorTempChange('notedDate', e.target.value)}
+        onChange={e => handleEditorTempChange('notedDate', e.target.value)}
       />
       <EditorDateGridItem
         label="Diagnosed"
         typographyCols={1}
         textFieldCols={3}
         value={tempData.resolvedDate}
-        onChange={(e: any) => handleEditorTempChange('diagnosedDate', e.target.value)}
+        onChange={e => handleEditorTempChange('diagnosedDate', e.target.value)}
       />
       <EditorDateGridItem
         label="Resolved"
         typographyCols={1}
         textFieldCols={3}
         value={tempData.resolvedDate}
-        onChange={(e: any) => handleEditorTempChange('resolvedDate', e.target.value)}
+        onChange={e => handleEditorTempChange('resolvedDate', e.target.value)}
       />
       <Grid size={2}>
         <Button variant="contained" color='error' onClick={() => onDelete(index)}>Delete</Button>

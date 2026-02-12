@@ -2,8 +2,9 @@ import * as React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import { Box, Label, Icon, Stack, Button } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
+import { Database } from 'components/contexts/PatientContext';
 
-const formatReferenceInterval = (low: any, high: any, units: string) => {
+const formatReferenceInterval = (low?: number | null, high?: number | null, units?: string | null) => {
   let interval = '';
   if (low !== null && high !== null) {
     interval = `${low} — ${high}`;
@@ -12,31 +13,33 @@ const formatReferenceInterval = (low: any, high: any, units: string) => {
   } else if (high !== null) {
     interval = `> ${high}`;
   }
-  return interval ? `${interval} ${units ? units : ''}` : null;
+  return interval ? `${interval} ${units ? units : ''}` : '';
 };
-const hasLowOrHighValues = (components: any[]) => {
+const hasLowOrHighValues = (components: Database.Lab.Component[]) => {
   return components.some(item => {
-    const numericValue = parseFloat(item.value);
+    const numericValue = typeof item.value === "string" ? parseFloat(item.value) : item.value;
     if (!isNaN(numericValue)) {
-      return (item.low !== null && numericValue < item.low) || (item.high !== null && numericValue > item.high);
+      return (!!item.low && numericValue < item.low) || (!!item.high && numericValue > item.high);
     }
     return false;
   });
 };
-const isValueOutsideRange = (value: any, low: any, high: any) => {
-  const numericValue = parseFloat(value);
+const isValueOutsideRange = (value: string | number, low?: number | null, high?: number | null) => {
+  const numericValue = typeof value === "string" ? parseFloat(value) : value;
   if (!isNaN(numericValue)) {
-    return (low !== null && numericValue < low) || (high !== null && numericValue > high);
+    return (!!low && numericValue < low) || (!!high && numericValue > high);
   }
   return false;
 };
 
-export const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any }) => {
-  const { openTab }: any = useSplitView();
+type Reportable = Database.Lab & Database.Imaging;
+
+export const ReportViewer = ({ data }: { data: Reportable }) => {
+  const { openTab } = useSplitView();
   const isAbnormal = hasLowOrHighValues(data?.components ?? [])
 
   const handleOpenImaging = () => {
-    const isPathologySlide = data?.accessionNumber?.startsWith("PATH") || data?.id?.startsWith("PATH");
+    const isPathologySlide = data?.accessionNumber?.startsWith("PATH") || (data?.id ?? "").startsWith("PATH");
     const viewerId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     openTab("Imaging Viewer", { data: data, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false);
   };
@@ -102,7 +105,7 @@ export const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any 
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(data?.components ?? []).map((item: any, index: number) => {
+                {(data?.components ?? []).map((item, index) => {
                   if (item.value === null || item.name === null) return null;
 
                   const referenceInterval = formatReferenceInterval(item.low, item.high, item.units);
@@ -114,9 +117,9 @@ export const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any 
                   let highlightBg = 'transparent';
 
                   if (isOutOfRange) {
-                    const numericValue = parseFloat(item.value);
+                    const numericValue = typeof item.value === "string" ? parseFloat(item.value) : item.value;
                     if (!isNaN(numericValue)) {
-                      symbol = numericValue > item.high ? '▲' : '▼'; // Geometric shapes matching style better than caret
+                      symbol = numericValue > (item?.high ?? 0) ? '▲' : '▼'; // Geometric shapes matching style better than caret
                       valueColor = '#d32f2f'; // Red
                       highlightBg = '#fff9c4'; // Light yellow
                     }
@@ -170,13 +173,13 @@ export const ReportViewer = ({ data, ...props }: { data: any;[key: string]: any 
           </TableContainer>
         )}
 
-        {data?.image && (
+        {(data as Database.Imaging).image && (
           <Box sx={{ p: 2, borderBottom: '1px solid #e0e0e0' }}>
             <Label variant="body2" bold sx={{ mb: 0.5 }}>Narrative</Label>
-            <Label variant="body2" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>{data?.narrative ?? "No narrative available."}</Label>
+            <Label variant="body2" sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>{(data as Database.Imaging).narrative ?? "No narrative available."}</Label>
 
             <Label variant="body2" bold sx={{ mb: 0.5 }}>Impression</Label>
-            <Label variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{data?.impression ?? "No impression available."}</Label>
+            <Label variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>{(data as Database.Imaging).impression ?? "No impression available."}</Label>
           </Box>
         )}
 

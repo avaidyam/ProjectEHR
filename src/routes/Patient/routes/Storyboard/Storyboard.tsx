@@ -11,36 +11,36 @@ import { SidebarClinicalImpressions } from './components/SidebarClinicalImpressi
 import { SidebarProblemList } from './components/SidebarProblemList';
 
 export const Storyboard = () => {
-    const { useEncounter } = usePatient();
-    const [encounter] = (useEncounter() as any)();
+  const { useEncounter } = usePatient();
+  const [encounter] = useEncounter()();
 
-    return (
+  return (
+    <>
+      <SidebarPatientInfo />
+      <SidebarSepsisAlert />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarCareTeam />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarAllergies />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      {!!encounter ?
         <>
-            <SidebarPatientInfo />
-            <SidebarSepsisAlert />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <SidebarCareTeam />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <SidebarAllergies />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            {!!encounter ?
-                <>
-                    <Typography variant="h6">Encounter</Typography>
-                    <Typography>Type: {encounter?.type}</Typography>
-                    <Typography>Date: {encounter?.startDate}</Typography>
-                    <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography>
-                </> :
-                <>
-                    <Typography variant="h6">Chart Review</Typography>
-                </>
-            }
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <SidebarVitals />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <SidebarClinicalImpressions />
-            <Divider sx={{ bgcolor: "primary.light" }} />
-            <SidebarProblemList />
+          <Typography variant="h6">Encounter</Typography>
+          <Typography>Type: {encounter?.type}</Typography>
+          <Typography>Date: {encounter?.startDate.toString()}</Typography>
+          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography>
+        </> :
+        <>
+          <Typography variant="h6">Chart Review</Typography>
         </>
-    );
+      }
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarVitals />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarClinicalImpressions />
+      <Divider sx={{ bgcolor: "primary.light" }} />
+      <SidebarProblemList />
+    </>
+  );
 };

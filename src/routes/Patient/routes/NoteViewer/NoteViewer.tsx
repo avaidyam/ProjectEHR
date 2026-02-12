@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Box, Stack, Divider, Label, RichText } from 'components/ui/Core';
-import { useDatabase } from 'components/contexts/PatientContext';
+import { useDatabase, Database } from 'components/contexts/PatientContext';
 
-export const NoteViewer = ({ data }: { data: any }) => {
-  const [providers] = (useDatabase() as any).providers();
-  const authorProv = (providers as any[]).find((p: any) => p.id === data.author);
+export const NoteViewer = ({ data }: { data: Database.Note }) => {
+  const [providers] = useDatabase().providers();
+  const authorProv = providers.find((p) => p.id === data.author);
   return (
     <Stack direction="column" sx={{ p: 2 }}>
       <Divider />
@@ -19,7 +19,7 @@ export const NoteViewer = ({ data }: { data: any }) => {
           <Label>{data.status}</Label>
         </Stack>
       </Stack>
-      <Label><span style={{ color: '#888' }}>Date of Service:</span> {data.serviceDate}</Label>
+      <Label><span style={{ color: '#888' }}>Date of Service:</span> {data.serviceDate.toString()}</Label>
       <Divider sx={{ mb: 1 }} />
       <Label bold sx={data.status === "Incomplete" ? { color: 'error.main' } : { display: "none" }}>Incomplete</Label>
       <Box sx={{ p: 1, pt: 0, ...(data.status === "Incomplete" ? { borderLeft: 4, borderColor: "error.main" } : {}) }}>

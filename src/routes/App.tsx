@@ -38,7 +38,7 @@ export const App: React.FC = () => {
   React.useEffect(() => {
     let lastRightClickTime = 0;
 
-    const handleContextMenu = (e: any) => {
+    const handleContextMenu: EventListener = (e) => {
       const currentTime = new Date().getTime();
       const timeDiff = currentTime - lastRightClickTime;
 
@@ -46,7 +46,7 @@ export const App: React.FC = () => {
         // Double right click - allow system menu, hide functionality
         lastRightClickTime = 0;
         // e.stopPropagation() is not always enough for contextmenu, but preserving logic
-        (e as any).stopPropagation?.();
+        e.stopPropagation?.();
       } else {
         // Single right click - prevent system menu, allow functionality
         e.preventDefault();
