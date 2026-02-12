@@ -3,7 +3,7 @@ import * as React from 'react';
 import groupBy from 'lodash/groupBy';
 import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core";
 import { CollapsiblePane } from "components/ui/CollapsiblePane";
-import { LineChart } from "@mui/x-charts/LineChart";
+import { LineChart } from "@mui/x-charts-pro/LineChart";
 import { usePatient } from "components/contexts/PatientContext";
 import { useSplitView } from "components/contexts/SplitViewContext";
 import { Tooltip } from "@mui/material";

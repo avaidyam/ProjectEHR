@@ -80,6 +80,9 @@ import {
   DataGridPremiumProps
 } from '@mui/x-data-grid-premium'
 import {
+  TreeItem as _MUITreeItem
+} from '@mui/x-tree-view'
+import {
   RichTreeViewPro as MUIRichTreeView,
   SimpleTreeView as MUISimpleTreeView,
   TreeItem as MUITreeItem,

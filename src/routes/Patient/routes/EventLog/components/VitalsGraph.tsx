@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Stack, Button } from '@mui/material';
-import { LineChart } from '@mui/x-charts/LineChart';
+import { LineChart } from '@mui/x-charts-pro/LineChart';
 
 const VITALS_CONFIG = [
   { key: 'temp', label: 'Temp', color: '#ff5722' },
