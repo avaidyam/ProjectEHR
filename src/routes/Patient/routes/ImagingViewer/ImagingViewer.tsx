@@ -624,9 +624,7 @@ const ImageView = ({
 };
 
 export const ImagingViewer = ({ data, viewerId, convertMonochrome }: { data: any; viewerId: string; convertMonochrome?: boolean }) => {
-  const basePath = './img/Anonymized_20240903/series-00001/';
-  const dicomFiles = Array.from({ length: 21 }, (_, i) => `${basePath}image-${String(i).padStart(5, '0')}.dcm`);
-  const images = data?.image ? [data?.image] : dicomFiles;
+  const images = data?.image ? [data?.image] : [];
 
   const [currentLayout, setCurrentLayout] = React.useState('1x1'); // "rows x cols"
   const [currentRows, currentCols] = (currentLayout || '1x1').split('x').map(Number);
