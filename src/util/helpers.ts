@@ -1,7 +1,13 @@
-import _ from 'lodash';
+import 'temporal-polyfill/global';
+
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Database } from 'components/contexts/PatientContext';
 import icd10Data from '../util/data/icd10cm.json';
+
+// Activate Temporal polyfill
+if (typeof Temporal === "undefined") {
+  await import("temporal-polyfill/global");
+}
 
 // ICD-10 Chapter structure based on standard classification
 export const ICD10_CHAPTERS = [
@@ -225,22 +231,7 @@ Number.prototype.clamp = function (min, max) { // eslint-disable-line no-extend-
   return Math.min(Math.max(this as number, min), max)
 }
 
-/**
- * Calculates age in years since the given birth date.
- * 
- * @param {Date|String} other The birth date to calculate age from
- * @returns Age, in years
- * @type Number
- */
-Date.prototype.age = function () { // eslint-disable-line no-extend-native, func-names
-  return Math.floor((Date.now() - this.getTime()) / (1000 * 60 * 60 * 24 * 365))
-}
 
-declare global {
-  interface Date {
-    age(): number;
-  }
-}
 
 /**
  * Update an element of the array if it exists, matching by `key`, or, if it 
@@ -270,8 +261,6 @@ declare global {
   }
 }
 
-
-
 /**
  * Generates a mapping of component names to their values across both
  * the current encounter and the entire chart.
@@ -290,7 +279,7 @@ export function getComponentHistory(encounterLabs: Database.Lab[]) {
     componentMap[componentName][source].push({
       value,
       date,
-      timestamp: new Date(date).getTime(),
+      timestamp: Temporal.Instant.from(date as string).epochMilliseconds,
     });
   };
 
@@ -313,20 +302,21 @@ export function getComponentHistory(encounterLabs: Database.Lab[]) {
 
 /**
  * Formats a date for display in the component popover (MM/DD/YY HHmm format)
- * @param {string|Date} date - The date to format
+ * @param {string} date - The ISO date string to format
  * @returns {string} - Formatted date string
  */
 export function formatComponentDate(date: any) {
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return '';
-
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const year = String(d.getFullYear()).slice(-2);
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
-
-  return `${month}/${day}/${year} ${hours}${minutes}`;
+  try {
+    const d = Temporal.PlainDateTime.from(date);
+    const month = String(d.month).padStart(2, '0');
+    const day = String(d.day).padStart(2, '0');
+    const year = String(d.year).slice(-2);
+    const hours = String(d.hour).padStart(2, '0');
+    const minutes = String(d.minute).padStart(2, '0');
+    return `${month}/${day}/${year} ${hours}${minutes}`;
+  } catch {
+    return '';
+  }
 }
 
 /**
@@ -358,7 +348,7 @@ export function getFlowsheetHistory(encounterFlowsheets: any, flowsheetDefs: any
     flowsheetMap[rowLabel][source].push({
       value,
       date,
-      timestamp: new Date(date).getTime(),
+      timestamp: Temporal.Instant.from(date as string).epochMilliseconds,
     });
   };
 
@@ -537,3 +527,51 @@ export const useICD10InfiniteSearch = (searchTerm: string, options: { limit?: nu
     isFetchingNextPage: false
   };
 };
+
+/**
+ * Groups an array of objects by a key or function.
+ * 
+ * @param array The array to group
+ * @param key The key to group by, or a function that returns the group key
+ * @returns A record where keys are the group names and values are arrays of items in that group
+ */
+export function groupBy<T>(array: T[], key: keyof T | ((item: T) => string)): Record<string, T[]> {
+  const getKey = typeof key === 'function' ? key : (item: any) => item[key];
+  return array.reduce((result, currentItem) => {
+    const groupKey = String(getKey(currentItem));
+    if (!result[groupKey]) {
+      result[groupKey] = [];
+    }
+    result[groupKey].push(currentItem);
+    return result;
+  }, {} as Record<string, T[]>);
+}
+
+/**
+ * Creates a debounced function that delays invoking the func until after wait milliseconds have elapsed
+ * since the last time the debounced function was invoked.
+ * 
+ * @param func The function to debounce
+ * @param wait The number of milliseconds to delay
+ * @returns A debounced version of the function
+ */
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  const debounced = function (...args: Parameters<T>) {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      func(...args);
+    }, wait);
+  };
+
+  debounced.cancel = () => {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+  };
+
+  return debounced;
+}

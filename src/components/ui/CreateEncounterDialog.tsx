@@ -27,8 +27,8 @@ export const CreateEncounterDialog = ({
   providers: Database.Provider[]
 }) => {
   const [formData, setFormData] = React.useState<EncounterFormData>({
-    startDate: new Date().toISOString().slice(0, 16), // Default to now
-    endDate: new Date(new Date().getTime() + 30 * 60000).toISOString().slice(0, 16), // Default +30m
+    startDate: Temporal.Now.plainDateTimeISO().toString().slice(0, 16), // Default to now
+    endDate: Temporal.Now.plainDateTimeISO().add({ minutes: 30 }).toString().slice(0, 16), // Default +30m
     department: '',
     type: 'Office Visit',
     provider: '',

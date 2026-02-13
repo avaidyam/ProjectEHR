@@ -2,12 +2,6 @@ import React from 'react'
 import { Box, Chip, Grid, Stack, Label, Divider, Button, ButtonGroup, Tab, TabList, TabPanel, TabView, TitledCard } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
 
-const formatter = new Intl.DateTimeFormat('en-US', {
-  month: '2-digit',
-  day: '2-digit',
-  year: 'numeric'
-})
-
 export function OrdersMgmt() {
   const { useChart, useEncounter } = usePatient()
   const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
@@ -18,15 +12,15 @@ export function OrdersMgmt() {
   const addOrder = (med: any, changeType: string) => {
     const item = { ...med }
     if (changeType === "Modify")
-      item.signedDate = Date.now()
+      item.signedDate = Temporal.Now.instant().epochMilliseconds
     if (changeType === "Hold")
-      item.holdDate = Date.now()
+      item.holdDate = Temporal.Now.instant().epochMilliseconds
     if (changeType === "Unhold") {
       item.holdDate = undefined
-      item.signedDate = Date.now()
+      item.signedDate = Temporal.Now.instant().epochMilliseconds
     }
     if (changeType === "Discontinue")
-      item.discontinueDate = Date.now()
+      item.discontinueDate = Temporal.Now.instant().epochMilliseconds
     setOrderCart((prev: any) => prev.upsert(item, "id"))
   }
 
@@ -57,7 +51,7 @@ export function OrdersMgmt() {
                     </Label>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 5 }} sx={{ textAlign: 'left' }}>
-                    <Label variant="body2">{order.dose}, {order.route}, {order.frequency}, started on {!!order.date ? formatter.format(new Date(order.date)) : ""}</Label>
+                    <Label variant="body2">{order.dose}, {order.route}, {order.frequency}, started on {!!order.date ? Temporal.Instant.from(String(order.date)).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' }) : ""}</Label>
                   </Grid>
                   <Grid size={{ xs: 12, sm: 4 }} sx={{ textAlign: 'right' }}>
                     <ButtonGroup size="small" variant="outlined" onChange={((_, mode) => addOrder(order, mode))}>

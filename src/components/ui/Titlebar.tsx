@@ -221,7 +221,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
             scrollButtons="auto"
             allowScrollButtonsMobile
             TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
-            value={location.pathname}
+            value={['/schedule', '/snapboard', '/list'].includes(location.pathname) || (tabHistory.includes(location.pathname) && location.pathname.startsWith('/patient')) ? location.pathname : false}
             onChange={(event, newValue) => { }}
             sx={{ flexGrow: 1, justifyContent: 'center' }}
           >

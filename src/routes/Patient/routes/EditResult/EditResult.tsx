@@ -7,7 +7,7 @@ import {
   IconButton,
   Icon,
   DataGrid,
-  Divider
+  Divider,
 } from 'components/ui/Core';
 import { Autocomplete, Grid, createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
@@ -44,7 +44,7 @@ export const EditResult = ({ ...props }) => {
   const procedures = Object.entries(orderables!.procedures).map(([key, value]) => ({ label: value, id: key }));
   const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
-  const [testDate, setTestDate] = React.useState(new Date().toISOString().slice(0, 16));
+  const [testDate, setTestDate] = React.useState(Temporal.Now.plainDateTimeISO().toString().slice(0, 16));
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
   const [results, setResults] = React.useState<any[]>([]);
 
@@ -55,7 +55,7 @@ export const EditResult = ({ ...props }) => {
   const [imageBase64, setImageBase64] = React.useState('');
 
   const handleAddRow = () => {
-    setResults([...results, { id: Date.now(), component: null, value: '', units: '', low: '', high: '', comment: '' }]);
+    setResults([...results, { id: Temporal.Now.instant().epochMilliseconds, component: null, value: '', units: '', low: '', high: '', comment: '' }]);
   };
 
   const handleRemoveRow = (id: any) => {
@@ -82,9 +82,9 @@ export const EditResult = ({ ...props }) => {
     if (!selectedTest && !imageBase64) return;
     if (imageBase64) { // Imaging
       setImaging((prev: any) => [...prev, {
-        "date": new Date(testDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+        "date": Temporal.PlainDate.from(testDate.slice(0, 10)).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
         "status": status,
-        "statusDate": new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+        "statusDate": Temporal.Now.plainDateISO().toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
         "test": selectedTest ? selectedTest.label : "Unknown Exam",
         "abnormal": false,
         "acuity": "",
@@ -93,7 +93,7 @@ export const EditResult = ({ ...props }) => {
       }])
     } else { // Labs
       setLabs((prev: any) => [...[prev, {
-        "date": new Date(testDate).toLocaleString(),
+        "date": Temporal.Instant.from(testDate).toLocaleString(),
         "test": selectedTest ? selectedTest.label : "Unknown Test",
         "status": "Completed",
         "abnormal": false,

@@ -1,6 +1,5 @@
 import * as React from 'react';
-// @ts-ignore
-import groupBy from 'lodash/groupBy';
+
 import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeView, Autocomplete } from "components/ui/Core";
 import { CollapsiblePane } from "components/ui/CollapsiblePane";
 import { LineChart } from "@mui/x-charts-pro/LineChart";
@@ -18,11 +17,11 @@ const hashCode = (str: string) => {
 const getColor = (name: string) => `hsl(${hashCode(name) % 360} 85% 45%)`;
 
 const formatDate = (iso: any, format?: string) => {
-  const d = new Date(iso);
+  const instant = Temporal.Instant.from(new Date(iso).toISOString());
   if (format === "short") {
-    return `${d.toLocaleDateString("en-US", { month: "numeric", day: "numeric", year: "2-digit" })} ${d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}`;
+    return `${instant.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "2-digit" })} ${instant.toLocaleString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}`;
   }
-  return new Intl.DateTimeFormat("en-US", { month: "short", day: "2-digit" }).format(d);
+  return instant.toLocaleString("en-US", { month: "short", day: "2-digit" });
 };
 
 function useNormalizedResults() {
@@ -59,7 +58,7 @@ function useNormalizedResults() {
         }
         const val = Number(r.value);
         categories.Laboratory[panelName][r.name].results.push({
-          time: new Date(time).toISOString(),
+          time: Temporal.Instant.from(new Date(time).toISOString()).toString(),
           value: val,
           flag: r.low != null && val < r.low ? "L" : r.high != null && val > r.high ? "H" : "",
           low: r.low ?? null,
@@ -82,7 +81,7 @@ function useNormalizedResults() {
         };
       }
       categories.Imaging[testName].results.push({
-        time: new Date(time).toISOString(),
+        time: Temporal.Instant.from(new Date(time).toISOString()).toString(),
         value: "image",
         isImage: true,
         test: testName,
@@ -99,7 +98,7 @@ function useNormalizedResults() {
             ? [tests]
             : Object.values(tests as Record<string, any>).map((t: any) => ({
               ...t,
-              results: t.results.sort((a: any, b: any) => (new Date(a.time) as any) - (new Date(b.time) as any)),
+              results: t.results.sort((a: any, b: any) => Temporal.Instant.from(a.time).epochMilliseconds - Temporal.Instant.from(b.time).epochMilliseconds),
             })),
         };
       }),
@@ -218,11 +217,11 @@ function ResultsGraph({ components }: { components: any[] }) {
   const timeKeys = React.useMemo(() => {
     const times = new Set<string>();
     components.forEach((t) => (t.results as any[]).forEach((r) => times.add(r.time)));
-    return [...times].sort((a, b) => (new Date(b) as any) - (new Date(a) as any)).slice(0, 6);
+    return [...times].sort((a, b) => Temporal.Instant.from(b).epochMilliseconds - Temporal.Instant.from(a).epochMilliseconds).slice(0, 6);
   }, [components]);
 
   const graphData = React.useMemo(() => {
-    const timesAsc = [...timeKeys].sort((a, b) => (new Date(a) as any) - (new Date(b) as any));
+    const timesAsc = [...timeKeys].sort((a, b) => Temporal.Instant.from(a).epochMilliseconds - Temporal.Instant.from(b).epochMilliseconds);
     return timesAsc.map((iso) => {
       const row: Record<string, any> = { time: iso };
       components.forEach((t) => {
@@ -258,7 +257,7 @@ function ResultsGrid({ components }: { components: any[] }) {
   const timeKeys = React.useMemo(() => {
     const times = new Set<string>();
     components.forEach((t) => (t.results as any[]).forEach((r: any) => times.add(r.time)));
-    return [...times].sort((a, b) => (new Date(b) as any) - (new Date(a) as any)).slice(0, 6);
+    return [...times].sort((a, b) => Temporal.Instant.from(b).epochMilliseconds - Temporal.Instant.from(a).epochMilliseconds).slice(0, 6);
   }, [components]);
 
   const rows = React.useMemo(

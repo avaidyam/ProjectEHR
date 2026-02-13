@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker, dayjs } from 'components/ui/Core';
+import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker } from 'components/ui/Core';
 import { Typography } from '@mui/material';
 
 /**
@@ -801,7 +801,7 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                   }
                   {x.type === "date" &&
                     <DatePicker
-                      value={dayjs(`${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`).add(0, 'day')} // FIXME
+                      value={Temporal.Now.plainDateISO()} // FIXME
                       onChange={(event, value) => setParams((prev) => ({ ...prev, [x.name]: value }))}
                       slotProps={{ textField: { size: 'small' } }}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}

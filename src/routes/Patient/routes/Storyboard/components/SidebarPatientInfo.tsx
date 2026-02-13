@@ -1,8 +1,7 @@
 import * as React from 'react';
-
 import { Alert, Avatar, Box, colors } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext';
 import { StickyNote } from '../../../components/StickyNote';
+import { Database, usePatient } from 'components/contexts/PatientContext';
 
 export const SidebarPatientInfo = () => {
   const { useChart } = usePatient();
@@ -31,8 +30,8 @@ export const SidebarPatientInfo = () => {
       <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'center', marginBottom: '1em' }}>
         <strong>{firstName} {lastName}</strong>
         <span>Sex: {gender}</span>
-        <span>Age: {(new Date(birthdate)).age()} years old</span>
-        <span>DOB: {new Date(birthdate).toLocaleDateString()}</span>
+        <span>Age: {Database.JSONDate.toAge(birthdate)} years old</span>
+        <span>DOB: {Database.JSONDate.toDateString(birthdate)}</span>
         <span>MRN: {mrn}</span>
         <strong>Preferred language: {preferredLanguage}</strong>
         {preferredLanguage !== 'English' &&

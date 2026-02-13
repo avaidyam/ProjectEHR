@@ -13,7 +13,7 @@ import {
   Grid
 } from 'components/ui/Core';
 import { Checkbox, FormControlLabel } from '@mui/material';
-import dayjs from 'dayjs';
+
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
 // Format dose for display
@@ -28,12 +28,9 @@ const formatDose = (dose: any) => {
 const formatDate = (dateString: any) => {
   if (!dateString) return 'N/A';
   try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return 'Invalid Date';
-    }
+    Temporal.PlainDate.from(dateString);
     return dateString;
-  } catch (error) {
+  } catch {
     return 'Invalid Date';
   }
 };
@@ -339,9 +336,9 @@ export const Immunizations = () => {
     const newEntry: Database.Immunization = {
       id: Database.Immunization.ID.create(),
       vaccine: '',
-      received: dayjs().format('YYYY-MM-DD'),
+      received: Temporal.Now.plainDateISO().toString(),
       recorder: '',
-      recorded: dayjs().format('YYYY-MM-DD'),
+      recorded: Temporal.Now.plainDateISO().toString(),
       administeredBy: '',
       facility: '',
       dose: { value: 0, unit: { mass: '', volume: '', time: '' } },
@@ -358,7 +355,7 @@ export const Immunizations = () => {
   const handleReviewedChange = (e: any) => {
     setReviewed(e.target.checked);
     if (e.target.checked) {
-      setLastReviewed(dayjs().format('MMM D, YYYY h:mm A'));
+      setLastReviewed(Temporal.Now.instant().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }));
     }
   };
 

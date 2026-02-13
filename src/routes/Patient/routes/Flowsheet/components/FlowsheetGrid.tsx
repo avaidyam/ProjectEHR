@@ -1,11 +1,7 @@
 import * as React from 'react';
-import { DataGrid } from 'components/ui/Core'
-import { Box, TextField, Select, MenuItem, Autocomplete } from '@mui/material';
+import { Box, TextField, Autocomplete, DataGrid, DateTimePicker } from 'components/ui/Core'
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../Flowsheet';
-import { v4 as uuidv4 } from 'uuid';
-import dayjs from 'dayjs';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 interface FlowsheetGridProps {
   rowsDefinition: FlowsheetRow[];
@@ -76,18 +72,18 @@ const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
 
 export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
   const [isEditing, setIsEditing] = React.useState(false);
-  const [tempValue, setTempValue] = React.useState<dayjs.Dayjs | null>(dayjs(column.timestamp));
+  const [tempValue, setTempValue] = React.useState<Temporal.Instant | null>(Temporal.Instant.from(column.timestamp));
 
   const handleDoubleClick = () => {
-    setTempValue(dayjs(column.timestamp));
+    setTempValue(Temporal.Instant.from(column.timestamp));
     setIsEditing(true);
   };
 
-  const handleAccept = (newValue: dayjs.Dayjs | null) => {
-    if (newValue && newValue.isValid()) {
+  const handleAccept = (newValue: Temporal.Instant | null) => {
+    if (newValue) {
       onUpdate(column.id, {
-        timestamp: newValue.toISOString(),
-        displayTime: newValue.format('HHmm'),
+        timestamp: newValue.toString(),
+        displayTime: `${String(newValue.toZonedDateTimeISO('UTC').hour).padStart(2, '0')}${String(newValue.toZonedDateTimeISO('UTC').minute).padStart(2, '0')}`,
         ...(column.isCurrentTime ? { isCurrentTime: false } : {})
       });
     }
@@ -102,7 +98,7 @@ export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn
     return (
       <Box sx={{ width: '100%', p: 0 }}>
         <DateTimePicker
-          value={tempValue}
+          value={tempValue?.toZonedDateTimeISO('UTC').toPlainDateTime()}
           onChange={(newValue) => setTempValue(newValue)}
           onAccept={handleAccept}
           onClose={handleClose}
@@ -160,15 +156,15 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     const updateCurrentTime = () => {
       const currentColumn = timeColumns.find((col: TimeColumn) => col.isCurrentTime);
       if (currentColumn) {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const now = Temporal.Now.zonedDateTimeISO();
+        const hours = String(now.hour).padStart(2, '0');
+        const minutes = String(now.minute).padStart(2, '0');
         const displayTime = `${hours}${minutes}`;
 
         if (currentColumn.displayTime !== displayTime) {
           onUpdateTimeColumn(currentColumn.id, {
             displayTime: displayTime,
-            timestamp: now.toISOString()
+            timestamp: now.toInstant().toString()
           });
         }
       }
@@ -304,8 +300,7 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
     const groups: { [key: string]: string[] } = {};
 
     timeColumns.forEach((col) => {
-      const date = new Date(col.timestamp);
-      const dateKey = date.toLocaleDateString(); // e.g., "1/9/2022" - grouping key and label
+      const dateKey = Temporal.Instant.from(col.timestamp).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' }); // e.g., "1/9/2022" - grouping key and label
 
       if (!groups[dateKey]) {
         groups[dateKey] = [];
@@ -341,29 +336,29 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         onUpdateTimeColumn(column.id, { isCurrentTime: false });
 
         // Spawn new "Now" column logic
-        let now = new Date();
+        let nowInstant = Temporal.Now.instant();
 
         // Ensure uniqueness down to the second
         let collision = true;
         while (collision) {
-          const timeToken = Math.floor(now.getTime() / 1000);
+          const timeToken = Math.floor(nowInstant.epochMilliseconds / 1000);
           // Check against existing columns
           const isTaken = timeColumns.some((c: TimeColumn) => {
-            const cDate = new Date(c.timestamp);
-            return Math.floor(cDate.getTime() / 1000) === timeToken;
+            const cInstant = Temporal.Instant.from(c.timestamp);
+            return Math.floor(cInstant.epochMilliseconds / 1000) === timeToken;
           });
 
           if (isTaken) {
             // Add 1 second
-            now = new Date(now.getTime() + 1000);
+            nowInstant = nowInstant.add(Temporal.Duration.from({ seconds: 1 }));
           } else {
             collision = false;
           }
         }
 
         onAddTimeColumn({
-          id: uuidv4(),
-          timestamp: now.toISOString(),
+          id: crypto.randomUUID(),
+          timestamp: nowInstant.toString(),
           displayTime: 'Now',
           isCurrentTime: true,
           index: timeColumns.length + 1

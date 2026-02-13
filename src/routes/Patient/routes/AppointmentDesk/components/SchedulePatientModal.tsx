@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { MenuItem, Select, InputLabel, FormControl, Grid, Autocomplete } from '@mui/material';
 import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, Label } from 'components/ui/Core';
-import { dayjs } from 'components/ui/Core';
 
 const VISIT_TYPES = [
   "Admission",
@@ -45,7 +44,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
     provider: appointment ? appointment.provider : null,
     location: appointment ? appointment.location : null,
     status: appointment ? (appointment.status || 'Scheduled') : 'Scheduled',
-    date: appointment ? appointment.apptTime : dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
+    date: appointment ? appointment.apptTime : Temporal.PlainDateTime.from('2026-01-01T08:00').toString().slice(0, 16),
     type: appointment?.type || 'Office Visit',
     cc: appointment?.cc || '',
     notes: appointment?.notes || '',
@@ -78,7 +77,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
         provider: null,
         location: null,
         status: 'Scheduled',
-        date: dayjs('2026-01-01T08:00').format('YYYY-MM-DDTHH:mm'),
+        date: Temporal.PlainDateTime.from('2026-01-01T08:00').toString().slice(0, 16),
         type: 'Office Visit',
         cc: '',
         notes: '',

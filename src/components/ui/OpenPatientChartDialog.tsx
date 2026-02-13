@@ -5,12 +5,10 @@ import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 import { List, ListItem, ListItemText, ListItemButton, InputAdornment } from '@mui/material';
 
-interface OpenPatientChartDialogProps {
+export const OpenPatientChartDialog = ({ open, onClose }: {
   open: boolean;
   onClose: () => void;
-}
-
-export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ open, onClose }) => {
+}) => {
   const navigate = useNavigate();
   const [patients] = useDatabase().patients()
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -68,7 +66,7 @@ export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ 
             <ListItemButton onClick={() => handlePatientSelect(patient.id)}>
               <ListItemText
                 primary={`${patient.lastName}, ${patient.firstName}`}
-                secondary={`MRN: ${patient.id} • DOB: ${patient.birthdate}`}
+                secondary={`MRN: ${patient.id} • DOB: ${Database.JSONDate.toDateString(patient.birthdate)}`}
               />
               <Icon color="action">chevron_right</Icon>
             </ListItemButton>
@@ -88,7 +86,7 @@ export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ 
     const patient = patients[selectedPatientMRN!];
     if (!patient) return <Box>Error: Patient not found</Box>;
 
-    const encounters = Object.values(patient.encounters || {}).sort((a: Database.Encounter, b: Database.Encounter) => new Date(b.startDate as string).getTime() - new Date(a.startDate as string).getTime());
+    const encounters = Object.values(patient.encounters || {}).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from((b.startDate)), Temporal.Instant.from((a.startDate))));
 
     return (
       <Stack spacing={2} sx={{ height: '100%' }}>
@@ -104,12 +102,12 @@ export const OpenPatientChartDialog: React.FC<OpenPatientChartDialogProps> = ({ 
         <Divider />
         <Label variant="subtitle2" color="text.secondary">Select Encounter</Label>
         <List sx={{ overflow: 'auto', flex: 1, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-          {encounters.map((enc: Database.Encounter) => (
-            <React.Fragment key={enc.id as string}>
+          {encounters.map((enc) => (
+            <React.Fragment key={enc.id}>
               <ListItemButton onClick={() => handleEncounterSelect(enc.id)}>
                 <ListItemText
                   primary={enc.type || "Unknown Type"}
-                  secondary={`${enc.startDate} • ${enc.specialty || "No Specialty"} • ${enc.provider || "No Provider"}`}
+                  secondary={`${Database.JSONDate.toDateString(enc.startDate)} • ${enc.specialty || "No Specialty"} • ${enc.provider || "No Provider"}`}
                 />
                 <Icon color="action">open_in_new</Icon>
               </ListItemButton>

@@ -136,15 +136,15 @@ export const SidebarCareTeam = () => {
         <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em', marginBottom: '0.5em' }}>
           Care Team <Icon sx={{ fontSize: '0.8em', verticalAlign: 'middle', opacity: 0.5 }}>edit</Icon>
         </Typography>
-        {(careTeam || []).map((member) => {
-          const provider = providers.find((p) => p.id === member.provider);
+        {(careTeam || []).map((member: any) => {
+          const provider = providers.find((p: any) => p.id === member.provider);
           return (
             <div key={member.provider} style={{ display: 'flex', marginBottom: '0.5em' }}>
               <Avatar
                 src={undefined}
                 sx={{ bgcolor: colors.blue[500], height: 50, width: 50, margin: 'auto 1em auto 0' }}
               >
-                {provider?.name.split(" ").map((x) => x?.charAt(0) ?? '').join("")}
+                {provider?.name.split(" ").map((x: any) => x?.charAt(0) ?? '').join("")}
               </Avatar>
               <div style={{ display: 'flex', flexDirection: "column", margin: 'auto 0 auto 0' }}>
                 <span>{provider?.name}</span>
