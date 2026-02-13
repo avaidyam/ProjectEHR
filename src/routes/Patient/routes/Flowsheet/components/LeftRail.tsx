@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import * as React from 'react';
 import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
-import { KeyboardArrowRight, Search } from '@mui/icons-material';
+import { Icon } from '../../../../../components/ui/Core';
 import { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
@@ -11,18 +11,18 @@ interface LeftRailProps {
   className?: string;
 }
 
-const LeftRail: React.FC<LeftRailProps> = ({
+export const LeftRail: React.FC<LeftRailProps> = ({
   rows,
   visibleRows,
   onToggleRow,
   onToggleCategory,
   className,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [debouncedSearch, setDebouncedSearch] = React.useState('');
 
   // Debounce search
-  useEffect(() => {
+  React.useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
     }, 300);
@@ -30,7 +30,7 @@ const LeftRail: React.FC<LeftRailProps> = ({
   }, [searchTerm]);
 
   // Group rows by category
-  const categorizedRows = useMemo(() => {
+  const categorizedRows = React.useMemo(() => {
     const groups: { [key: string]: FlowsheetRow[] } = {};
     rows.forEach((row) => {
       const category = row.category || row.group || 'Uncategorized';
@@ -43,7 +43,7 @@ const LeftRail: React.FC<LeftRailProps> = ({
   }, [rows]);
 
   // Handle Search
-  const filteredCategories = useMemo(() => {
+  const filteredCategories = React.useMemo(() => {
     if (!debouncedSearch.trim()) return categorizedRows;
 
     const query = debouncedSearch.toLowerCase();
@@ -74,7 +74,7 @@ const LeftRail: React.FC<LeftRailProps> = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             InputProps={{
-              startAdornment: <Search fontSize="small" sx={{ color: 'text.secondary', mr: 1 }} />,
+              startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
             }}
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
           />
@@ -131,5 +131,3 @@ const LeftRail: React.FC<LeftRailProps> = ({
     </Box>
   );
 };
-
-export default React.memo(LeftRail);

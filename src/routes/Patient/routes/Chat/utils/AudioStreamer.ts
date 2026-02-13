@@ -234,7 +234,7 @@ export class AudioStreamer {
   }
 
   async setSinkId(deviceId: string) {
-    const dest = this.context.destination as any;
+    const dest = this.context.destination as any; // FIXME setSinkId is an experimental API
     if (dest.setSinkId) {
       await dest.setSinkId(deviceId);
     } else {

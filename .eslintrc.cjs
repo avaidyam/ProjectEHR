@@ -64,7 +64,7 @@ module.exports = {
     'react/sort-comp': 0,
     'react/prop-types': 0,
 
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
 
     "import/extensions": [
       "error",
@@ -75,7 +75,7 @@ module.exports = {
         "ts": "never",
         "tsx": "never"
       }
-   ],
+    ],
 
     // these are super annoying and a11y is required as a peer package so 🤷
     'jsx-a11y/anchor-is-valid': 0,
