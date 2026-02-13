@@ -13,7 +13,7 @@ import {
   Grid
 } from 'components/ui/Core';
 import { Checkbox, FormControlLabel, colors } from '@mui/material';
-import dayjs from 'dayjs';
+
 import { usePatient, Database } from 'components/contexts/PatientContext';
 
 const dummyAgents = [
@@ -295,7 +295,7 @@ export const Allergies = () => {
   const handleReviewedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReviewed(e.target.checked);
     if (e.target.checked) {
-      setLastReviewed(dayjs().format('MMM D, YYYY h:mm A'));
+      setLastReviewed(Temporal.Now.instant().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }));
     }
   };
 
@@ -339,7 +339,7 @@ export const Allergies = () => {
       field: 'recorded',
       headerName: 'Noted',
       width: 120,
-      valueFormatter: (params: any) => params.value ? dayjs(params.value).format('MM-DD-YYYY') : ''
+      valueFormatter: (params: any) => params.value ? Temporal.PlainDate.from(params.value).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : ''
     },
     {
       field: 'actions',

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DataGrid, Box, dayjs, useGridApiRef, useKeepGroupedColumnsHidden, TitledCard, Icon } from 'components/ui/Core';
+import { DataGrid, Box, useGridApiRef, useKeepGroupedColumnsHidden, TitledCard, Icon } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
 export function Pdmp() {
@@ -14,8 +14,8 @@ export function Pdmp() {
       id: index,
       ...item,
       drugName: item.name,
-      dispensedFormatted: item.dispensed ? dayjs(item.dispensed).format('MM/DD/YYYY') : '',
-      writtenFormatted: item.written ? dayjs(item.written).format('MM/DD/YYYY') : '',
+      dispensedFormatted: item.dispensed ? Temporal.PlainDate.from(item.dispensed).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
+      writtenFormatted: item.written ? Temporal.PlainDate.from(item.written).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
       providerName: provider ? provider.name : item.prescriber,
     };
   });

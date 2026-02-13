@@ -144,7 +144,7 @@ export const ListFormModal = ({
         <TextField
           label='Owner'
           fullWidth
-          value="Aditya Vaidyam" // TODO: update once auth is implemented
+          value="Current User" // TODO: update once auth is implemented
           disabled
           size='small'
         />

@@ -17,17 +17,6 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
     }).filter(Boolean);
   }, [list, patientsDB]);
 
-  const formatDob = (val: string) => {
-    if (!val) return '';
-    try {
-      const d = new Date(val);
-      if (Number.isNaN(d.getTime())) return val;
-      return d.toLocaleDateString();
-    } catch {
-      return val;
-    }
-  };
-
   const getNameWithMrn = (p: Database.Patient) => {
     return `${p.firstName} ${p.lastName} (${p.id})`
   };
@@ -116,7 +105,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
             variant="subtitle1"
             sx={{ mb: 2, fontWeight: 500, textAlign: 'left' }}
           >
-            {list.name || 'TEAM NAME'} – Last Refreshed: {new Date().toLocaleString()}
+            {list.name || 'TEAM NAME'} – Last Refreshed: {Temporal.Now.instant().toLocaleString()}
           </Typography>
 
           <Table
@@ -186,7 +175,7 @@ export const PrintPreviewDialog = ({ open, onClose, list }: { open: boolean; onC
                     }}
                   >
                     <TableCell>{getNameWithMrn(p)}</TableCell>
-                    <TableCell>{formatDob(p.birthdate as string)}</TableCell>
+                    <TableCell>{Database.JSONDate.toDateString(p.birthdate)}</TableCell>
                     <TableCell>
                       <Box>
                         <Typography variant="body2">Room unknown</Typography>

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Box, Stack, Button, Typography, Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
-import { Icon } from 'components/ui/Core';
+import { Icon, DatePicker } from 'components/ui/Core';
+import { useNavigate, useParams } from 'react-router-dom';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
@@ -61,7 +60,7 @@ export const EventLog = () => {
     'narrator', 'notes', 'notes_staff', 'orders', 'patient_movement',
     'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
-  const [selectedDate, setSelectedDate] = React.useState(dayjs());
+  const [selectedDate, setSelectedDate] = React.useState(Temporal.Now.plainDateISO());
 
   // Normalize Data
   const events = React.useMemo(() => {
@@ -166,20 +165,20 @@ export const EventLog = () => {
       });
     });
 
-    return allEvents.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return allEvents.sort((a: any, b: any) => Temporal.Instant.from(b.timestamp).epochMilliseconds - Temporal.Instant.from(a.timestamp).epochMilliseconds);
   }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers, orders]);
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = React.useMemo(() => {
     return (flowsheets || []).map((entry: any) => ({
-      time: new Date(entry.date),
+      time: Temporal.Instant.from(entry.date),
       temp: entry.temp,
       hr: entry.hr,
       sbp: entry.sbp,
       dbp: entry.dbp,
       rr: entry.rr,
       spo2: entry.spo2,
-    })).sort((a: any, b: any) => a.time - b.time);
+    })).sort((a, b) => Temporal.Instant.compare(a.time, b.time));
   }, [flowsheets]);
 
   const filteredEvents = events.filter((e: any) => {
@@ -193,26 +192,28 @@ export const EventLog = () => {
   const availableDateKeys = React.useMemo(() => {
     const dateSet = new Set<string>();
     filteredEvents.forEach((event: any) => {
-      const date = new Date(event.timestamp);
-      if (!isNaN(date.getTime())) {
-        dateSet.add(date.toISOString().split('T')[0]);
-      }
+      try {
+        const date = Temporal.Instant.from(event.timestamp);
+        dateSet.add(date.toZonedDateTimeISO(Temporal.Now.timeZoneId()).toPlainDate().toString());
+      } catch { }
     });
-    return Array.from(dateSet).sort((a: string, b: string) => new Date(b).getTime() - new Date(a).getTime());
+    return Array.from(dateSet).sort((a: string, b: string) => Temporal.PlainDate.compare(Temporal.PlainDate.from(b), Temporal.PlainDate.from(a)));
   }, [filteredEvents]);
 
   // Find closest available date and scroll to it
   const handleDateChange = (newDate: any) => {
     if (!newDate || !availableDateKeys.length) return;
 
-    // Convert dayjs to native Date if needed
-    const targetDate = newDate.toDate ? newDate.toDate() : new Date(newDate);
-    const targetTime = targetDate.getTime();
+    let targetDate: Temporal.PlainDate;
+    try {
+      targetDate = Temporal.PlainDate.from(newDate);
+    } catch { return; }
+
     let closestDate = availableDateKeys[0];
-    let closestDiff = Math.abs(new Date(availableDateKeys[0]).getTime() - targetTime);
+    let closestDiff = Math.abs(Temporal.PlainDate.from(availableDateKeys[0]).until(targetDate, { largestUnit: 'days' }).days);
 
     for (const dateKey of availableDateKeys) {
-      const diff = Math.abs(new Date(dateKey).getTime() - targetTime);
+      const diff = Math.abs(Temporal.PlainDate.from(dateKey).until(targetDate, { largestUnit: 'days' }).days);
       if (diff < closestDiff) {
         closestDiff = diff;
         closestDate = dateKey;
@@ -268,7 +269,7 @@ export const EventLog = () => {
             size="small"
             startIcon={<Icon>vertical_align_top</Icon>}
             onClick={() => {
-              setSelectedDate(dayjs());
+              setSelectedDate(Temporal.Now.plainDateISO());
               eventListRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >

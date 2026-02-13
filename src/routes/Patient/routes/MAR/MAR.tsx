@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Tab, Tabs, IconButton, Toolbar, Paper, Chip, Collapse, InputAdornment } from '@mui/material';
+import { Tab, Tabs, IconButton, Toolbar, Paper, Chip, Collapse, InputAdornment, Tooltip } from '@mui/material';
 import { Box, Button, Stack, Divider, Icon, Label, Spacer, DatePicker, DateTimePicker, Autocomplete } from 'components/ui/Core';
-import { useDatabase } from 'components/contexts/PatientContext';
-import dayjs from 'dayjs';
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
 interface MAROrder {
   id: string;
@@ -36,13 +35,13 @@ interface MAREntry {
 }
 
 interface Hour {
-  time: dayjs.Dayjs;
+  time: Temporal.ZonedDateTime;
   label: string;
   isPast: boolean;
 }
 
 interface DaySegment {
-  date: dayjs.Dayjs;
+  date: Temporal.ZonedDateTime;
   count: number;
 }
 
@@ -135,12 +134,12 @@ const MOCK_ORDERS: MAROrder[] = [
 ];
 
 const MOCK_MAR_ENTRIES: MAREntry[] = [
-  { id: '101', orderId: '1', timestamp: dayjs().subtract(2, 'hour').minute(30).toISOString(), status: 'Given', amount: '10 mg' },
-  { id: '102', orderId: '1', timestamp: dayjs().subtract(2, 'hour').minute(45).toISOString(), status: 'Given', amount: '10 mg' },
-  { id: '201', orderId: '2', timestamp: dayjs().subtract(3, 'hour').minute(0).toISOString(), status: 'Given', amount: '15 Units' },
-  { id: '301', orderId: '3', timestamp: dayjs().subtract(4, 'hour').minute(0).toISOString(), status: 'Refused', amount: '' },
-  { id: '302', orderId: '3', timestamp: dayjs().add(1, 'hour').minute(0).toISOString(), status: 'Due', amount: '' },
-  { id: '401', orderId: '4', timestamp: dayjs().subtract(1, 'hour').minute(15).toISOString(), status: 'Overdue', amount: '' }
+  { id: '101', orderId: '1', timestamp: Temporal.Now.instant().subtract(Temporal.Duration.from({ hours: 2 })).toString(), status: 'Given', amount: '10 mg' },
+  { id: '102', orderId: '1', timestamp: Temporal.Now.instant().subtract(Temporal.Duration.from({ hours: 2 })).toString(), status: 'Given', amount: '10 mg' },
+  { id: '201', orderId: '2', timestamp: Temporal.Now.instant().subtract(Temporal.Duration.from({ hours: 3 })).toString(), status: 'Given', amount: '15 Units' },
+  { id: '301', orderId: '3', timestamp: Temporal.Now.instant().subtract(Temporal.Duration.from({ hours: 4 })).toString(), status: 'Refused', amount: '' },
+  { id: '302', orderId: '3', timestamp: Temporal.Now.instant().add(Temporal.Duration.from({ hours: 1 })).toString(), status: 'Due', amount: '' },
+  { id: '401', orderId: '4', timestamp: Temporal.Now.instant().subtract(Temporal.Duration.from({ hours: 1 })).toString(), status: 'Overdue', amount: '' }
 ];
 
 interface AdminFormPanelProps {
@@ -153,11 +152,11 @@ interface AdminFormPanelProps {
 
 const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onSave, onCancel }) => {
   const [status, setStatus] = React.useState<string>(admin?.status || 'Given');
-  const [dateTime, setDateTime] = React.useState<dayjs.Dayjs>(() => {
+  const [dateTime, setDateTime] = React.useState<Temporal.PlainDateTime>(() => {
     if (admin?.timestamp) {
-      return dayjs(admin.timestamp);
+      return Temporal.Instant.from(admin.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId()).toPlainDateTime();
     }
-    return hour.time.minute(0).second(0);
+    return hour.time.toPlainDateTime().with({ minute: 0, second: 0 });
   });
   const [dose, setDose] = React.useState<string>(admin ? admin.amount.split(' ')[0] : (order.dose || '').split(' ')[0] || '');
   const [unit] = React.useState<string>(admin ? admin.amount.split(' ')[1] : (order.dose || '').split(' ')[1] || 'mg');
@@ -168,7 +167,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
     onSave({
       status,
       dateTime,
-      dose: `${dose} ${unit}`,
+      dose: `${dose} ${unit} `,
       site,
       comment
     });
@@ -189,7 +188,7 @@ const AdminFormPanel: React.FC<AdminFormPanelProps> = ({ order, hour, admin, onS
         <DateTimePicker
           label="Date/Time"
           value={dateTime}
-          onChange={(newValue: dayjs.Dayjs | null) => newValue && setDateTime(newValue)}
+          onChange={(newValue: Temporal.PlainDateTime | null) => newValue && setDateTime(newValue)}
           ampm={false}
           format="MM/DD/YYYY HH:mm"
           sx={{ minWidth: 220 }}
@@ -269,173 +268,180 @@ const DrugBox: React.FC<DrugBoxProps> = ({ order, hours, administrations, onAddA
   const isStat = order.priority === 'STAT';
 
   // Compute lastAdmin dynamically
-  const lastAdminRecord = [...administrations]
-    .filter(a => ['Given', 'Not Given', 'Refused', 'Held', 'Missed'].includes(a.status))
-    .sort((a, b) => dayjs(b.timestamp).diff(dayjs(a.timestamp)))[0];
+  const lastAdminRecord = administrations
+    .filter(a => a.orderId === order.id && ['Given', 'Not Given', 'Refused', 'Held', 'Missed'].includes(a.status))
+    .sort((a, b) => Temporal.Instant.from(b.timestamp).epochMilliseconds - Temporal.Instant.from(a.timestamp).epochMilliseconds)[0];
 
   const lastAdminValue = lastAdminRecord
-    ? `${dayjs(lastAdminRecord.timestamp).format('MMM D [at] HHmm')} (${lastAdminRecord.status})`
+    ? `${Temporal.Instant.from(lastAdminRecord.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric' })} at ${(() => { const z = Temporal.Instant.from(lastAdminRecord.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId()); return `${String(z.hour).padStart(2, '0')}${String(z.minute).padStart(2, '0')}`; })()} (${lastAdminRecord.status})`
     : 'Never';
 
   return (
-    <Paper variant="outlined" sx={{ mb: 1.5, p: 0, overflow: 'hidden' }}>
-      {/* Header */}
-      <Stack direction="row" alignItems="center" spacing={2} sx={{ px: 2, py: 1.25, borderBottom: 1, borderColor: 'divider' }}>
-        <Label variant="subtitle2" color="primary" fontWeight="bold">
-          {order.name}
-        </Label>
-        <Label variant="caption" color="text.secondary">
-          {[order.dose, order.rate, order.route, order.frequency].filter(Boolean).join(" • ")}
-        </Label>
-        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-        <Label variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', bgcolor: 'action.selected', px: 1, py: 0.25, borderRadius: 1 }}>
-          {order.medication?.pharmClass ?? "No class"}
-        </Label>
-        <Spacer />
-        <Chip
-          label={order.priority}
-          size="small"
-          color={isStat ? 'error' : 'default'}
-          sx={{ fontWeight: 'bold', height: 20, fontSize: '0.65rem' }}
-        />
-        <IconButton size="small" disabled><Icon>medication_liquid</Icon></IconButton>
-      </Stack>
+    <Tooltip title={lastAdminRecord
+      ? `${Temporal.Instant.from(lastAdminRecord.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric' })} at ${(() => { const z = Temporal.Instant.from(lastAdminRecord.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId()); return `${String(z.hour).padStart(2, '0')}${String(z.minute).padStart(2, '0')}`; })()} (${lastAdminRecord.status})`
+      : "No administrations"}>
+      <Paper variant="outlined" sx={{ mb: 1.5, p: 0, overflow: 'hidden' }}>
+        {/* Header */}
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ px: 2, py: 1.25, borderBottom: 1, borderColor: 'divider' }}>
+          <Label variant="subtitle2" color="primary" fontWeight="bold">
+            {order.name}
+          </Label>
+          <Label variant="caption" color="text.secondary">
+            {[order.dose, order.rate, order.route, order.frequency].filter(Boolean).join(" • ")}
+          </Label>
+          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+          <Label variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', bgcolor: 'action.selected', px: 1, py: 0.25, borderRadius: 1 }}>
+            {order.medication?.pharmClass ?? "No class"}
+          </Label>
+          <Spacer />
+          <Chip
+            label={order.priority}
+            size="small"
+            color={isStat ? 'error' : 'default'}
+            sx={{ fontWeight: 'bold', height: 20, fontSize: '0.65rem' }}
+          />
+          <IconButton size="small" disabled><Icon>medication_liquid</Icon></IconButton>
+        </Stack>
 
-      {/* Grid or Admin Form */}
-      {activeFormContext ? (
-        <AdminFormPanel
-          order={order}
-          hour={activeFormContext.hour}
-          admin={activeFormContext.admin}
-          onSave={(data) => {
-            if (activeFormContext.admin) {
-              onUpdateAdmin(activeFormContext.admin.id, data);
-            } else {
-              onAddAdmin(order.id, data);
-            }
-            setActiveFormContext(null);
-          }}
-          onCancel={() => setActiveFormContext(null)}
-        />
-      ) : (
-        <Box sx={{ display: 'flex' }}>
-          {hours.map((hour) => {
-            const admins = administrations.filter(a => dayjs(a.timestamp).isSame(hour.time, 'hour'));
-            return (
-              <Box
-                key={hour.label}
-                onClick={() => setActiveFormContext({ hour, admin: null })}
-                sx={{
-                  flex: 1,
-                  minWidth: 120,
-                  minHeight: 96,
-                  maxHeight: 96,
-                  overflowY: "auto",
-                  borderRight: 1,
-                  borderColor: 'divider',
-                  p: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 0.5,
-                  transition: 'background-color 0.2s',
-                  cursor: 'pointer',
-                  bgcolor: hour.isPast ? 'action.hover' : 'transparent',
-                  background: hour.isPast
-                    ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.03) 10px, rgba(0, 0, 0, 0.03) 20px)'
-                    : 'none',
-                  '&:hover': { bgcolor: 'action.hover' }
-                }}
-              >
-                {admins.map((admin, idx) => (
-                  <Chip
-                    key={idx}
-                    size="small"
-                    variant="filled"
-                    sx={{ fontWeight: 500, flexShrink: 0 }}
-                    label={`${dayjs(admin.timestamp).format('HHmm')} ${admin.status}`}
-                    color={admin.status === 'Given' ? 'success' : admin.status === 'Due' ? 'primary' : 'error'}
-                    onClick={(e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      setActiveFormContext({ hour, admin: admin });
-                    }}
-                  />
-                ))}
-              </Box>
-            );
-          })}
-        </Box>
-      )}
-
-      {/* Expanded Pane */}
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Box sx={{ p: 2, bgcolor: 'action.hover', borderTop: 1, borderColor: 'divider' }}>
-          <Stack direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
-
-            {/* Instructions */}
-            <Stack spacing={2} sx={{ flex: 1, minWidth: 0 }}>
-              <Stack spacing={0.5}>
-                <Label variant="caption" color="text.secondary" fontWeight="bold">Admin Instructions</Label>
-                <Label variant="body2">{order.medication?.adminInstructions ?? 'None listed'}</Label>
-              </Stack>
-              <Stack spacing={0.5}>
-                <Label variant="caption" color="text.secondary" fontWeight="bold">Product Instructions</Label>
-                <Label variant="body2">{order.medication?.productInstructions ?? 'None listed'}</Label>
-              </Stack>
-            </Stack>
-
-            {/* Timeline & History */}
-            <Stack spacing={2} sx={{ flex: 1, flexShrink: 0 }}>
-              <Stack spacing={0.5}>
-                <Label variant="caption" color="text.secondary">Order Start</Label>
-                <Label variant="body2" fontWeight="medium">{order.orderStart}</Label>
-                <Label variant="caption" color="text.secondary">Order End</Label>
-                <Label variant="body2" fontWeight="medium">{order.orderEnd || 'Ongoing'}</Label>
-                <Label variant="caption" color="text.secondary">Last Admin</Label>
-                <Label variant="body2" fontWeight="medium">{lastAdminValue}</Label>
-              </Stack>
-            </Stack>
-
-            {/* Mixture Components */}
-            <Stack spacing={1} sx={{ flex: 1.5, minWidth: 0 }}>
-              <Label variant="caption" color="text.secondary" fontWeight="bold">Mixture Components</Label>
-              {order.components && order.components.length > 0 ? (
-                <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-                  <Stack direction="row" sx={{ bgcolor: 'action.disabledBackground', px: 1.5, py: 0.5, borderBottom: 1, borderColor: 'divider' }}>
-                    <Label variant="caption" fontWeight="bold" sx={{ flex: 1 }}>Product</Label>
-                    <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Dose</Label>
-                    <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Amount</Label>
-                  </Stack>
-                  {order.components.map((comp, idx) => (
-                    <Stack key={idx} direction="row" sx={{ px: 1.5, py: 0.75, borderBottom: order.components && idx < order.components.length - 1 ? 1 : 0, borderColor: 'divider' }}>
-                      <Label variant="body2" sx={{ flex: 1 }} noWrap>{comp.name}</Label>
-                      <Label variant="body2" sx={{ width: 80 }}>{comp.dose}</Label>
-                      <Label variant="body2" sx={{ width: 80 }}>{comp.amount}</Label>
-                    </Stack>
+        {/* Grid or Admin Form */}
+        {activeFormContext ? (
+          <AdminFormPanel
+            order={order}
+            hour={activeFormContext.hour}
+            admin={activeFormContext.admin}
+            onSave={(data) => {
+              if (activeFormContext.admin) {
+                onUpdateAdmin(activeFormContext.admin.id, data);
+              } else {
+                onAddAdmin(order.id, data);
+              }
+              setActiveFormContext(null);
+            }}
+            onCancel={() => setActiveFormContext(null)}
+          />
+        ) : (
+          <Box sx={{ display: 'flex' }}>
+            {hours.map((hour) => {
+              const admins = administrations.filter(a => {
+                const aZdt = Temporal.Instant.from(a.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId());
+                return aZdt.year === hour.time.year && aZdt.month === hour.time.month && aZdt.day === hour.time.day && aZdt.hour === hour.time.hour;
+              });
+              return (
+                <Box
+                  key={hour.label}
+                  onClick={() => setActiveFormContext({ hour, admin: null })}
+                  sx={{
+                    flex: 1,
+                    minWidth: 120,
+                    minHeight: 96,
+                    maxHeight: 96,
+                    overflowY: "auto",
+                    borderRight: 1,
+                    borderColor: 'divider',
+                    p: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 0.5,
+                    transition: 'background-color 0.2s',
+                    cursor: 'pointer',
+                    bgcolor: hour.isPast ? 'action.hover' : 'transparent',
+                    background: hour.isPast
+                      ? 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.03) 10px, rgba(0, 0, 0, 0.03) 20px)'
+                      : 'none',
+                    '&:hover': { bgcolor: 'action.hover' }
+                  }}
+                >
+                  {admins.map((admin, idx) => (
+                    <Chip
+                      key={idx}
+                      size="small"
+                      variant="filled"
+                      sx={{ fontWeight: 500, flexShrink: 0 }}
+                      label={`${(() => { const z = Temporal.Instant.from(admin.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId()); return `${String(z.hour).padStart(2, '0')}${String(z.minute).padStart(2, '0')}`; })()} ${admin.status} `}
+                      color={admin.status === 'Given' ? 'success' : admin.status === 'Due' ? 'primary' : 'error'}
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        setActiveFormContext({ hour, admin: admin });
+                      }}
+                    />
                   ))}
-                </Paper>
-              ) : (
-                <Label variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No components listed</Label>
-              )}
-            </Stack>
-          </Stack>
-        </Box>
-      </Collapse>
-      <Divider />
+                </Box>
+              );
+            })}
+          </Box>
+        )}
 
-      {/* Footer */}
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 0.75 }}>
-        <Label variant="caption" sx={{ flex: 1 }}>Dose: <strong>{order.orderedAdminDose}</strong></Label>
-        <Label variant="caption" sx={{ flex: 1 }}>Window: <strong>{order.adminWindow ?? "N/A"}</strong></Label>
-        <Label variant="caption" sx={{ flex: 1 }}>Location: <strong>{order.dispenseLocation}</strong></Label>
-        <IconButton
-          size="small"
-          onClick={() => setExpanded(!expanded)}
-          sx={{ transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'none' }}
-        >
-          <Icon size={16}>expand_more</Icon>
-        </IconButton>
-      </Stack>
-    </Paper>
+        {/* Expanded Pane */}
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Box sx={{ p: 2, bgcolor: 'action.hover', borderTop: 1, borderColor: 'divider' }}>
+            <Stack direction="row" spacing={1} divider={<Divider orientation="vertical" flexItem />}>
+
+              {/* Instructions */}
+              <Stack spacing={2} sx={{ flex: 1, minWidth: 0 }}>
+                <Stack spacing={0.5}>
+                  <Label variant="caption" color="text.secondary" fontWeight="bold">Admin Instructions</Label>
+                  <Label variant="body2">{order.medication?.adminInstructions ?? 'None listed'}</Label>
+                </Stack>
+                <Stack spacing={0.5}>
+                  <Label variant="caption" color="text.secondary" fontWeight="bold">Product Instructions</Label>
+                  <Label variant="body2">{order.medication?.productInstructions ?? 'None listed'}</Label>
+                </Stack>
+              </Stack>
+
+              {/* Timeline & History */}
+              <Stack spacing={2} sx={{ flex: 1, flexShrink: 0 }}>
+                <Stack spacing={0.5}>
+                  <Label variant="caption" color="text.secondary">Order Start</Label>
+                  <Label variant="body2" fontWeight="medium">{order.orderStart}</Label>
+                  <Label variant="caption" color="text.secondary">Order End</Label>
+                  <Label variant="body2" fontWeight="medium">{order.orderEnd || 'Ongoing'}</Label>
+                  <Label variant="caption" color="text.secondary">Last Admin</Label>
+                  <Label variant="body2" fontWeight="medium">{lastAdminValue}</Label>
+                </Stack>
+              </Stack>
+
+              {/* Mixture Components */}
+              <Stack spacing={1} sx={{ flex: 1.5, minWidth: 0 }}>
+                <Label variant="caption" color="text.secondary" fontWeight="bold">Mixture Components</Label>
+                {order.components && order.components.length > 0 ? (
+                  <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+                    <Stack direction="row" sx={{ bgcolor: 'action.disabledBackground', px: 1.5, py: 0.5, borderBottom: 1, borderColor: 'divider' }}>
+                      <Label variant="caption" fontWeight="bold" sx={{ flex: 1 }}>Product</Label>
+                      <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Dose</Label>
+                      <Label variant="caption" fontWeight="bold" sx={{ width: 80 }}>Amount</Label>
+                    </Stack>
+                    {order.components.map((comp, idx) => (
+                      <Stack key={idx} direction="row" sx={{ px: 1.5, py: 0.75, borderBottom: order.components && idx < order.components.length - 1 ? 1 : 0, borderColor: 'divider' }}>
+                        <Label variant="body2" sx={{ flex: 1 }} noWrap>{comp.name}</Label>
+                        <Label variant="body2" sx={{ width: 80 }}>{comp.dose}</Label>
+                        <Label variant="body2" sx={{ width: 80 }}>{comp.amount}</Label>
+                      </Stack>
+                    ))}
+                  </Paper>
+                ) : (
+                  <Label variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No components listed</Label>
+                )}
+              </Stack>
+            </Stack>
+          </Box>
+        </Collapse>
+        <Divider />
+
+        {/* Footer */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 2, py: 0.75 }}>
+          <Label variant="caption" sx={{ flex: 1 }}>Dose: <strong>{order.orderedAdminDose}</strong></Label>
+          <Label variant="caption" sx={{ flex: 1 }}>Window: <strong>{order.adminWindow ?? "N/A"}</strong></Label>
+          <Label variant="caption" sx={{ flex: 1 }}>Location: <strong>{order.dispenseLocation}</strong></Label>
+          <IconButton
+            size="small"
+            onClick={() => setExpanded(!expanded)}
+            sx={{ transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'none' }}
+          >
+            <Icon size={16}>expand_more</Icon>
+          </IconButton>
+        </Stack>
+      </Paper>
+    </Tooltip>
   );
 };
 
@@ -454,7 +460,7 @@ export const MAR: React.FC = () => {
       for (const [routeType, forms] of Object.entries(med.route) as [string, any][]) {
         if (forms[code]) {
           formDescription = forms[code];
-          fullName = `${med.name} ${formDescription}`;
+          fullName = `${med.name} ${formDescription} `;
           break;
         }
       }
@@ -464,7 +470,10 @@ export const MAR: React.FC = () => {
   };
 
   const [activeTab, setActiveTab] = React.useState<string>('All');
-  const [startTime, setStartTime] = React.useState<dayjs.Dayjs>(dayjs().startOf('hour').subtract(4, 'hour'));
+  const [startTime, setStartTime] = React.useState<Temporal.ZonedDateTime>(() => {
+    const now = Temporal.Now.zonedDateTimeISO();
+    return now.with({ minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }).subtract({ hours: 4 });
+  });
   const [orders] = React.useState<MAROrder[]>(MOCK_ORDERS);
   const [entries, setEntries] = React.useState<MAREntry[]>(MOCK_MAR_ENTRIES);
 
@@ -517,13 +526,13 @@ export const MAR: React.FC = () => {
   };
 
   // Generate 9 hours starting from startTime
-  const now = dayjs().startOf('hour');
+  const now = Temporal.Now.zonedDateTimeISO().with({ minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 });
   const HOURS: Hour[] = Array.from({ length: 9 }).map((_, i) => {
-    const hourTime = startTime.add(i, 'hour');
+    const hourTime = startTime.add({ hours: i });
     return {
       time: hourTime,
-      label: hourTime.format('HH00'),
-      isPast: hourTime.isBefore(now)
+      label: `${String(hourTime.hour).padStart(2, '0')}00`,
+      isPast: Temporal.ZonedDateTime.compare(hourTime, now) < 0
     };
   });
 
@@ -532,9 +541,9 @@ export const MAR: React.FC = () => {
   let currentDay = startTime;
   let currentCount = 0;
   for (let i = 0; i < 9; i++) {
-    const hourTime = startTime.add(i, 'hour');
+    const hourTime = startTime.add({ hours: i });
     // If it's 00:00 (and not the very first column), start a new segment
-    if (i > 0 && hourTime.hour() === 0) {
+    if (i > 0 && hourTime.hour === 0) {
       daySegments.push({ date: currentDay, count: currentCount });
       currentDay = hourTime;
       currentCount = 1;
@@ -593,13 +602,13 @@ export const MAR: React.FC = () => {
         </Tabs>
       </Box>
       <Toolbar variant="dense" sx={{ px: 1, display: 'flex', alignItems: 'center', gap: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <IconButton size="small" onClick={() => setStartTime(prev => prev.subtract(1, 'hour'))}>
+        <IconButton size="small" onClick={() => setStartTime(prev => prev.subtract({ hours: 1 }))}>
           <Icon>chevron_left</Icon>
         </IconButton>
         <Stack direction="row" sx={{ alignItems: 'stretch' }}>
           <DatePicker
             value={startTime}
-            onChange={(newValue: dayjs.Dayjs | null) => newValue && setStartTime(newValue)}
+            onChange={(newValue: Temporal.PlainDateTime | null) => newValue && setStartTime(newValue.toZonedDateTime(Temporal.Now.timeZoneId()))}
             slotProps={{
               textField: {
                 size: 'small',
@@ -616,7 +625,7 @@ export const MAR: React.FC = () => {
           <Button
             variant="outlined"
             size="small"
-            onClick={() => setStartTime(dayjs().startOf('hour').subtract(4, 'hour'))}
+            onClick={() => setStartTime(Temporal.Now.zonedDateTimeISO().with({ minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }).subtract({ hours: 4 }))}
             sx={{
               borderLeft: 0,
               borderTopLeftRadius: 0,
@@ -631,7 +640,7 @@ export const MAR: React.FC = () => {
           </Button>
         </Stack>
         <Spacer />
-        <IconButton size="small" onClick={() => setStartTime(prev => prev.add(1, 'hour'))}>
+        <IconButton size="small" onClick={() => setStartTime(prev => prev.add({ hours: 1 }))}>
           <Icon>chevron_right</Icon>
         </IconButton>
       </Toolbar>
@@ -654,7 +663,7 @@ export const MAR: React.FC = () => {
               }}
             >
               <Label variant="caption" fontWeight="bold" color="text.secondary" sx={{ textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                {seg.date.format('dddd, MMM D')}
+                {seg.date.toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
               </Label>
             </Box>
           ))}
@@ -663,7 +672,10 @@ export const MAR: React.FC = () => {
         {/* Hour Header Row */}
         <Stack direction="row">
           {HOURS.map((hour) => {
-            const hasEntry = entries.some(admin => dayjs(admin.timestamp).isSame(hour.time, 'hour'));
+            const hasEntry = entries.some(admin => {
+              const aZdt = Temporal.Instant.from(admin.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId());
+              return aZdt.year === hour.time.year && aZdt.month === hour.time.month && aZdt.day === hour.time.day && aZdt.hour === hour.time.hour;
+            });
             return (
               <Stack
                 key={hour.label}

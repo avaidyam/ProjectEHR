@@ -66,15 +66,7 @@ export function BirthHistory() {
     if (!birthdate) return '';
 
     try {
-      const birthDate = new Date(birthdate);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-
+      const age = Temporal.Now.plainDateISO().since(birthdate, { largestUnit: 'year' }).years;
       return `${age} years old`;
     } catch (error) {
       return '';

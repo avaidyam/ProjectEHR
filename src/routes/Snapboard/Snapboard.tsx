@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { Box, Typography, Card, CardContent, Grid, FormControl, Select, MenuItem, Chip, Avatar } from '@mui/material';
 import { DatePicker, Button } from 'components/ui/Core';
 import { useDatabase, Database } from 'components/contexts/PatientContext';
@@ -22,14 +21,14 @@ export function Snapboard() {
 
   // Initialize state from URL or defaults
   const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
-  const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
+  const initialDate = date ? Temporal.PlainDate.from(date) : Temporal.PlainDate.from('2026-01-01');
 
-  const [selectedDate, setSelectedDate] = React.useState(initialDate);
-  const [selectedDept, setSelectedDept] = React.useState(initialDept);
+  const [selectedDate, setSelectedDate] = React.useState<Temporal.PlainDate>(initialDate);
+  const [selectedDept, setSelectedDept] = React.useState<Database.Department.ID>(initialDept);
 
   // Update URL function
-  const updateUrl = (dept: Database.Department.ID, dateObj: dayjs.Dayjs) => {
-    const dateStr = dateObj.format('YYYY-MM-DD');
+  const updateUrl = (dept: Database.Department.ID, dateObj: Temporal.PlainDate) => {
+    const dateStr = dateObj.toString();
     navigate(`/snapboard/${dept}/${dateStr}`, { replace: true });
   };
 
@@ -39,7 +38,7 @@ export function Snapboard() {
     updateUrl(dept, selectedDate);
   };
 
-  const handleSetSelectedDate = (date: dayjs.Dayjs) => {
+  const handleSetSelectedDate = (date: Temporal.PlainDate) => {
     setSelectedDate(date);
     updateUrl(selectedDept, date);
   };
@@ -50,7 +49,7 @@ export function Snapboard() {
       setSelectedDept(department);
     }
     if (date) {
-      setSelectedDate(dayjs(date));
+      setSelectedDate(Temporal.PlainDate.from(date));
     }
   }, [department, date]);
 
@@ -61,8 +60,11 @@ export function Snapboard() {
 
   // 2. Get appointments for the date and department
   const deptAppointments = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+    const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
+    return deptSchedule.filter((appt: any) => {
+      const apptDate = Temporal.PlainDateTime.from(appt.apptTime).toPlainDate();
+      return apptDate.equals(selectedDate);
+    });
   }, [schedulesDB, selectedDept, selectedDate]);
 
   // 3. Map patients to locations
@@ -70,12 +72,12 @@ export function Snapboard() {
     const state = {} as Record<Database.Location.ID, LocationState>;
 
     // Initialize with empty
-    deptLocations.forEach((loc) => {
+    deptLocations.forEach((loc: Database.Location) => {
       state[loc.id] = { location: loc, appointment: null, patient: null };
     });
 
     // Fill with appointments
-    deptAppointments.forEach((appt) => {
+    deptAppointments.forEach((appt: Database.Appointment) => {
       if (appt.location && state[appt.location]) {
         state[appt.location].appointment = appt;
         state[appt.location].patient = patientsDB[appt.patient.mrn];
@@ -91,12 +93,12 @@ export function Snapboard() {
         <Box sx={{ display: 'flex', gap: 2 }}>
           <DatePicker
             value={selectedDate}
-            onChange={(newValue) => handleSetSelectedDate(newValue ?? dayjs())}
+            onChange={(newValue) => handleSetSelectedDate(newValue ?? Temporal.Now.plainDateISO())}
           />
           <FormControl variant="outlined" sx={{ minWidth: 200 }}>
             <Select
               value={selectedDept}
-              onChange={(e) => handleSetSelectedDept(e.target.value)}
+              onChange={(e: any) => handleSetSelectedDept(e.target.value)}
               displayEmpty
             >
               {schedulesDB.map((s) => (
@@ -144,7 +146,7 @@ export function Snapboard() {
                       <strong>Status:</strong> {appointment.officeStatus}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Time:</strong> {dayjs(appointment.apptTime).format('h:mm A')}
+                      <strong>Time:</strong> {Temporal.PlainDateTime.from(appointment.apptTime).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                     </Typography>
                     <Typography variant="body2" sx={{ mb: 1 }}>
                       <strong>CC:</strong> {appointment.cc}

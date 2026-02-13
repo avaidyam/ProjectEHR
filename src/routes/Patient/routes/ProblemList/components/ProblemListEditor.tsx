@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
 import { DatePicker } from 'components/ui/Core';
-import dayjs from 'dayjs';
 
 // Quicker way to quickly generate generic Probelem List Editor inputs
 const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }: {
@@ -43,7 +42,7 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
   typographyCols: any;
   textFieldCols: any;
   icon?: string;
-  value: dayjs.Dayjs;
+  value: Temporal.PlainDate;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement>
 }) => {
   //

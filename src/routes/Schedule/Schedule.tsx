@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext';
 import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
@@ -25,8 +24,8 @@ function customFilterBar({
   setHide
 }: {
   setFilterElem: React.RefObject<HTMLButtonElement>,
-  selectedDate: dayjs.Dayjs,
-  setSelectedDate: (date: dayjs.Dayjs | null) => void,
+  selectedDate: Temporal.PlainDate,
+  setSelectedDate: (date: Temporal.PlainDate | null) => void,
   selectedDept: string,
   setSelectedDept: (dept: string) => void,
   schedulesDB: Database.Schedule[],
@@ -191,16 +190,15 @@ export function Schedule() {
 
   const [selPatient, setPatient] = React.useState<Database.Appointment | null>(null);
 
-  // Initialize state from URL or defaults
   const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
-  const initialDate = date ? dayjs(date) : dayjs()//dayjs('2026-01-01')
+  const initialDate = date ? Temporal.PlainDate.from(date) : Temporal.Now.plainDateISO()//Temporal.PlainDate.from('2026-01-01')
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
   const [selectedDate, setSelectedDate] = React.useState(initialDate);
 
   // Update URL function
-  const updateUrl = (dept: Database.Department.ID, dateObj: dayjs.Dayjs) => {
-    const dateStr = dateObj.format('YYYY-MM-DD');
+  const updateUrl = (dept: Database.Department.ID, dateObj: Temporal.PlainDate) => {
+    const dateStr = dateObj.toString();
     navigate(`/schedule/${dept}/${dateStr}`, { replace: true });
   };
 
@@ -210,7 +208,7 @@ export function Schedule() {
     updateUrl(dept, selectedDate);
   };
 
-  const handleSetSelectedDate = (date: dayjs.Dayjs) => {
+  const handleSetSelectedDate = (date: Temporal.PlainDate) => {
     setSelectedDate(date);
     updateUrl(selectedDept, date);
   };
@@ -221,13 +219,16 @@ export function Schedule() {
       setSelectedDept(department);
     }
     if (date) {
-      setSelectedDate(dayjs(date));
+      setSelectedDate(Temporal.PlainDate.from(date));
     }
   }, [department, date]);
 
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+    return deptSchedule.filter((appt) => {
+      const apptDate = Temporal.PlainDateTime.from(appt.apptTime);
+      return apptDate.toPlainDate().equals(selectedDate);
+    });
   }, [schedulesDB, selectedDept, selectedDate]);
 
   const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
@@ -264,7 +265,7 @@ export function Schedule() {
               {selPatient ? (
                 <>
                   Name: {patientsDB[selPatient.patient.mrn].firstName} {patientsDB[selPatient.patient.mrn].lastName} <br />
-                  Age: {(new Date(patientsDB[selPatient.patient.mrn].birthdate)).age()} <br />
+                  Age: {Temporal.PlainDate.from(patientsDB[selPatient.patient.mrn].birthdate).until(Temporal.Now.plainDateISO()).years} <br />
                   Gender: {patientsDB[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
@@ -315,8 +316,8 @@ export function Schedule() {
                 headerName: 'Time',
                 width: 100,
                 renderCell: (params) => (
-                  <Tooltip title={new Date(params.value).toLocaleString()}>
-                    <span>{new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                  <Tooltip title={Temporal.PlainDateTime.from(params.value).toLocaleString()}>
+                    <span>{Temporal.PlainDateTime.from(params.value).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                   </Tooltip>
                 ),
               },
@@ -350,7 +351,7 @@ export function Schedule() {
                           {data.lastName}, {data.firstName} ({data.id})
                         </Typography>
                         <Typography color="textSecondary" fontSize="12px">
-                          {(new Date(data.birthdate)).age()} years old / {data.gender}
+                          {Database.JSONDate.toAge(data.birthdate)} years old / {data.gender}
                         </Typography>
                       </Box>
                     </Box>
@@ -358,8 +359,7 @@ export function Schedule() {
                 },
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate)).age()
-                    } years old / ${data.gender}`;
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${Database.JSONDate.toAge(data.birthdate)} years old / ${data.gender}`;
                 },
               },
               {
@@ -399,7 +399,7 @@ export function Schedule() {
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
                   const providerId = data.encounters[row.patient.enc]?.provider;
-                  const provider = providers.find((p) => p.id === providerId);
+                  const provider = providers.find((p: Database.Provider) => p.id === providerId);
                   return provider ? provider.name : providerId;
                 },
               },
@@ -435,7 +435,7 @@ export function Schedule() {
               // } // FIXME later
               if (
                 !(Object.values(patientsDB[selectedMRN]
-                  .encounters)).map((x) => x.id)
+                  .encounters)).map((x: any) => x.id)
                   .includes(selectedEnc)
               ) {
                 alert(

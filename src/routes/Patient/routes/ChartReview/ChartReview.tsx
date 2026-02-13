@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Tooltip } from '@mui/material'; // FIXME: REMOVE!
-import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
+import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColDef } from '@mui/x-data-grid-premium';
 import { Box, Button, Label, DataGrid, Icon, IconButton } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext';
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers'
 
 const tabLabels = [
@@ -33,15 +33,19 @@ const CARDIAC_ORDERS = [
   "CT CORONARY ANGIOGRAM (POST-PCI)"
 ];
 
-const COLUMN_DEFS: Record<string, any[]> = {
+const DATE_FORMATTER = {
+  valueGetter: (x?: Database.JSONDate) => x ? Temporal.Instant.from(x).toZonedDateTimeISO('UTC').toPlainDateTime().toLocaleString() : 'N/A'
+}
+
+const COLUMN_DEFS: Record<string, GridColDef[]> = {
   "Encounters": [
-    { field: 'date', headerName: 'When', width: 140 },
+    { field: 'date', headerName: 'When', width: 140, ...DATE_FORMATTER },
     { field: 'type', headerName: 'Type', width: 140 },
     { field: 'encClosed', headerName: 'Enc Closed', width: 100 },
     { field: 'with', headerName: 'With', width: 200 },
     { field: 'visitType', headerName: 'Visit Type', width: 140 },
     { field: 'description', headerName: 'Description', flex: 1 },
-    { field: 'endDate', headerName: 'Disch Date', width: 140 }
+    { field: 'endDate', headerName: 'Disch Date', width: 140, ...DATE_FORMATTER }
   ],
   "Notes": [
     {
@@ -56,8 +60,8 @@ const COLUMN_DEFS: Record<string, any[]> = {
         </Tooltip>
       )
     },
-    { field: 'serviceDate', headerName: 'Service Date', width: 100 },
-    { field: 'encDate', headerName: 'Enc Date', width: 100 },
+    { field: 'serviceDate', headerName: 'Service Date', width: 100, ...DATE_FORMATTER },
+    { field: 'encDate', headerName: 'Enc Date', width: 100, ...DATE_FORMATTER },
     { field: 'encDept', headerName: 'Enc Dept', width: 150 },
     { field: 'authorSpecialty', headerName: 'Auth Specialty', width: 150 },
     { field: 'authorName', headerName: 'Author', width: 250 },
@@ -67,9 +71,9 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'encounterProvider', headerName: 'Enc Provider', width: 150 }
   ],
   "Imaging": [
-    { field: 'date', headerName: 'Ordered', width: 140 },
+    { field: 'date', headerName: 'Ordered', width: 140, ...DATE_FORMATTER },
     { field: 'status', headerName: 'Status', width: 120 },
-    { field: 'statusDate', headerName: 'Status Date', width: 140 },
+    { field: 'statusDate', headerName: 'Status Date', width: 140, ...DATE_FORMATTER },
     { field: 'test', headerName: 'Exam', flex: 1 },
     { field: 'abnormal', headerName: 'Abnormal?', width: 90 },
     { field: 'acuity', headerName: 'Acuity', width: 90 },
@@ -77,19 +81,19 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'provider', headerName: 'Provider', width: 150 }
   ],
   "Lab": [
-    { field: 'date', headerName: 'Order Date/Time', width: 150 },
+    { field: 'date', headerName: 'Order Date/Time', width: 150, ...DATE_FORMATTER },
     { field: 'test', headerName: 'Test', width: 250 },
     { field: 'status', headerName: 'Status', width: 120 },
     { field: 'abnormal', headerName: 'Abnormal?', width: 90 },
-    { field: 'resulted', headerName: 'Result Date/Time', width: 150 },
-    { field: 'expectedDate', headerName: 'Expected Date', width: 140 },
-    { field: 'expirationDate', headerName: 'Expiration', width: 120 },
+    { field: 'resulted', headerName: 'Result Date/Time', width: 150, ...DATE_FORMATTER },
+    { field: 'expectedDate', headerName: 'Expected Date', width: 140, ...DATE_FORMATTER },
+    { field: 'expirationDate', headerName: 'Expiration', width: 120, ...DATE_FORMATTER },
     { field: 'encType', headerName: 'Encounter Type', width: 140 },
     { field: 'provider', headerName: 'Provider', width: 150 }
   ],
   "Cardiac": [
-    { field: 'date', headerName: 'Ordered', width: 140 },
-    { field: 'statusDate', headerName: 'Performed', width: 140 },
+    { field: 'date', headerName: 'Ordered', width: 140, ...DATE_FORMATTER },
+    { field: 'statusDate', headerName: 'Performed', width: 140, ...DATE_FORMATTER },
     { field: 'test', headerName: 'Exam', flex: 1 },
     { field: 'status', headerName: 'Status', width: 120 },
     { field: 'encType', headerName: 'Encounter', width: 140 },
@@ -97,8 +101,8 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'performedBy', headerName: 'Perf Provider', width: 150 }
   ],
   "Specialty Tests": [
-    { field: 'date', headerName: 'Ordered', width: 140 },
-    { field: 'statusDate', headerName: 'Performed', width: 140 },
+    { field: 'date', headerName: 'Ordered', width: 140, ...DATE_FORMATTER },
+    { field: 'statusDate', headerName: 'Performed', width: 140, ...DATE_FORMATTER },
     { field: 'test', headerName: 'Test', flex: 1 },
     { field: 'status', headerName: 'Status', width: 120 },
     { field: 'encType', headerName: 'Encounter Type', width: 140 },
@@ -106,19 +110,19 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'performedBy', headerName: 'Perf Provider', width: 150 }
   ],
   "Other": [
-    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'date', headerName: 'Date', width: 140, ...DATE_FORMATTER },
     { field: 'description', headerName: 'Description', flex: 1 },
     { field: 'status', headerName: 'Status', width: 120 },
     { field: 'encDept', headerName: 'Enc Dept', width: 150 },
     { field: 'provider', headerName: 'Provider', width: 150 }
   ],
   "Meds": [
-    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'date', headerName: 'Date', width: 140, ...DATE_FORMATTER },
     { field: 'ambIp', headerName: 'AMB/IP', width: 90 },
     { field: 'name', headerName: 'Medication', flex: 1 },
     { field: 'orderDetail', headerName: 'Order Detail', width: 200 },
     { field: 'longTerm', headerName: 'Long-term?', width: 100 },
-    { field: 'endDate', headerName: 'End Date', width: 140 },
+    { field: 'endDate', headerName: 'End Date', width: 140, ...DATE_FORMATTER },
     { field: 'discontinue', headerName: 'Discontinue', width: 120 },
     { field: 'discontinueReason', headerName: 'Discontinue Reason', width: 160 },
     { field: 'provider', headerName: 'Provider', width: 150 },
@@ -126,16 +130,16 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'class', headerName: 'Class', width: 120 }
   ],
   "Letters": [
-    { field: 'date', headerName: 'Letter Date', width: 140 },
+    { field: 'date', headerName: 'Letter Date', width: 140, ...DATE_FORMATTER },
     { field: 'from', headerName: 'Letter From', width: 150 },
     { field: 'reason', headerName: 'Reason', flex: 1 },
     { field: 'comments', headerName: 'Comments', width: 200 },
     { field: 'status', headerName: 'Status', width: 120 },
-    { field: 'viewedDate', headerName: 'Viewed Date', width: 140 },
-    { field: 'encDate', headerName: 'Enc Date', width: 120 }
+    { field: 'viewedDate', headerName: 'Viewed Date', width: 140, ...DATE_FORMATTER },
+    { field: 'encDate', headerName: 'Enc Date', width: 120, ...DATE_FORMATTER }
   ],
   "Referrals": [
-    { field: 'date', headerName: 'Date', width: 140 },
+    { field: 'date', headerName: 'Date', width: 140, ...DATE_FORMATTER },
     { field: 'specialty', headerName: 'To Specialty', width: 150 },
     { field: 'toProvider', headerName: 'To Provider', width: 150 },
     { field: 'status', headerName: 'Status', width: 120 },
@@ -147,30 +151,30 @@ const COLUMN_DEFS: Record<string, any[]> = {
   "Scan Doc": [
     { field: 'type', headerName: 'Document Type', width: 150 },
     { field: 'description', headerName: 'Description', flex: 1 },
-    { field: 'encDate', headerName: 'Enc Date', width: 120 },
-    { field: 'scanDate', headerName: 'Scan Date', width: 140 },
-    { field: 'expirationDate', headerName: 'Expiration Date', width: 140 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120, ...DATE_FORMATTER },
+    { field: 'scanDate', headerName: 'Scan Date', width: 140, ...DATE_FORMATTER },
+    { field: 'expirationDate', headerName: 'Expiration Date', width: 140, ...DATE_FORMATTER },
     { field: 'attachedTo', headerName: 'File Attached To', width: 160 }
   ],
   "Med Photos": [
     { field: 'type', headerName: 'Document Type', width: 150 },
     { field: 'description', headerName: 'Description', flex: 1 },
-    { field: 'encDate', headerName: 'Enc Date', width: 120 },
-    { field: 'scanDate', headerName: 'Scan Date', width: 140 },
-    { field: 'expirationDate', headerName: 'Expiration Date', width: 140 },
+    { field: 'encDate', headerName: 'Enc Date', width: 120, ...DATE_FORMATTER },
+    { field: 'scanDate', headerName: 'Scan Date', width: 140, ...DATE_FORMATTER },
+    { field: 'expirationDate', headerName: 'Expiration Date', width: 140, ...DATE_FORMATTER },
     { field: 'attachedTo', headerName: 'File Attached To', width: 160 }
   ],
   "Episodes": [
-    { field: 'dateNoted', headerName: 'Date Noted', width: 140 },
+    { field: 'dateNoted', headerName: 'Date Noted', width: 140, ...DATE_FORMATTER },
     { field: 'status', headerName: 'Status', width: 120 },
-    { field: 'dateResolved', headerName: 'Date Resolved', width: 140 },
+    { field: 'dateResolved', headerName: 'Date Resolved', width: 140, ...DATE_FORMATTER },
     { field: 'type', headerName: 'Type', width: 140 },
     { field: 'episode', headerName: 'Episode', flex: 1 },
     { field: 'comments', headerName: 'Comments', width: 200 }
   ],
   "LDAs": [
     { field: 'name', headerName: 'LDA Name', width: 160 },
-    { field: 'placementDate', headerName: 'Placement Date', width: 140 },
+    { field: 'placementDate', headerName: 'Placement Date', width: 140, ...DATE_FORMATTER },
     { field: 'site', headerName: 'Site', width: 140 },
     { field: 'status', headerName: 'Status', width: 120 },
     { field: 'removalDate', headerName: 'Removal Date', width: 140 },
@@ -178,7 +182,7 @@ const COLUMN_DEFS: Record<string, any[]> = {
     { field: 'description', headerName: 'Description', flex: 1 }
   ],
   "Consents": [
-    { field: 'createdDate', headerName: 'Created Date', width: 140 },
+    { field: 'createdDate', headerName: 'Created Date', width: 140, ...DATE_FORMATTER },
     { field: 'type', headerName: 'Consent Type', width: 150 },
     { field: 'consentFor', headerName: 'Consent For', flex: 1 },
     { field: 'lastSigned', headerName: 'Last Signed', width: 140 },
@@ -269,8 +273,8 @@ export const ChartReview = ({ ...props }: any) => {
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   const currentEncDate = encounter.startDate
   const documents2 = Object.values(chart.encounters)
-    .toSorted((a: any, b: any) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
-    .filter((x: any) => x.id === encounter.id || (new Date(x.startDate)).getTime() <= (new Date(currentEncDate)).getTime())
+    .toSorted((a: any, b: any) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate), Temporal.Instant.from(a.startDate)))
+    .filter((x: any) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncDate)) <= 0)
     .flatMap((x: any) => [
       ...enrichDocs(x.notes, 'Notes', x),
       ...enrichDocs(x.labs, 'Lab', x),

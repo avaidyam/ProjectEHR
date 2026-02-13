@@ -5,6 +5,11 @@ export type Branded<T, B> = T & Brand<B>
 export type UUID = Branded<string, 'UUID'>
 export type JSONDate = Branded<string, 'JSONDate'>
 
+export namespace JSONDate {
+  export const toAge = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Now.plainDateISO().since(Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate(), { largestUnit: 'years' }).years
+  export const toDateString = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+}
+
 export namespace Units {
   export enum Mass {
     MG = 'mg',

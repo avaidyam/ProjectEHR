@@ -29,6 +29,9 @@ module.exports = {
     es2021: true,
     node: true,
   },
+  globals: {
+    Temporal: 'readonly',
+  },
   rules: {
     // Prevent accidental inclusion of debugging statements.
     'no-console': 2,

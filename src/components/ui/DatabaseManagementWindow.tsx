@@ -14,7 +14,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     const url = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }))
     const a = document.createElement('a')
     a.href = url
-    a.download = `database_export_${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `database_export_${Temporal.Now.plainDateISO().toString()}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

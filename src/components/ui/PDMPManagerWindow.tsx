@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Window, Button, Stack, Label, Icon, Box, TextField, dayjs, DataGrid, Autocomplete, IconButton } from './Core';
+import { Window, Button, Stack, Label, Icon, Box, TextField, DataGrid, Autocomplete, IconButton } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 
@@ -134,7 +134,7 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
     prescriber: '',
     pharmacy: '',
     written: '',
-    dispensed: new Date().toISOString().split('T')[0],
+    dispensed: Temporal.Now.plainDateISO().toString(),
   });
 
   const handleSave = () => {
@@ -149,7 +149,7 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
       name: '', route: '', dosage: '', drug: '',
       quantity: 0, refills: 0, supply: 0, prescriber: '', pharmacy: '',
       written: '',
-      dispensed: new Date().toISOString().split('T')[0],
+      dispensed: Temporal.Now.plainDateISO().toString(),
     });
   };
 
@@ -207,8 +207,8 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
   const rows = (dispenseHistory || []).map((item, idx) => ({
     id: idx,
     ...item,
-    dispensedFormatted: item.dispensed ? dayjs(item.dispensed).format('MM/DD/YYYY') : '',
-    writtenFormatted: item.written ? dayjs(item.written).format('MM/DD/YYYY') : '',
+    dispensedFormatted: item.dispensed ? Temporal.PlainDateTime.from(item.dispensed).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
+    writtenFormatted: item.written ? Temporal.PlainDateTime.from(item.written).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
   }));
 
   return (

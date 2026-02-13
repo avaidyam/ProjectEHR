@@ -17,7 +17,7 @@ export const EditNote = () => {
       setActiveNote({
         editorState: "",
         summary: '',
-        date: (() => { const n = new Date(); n.setMinutes(n.getMinutes() - n.getTimezoneOffset()); return n.toISOString().slice(0, 16) as Database.JSONDate })(),
+        date: Temporal.Now.plainDateTimeISO().toString().slice(0, 16) as Database.JSONDate,
         type: null,
         service: null
       });

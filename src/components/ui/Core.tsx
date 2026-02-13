@@ -1,8 +1,7 @@
 // eslint-disable-file no-nested-ternary
 import React from "react"
-// @ts-ignore
-import { debounce } from "lodash"
-import dayjs2 from "dayjs"
+import { debounce } from "../../util/helpers"
+
 import {
   alpha as MUIalpha,
   Box as MUIBox,
@@ -74,6 +73,10 @@ import {
   DateTimePickerProps
 } from '@mui/x-date-pickers-pro'
 import {
+  TemporalPlainDateProvider,
+  TemporalPlainDateTimeProvider
+} from 'mui-temporal-pickers'
+import {
   DataGridPremium as MUIDataGrid,
   useGridApiRef as MUIuseGridApiRef,
   useKeepGroupedColumnsHidden as MUIuseKeepGroupedColumnsHidden,
@@ -98,16 +101,22 @@ import {
   Editor as MUIEditor,
   EditorReadOnly as MUIEditorReadOnly
 } from './Editor'
+import {
+  ErrorBoundary as ReactErrorBoundary
+} from 'react-error-boundary'
 
 LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.
 export const alpha = (_color: string, _alpha: number) => MUIalpha(_color, _alpha)
 
-// Re-export dayjs from the library
-export const dayjs = dayjs2
+export const ErrorBoundary: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <ReactErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+    {children}
+  </ReactErrorBoundary>
+)
 
-export const Box = React.forwardRef<any, BoxProps & { paper?: boolean, elevation?: number }>(({ paper, children, ...props }, ref) => {
+export const Box = React.forwardRef<any, BoxProps & PaperProps & { paper?: boolean }>(({ paper, children, ...props }, ref) => {
   if (paper === true)
     return (<MUIPaper ref={ref} {...props as any}>{children}</MUIPaper>)
   return (<MUIBox ref={ref} {...props as any}>{children}</MUIBox>)
@@ -230,7 +239,7 @@ export const Divider: React.FC<DividerProps> = ({ ...props }) => (
 
 // Use this to space out a stack: [Content -----Spacer----- Content]
 export const Spacer: React.FC<BoxProps> = ({ ...props }) => (
-  <Box {...props} sx={{ flexGrow: 1 }} />
+  <MUIBox {...props} sx={{ flexGrow: 1 }} />
 )
 
 // FIXME: Pass props for TableHead, TableBody, TableRow, and TableCell.
@@ -325,11 +334,15 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
 )
 
 export const DatePicker: React.FC<DatePickerProps<any>> = ({ ...props }) => (
-  <MUIDatePicker {...props} />
+  <TemporalPlainDateProvider>
+    <MUIDatePicker {...props} />
+  </TemporalPlainDateProvider>
 )
 
 export const DateTimePicker: React.FC<DateTimePickerProps<any>> = ({ ...props }) => (
-  <MUIDateTimePicker {...props} />
+  <TemporalPlainDateTimeProvider>
+    <MUIDateTimePicker {...props} />
+  </TemporalPlainDateTimeProvider>
 )
 
 export const Tab: React.FC<TabProps> = ({ children, ...props }) => (

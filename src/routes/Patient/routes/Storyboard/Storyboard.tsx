@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Divider, Typography } from '@mui/material';
-import { usePatient } from 'components/contexts/PatientContext';
+import { Divider, Label, ErrorBoundary } from 'components/ui/Core';
+import { Database, usePatient } from 'components/contexts/PatientContext';
 
 import { SidebarPatientInfo } from './components/SidebarPatientInfo';
 import { SidebarSepsisAlert } from './components/SidebarSepsisAlert';
@@ -16,31 +16,28 @@ export const Storyboard = () => {
 
   return (
     <>
-      <SidebarPatientInfo />
-      <SidebarSepsisAlert />
+      <ErrorBoundary><SidebarPatientInfo /></ErrorBoundary>
+      <ErrorBoundary><SidebarSepsisAlert /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <SidebarCareTeam />
+      <ErrorBoundary><SidebarCareTeam /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <SidebarAllergies />
+      <ErrorBoundary><SidebarAllergies /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
       {!!encounter ?
-        <>
-          <Typography variant="h6">Encounter</Typography>
-          <Typography>Type: {encounter?.type}</Typography>
-          <Typography>Date: {encounter?.startDate.toString()}</Typography>
-          <Typography>Reason: {encounter?.concerns?.join(", ")}</Typography>
-        </> :
-        <>
-          <Typography variant="h6">Chart Review</Typography>
-        </>
+        <ErrorBoundary>
+          <Label variant="h6">Encounter</Label>
+          <Label>Type: {encounter?.type}</Label>
+          <Label>Date: {Database.JSONDate.toDateString(encounter?.startDate)}</Label>
+          <Label>Reason: {encounter?.concerns?.join(", ")}</Label>
+        </ErrorBoundary> :
+        <Label variant="h6">Chart Review</Label>
       }
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <SidebarVitals />
+      <ErrorBoundary><SidebarVitals /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
+      <ErrorBoundary><SidebarClinicalImpressions /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
-      <SidebarClinicalImpressions />
-      <Divider sx={{ bgcolor: "primary.light" }} />
-      <SidebarProblemList />
+      <ErrorBoundary><SidebarProblemList /></ErrorBoundary>
     </>
   );
 };

@@ -183,7 +183,7 @@ export const OrderCart = () => {
           setOpenSearchList(null)
           if (item !== null) {
             if (Array.isArray(item)) {
-              const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: new Date(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
+              const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: Temporal.Now.instant().toString(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
               setOrderCart((prev: any) => prev.upsert(newItems, "id"))
             } else {
               setOpenOrder(item)

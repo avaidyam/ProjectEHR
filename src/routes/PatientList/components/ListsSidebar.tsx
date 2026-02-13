@@ -12,6 +12,7 @@ export const ListsSidebar = ({ lists, selectedListId }: { lists: Database.Patien
 
   return (
     <Box paper
+      variant="outlined"
       sx={{
         minWidth: 280,
         display: 'flex',
