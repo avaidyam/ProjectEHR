@@ -72,7 +72,7 @@ export function ChatPanel() {
                 {loading ? "..." : "Send"}
               </Button>
             )
-          } as any
+          }
         }}
       />
     </Stack>

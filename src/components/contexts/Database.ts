@@ -10,8 +10,22 @@ export type JSONDate = Branded<string, 'JSONDate'>
 //  `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 
 export namespace JSONDate {
-  export const toAge = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Now.plainDateISO().since(Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate(), { largestUnit: 'years' }).years
-  export const toDateString = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+  export const toAge = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => {
+    try {
+      return Temporal.Now.plainDateISO().since(Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate(), { largestUnit: 'years' }).years
+    } catch (e) {
+      console.error(e)
+      return 0
+    }
+  }
+  export const toDateString = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => {
+    try {
+      return Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+    } catch (e) {
+      console.error(e)
+      return 'N/A'
+    }
+  }
 }
 
 export namespace Units {
@@ -92,6 +106,7 @@ export interface Department {
 
 export namespace Department {
   export type ID = Branded<UUID, 'Department.ID'>
+  export type Fragment = Partial<Omit<Department, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -107,6 +122,7 @@ export interface Location {
 
 export namespace Location {
   export type ID = Branded<UUID, 'Location.ID'>
+  export type Fragment = Partial<Omit<Location, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -122,6 +138,7 @@ export interface Provider {
 
 export namespace Provider {
   export type ID = Branded<UUID, 'Provider.ID'>
+  export type Fragment = Partial<Omit<Provider, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -136,6 +153,7 @@ export namespace Flowsheet {
 
   export namespace Definition {
     export type ID = Branded<UUID, 'Flowsheet.Definition.ID'>
+    export type Fragment = Partial<Omit<Definition, 'id'>>
     export namespace ID {
       export const create = (): ID => crypto.randomUUID() as ID
     }
@@ -159,6 +177,7 @@ export namespace Flowsheet {
 
   export namespace Entry {
     export type ID = Branded<UUID, 'Flowsheet.Entry.ID'>
+    export type Fragment = Partial<Omit<Entry, 'id'>>
     export namespace ID {
       export const create = (): ID => crypto.randomUUID() as ID
     }
@@ -175,6 +194,7 @@ export interface PatientList {
 
 export namespace PatientList {
   export type ID = Branded<UUID, 'PatientList.ID'>
+  export type Fragment = Partial<Omit<PatientList, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -210,6 +230,7 @@ export interface Appointment {
 
 export namespace Appointment {
   export type ID = Branded<UUID, 'Appointment.ID'>
+  export type Fragment = Partial<Omit<Appointment, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -252,6 +273,7 @@ export interface Patient {
 
 export namespace Patient {
   export type ID = Branded<UUID, 'Patient.ID'>
+  export type Fragment = Partial<Omit<Patient, 'id'>>
   export namespace ID {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
   }
@@ -290,6 +312,7 @@ export interface Encounter {
 
 export namespace Encounter {
   export type ID = Branded<UUID, 'Encounter.ID'>
+  export type Fragment = Partial<Omit<Encounter, 'id'>>
   export namespace ID {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
   }
@@ -379,7 +402,7 @@ export interface Allergy {
   reactionType: Allergy.ReactionType
   recorded: string
   recorder: string
-  resovled: boolean
+  resolved: boolean
   severity: Allergy.Severity
   type: Allergy.Type
   verified: boolean
@@ -388,6 +411,7 @@ export interface Allergy {
 
 export namespace Allergy {
   export type ID = Branded<UUID, 'Allergy.ID'>
+  export type Fragment = Partial<Omit<Allergy, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -478,6 +502,7 @@ export interface Immunization {
 
 export namespace Immunization {
   export type ID = Branded<UUID, 'Immunization.ID'>
+  export type Fragment = Partial<Omit<Immunization, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -523,6 +548,7 @@ export interface Imaging {
 
 export namespace Imaging {
   export type ID = Branded<UUID, 'Imaging.ID'>
+  export type Fragment = Partial<Omit<Imaging, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -549,6 +575,7 @@ export interface Lab {
 
 export namespace Lab {
   export type ID = Branded<UUID, 'Lab.ID'>
+  export type Fragment = Partial<Omit<Lab, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -581,6 +608,7 @@ export interface Medication {
 
 export namespace Medication {
   export type ID = Branded<UUID, 'Medication.ID'>
+  export type Fragment = Partial<Omit<Medication, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -613,6 +641,7 @@ export interface Note {
 
 export namespace Note {
   export type ID = Branded<UUID, 'Note.ID'>
+  export type Fragment = Partial<Omit<Note, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -648,6 +677,7 @@ export interface Order {
 
 export namespace Order {
   export type ID = Branded<UUID, 'Order.ID'>
+  export type Fragment = Partial<Omit<Order, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }

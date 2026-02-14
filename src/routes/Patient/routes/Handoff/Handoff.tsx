@@ -76,7 +76,7 @@ export const Handoff: React.FC = () => {
         <Autocomplete
           label="Select Department"
           size="small"
-          sx={{ maxWidth: 250 }}
+          sx={{ width: 250 }}
           options={departmentsDB}
           getOptionLabel={(option: Database.Department) => option.name}
           value={departmentsDB.find((d: Database.Department) => d.id === currentDepartment) || null}
@@ -87,6 +87,7 @@ export const Handoff: React.FC = () => {
         <Label variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>Summary</Label>
         <RichTextEditor
           key={`summary-${currentDepartment}`}
+          editable={!!currentDepartment}
           placeholder={currentDepartment ? `Enter summary details for ${currentDeptName}...` : "Please select a department first"}
           initialContent={localSummary}
           onUpdate={setLocalSummary}
@@ -98,6 +99,7 @@ export const Handoff: React.FC = () => {
         <Label variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>To Do</Label>
         <RichTextEditor
           key={`todo-${currentDepartment}`}
+          editable={!!currentDepartment}
           placeholder={currentDepartment ? `Enter to-do tasks or follow-ups for ${currentDeptName}...` : "Please select a department first"}
           initialContent={localTodo}
           onUpdate={setLocalTodo}

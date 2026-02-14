@@ -281,7 +281,7 @@ export const Allergies = () => {
       reactionType: Database.Allergy.ReactionType.Unknown,
       recorded: '',
       comment: '',
-      resovled: false,
+      resolved: false,
       verified: false,
       recorder: '',
       isNew: true

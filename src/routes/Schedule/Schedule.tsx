@@ -46,11 +46,12 @@ function customFilterBar({
         onChange={(newValue) => setSelectedDate(newValue)}
       />
       <Autocomplete
+        disableClearable
         options={schedulesDB.map(s => ({ id: s.department, label: departments.find(d => d.id === s.department)?.name || `Dept ${s.department}` }))}
         value={selectedDept}
         onChange={(_e, newValue: any) => setSelectedDept(newValue?.id)}
         getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : option.label}
-        sx={{ minWidth: 200 }}
+        sx={{ width: 250 }}
       />
       <FormControlLabel
         onClick={() => {
@@ -62,15 +63,6 @@ function customFilterBar({
         label="Preview"
       />
     </GridToolbarContainer>
-  );
-}
-
-// display circle badge by noted color
-function changeBadge(badgeColor: React.CSSProperties['color']) {
-  return (
-    <Badge>
-      <Icon style={{ color: badgeColor }}>circle</Icon>
-    </Badge>
   );
 }
 
@@ -291,17 +283,19 @@ export function Schedule() {
                 headerName: '',
                 sortable: false,
                 width: 100,
-                renderCell: () => {
+                renderCell: (params) => {
                   return (
                     <Autocomplete
-                      options={['white', 'gray', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']}
+                      disableClearable
+                      options={['gray', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']}
                       defaultValue="gray"
+                      sx={{ width: 64 }}
                       renderOption={(props, option) => (
                         <li {...props}>
-                          {changeBadge(option)}
+                          <Badge><Icon style={{ color: option }}>circle</Icon></Badge>
                         </li>
                       )}
-                      sx={{ width: 100 }}
+                      renderValue={(value) => <Badge><Icon style={{ color: value }}>circle</Icon></Badge>}
                     />
                   );
                 },

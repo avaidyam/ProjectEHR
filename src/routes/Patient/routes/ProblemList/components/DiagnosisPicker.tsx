@@ -219,7 +219,7 @@ export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { sear
                   setValue(inputValue)
                   if (tab === 'browse') setTab('preference')
                 }}>search</Icon>
-              } as any
+              }
             }}
           />
           <TabView value={tab}>

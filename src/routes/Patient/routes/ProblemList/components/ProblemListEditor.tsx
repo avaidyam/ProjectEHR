@@ -103,7 +103,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
                   <Icon>search</Icon>
                 </IconButton>
               )
-            } as any
+            }
           }}
         />
       </Grid>

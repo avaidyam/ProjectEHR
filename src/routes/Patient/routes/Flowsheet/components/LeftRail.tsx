@@ -77,7 +77,7 @@ export const LeftRail: React.FC<LeftRailProps> = ({
             TextFieldProps={{
               InputProps: {
                 startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
-              } as any
+              }
             }}
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
           />
