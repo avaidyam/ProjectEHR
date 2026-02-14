@@ -6,15 +6,13 @@ import {
   Button,
   Icon,
   IconButton,
-  TextField,
   Label,
   DataGrid,
   TitledCard,
   Grid,
+  Autocomplete,
+  Checkbox
 } from 'components/ui/Core';
-import {
-  Checkbox,
-} from '@mui/material';
 import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { Database, usePatient } from 'components/contexts/PatientContext';
 import { GridColDef } from '@mui/x-data-grid';
@@ -83,7 +81,16 @@ export function Medications() {
       field: 'lastDose',
       headerName: 'Last Dose',
       width: 150,
-      renderCell: () => <TextField disabled size="small" fullWidth color="error" />
+      renderCell: () => (
+        <Autocomplete
+          disabled
+          size="small"
+          fullWidth
+          value=""
+          options={[]}
+          TextFieldProps={{ color: 'error' }}
+        />
+      )
     },
     {
       field: 'taking',
@@ -127,7 +134,14 @@ export function Medications() {
       <Stack spacing={2}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <TextField label="New Medication" variant="outlined" size="small" />
+            <Autocomplete
+              freeSolo
+              label="New Medication"
+              size="small"
+              fullWidth
+              options={[]}
+              sx={{ width: 300 }}
+            />
             <Button variant="contained" startIcon={<Icon>add_task</Icon>}>Add</Button>
           </Stack>
           <Stack direction="row" spacing={1}>

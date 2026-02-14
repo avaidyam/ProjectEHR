@@ -1,10 +1,26 @@
 import * as React from 'react';
 import { List, Popover, Typography } from '@mui/material';
 import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
-import { useNavigate } from 'react-router-dom';
 import { useSplitView } from 'components/contexts/SplitViewContext';
-import { formatComponentDate } from 'util/helpers';
 
+/**
+ * Formats a date for display in the component popover (MM/DD/YY HHmm format)
+ * @param {string} date - The ISO date string to format
+ * @returns {string} - Formatted date string
+ */
+function formatComponentDate(date: any) {
+  try {
+    const d = Temporal.PlainDateTime.from(date);
+    const month = String(d.month).padStart(2, '0');
+    const day = String(d.day).padStart(2, '0');
+    const year = String(d.year).slice(-2);
+    const hours = String(d.hour).padStart(2, '0');
+    const minutes = String(d.minute).padStart(2, '0');
+    return `${month}/${day}/${year} ${hours}${minutes}`;
+  } catch {
+    return '';
+  }
+}
 const ComponentPopover = ({ item, historyData }: { item: any; historyData: any }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const isAbnormal = item.flag === 'H' || item.flag === 'L';
@@ -202,7 +218,7 @@ const EventItem = ({ event, categories, componentHistory, flowsheetHistory }: { 
 const formatDateHeader = (dateKey: string) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   try {
-    const pd = Temporal.PlainDate.from(dateKey);
+    const pd = Temporal.Instant.from(dateKey).toZonedDateTimeISO('UTC');
     const currentYear = Temporal.Now.plainDateISO().year;
     const base = `${months[pd.month - 1]} ${pd.day}`;
     return pd.year !== currentYear ? `${base}, ${pd.year}` : base;
@@ -251,7 +267,7 @@ export const EventList = ({ events, categories, componentHistory, flowsheetHisto
 
   const sortedDateKeys = Object.keys(groupedEvents).sort((a: string, b: string) => {
     try {
-      return Temporal.PlainDate.compare(Temporal.PlainDate.from(b), Temporal.PlainDate.from(a));
+      return Temporal.Instant.compare(Temporal.Instant.from(b), Temporal.Instant.from(a));
     } catch {
       return 0;
     }

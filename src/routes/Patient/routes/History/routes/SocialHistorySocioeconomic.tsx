@@ -3,7 +3,6 @@ import * as React from 'react';
 import {
   Box,
   Button,
-  TextField,
   Label,
   Table,
   TableBody,
@@ -13,6 +12,7 @@ import {
   IconButton,
   TitledCard,
   Icon,
+  Autocomplete,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -160,20 +160,24 @@ export function SocialHistorySocioeconomic() {
         <SectionHeader>Current Occupation</SectionHeader>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Occupation"
               fullWidth
               value={socioeconomicData?.occupation || ''}
-              onChange={(e) => handleCurrentOccupationChange('occupation', e.target.value)}
+              onInputChange={(_e, newValue) => handleCurrentOccupationChange('occupation', newValue)}
+              options={[]}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Employer"
               fullWidth
               value={socioeconomicData?.employer || ''}
-              onChange={(e) => handleCurrentOccupationChange('employer', e.target.value)}
-              placeholder="NOT EMPLOYED"
+              onInputChange={(_e, newValue) => handleCurrentOccupationChange('employer', newValue)}
+              options={[]}
+              TextFieldProps={{ placeholder: "NOT EMPLOYED" }}
             />
           </Grid>
         </Grid>
@@ -233,32 +237,34 @@ export function SocialHistorySocioeconomic() {
             </Label>
             <Grid container spacing={3}>
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Occupation"
-                  name="occupation"
+                  fullWidth
                   value={newEntry.occupation}
-                  onChange={handleChange}
-                  fullWidth
+                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, occupation: newValue })}
+                  options={[]}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Employer"
-                  name="employer"
-                  value={newEntry.employer}
-                  onChange={handleChange}
                   fullWidth
+                  value={newEntry.employer}
+                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, employer: newValue })}
+                  options={[]}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Comment"
-                  name="comment"
-                  value={newEntry.comment}
-                  onChange={handleChange}
                   fullWidth
-                  multiline
-                  rows={3}
+                  value={newEntry.comment}
+                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, comment: newValue })}
+                  options={[]}
+                  TextFieldProps={{ multiline: true, rows: 3 }}
                 />
               </Grid>
               <Grid size={12}>
@@ -318,72 +324,79 @@ export function SocialHistorySocioeconomic() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Spouse Name:"
               fullWidth
               value={socioeconomicData?.demographics?.spouseName || ''}
-              onChange={(e) => handleDemographicsChange('spouseName', e.target.value)}
+              onInputChange={(_e, newValue) => handleDemographicsChange('spouseName', newValue)}
+              options={[]}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Preferred Language:"
               fullWidth
               value={socioeconomicData?.demographics?.preferredLanguage || ''}
-              onChange={(e) => handleDemographicsChange('preferredLanguage', e.target.value)}
-              placeholder="English"
+              onInputChange={(_e, newValue) => handleDemographicsChange('preferredLanguage', newValue)}
+              options={['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Number of Children:"
-              type="number"
               fullWidth
-              value={socioeconomicData?.demographics?.numberOfChildren || ''}
-              onChange={(e) => handleDemographicsChange('numberOfChildren', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={socioeconomicData?.demographics?.numberOfChildren?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDemographicsChange('numberOfChildren', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5', '6+']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Ethnic Group:"
               fullWidth
               value={socioeconomicData?.demographics?.ethnicGroup || ''}
-              onChange={(e) => handleDemographicsChange('ethnicGroup', e.target.value)}
-              placeholder="Non-Hispanic, Latino ..."
+              onInputChange={(_e, newValue) => handleDemographicsChange('ethnicGroup', newValue)}
+              options={['Non-Hispanic', 'Latino', 'Hispanic']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Years of Education:"
-              type="number"
               fullWidth
-              value={socioeconomicData?.demographics?.yearsOfEducation || ''}
-              onChange={(e) => handleDemographicsChange('yearsOfEducation', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={socioeconomicData?.demographics?.yearsOfEducation?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDemographicsChange('yearsOfEducation', parseInt(newValue) || 0)}
+              options={['12', '14', '16', '18', '20+']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Race:"
               fullWidth
               value={socioeconomicData?.demographics?.race || ''}
-              onChange={(e) => handleDemographicsChange('race', e.target.value)}
-              placeholder="White"
+              onInputChange={(_e, newValue) => handleDemographicsChange('race', newValue)}
+              options={['White', 'Black or African American', 'Asian', 'American Indian', 'Native Hawaiian', 'Other']}
             />
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="What is the highest level of school you have completed or the highest degree you have received?"
               fullWidth
               value={socioeconomicData?.demographics?.highestEducationLevel || ''}
-              onChange={(e) => handleDemographicsChange('highestEducationLevel', e.target.value)}
+              onInputChange={(_e, newValue) => handleDemographicsChange('highestEducationLevel', newValue)}
+              options={['High School', 'Associate Degree', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']}
             />
           </Grid>
         </Grid>

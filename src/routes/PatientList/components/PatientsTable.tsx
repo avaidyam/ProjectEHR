@@ -193,7 +193,7 @@ export const PatientsTable = ({
             const patient = params.row as Database.Patient;
             if (patient.encounters && Object.keys(patient.encounters).length > 0) {
               const encounters = Object.values(patient.encounters);
-              const sortedEncounters = encounters.sort((a: any, b: any) => Temporal.PlainDateTime.compare(Temporal.PlainDateTime.from(b.startDate), Temporal.PlainDateTime.from(a.startDate)));
+              const sortedEncounters = encounters.sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate), Temporal.Instant.from(a.startDate)));
               const latestEncounter = sortedEncounters[0];
               navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
             } else {

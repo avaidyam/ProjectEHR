@@ -5,6 +5,10 @@ export type Branded<T, B> = T & Brand<B>
 export type UUID = Branded<string, 'UUID'>
 export type JSONDate = Branded<string, 'JSONDate'>
 
+//type JSONDate =
+//  `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z` |
+//  `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
 export namespace JSONDate {
   export const toAge = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Now.plainDateISO().since(Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate(), { largestUnit: 'years' }).years
   export const toDateString = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
@@ -65,6 +69,15 @@ export interface Root {
 }
 
 export type Specialty = Branded<string, 'Specialty.Name'>
+
+export namespace Specialty {
+  export const SPECIALTIES = [
+    'Internal Medicine',
+    'General Surgery',
+    'Cardiology',
+    'Orthopedic Surgery'
+  ]
+}
 
 export type ServiceArea = Branded<string, 'ServiceArea.Name'>
 

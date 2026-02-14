@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { TextField, Checkbox, IconButton } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
-import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core';
+import { DataGrid, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 import { ProblemListEditor } from './components/ProblemListEditor';
 import { DiagnosisPicker } from './components/DiagnosisPicker';
@@ -211,22 +210,23 @@ export const ProblemListTabContent: React.FC = () => {
         <Label variant="h6" sx={{ pb: 1 }}>Problem List</Label>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
           <Stack direction="row" alignItems="center">
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Search for problem"
-              variant="outlined"
               size="small"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onInputChange={(_e, newValue) => setSearchTerm(newValue)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleOpenModal(null, searchTerm);
                 }
               }}
-              style={{ marginRight: 0 }}
+              options={[]}
+              sx={{ width: 250 }}
             />
             <Button
               variant="outlined"
-              style={{ height: '40px', marginLeft: '-1px' }}
+              sx={{ height: '40px', marginLeft: '-1px' }}
               onClick={() => handleOpenModal(null, searchTerm)}
             >
               <Icon color="success">add_task</Icon>Add
@@ -236,7 +236,7 @@ export const ProblemListTabContent: React.FC = () => {
             <Label>Show:</Label>
             <Checkbox name="showPastProblems" />
             <Label>Past Problems</Label>
-            <Button variant="outlined" style={{ marginLeft: '1em' }}>
+            <Button variant="outlined" sx={{ marginLeft: '1em' }}>
               View Drug-Disease Interactions
             </Button>
           </Stack>

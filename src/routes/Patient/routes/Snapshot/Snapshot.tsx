@@ -58,7 +58,7 @@ export const SnapshotTabContent: React.FC = () => {
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
                 <span style={{ color: '#9F3494' }}>
-                  {records?.map?.((rec) => Database.JSONDate.toDateString(rec.received as Database.JSONDate)).join(', ')}
+                  {records?.map?.((rec) => !!rec.received ? Database.JSONDate.toDateString(rec.received as Database.JSONDate) : 'N/A').join(', ')}
                 </span>
               </div>
             ))
@@ -71,7 +71,7 @@ export const SnapshotTabContent: React.FC = () => {
             medicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.diagnosis}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
-                  {Database.JSONDate.toDateString(condition.date!)}
+                  {!!condition.date ? Database.JSONDate.toDateString(condition.date) : 'N/A'}
                 </span>
                 <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
               </div>

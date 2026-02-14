@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Box, TextField, IconButton, Button, Autocomplete, Typography } from '@mui/material';
+import { Box, IconButton, Button, Typography } from '@mui/material';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
-import { Label, Stack, Icon, Window, RichTextEditor } from 'components/ui/Core';
+import { Label, Stack, Icon, Window, RichTextEditor, Autocomplete, DateTimePicker } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 
 export const EditNote = () => {
@@ -17,7 +17,7 @@ export const EditNote = () => {
       setActiveNote({
         editorState: "",
         summary: '',
-        date: Temporal.Now.plainDateTimeISO().toString().slice(0, 16) as Database.JSONDate,
+        date: Temporal.Now.instant().toString() as Database.JSONDate,
         type: null,
         service: null
       });
@@ -78,13 +78,11 @@ export const EditNote = () => {
         <Box sx={{ mt: 2, mb: 1 }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Label variant="body2" color="text.secondary">Date of Service:</Label>
-              <TextField
-                type="datetime-local"
-                variant="standard"
-                size="small"
+              <DateTimePicker
+                convertString
+                label="Date of Service"
                 value={activeNote?.date ?? ""}
-                onChange={(e) => setActiveNote({ ...activeNote!, date: e.target.value as Database.JSONDate })}
+                onChange={(newValue: any) => setActiveNote({ ...activeNote!, date: newValue as Database.JSONDate })}
                 sx={{ width: 190 }}
               />
             </Box>
@@ -96,7 +94,8 @@ export const EditNote = () => {
                 onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote!, type: newValue })}
                 fullWidth
                 size="small"
-                renderInput={(params: any) => <TextField {...params} variant="standard" placeholder="Note Type" />}
+                label="Note Type"
+                TextFieldProps={{ variant: 'standard' }}
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1 }}>
@@ -108,7 +107,8 @@ export const EditNote = () => {
                 onChange={(_: any, newValue: any) => setActiveNote({ ...activeNote!, service: newValue })}
                 fullWidth
                 size="small"
-                renderInput={(params: any) => <TextField {...params} variant="standard" placeholder="Service" />}
+                label="Service"
+                TextFieldProps={{ variant: 'standard' }}
               />
             </Box>
           </Box>
@@ -116,12 +116,14 @@ export const EditNote = () => {
 
         <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
           <Label variant="body2" sx={{ mr: 2, color: 'text.secondary' }}>Summary:</Label>
-          <TextField
-            variant="standard"
+          <Autocomplete
+            freeSolo
+            label="Summary"
             fullWidth
             value={activeNote?.summary ?? ""}
-            onChange={(e) => setActiveNote({ ...activeNote!, summary: e.target.value })}
-            InputProps={{ disableUnderline: false }}
+            onInputChange={(_e, newValue) => setActiveNote({ ...activeNote!, summary: newValue })}
+            options={[]}
+            TextFieldProps={{ variant: 'standard', InputProps: { disableUnderline: false } }}
           />
         </Box>
       </Box>
@@ -155,7 +157,6 @@ export const EditNote = () => {
           defaultValue="Sign"
           size="small"
           sx={{ minWidth: 200 }}
-          renderInput={params => <TextField {...params} variant="outlined" />}
         />
         <Button variant="outlined" color="success" startIcon={<Icon>check</Icon>} onClick={handleAccept}>Accept</Button>
         <Button variant="outlined" color="error" startIcon={<Icon>close</Icon>} onClick={handleCancel}>Cancel</Button>

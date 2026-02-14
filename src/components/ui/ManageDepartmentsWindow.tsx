@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
-import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton } from './Core';
+import { Menu } from '@mui/material';
+import { Box, Button, Window, TreeView, TreeItem, Icon, IconButton, Autocomplete, MenuItem } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 
@@ -200,11 +200,14 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
     if (isAddingDept) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Department Name"
+            fullWidth
             value={deptName}
-            onChange={(e) => setDeptName(e.target.value)}
+            onInputChange={(_e, newValue) => setDeptName(newValue)}
             autoFocus
+            options={[]}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => setIsAddingDept(false)}>Cancel</Button>
@@ -217,11 +220,14 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
     if (isEditingDept) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Department Name"
+            fullWidth
             value={deptName}
-            onChange={(e) => setDeptName(e.target.value)}
+            onInputChange={(_e, newValue) => setDeptName(newValue)}
             autoFocus
+            options={[]}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => setIsEditingDept(false)}>Cancel</Button>
@@ -234,29 +240,30 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
     if (isAddingProvider) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Provider Name"
+            fullWidth
             value={providerData.name}
-            onChange={(e) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
+            onInputChange={(_e, newValue) => setProviderData(prev => ({ ...prev, name: newValue }))}
             autoFocus
+            options={[]}
           />
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Specialty"
+            fullWidth
             value={providerData.specialty}
-            onChange={(e) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
+            onInputChange={(_e, newValue) => setProviderData(prev => ({ ...prev, specialty: newValue as Database.Specialty }))}
+            options={Database.Specialty.SPECIALTIES}
           />
-          <FormControl fullWidth>
-            <InputLabel>Department</InputLabel>
-            <Select
-              value={providerData.department! as string}
-              label="Department"
-              onChange={(e) => setProviderData(prev => ({ ...prev, department: e.target.value as Database.Department.ID }))}
-            >
-              {departments.map(d => (
-                <MenuItem key={d.id as string} value={d.id as string}>{d.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            label="Department"
+            options={departments}
+            value={departments.find(d => d.id === providerData.department)}
+            onChange={(_e, newValue: any) => setProviderData(prev => ({ ...prev, department: newValue?.id }))}
+            getOptionLabel={(option: any) => option.name}
+          />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => setIsAddingProvider(false)}>Cancel</Button>
             <Button variant="contained" onClick={handleAddProvider}>Add</Button>
@@ -268,29 +275,30 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
     if (isEditingProvider) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Provider Name"
+            fullWidth
             value={providerData.name}
-            onChange={(e) => setProviderData(prev => ({ ...prev, name: e.target.value }))}
+            onInputChange={(_e, newValue) => setProviderData(prev => ({ ...prev, name: newValue }))}
             autoFocus
+            options={[]}
           />
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Specialty"
+            fullWidth
             value={providerData.specialty}
-            onChange={(e) => setProviderData(prev => ({ ...prev, specialty: e.target.value as Database.Specialty }))}
+            onInputChange={(_e, newValue) => setProviderData(prev => ({ ...prev, specialty: newValue as Database.Specialty }))}
+            options={Database.Specialty.SPECIALTIES}
           />
-          <FormControl fullWidth>
-            <InputLabel>Department</InputLabel>
-            <Select
-              value={providerData.department! as string}
-              label="Department"
-              onChange={(e) => setProviderData(prev => ({ ...prev, department: e.target.value as Database.Department.ID }))}
-            >
-              {departments.map(d => (
-                <MenuItem key={d.id as string} value={d.id as string}>{d.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            label="Department"
+            options={departments}
+            value={departments.find(d => d.id === providerData.department)}
+            onChange={(_e, newValue: any) => setProviderData(prev => ({ ...prev, department: newValue?.id }))}
+            getOptionLabel={(option: any) => option.name}
+          />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => setIsEditingProvider(false)}>Cancel</Button>
             <Button variant="contained" onClick={handleEditProvider}>Save</Button>
@@ -304,18 +312,13 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box>Moving Provider: <strong>{provider?.name}</strong></Box>
-          <FormControl fullWidth>
-            <InputLabel>Target Department</InputLabel>
-            <Select
-              value={moveProviderData.targetDeptId}
-              label="Target Department"
-              onChange={(e) => setMoveProviderData(prev => ({ ...prev, targetDeptId: e.target.value as Database.Department.ID }))}
-            >
-              {departments.map(d => (
-                <MenuItem key={d.id as string} value={d.id as string}>{d.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            label="Target Department"
+            options={departments}
+            value={departments.find(d => d.id === moveProviderData.targetDeptId)}
+            onChange={(_e, newValue: any) => setMoveProviderData(prev => ({ ...prev, targetDeptId: newValue?.id }))}
+            getOptionLabel={(option: any) => option.name}
+          />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => setIsMovingProvider(false)}>Cancel</Button>
             <Button variant="contained" onClick={handleMoveProvider}>Move</Button>

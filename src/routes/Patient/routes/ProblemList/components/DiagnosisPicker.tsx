@@ -1,5 +1,21 @@
 import * as React from 'react';
-import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
+import {
+  Button,
+  Label,
+  Stack,
+  Window,
+  useLazyEffect,
+  Tab,
+  TabList,
+  TabView,
+  Box,
+  TreeView,
+  TreeItem,
+  TitledCard,
+  Icon,
+  DataGrid,
+  Autocomplete
+} from 'components/ui/Core';
 import { getAllCategories, getCodesForChapter, searchICD10Codes } from 'util/helpers';
 
 const COLUMN_DEFS = {
@@ -162,7 +178,7 @@ const DiagnosisBrowse = ({ onSelect, queuedDiagnoses, setQueuedDiagnoses, ...pro
 
 export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { searchTerm: string; open: boolean; onSelect: (selection: any) => void;[key: string]: any }) => {
   const [value, setValue] = React.useState(searchTerm)
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const [inputValue, setInputValue] = React.useState(searchTerm)
   const [tab, setTab] = React.useState(searchTerm ? "preference" : "browse")
   const [data, setData] = React.useState<any[]>([])
   const [selection, setSelection] = React.useState<any>(null)
@@ -183,24 +199,27 @@ export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { sear
       onClose={() => onSelect(null)}
       header={
         <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: 'center', mt: 1, mb: -2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Search"
             size="small"
             sx={{ flex: 1 }}
-            variant="outlined"
-            defaultValue={searchTerm}
-            inputRef={inputRef}
-            onKeyDown={(e: any) => {
+            value={inputValue}
+            onInputChange={(_e, newValue) => setInputValue(newValue)}
+            onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                setValue(inputRef.current?.value ?? "")
+                setValue(inputValue)
                 if (tab === 'browse') setTab('preference')
               }
             }}
-            InputProps={{
-              endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
-                setValue(inputRef.current?.value ?? "")
-                if (tab === 'browse') setTab('preference')
-              }}>search</Icon>
+            options={[]}
+            TextFieldProps={{
+              InputProps: {
+                endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
+                  setValue(inputValue)
+                  if (tab === 'browse') setTab('preference')
+                }}>search</Icon>
+              } as any
             }}
           />
           <TabView value={tab}>

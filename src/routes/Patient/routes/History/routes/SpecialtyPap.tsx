@@ -54,7 +54,7 @@ export function PapTracking() {
     if (!lastPapDate) return null;
 
     try {
-      const nextDate = Temporal.PlainDate.from(lastPapDate).add({ years: 3 });
+      const nextDate = Temporal.Instant.from(lastPapDate).toZonedDateTimeISO('UTC').add({ years: 3 });
       return nextDate.toLocaleString();
     } catch {
       return null;

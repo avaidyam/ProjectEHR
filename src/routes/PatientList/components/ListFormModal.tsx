@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Stack, Button, Icon, IconButton, TextField, Label, Window } from 'components/ui/Core';
+import { Box, Stack, Button, Icon, IconButton, Label, Window, Autocomplete } from 'components/ui/Core';
 import { Database } from 'components/contexts/PatientContext';
 
 const availableColumns: Database.PatientList.Column[] = [
@@ -132,25 +132,30 @@ export const ListFormModal = ({
   return (
     <Window title={isEditMode ? 'Edit List' : 'Create List'} open={open} onClose={onClose} maxWidth='md' fullWidth>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-        <TextField
+        <Autocomplete
+          freeSolo
           label='Name'
           fullWidth
           value={listName}
-          onChange={(e) => setListName(e.target.value)}
+          onInputChange={(_e, newValue) => setListName(newValue)}
           size='small'
-          required
-          helperText="List name is required"
+          options={[]}
+          TextFieldProps={{
+            required: true,
+            helperText: "List name is required"
+          }}
         />
-        <TextField
+        <Autocomplete
+          disabled
           label='Owner'
           fullWidth
           value="Current User" // TODO: update once auth is implemented
-          disabled
+          options={["Current User"]}
           size='small'
         />
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Box sx={{ flex: 1 }}>
-            <Label variant='subtitle2' gutterBottom>
+            <Label variant='subtitle2' sx={{ mb: 1 }}>
               Available Columns
             </Label>
             <Box paper sx={{ height: 300, overflow: 'auto' }}>
@@ -171,9 +176,9 @@ export const ListFormModal = ({
             </Box>
           </Box>
           <Box sx={{ flex: 1 }}>
-            <Label variant='subtitle2' gutterBottom>
+            <Label variant='subtitle2' sx={{ mb: 1 }}>
               Selected Columns {selectedColumns.length === 0 && (
-                <Label component="span" color="error" variant="caption">
+                <Label variant="caption" sx={{ color: 'error.main' }}>
                   (At least one column required)
                 </Label>
               )}

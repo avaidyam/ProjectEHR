@@ -2,10 +2,10 @@ import * as React from 'react';
 import {
   Box,
   Button,
-  TextField,
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -104,116 +104,40 @@ export function SpecialtyOB() {
 
         <Grid container spacing={2}>
           {/* First row */}
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Gravida"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.gravida || ''}
-              onChange={(e) => handleObstetricChange('gravida', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Para"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.para || ''}
-              onChange={(e) => handleObstetricChange('para', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Term"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.term || ''}
-              onChange={(e) => handleObstetricChange('term', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Preterm"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.preterm || ''}
-              onChange={(e) => handleObstetricChange('preterm', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="AB"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.ab || ''}
-              onChange={(e) => handleObstetricChange('ab', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Living"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.living || ''}
-              onChange={(e) => handleObstetricChange('living', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
+          {['Gravida', 'Para', 'Term', 'Preterm', 'AB', 'Living'].map((label) => (
+            <Grid key={label} size={{ xs: 12, sm: 2 }}>
+              <Autocomplete
+                freeSolo
+                label={label}
+                fullWidth
+                value={obgynData?.obstetricHistory?.[label.toLowerCase()]?.toString() || ''}
+                onInputChange={(_e, newValue) => handleObstetricChange(label.toLowerCase(), parseInt(newValue) || 0)}
+                options={['0', '1', '2', '3', '4', '5']}
+              />
+            </Grid>
+          ))}
 
           {/* Second row */}
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="SAB"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.sab || ''}
-              onChange={(e) => handleObstetricChange('sab', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="IAB"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.iab || ''}
-              onChange={(e) => handleObstetricChange('iab', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Ectopic"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.ectopic || ''}
-              onChange={(e) => handleObstetricChange('ectopic', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, sm: 2 }}>
-            <TextField
-              label="Multiple"
-              type="number"
-              fullWidth
-              value={obgynData?.obstetricHistory?.multiple || ''}
-              onChange={(e) => handleObstetricChange('multiple', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
-            />
-          </Grid>
+          {['SAB', 'IAB', 'Ectopic', 'Multiple'].map((label) => (
+            <Grid key={label} size={{ xs: 12, sm: 2 }}>
+              <Autocomplete
+                freeSolo
+                label={label}
+                fullWidth
+                value={obgynData?.obstetricHistory?.[label.toLowerCase()]?.toString() || ''}
+                onInputChange={(_e, newValue) => handleObstetricChange(label.toLowerCase(), parseInt(newValue) || 0)}
+                options={['0', '1', '2']}
+              />
+            </Grid>
+          ))}
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Live Births"
-              type="number"
               fullWidth
-              value={obgynData?.obstetricHistory?.liveBirths || ''}
-              onChange={(e) => handleObstetricChange('liveBirths', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={obgynData?.obstetricHistory?.liveBirths?.toString() || ''}
+              onInputChange={(_e, newValue) => handleObstetricChange('liveBirths', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
             />
           </Grid>
 
@@ -267,57 +191,57 @@ export function SpecialtyOB() {
         <SectionHeader>Gynecology History</SectionHeader>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Age at menarche"
-              type="number"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtMenarche || ''}
-              onChange={(e) => handleGynecologyChange('ageAtMenarche', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0, max: 50 }}
+              value={obgynData?.gynecologyHistory?.ageAtMenarche?.toString() || ''}
+              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtMenarche', parseInt(newValue) || 0)}
+              options={['10', '11', '12', '13', '14', '15']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Age at first pregnancy"
-              type="number"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtFirstPregnancy || ''}
-              onChange={(e) => handleGynecologyChange('ageAtFirstPregnancy', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0, max: 50 }}
+              value={obgynData?.gynecologyHistory?.ageAtFirstPregnancy?.toString() || ''}
+              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtFirstPregnancy', parseInt(newValue) || 0)}
+              options={['18', '20', '25', '30', '35']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Age at first live birth"
-              type="number"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtFirstLiveBirth || ''}
-              onChange={(e) => handleGynecologyChange('ageAtFirstLiveBirth', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0, max: 50 }}
+              value={obgynData?.gynecologyHistory?.ageAtFirstLiveBirth?.toString() || ''}
+              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtFirstLiveBirth', parseInt(newValue) || 0)}
+              options={['18', '20', '25', '30', '35']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Months breastfeeding"
-              type="number"
               fullWidth
-              value={obgynData?.gynecologyHistory?.monthsBreastfeeding || ''}
-              onChange={(e) => handleGynecologyChange('monthsBreastfeeding', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={obgynData?.gynecologyHistory?.monthsBreastfeeding?.toString() || ''}
+              onInputChange={(_e, newValue) => handleGynecologyChange('monthsBreastfeeding', parseInt(newValue) || 0)}
+              options={['0', '3', '6', '12', '24']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Age at menopause"
-              type="number"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtMenopause || ''}
-              onChange={(e) => handleGynecologyChange('ageAtMenopause', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0, max: 100 }}
+              value={obgynData?.gynecologyHistory?.ageAtMenopause?.toString() || ''}
+              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtMenopause', parseInt(newValue) || 0)}
+              options={['45', '50', '52', '55']}
             />
           </Grid>
 

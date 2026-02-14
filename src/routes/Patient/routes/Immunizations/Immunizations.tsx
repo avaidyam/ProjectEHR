@@ -6,13 +6,13 @@ import {
   Icon,
   IconButton,
   DataGrid,
-  TextField,
-  MenuItem,
   Autocomplete,
   Label,
-  Grid
+  Grid,
+  DatePicker,
+  Checkbox
 } from 'components/ui/Core';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { FormControlLabel } from '@mui/material';
 
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
@@ -28,8 +28,7 @@ const formatDose = (dose: any) => {
 const formatDate = (dateString: any) => {
   if (!dateString) return 'N/A';
   try {
-    Temporal.PlainDate.from(dateString);
-    return dateString;
+    return Temporal.Instant.from(dateString).toZonedDateTimeISO('UTC').toPlainDate().toLocaleString();
   } catch {
     return 'Invalid Date';
   }
@@ -103,14 +102,14 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                       family: newVal?.family || prev.family
                     }));
                   }}
-                  renderInput={(params: any) => <TextField {...params} />}
                 />
               ) : (
-                <TextField
+                <Autocomplete
+                  disabled
                   fullWidth
                   size="small"
                   value={formData.vaccine}
-                  disabled
+                  options={[formData.vaccine]}
                   sx={{ '& .MuiInputBase-input': { bgcolor: 'grey.100' } }}
                 />
               )}
@@ -118,13 +117,12 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
 
             <Stack direction="row" alignItems="center">
               <FieldLabel>Date Received</FieldLabel>
-              <TextField
+              <DatePicker
+                convertString
                 fullWidth
-                type="date"
                 size="small"
                 value={formData.received}
-                onChange={(e) => handleChange('received', e.target.value)}
-                InputLabelProps={{ shrink: true }}
+                onChange={(date) => handleChange('received', date)}
               />
             </Stack>
 
@@ -140,18 +138,16 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                     value={providers?.find((p: any) => p.name === formData.recorder) || null}
                     onChange={(e, newVal) => handleChange('recorder', newVal?.name || '')}
                     disableClearable
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </Stack>
                 <Stack direction="row" alignItems="center">
                   <FieldLabel sx={{ minWidth: 60 }}>Recorded:</FieldLabel>
-                  <TextField
+                  <DatePicker
+                    convertString
                     fullWidth
-                    type="date"
                     size="small"
                     value={formData.recorded}
-                    onChange={(e) => handleChange('recorded', e.target.value)}
-                    InputLabelProps={{ shrink: true }}
+                    onChange={(date) => handleChange('recorded', date)}
                   />
                 </Stack>
               </Stack>
@@ -166,16 +162,17 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                     value={providers?.find((p: any) => p.name === formData.given_by) || null}
                     onChange={(e, newVal) => handleChange('given_by', newVal?.name || '')}
                     disableClearable
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </Stack>
                 <Stack direction="row" alignItems="center">
                   <FieldLabel sx={{ minWidth: 60 }}>Facility:</FieldLabel>
-                  <TextField
+                  <Autocomplete
+                    freeSolo
                     fullWidth
                     size="small"
                     value={formData.facility}
-                    onChange={(e) => handleChange('facility', e.target.value)}
+                    onInputChange={(e, newVal) => handleChange('facility', newVal)}
+                    options={[]}
                   />
                 </Stack>
               </Stack>
@@ -187,12 +184,14 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
           <Stack spacing={1.5}>
             <Stack direction="row" spacing={1} alignItems="center">
               <FieldLabel sx={{ minWidth: 60 }}>Dose:</FieldLabel>
-              <TextField
-                type="number"
+              <Autocomplete
+                freeSolo
                 size="small"
                 sx={{ width: 80 }}
-                value={formData.dose?.value}
-                onChange={(e) => handleDoseChange('value', parseFloat(e.target.value))}
+                value={formData.dose?.value?.toString()}
+                onInputChange={(e, newVal) => handleDoseChange('value', parseFloat(newVal) || 0)}
+                options={[]}
+                TextFieldProps={{ type: 'number' }}
               />
               <Autocomplete
                 size="small"
@@ -200,7 +199,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                 options={Object.values(Database.Units.Mass)}
                 value={formData.dose?.unit?.mass}
                 onChange={(e, newVal) => handleUnitChange('mass', newVal)}
-                renderInput={(params: any) => <TextField {...params} label="Mass" />}
+                label="Mass"
                 disableClearable
               />
               <Autocomplete
@@ -209,7 +208,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                 options={Object.values(Database.Units.Volume)}
                 value={formData.dose?.unit?.volume}
                 onChange={(e, newVal) => handleUnitChange('volume', newVal)}
-                renderInput={(params: any) => <TextField {...params} label="Vol" />}
+                label="Vol"
                 disableClearable
               />
             </Stack>
@@ -224,7 +223,6 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                     options={Object.values(Database.Immunization.Site)}
                     value={formData.site}
                     onChange={(e, newVal) => handleChange('site', newVal)}
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </Stack>
                 <Stack direction="row" alignItems="center">
@@ -235,27 +233,30 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
                     options={Object.values(Database.Immunization.Route)}
                     value={formData.route}
                     onChange={(e, newVal) => handleChange('route', newVal)}
-                    renderInput={(params: any) => <TextField {...params} />}
                   />
                 </Stack>
               </Stack>
               <Stack spacing={1} sx={{ flex: 1 }}>
                 <Stack direction="row" alignItems="center">
                   <FieldLabel sx={{ minWidth: 60 }}>Lot #:</FieldLabel>
-                  <TextField
+                  <Autocomplete
+                    freeSolo
                     fullWidth
                     size="small"
                     value={formData.lot}
-                    onChange={(e) => handleChange('lot', e.target.value)}
+                    onInputChange={(e, newVal) => handleChange('lot', newVal)}
+                    options={[]}
                   />
                 </Stack>
                 <Stack direction="row" alignItems="center">
                   <FieldLabel sx={{ minWidth: 60 }}>Mfr:</FieldLabel>
-                  <TextField
+                  <Autocomplete
+                    freeSolo
                     fullWidth
                     size="small"
                     value={formData.manufacturer}
-                    onChange={(e) => handleChange('manufacturer', e.target.value)}
+                    onInputChange={(e, newVal) => handleChange('manufacturer', newVal)}
+                    options={[]}
                   />
                 </Stack>
               </Stack>
@@ -266,9 +267,9 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
 
       <Stack direction="row" justifyContent="space-between" mt={3}>
         <Stack direction="row" spacing={1}>
-          <Button outlined size="small">Past Updates</Button>
+          <Button variant="outlined" size="small">Past Updates</Button>
           <Button
-            outlined
+            variant="outlined"
             color="error"
             size="small"
             startIcon={<Icon>close</Icon>}
@@ -279,7 +280,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
         </Stack>
         <Stack direction="row" spacing={1}>
           <Button
-            contained
+            variant="contained"
             color="success"
             size="small"
             startIcon={<Icon>check</Icon>}
@@ -288,7 +289,7 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
             Accept
           </Button>
           <Button
-            outlined
+            variant="outlined"
             color="error"
             size="small"
             startIcon={<Icon>close</Icon>}
@@ -336,9 +337,9 @@ export const Immunizations = () => {
     const newEntry: Database.Immunization = {
       id: Database.Immunization.ID.create(),
       vaccine: '',
-      received: Temporal.Now.plainDateISO().toString(),
+      received: Temporal.Now.instant().toString(),
       recorder: '',
-      recorded: Temporal.Now.plainDateISO().toString(),
+      recorded: Temporal.Now.instant().toString(),
       administeredBy: '',
       facility: '',
       dose: { value: 0, unit: { mass: '', volume: '', time: '' } },
@@ -406,7 +407,7 @@ export const Immunizations = () => {
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Label variant="h6">Current Immunizations</Label>
         <Button
-          contained
+          variant="contained"
           startIcon={<Icon>add</Icon>}
           onClick={handleAddClick}
           size="small"
@@ -440,7 +441,7 @@ export const Immunizations = () => {
           label="Mark as Reviewed"
         />
         {reviewed && (
-          <Label variant="body2" color="green" italic>
+          <Label variant="body2" sx={{ color: 'green', fontStyle: 'italic' }}>
             Last Reviewed at {lastReviewed}
           </Label>
         )}

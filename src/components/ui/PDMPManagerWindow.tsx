@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Window, Button, Stack, Label, Icon, Box, TextField, DataGrid, Autocomplete, IconButton } from './Core';
+import { Window, Button, Stack, Label, Icon, Box, DataGrid, Autocomplete, IconButton, DatePicker } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 
@@ -61,6 +61,7 @@ const DrugPicker = ({ value, onChange }: {
             code: ''
           });
         }}
+        fullWidth
       />
       <Autocomplete
         label="Route"
@@ -179,20 +180,58 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
         />
 
         <Stack direction="row" spacing={2}>
-          <TextField label="Quantity" type="number" value={newItem.quantity} onChange={(e) => setNewItem({ ...newItem, quantity: Number(e.target.value) })} />
-          <TextField label="Refills" type="number" value={newItem.refills} onChange={(e) => setNewItem({ ...newItem, refills: Number(e.target.value) })} />
-          <TextField label="Days Supply" type="number" value={newItem.supply} onChange={(e) => setNewItem({ ...newItem, supply: Number(e.target.value) })} />
+          <Autocomplete
+            freeSolo
+            label="Quantity"
+            fullWidth
+            value={newItem.quantity.toString()}
+            onInputChange={(_e, newValue) => setNewItem({ ...newItem, quantity: Number(newValue) || 0 })}
+            options={['15', '30', '45', '60', '90']}
+          />
+          <Autocomplete
+            freeSolo
+            label="Refills"
+            fullWidth
+            value={newItem.refills.toString()}
+            onInputChange={(_e, newValue) => setNewItem({ ...newItem, refills: Number(newValue) || 0 })}
+            options={['0', '1', '2', '3', '4', '5']}
+          />
+          <Autocomplete
+            freeSolo
+            label="Days Supply"
+            fullWidth
+            value={newItem.supply.toString()}
+            onInputChange={(_e, newValue) => setNewItem({ ...newItem, supply: Number(newValue) || 0 })}
+            options={['7', '14', '30', '60', '90']}
+          />
         </Stack>
         <Stack direction="row" spacing={2}>
           <ProviderPicker
             value={newItem.prescriber as Database.Provider.ID}
             onChange={(id) => setNewItem({ ...newItem, prescriber: id })}
           />
-          <TextField label="Pharmacy" value={newItem.pharmacy} onChange={(e) => setNewItem({ ...newItem, pharmacy: e.target.value })} fullWidth />
+          <Autocomplete
+            freeSolo
+            label="Pharmacy"
+            fullWidth
+            value={newItem.pharmacy}
+            onInputChange={(_e, newValue) => setNewItem({ ...newItem, pharmacy: newValue })}
+            options={[]}
+          />
         </Stack>
         <Stack direction="row" spacing={2}>
-          <TextField label="Written Date" type="date" InputLabelProps={{ shrink: true }} value={newItem.written} onChange={(e) => setNewItem({ ...newItem, written: e.target.value })} />
-          <TextField label="Dispensed Date" type="date" InputLabelProps={{ shrink: true }} value={newItem.dispensed} onChange={(e) => setNewItem({ ...newItem, dispensed: e.target.value })} />
+          <DatePicker
+            convertString
+            label="Written Date"
+            value={newItem.written}
+            onChange={(date: any) => setNewItem({ ...newItem, written: date })}
+          />
+          <DatePicker
+            convertString
+            label="Dispensed Date"
+            value={newItem.dispensed}
+            onChange={(date: any) => setNewItem({ ...newItem, dispensed: date })}
+          />
         </Stack>
 
         <Stack direction="row" spacing={2} justifyContent="flex-end">
@@ -207,8 +246,8 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
   const rows = (dispenseHistory || []).map((item, idx) => ({
     id: idx,
     ...item,
-    dispensedFormatted: item.dispensed ? Temporal.PlainDateTime.from(item.dispensed).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
-    writtenFormatted: item.written ? Temporal.PlainDateTime.from(item.written).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
+    dispensedFormatted: item.dispensed ? Temporal.Instant.from(item.dispensed).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
+    writtenFormatted: item.written ? Temporal.Instant.from(item.written).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
   }));
 
   return (

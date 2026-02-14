@@ -1,35 +1,28 @@
 import * as React from 'react';
-import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
-import { DatePicker } from 'components/ui/Core';
+import { Box, DatePicker, Autocomplete, Label, Button, IconButton, Icon, Stack, Grid } from 'components/ui/Core';
 
-// Quicker way to quickly generate generic Probelem List Editor inputs
-const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }: {
+// Quicker way to quickly generate generic Problem List Editor inputs
+const EditorGridItem = ({ label, typographyCols, textFieldCols, value, onChange, options = [] }: {
   label: string;
   typographyCols: any;
   textFieldCols: any;
-  icon?: string;
   value: string;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+  onChange: (value: string) => void;
+  options?: string[];
 }) => {
   return (
     <>
       <Grid size={typographyCols}>
-        <Typography>{label}</Typography>
+        <Label>{label}</Label>
       </Grid>
       <Grid size={textFieldCols}>
-        <TextField
-          label={label}
+        <Autocomplete
+          freeSolo
           fullWidth
+          label={label}
           value={value}
-          onChange={onChange}
-          // Make the icon optional
-          InputProps={{
-            endAdornment: icon && (
-              <InputAdornment position="end">
-                {icon}
-              </InputAdornment>
-            ),
-          }}
+          options={options}
+          onInputChange={(_e, newInputValue) => onChange(newInputValue)}
         />
       </Grid>
     </>
@@ -41,34 +34,21 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
   label: string;
   typographyCols: any;
   textFieldCols: any;
-  icon?: string;
-  value: Temporal.PlainDate;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+  value: any;
+  onChange: (date: any) => void;
 }) => {
-  //
   return (
     <>
       <Grid size={typographyCols}>
-        <Typography>{label}</Typography>
+        <Label>{label}</Label>
       </Grid>
       <Grid size={textFieldCols}>
-        <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } } as any)} />
+        <DatePicker convertString label={label} value={value} onChange={onChange} />
       </Grid>
     </>
   );
 };
 
-/**
- * ProblemListEditor component for editing problem details.
- *
- * @param {Object} props - The component props.
- * @param {Object} props.data - The data for the problem being edited.
- * @param {number} props.index - The index of the problem in the list.
- * @param {function} props.expandedRows - Function to handle row expansion.
- * @param {function} props.onDelete - Function to handle deleting the problem.
- * @param {function} props.onOpenModal - Function to open the modal for searching diagnosis.
- * @returns {JSX.Element} The ProblemListEditor component.
- */
 export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: {
   data: any;
   index: number;
@@ -106,21 +86,24 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid size={2}>
-        <Typography>Problem</Typography>
+        <Label>Problem</Label>
       </Grid>
       <Grid size={10}>
-        <TextField
-          label='Problem'
+        <Autocomplete
+          freeSolo
           fullWidth
+          label='Problem'
           value={tempData.diagnosis}
-          onChange={(e) => handleEditorTempChange('diagnosis', e.target.value)}
-          InputProps={{
-            endAdornment: (
-              // Want deferred funciton call
-              (<IconButton onClick={() => onOpenModal(index)}>
-                <Icon>search</Icon>
-              </IconButton>)
-            )
+          onInputChange={(e, newVal) => handleEditorTempChange('diagnosis', newVal)}
+          options={[]}
+          TextFieldProps={{
+            InputProps: {
+              endAdornment: (
+                <IconButton onClick={() => onOpenModal(index)}>
+                  <Icon>search</Icon>
+                </IconButton>
+              )
+            } as any
           }}
         />
       </Grid>
@@ -129,7 +112,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
         typographyCols={2}
         textFieldCols={10}
         value={tempData.display}
-        onChange={e => handleEditorTempChange('display', e.target.value)}
+        onChange={value => handleEditorTempChange('display', value)}
       />
       <Grid size={2}>
         <Button
@@ -149,50 +132,45 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
       </Grid>
       <Grid style={{ width: '100%' }} />
       <Grid size={2}>
-        <Typography>Priority</Typography>
+        <Label>Priority</Label>
       </Grid>
       <Grid size={4}>
-        <FormControl fullWidth>
-          <TextField
-            select
-            label="Priority"
-            value={tempData.priority}
-            onChange={e => handleEditorTempChange('priority', e.target.value)}
-          >
-            <MenuItem value=''>N/A</MenuItem>
-            <MenuItem value='Low'>Low</MenuItem>
-            <MenuItem value='Medium'>Medium</MenuItem>
-            <MenuItem value='High'>High</MenuItem>
-          </TextField>
-        </FormControl>
+        <Autocomplete
+          fullWidth
+          label="Priority"
+          options={['Low', 'Medium', 'High']}
+          value={tempData.priority || null}
+          onChange={(_e, newValue) => handleEditorTempChange('priority', newValue || '')}
+        />
       </Grid>
       <EditorGridItem
         label="Class"
         typographyCols={2}
         textFieldCols={4}
         value={tempData.class}
-        onChange={e => handleEditorTempChange('class', e.target.value)}
+        onChange={value => handleEditorTempChange('class', value)}
+        options={['Acute', 'Chronic', 'Resolved', 'Recurrent']}
       />
       <EditorDateGridItem
         label="Noted"
         typographyCols={1}
         textFieldCols={3}
         value={tempData.notedDate}
-        onChange={e => handleEditorTempChange('notedDate', e.target.value)}
+        onChange={date => handleEditorTempChange('notedDate', date)}
       />
       <EditorDateGridItem
         label="Diagnosed"
         typographyCols={1}
         textFieldCols={3}
-        value={tempData.resolvedDate}
-        onChange={e => handleEditorTempChange('diagnosedDate', e.target.value)}
+        value={tempData.diagnosedDate}
+        onChange={date => handleEditorTempChange('diagnosedDate', date)}
       />
       <EditorDateGridItem
         label="Resolved"
         typographyCols={1}
         textFieldCols={3}
         value={tempData.resolvedDate}
-        onChange={e => handleEditorTempChange('resolvedDate', e.target.value)}
+        onChange={date => handleEditorTempChange('resolvedDate', date)}
       />
       <Grid size={2}>
         <Button variant="contained" color='error' onClick={() => onDelete(index)}>Delete</Button>

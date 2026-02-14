@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { MenuItem, Select, InputLabel, FormControl, Grid, Autocomplete } from '@mui/material';
-import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, Label } from 'components/ui/Core';
+import { Box, Button, Window, TreeView, TreeItem, Icon, Label, Grid, Autocomplete, DateTimePicker } from 'components/ui/Core';
 
 const VISIT_TYPES = [
   "Admission",
@@ -44,7 +43,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
     provider: appointment ? appointment.provider : null,
     location: appointment ? appointment.location : null,
     status: appointment ? (appointment.status || 'Scheduled') : 'Scheduled',
-    date: appointment ? appointment.apptTime : Temporal.PlainDateTime.from('2026-01-01T08:00').toString().slice(0, 16),
+    date: appointment ? appointment.apptTime : Temporal.Instant.from('2026-01-01T08:00Z').toString(),
     type: appointment?.type || 'Office Visit',
     cc: appointment?.cc || '',
     notes: appointment?.notes || '',
@@ -77,7 +76,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
         provider: null,
         location: null,
         status: 'Scheduled',
-        date: Temporal.PlainDateTime.from('2026-01-01T08:00').toString().slice(0, 16),
+        date: Temporal.Instant.from('2026-01-01T08:00Z').toString(),
         type: 'Office Visit',
         cc: '',
         notes: '',
@@ -184,121 +183,106 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
           <Grid container spacing={2}>
             {/* Department - Autocomplete (Strict) */}
-            <Grid size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Autocomplete
+                label="Department"
+                fullWidth
                 options={departments || []}
                 getOptionLabel={(option) => option.name || ''}
                 value={departments?.find((d: any) => d.id === formData.department) || null}
                 onChange={(event, newValue) => {
                   setFormData((prev: any) => ({ ...prev, department: newValue ? newValue.id : null }));
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Department" size="small" />
-                )}
               />
             </Grid>
 
             {/* Status - Autocomplete (Strict) */}
-            <Grid size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Autocomplete
+                label="Status"
+                fullWidth
                 options={VISIT_STATUSES}
                 value={formData.status}
                 onChange={(event, newValue) => {
                   setFormData((prev: any) => ({ ...prev, status: newValue || 'Scheduled' }));
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Status" size="small" />
-                )}
               />
             </Grid>
 
             {/* Provider - Autocomplete (Strict) */}
-            <Grid size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Autocomplete
+                label="Provider"
+                fullWidth
                 options={providers || []}
                 getOptionLabel={(option) => option.name || ''}
                 value={providers?.find((p: any) => p.id === formData.provider) || null}
                 onChange={(event, newValue) => {
                   setFormData((prev: any) => ({ ...prev, provider: newValue ? newValue.id : null }));
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Provider" size="small" />
-                )}
               />
             </Grid>
 
             {/* Location - Autocomplete (Strict) */}
-            <Grid size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Autocomplete
+                label="Location"
+                fullWidth
                 options={locations || []}
                 getOptionLabel={(option) => option.name || ''}
                 value={locations?.find((l: any) => l.id === formData.location) || null}
                 onChange={(event, newValue) => {
                   setFormData((prev: any) => ({ ...prev, location: newValue ? newValue.id : null }));
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Location" size="small" />
-                )}
               />
             </Grid>
 
-            <Grid size={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Autocomplete
                 freeSolo
+                label="Appointment Type"
+                fullWidth
                 options={VISIT_TYPES}
                 value={formData.type}
-                onChange={(event, newValue) => {
-                  setFormData((prev: any) => ({ ...prev, type: newValue || '' }));
-                }}
                 onInputChange={(event, newInputValue) => {
                   setFormData((prev: any) => ({ ...prev, type: newInputValue || '' }));
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Appointment Type"
-                    size="small"
-                    fullWidth
-                  />
-                )}
               />
             </Grid>
 
-            <Grid size={6}>
-              <TextField
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <DateTimePicker
+                convertString
                 label="Appointment Time"
-                type="datetime-local"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                fullWidth
-                size="small"
-                InputLabelProps={{ shrink: true }}
+                onChange={(date: any) => setFormData({ ...formData, date })}
               />
             </Grid>
 
-            <Grid size={12}>
-              <TextField
+            <Grid size={{ xs: 12 }}>
+              <Autocomplete
+                freeSolo
                 label="Chief Complaint (CC)"
+                fullWidth
                 value={formData.cc}
-                onChange={(e) => setFormData({ ...formData, cc: e.target.value })}
-                fullWidth
-                size="small"
+                onInputChange={(_e, newValue) => setFormData({ ...formData, cc: newValue })}
+                options={[]}
               />
             </Grid>
 
-            <Grid size={12}>
-              <TextField
+            <Grid size={{ xs: 12 }}>
+              <Autocomplete
+                freeSolo
                 label="Notes"
-                value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 fullWidth
-                multiline
-                rows={3}
-                size="small"
+                value={formData.notes}
+                onInputChange={(_e, newValue) => setFormData({ ...formData, notes: newValue })}
+                options={[]}
+                TextFieldProps={{ multiline: true, rows: 3 }}
               />
             </Grid>
 
-            <Grid size={12}>
+            <Grid size={{ xs: 12 }}>
               <Button
                 startIcon={<Icon>{showAdvanced ? 'expand_less' : 'expand_more'}</Icon>}
                 onClick={() => setShowAdvanced(!showAdvanced)}
@@ -310,26 +294,20 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
             {showAdvanced && (
               <>
-                <Grid size={6}>
-                  <TextField
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <DateTimePicker
+                    convertString
                     label="Check-in Time"
-                    type="datetime-local"
                     value={formData.checkinTime}
-                    onChange={(e) => setFormData({ ...formData, checkinTime: e.target.value })}
-                    fullWidth
-                    size="small"
-                    InputLabelProps={{ shrink: true }}
+                    onChange={(date: any) => setFormData({ ...formData, checkinTime: date })}
                   />
                 </Grid>
-                <Grid size={6}>
-                  <TextField
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <DateTimePicker
+                    convertString
                     label="Check-out Time"
-                    type="datetime-local"
                     value={formData.checkoutTime}
-                    onChange={(e) => setFormData({ ...formData, checkoutTime: e.target.value })}
-                    fullWidth
-                    size="small"
-                    InputLabelProps={{ shrink: true }}
+                    onChange={(date: any) => setFormData({ ...formData, checkoutTime: date })}
                   />
                 </Grid>
               </>

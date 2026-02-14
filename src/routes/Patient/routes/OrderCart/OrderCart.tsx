@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
-import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core'
+import { Card } from '@mui/material'
+import { alpha, Box, Button, ButtonGroup, TitledCard, Autocomplete, Icon, Label } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
 import { OrderComposer } from './components/OrderComposer'
 import { OrderPicker } from './components/OrderPicker'
@@ -77,12 +77,12 @@ export const OrderCart = () => {
               <Button>Manage Orders</Button>
               <Button>Order Sets</Button>
             </ButtonGroup>
-            <FormControl sx={{ minWidth: 100 }} size="small">
-              <InputLabel>Options</InputLabel>
-              <Select>
-                <MenuItem>Test</MenuItem>
-              </Select>
-            </FormControl>
+            <Autocomplete
+              label="Options"
+              options={['Test']}
+              sx={{ minWidth: 100 }}
+              TextFieldProps={{ size: 'small' }}
+            />
           </Box>
           <Box sx={{ pt: 4 }}>
             <Button><Icon>person_outline</Icon>Providers</Button>
@@ -90,12 +90,18 @@ export const OrderCart = () => {
           </Box>
           <Box>
             <Box>
-              <TextField
+              <Autocomplete
+                freeSolo
                 label="Add orders or order sets"
                 size="small"
                 sx={{ minWidth: 300 }}
-                variant="outlined"
-                inputRef={inputRef}
+                options={[]}
+                value={searchTerm}
+                onChange={(_e, newValue: any) => {
+                  setSearchTerm(newValue || '')
+                  if (newValue) startSearch();
+                }}
+                onInputChange={(_e, newInputValue) => setSearchTerm(newInputValue)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter')
                     startSearch()
@@ -106,11 +112,12 @@ export const OrderCart = () => {
               </Button>
             </Box>
             <Box>
-              <FormControl sx={{ minWidth: 300 }} size="small">
-                <Select value="">
-                  <MenuItem value='test'>Test</MenuItem>
-                </Select>
-              </FormControl>
+              <Autocomplete
+                options={['test']}
+                value=""
+                sx={{ minWidth: 300 }}
+                TextFieldProps={{ size: 'small' }}
+              />
               <Button variant="outlined" disabled>
                 <Icon color="error">error</Icon> Next
               </Button>
@@ -123,13 +130,13 @@ export const OrderCart = () => {
             <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
               {orderCart.filter((x: any) => getCategoryForOrder(x) === category).map((order: any) => (
                 <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
-                  <Typography variant="body1">{order.name}</Typography>
-                  <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
+                  <Label variant="body1">{order.name}</Label>
+                  <Label fontSize="9pt" sx={{ color: categories[category].color }}>
                     {order.dose}
-                  </Typography>
-                  <Typography fontSize="8pt" color="grey">
+                  </Label>
+                  <Label fontSize="8pt" color="grey">
                     {order.route}, {order.frequency}, {order['Refills']} refills
-                  </Typography>
+                  </Label>
                   <Button
                     sx={{
                       display: 'flex',

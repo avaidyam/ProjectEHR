@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, TextField, Autocomplete } from 'components/ui/Core';
+import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 
 /*
@@ -561,37 +561,40 @@ export const Demographics = () => {
             <>
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={6}>
-                  <TextField
+                  <Autocomplete
+                    freeSolo
                     fullWidth
                     label="First Name"
                     value={formData.firstName}
-                    onChange={(e) => handleFormDataChange('firstName', e.target.value)}
-                  />
-                </Grid>
-                <Grid size={6}>
-                  <TextField
-                    fullWidth
-                    label="Last Name"
-                    value={formData.lastName}
-                    onChange={(e) => handleFormDataChange('lastName', e.target.value)}
-                  />
-                </Grid>
-                <Grid size={6}>
-                  <TextField
-                    fullWidth
-                    label="Date of Birth"
-                    type="date"
-                    value={formData.birthdate}
-                    onChange={(e) => handleFormDataChange('birthdate', e.target.value)}
-                    InputLabelProps={{ shrink: true }}
+                    onInputChange={(_e, newValue) => handleFormDataChange('firstName', newValue)}
+                    options={[]}
                   />
                 </Grid>
                 <Grid size={6}>
                   <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Last Name"
+                    value={formData.lastName}
+                    onInputChange={(_e, newValue) => handleFormDataChange('lastName', newValue)}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <DatePicker
+                    convertString
+                    label="Date of Birth"
+                    value={formData.birthdate}
+                    onChange={(date: Temporal.PlainDate) => handleFormDataChange('birthdate', date)}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <Autocomplete
+                    label="Legal Sex"
+                    fullWidth
                     options={legalSexOptions}
                     value={formData.gender}
                     onChange={(event, newValue) => handleFormDataChange('gender', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Legal Sex" />}
                   />
                 </Grid>
               </Grid>
@@ -599,34 +602,40 @@ export const Demographics = () => {
               <Grid container spacing={2} sx={{ mb: 2 }}>
                 <Grid size={6}>
                   <Autocomplete
+                    freeSolo
+                    label="Gender Identity"
+                    fullWidth
                     options={genderIdentityOptions}
                     value={formData.genderIdentity}
-                    onChange={(event, newValue) => handleFormDataChange('genderIdentity', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Gender Identity" />}
+                    onInputChange={(event, newInputValue) => handleFormDataChange('genderIdentity', newInputValue)}
                   />
                 </Grid>
                 <Grid size={6}>
                   <Autocomplete
+                    label="Sex Assigned at Birth"
+                    fullWidth
                     options={sexAssignedAtBirthOptions}
                     value={formData.sexAssignedAtBirth}
                     onChange={(event, newValue) => handleFormDataChange('sexAssignedAtBirth', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Sex Assigned at Birth" />}
                   />
                 </Grid>
                 <Grid size={6}>
                   <Autocomplete
+                    label="Sexual Orientation"
+                    fullWidth
                     options={sexualOrientationOptions}
                     value={formData.sexualOrientation}
                     onChange={(event, newValue) => handleFormDataChange('sexualOrientation', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Sexual Orientation" />}
                   />
                 </Grid>
                 <Grid size={6}>
                   <Autocomplete
+                    freeSolo
+                    label="Pronouns"
+                    fullWidth
                     options={pronounsOptions}
                     value={formData.pronouns}
-                    onChange={(event, newValue) => handleFormDataChange('pronouns', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Pronouns" />}
+                    onInputChange={(event, newInputValue) => handleFormDataChange('pronouns', newInputValue)}
                   />
                 </Grid>
               </Grid>
@@ -637,27 +646,33 @@ export const Demographics = () => {
               </Label>
               <Grid container spacing={2} sx={{ mb: 3 }}>
                 <Grid size={4}>
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    freeSolo
                     label="Address"
+                    fullWidth
                     value={formData.address}
-                    onChange={(e) => handleFormDataChange('address', e.target.value)}
+                    onInputChange={(_e, newValue) => handleFormDataChange('address', newValue)}
+                    options={[]}
                   />
                 </Grid>
                 <Grid size={4}>
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    freeSolo
                     label="Phone"
+                    fullWidth
                     value={formData.phone}
-                    onChange={(e) => handleFormDataChange('phone', e.target.value)}
+                    onInputChange={(_e, newValue) => handleFormDataChange('phone', newValue)}
+                    options={[]}
                   />
                 </Grid>
                 <Grid size={4}>
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    freeSolo
                     label="Email"
+                    fullWidth
                     value={formData.email}
-                    onChange={(e) => handleFormDataChange('email', e.target.value)}
+                    onInputChange={(_e, newValue) => handleFormDataChange('email', newValue)}
+                    options={[]}
                   />
                 </Grid>
               </Grid>
@@ -669,68 +684,79 @@ export const Demographics = () => {
               <Grid container spacing={2}>
                 <Grid size={3}>
                   <Autocomplete
+                    freeSolo
+                    label="Language"
+                    fullWidth
                     options={languageOptions}
                     value={formData.language}
-                    onChange={(event, newValue) => handleFormDataChange('language', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Language" />}
+                    onInputChange={(event, newInputValue) => handleFormDataChange('language', newInputValue)}
                   />
                 </Grid>
                 <Grid size={3}>
                   <Autocomplete
+                    label="Interpreter Needed"
+                    fullWidth
                     options={['Yes', 'No']}
                     value={formData.interpreterNeeded}
                     onChange={(event, newValue) => handleFormDataChange('interpreterNeeded', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Interpreter Needed" />}
                   />
                 </Grid>
                 <Grid size={3}>
                   <Autocomplete
+                    label="Marital Status"
+                    fullWidth
                     options={maritalStatusOptions}
                     value={formData.maritalStatus}
                     onChange={(event, newValue) => handleFormDataChange('maritalStatus', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Marital Status" />}
                   />
                 </Grid>
                 <Grid size={3}>
                   <Autocomplete
+                    freeSolo
+                    label="Religion"
+                    fullWidth
                     options={religionOptions}
                     value={formData.religion}
-                    onChange={(event, newValue) => handleFormDataChange('religion', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Religion" />}
+                    onInputChange={(event, newInputValue) => handleFormDataChange('religion', newInputValue)}
                   />
                 </Grid>
                 <Grid size={3}>
                   <Autocomplete
+                    label="Ethnic Group"
+                    fullWidth
                     options={ethnicGroupOptions}
                     value={formData.ethnicGroup}
                     onChange={(event, newValue) => handleFormDataChange('ethnicGroup', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Ethnic Group" />}
                   />
                 </Grid>
                 <Grid size={3}>
                   <Autocomplete
+                    label="Race"
+                    fullWidth
                     options={raceOptions}
                     value={formData.race}
                     onChange={(event, newValue) => handleFormDataChange('race', newValue)}
-                    renderInput={(params: any) => <TextField {...params} label="Race" />}
                   />
                 </Grid>
                 <Grid size={3}>
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    freeSolo
                     label="Preferred Form of Address"
+                    fullWidth
+                    options={['Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.', 'Rev.']}
                     value={formData.preferredFormOfAddress}
-                    onChange={(e) => handleFormDataChange('preferredFormOfAddress', e.target.value)}
+                    onInputChange={(event, newInputValue) => handleFormDataChange('preferredFormOfAddress', newInputValue)}
                   />
                 </Grid>
                 <Grid size={12}>
-                  <TextField
-                    fullWidth
+                  <Autocomplete
+                    freeSolo
                     label="Permanent Comments"
+                    fullWidth
                     value={formData.permanentComments}
-                    onChange={(e) => handleFormDataChange('permanentComments', e.target.value)}
-                    multiline
-                    rows={3}
+                    onInputChange={(_e, newValue) => handleFormDataChange('permanentComments', newValue)}
+                    options={[]}
+                    TextFieldProps={{ multiline: true, rows: 3 }}
                   />
                 </Grid>
               </Grid>
@@ -799,42 +825,51 @@ export const Demographics = () => {
                   <Grid container spacing={2}>
                     <Grid size={6}>
                       <Autocomplete
+                        label="Employment Status"
+                        fullWidth
                         options={employmentStatusOptions}
                         value={formData.employmentStatus}
                         onChange={(event, newValue) => handleFormDataChange('employmentStatus', newValue)}
-                        renderInput={(params: any) => <TextField {...params} label="Employment Status" />}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        freeSolo
                         label="Address"
+                        fullWidth
                         value={formData.employerAddress}
-                        onChange={(e) => handleFormDataChange('employerAddress', e.target.value)}
+                        onInputChange={(_e, newValue) => handleFormDataChange('employerAddress', newValue)}
+                        options={[]}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        freeSolo
                         label="Employer"
+                        fullWidth
+                        options={['Self-Employed', 'Unemployed', 'Retired', 'Student', 'Government', 'Healthcare']}
                         value={formData.employer}
-                        onChange={(e) => handleFormDataChange('employer', e.target.value)}
+                        onInputChange={(event, newInputValue) => handleFormDataChange('employer', newInputValue)}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        freeSolo
                         label="Phone"
+                        fullWidth
                         value={formData.employerPhone}
-                        onChange={(e) => handleFormDataChange('employerPhone', e.target.value)}
+                        onInputChange={(_e, newValue) => handleFormDataChange('employerPhone', newValue)}
+                        options={[]}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        freeSolo
                         label="Fax"
+                        fullWidth
                         value={formData.employerFax}
-                        onChange={(e) => handleFormDataChange('employerFax', e.target.value)}
+                        onInputChange={(_e, newValue) => handleFormDataChange('employerFax', newValue)}
+                        options={[]}
                       />
                     </Grid>
                   </Grid>
@@ -843,27 +878,30 @@ export const Demographics = () => {
                   <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Patient Identification</Label>
                   <Grid container spacing={2}>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        disabled
                         label="Patient Status"
+                        fullWidth
                         value={formData.patientStatus}
-                        disabled
+                        options={[formData.patientStatus]}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
+                      <Autocomplete
+                        disabled
                         label="MRN"
+                        fullWidth
                         value={formData.mrn}
-                        disabled
+                        options={[formData.mrn]}
                       />
                     </Grid>
                     <Grid size={6}>
-                      <TextField
-                        fullWidth
-                        label="Patient Type"
-                        value={formData.patientType}
+                      <Autocomplete
                         disabled
+                        label="Patient Type"
+                        fullWidth
+                        value={formData.patientType}
+                        options={[formData.patientType]}
                       />
                     </Grid>
                   </Grid>
@@ -1124,51 +1162,43 @@ export const Demographics = () => {
 
             <Grid container spacing={2} sx={{ mb: 3 }}>
               <Grid size={12}>
-                <TextField
-                  fullWidth
+                <Autocomplete
+                  freeSolo
                   label="Name"
+                  fullWidth
                   value={newContact.name}
-                  onChange={(e) => setNewContact({ ...newContact, name: e.target.value })}
-                  sx={{
-                    '& .MuiInputBase-input': { color: '#000' },
-                    '& .MuiInputLabel-root': { color: '#666' }
-                  }}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, name: newValue })}
+                  options={[]}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
-                  fullWidth
+                <Autocomplete
+                  freeSolo
                   label="Relationship"
+                  fullWidth
                   value={newContact.relationship}
-                  onChange={(e) => setNewContact({ ...newContact, relationship: e.target.value })}
-                  sx={{
-                    '& .MuiInputBase-input': { color: '#000' },
-                    '& .MuiInputLabel-root': { color: '#666' }
-                  }}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, relationship: newValue })}
+                  options={['Father', 'Mother', 'Spouse', 'Sibling', 'Child', 'Guarantor', 'Other']}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
-                  fullWidth
+                <Autocomplete
+                  freeSolo
                   label="Primary Phone"
+                  fullWidth
                   value={newContact.primaryPhone}
-                  onChange={(e) => setNewContact({ ...newContact, primaryPhone: e.target.value })}
-                  sx={{
-                    '& .MuiInputBase-input': { color: '#000' },
-                    '& .MuiInputLabel-root': { color: '#666' }
-                  }}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, primaryPhone: newValue })}
+                  options={[]}
                 />
               </Grid>
               <Grid size={12}>
-                <TextField
-                  fullWidth
+                <Autocomplete
+                  freeSolo
                   label="Work Phone"
+                  fullWidth
                   value={newContact.workPhone}
-                  onChange={(e) => setNewContact({ ...newContact, workPhone: e.target.value })}
-                  sx={{
-                    '& .MuiInputBase-input': { color: '#000' },
-                    '& .MuiInputLabel-root': { color: '#666' }
-                  }}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, workPhone: newValue })}
+                  options={[]}
                 />
               </Grid>
               <Grid size={6}>
