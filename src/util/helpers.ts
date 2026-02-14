@@ -301,25 +301,6 @@ export function getComponentHistory(encounterLabs: Database.Lab[]) {
 }
 
 /**
- * Formats a date for display in the component popover (MM/DD/YY HHmm format)
- * @param {string} date - The ISO date string to format
- * @returns {string} - Formatted date string
- */
-export function formatComponentDate(date: any) {
-  try {
-    const d = Temporal.PlainDateTime.from(date);
-    const month = String(d.month).padStart(2, '0');
-    const day = String(d.day).padStart(2, '0');
-    const year = String(d.year).slice(-2);
-    const hours = String(d.hour).padStart(2, '0');
-    const minutes = String(d.minute).padStart(2, '0');
-    return `${month}/${day}/${year} ${hours}${minutes}`;
-  } catch {
-    return '';
-  }
-}
-
-/**
  * Generates a mapping of flowsheet row names to their values across both
  * the current encounter and the entire chart.
  * 

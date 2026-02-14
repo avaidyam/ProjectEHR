@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { Box, TextField, Autocomplete, DataGrid, DateTimePicker } from 'components/ui/Core'
+import { Box, Autocomplete, DataGrid, DateTimePicker } from 'components/ui/Core'
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
 import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../Flowsheet';
+import { Database } from 'components/contexts/PatientContext';
 
 interface FlowsheetGridProps {
   rowsDefinition: FlowsheetRow[];
@@ -39,20 +40,17 @@ const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
           apiRef.current.stopCellEditMode({ id, field });
         }
       }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          autoFocus
-          fullWidth
-          variant="standard"
-          sx={{ height: '100%', p: 0 }}
-          InputProps={{
-            ...params.InputProps,
-            disableUnderline: true,
-            style: { fontSize: 'inherit', textAlign: 'center', height: '100%', padding: 0 }
-          }}
-        />
-      )}
+      label={value}
+      TextFieldProps={{
+        autoFocus: true,
+        fullWidth: true,
+        variant: "standard",
+        sx: { height: '100%', p: 0 },
+        InputProps: {
+          disableUnderline: true,
+          style: { fontSize: 'inherit', textAlign: 'center', height: '100%', padding: 0 }
+        }
+      }}
       sx={{
         height: '100%',
         '& .MuiAutocomplete-inputRoot': { height: '100%', p: '0 !important', display: 'flex', alignItems: 'center' },
@@ -72,18 +70,19 @@ const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
 
 export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
   const [isEditing, setIsEditing] = React.useState(false);
-  const [tempValue, setTempValue] = React.useState<Temporal.Instant | null>(Temporal.Instant.from(column.timestamp));
+  const [tempValue, setTempValue] = React.useState<Database.JSONDate | null>(column.timestamp as Database.JSONDate);
 
   const handleDoubleClick = () => {
-    setTempValue(Temporal.Instant.from(column.timestamp));
+    setTempValue(column.timestamp as Database.JSONDate);
     setIsEditing(true);
   };
 
-  const handleAccept = (newValue: Temporal.Instant | null) => {
+  const handleAccept = (newValue: Database.JSONDate | null) => {
     if (newValue) {
+      const newValueDate = Temporal.Instant.from(newValue).toZonedDateTimeISO('UTC')
       onUpdate(column.id, {
-        timestamp: newValue.toString(),
-        displayTime: `${String(newValue.toZonedDateTimeISO('UTC').hour).padStart(2, '0')}${String(newValue.toZonedDateTimeISO('UTC').minute).padStart(2, '0')}`,
+        timestamp: newValue,
+        displayTime: `${String(newValueDate.hour).padStart(2, '0')}${String(newValueDate.minute).padStart(2, '0')}`,
         ...(column.isCurrentTime ? { isCurrentTime: false } : {})
       });
     }
@@ -98,7 +97,8 @@ export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn
     return (
       <Box sx={{ width: '100%', p: 0 }}>
         <DateTimePicker
-          value={tempValue?.toZonedDateTimeISO('UTC').toPlainDateTime()}
+          convertString
+          value={tempValue}
           onChange={(newValue) => setTempValue(newValue)}
           onAccept={handleAccept}
           onClose={handleClose}
@@ -110,7 +110,7 @@ export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn
               fullWidth: true,
               variant: 'standard',
               autoFocus: true,
-              InputProps: {
+              inputProps: {
                 style: { fontSize: 'inherit', textAlign: 'center' }
               }
             },

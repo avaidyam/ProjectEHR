@@ -60,7 +60,7 @@ export const EventLog = () => {
     'narrator', 'notes', 'notes_staff', 'orders', 'patient_movement',
     'results', 'results_cardiac', 'results_imaging', 'results_lab', 'transfusions'
   ]);
-  const [selectedDate, setSelectedDate] = React.useState(Temporal.Now.plainDateISO());
+  const [selectedDate, setSelectedDate] = React.useState(Temporal.Now.instant().toString() as Database.JSONDate);
 
   // Normalize Data
   const events = React.useMemo(() => {
@@ -197,23 +197,18 @@ export const EventLog = () => {
         dateSet.add(date.toZonedDateTimeISO(Temporal.Now.timeZoneId()).toPlainDate().toString());
       } catch { }
     });
-    return Array.from(dateSet).sort((a: string, b: string) => Temporal.PlainDate.compare(Temporal.PlainDate.from(b), Temporal.PlainDate.from(a)));
+    return Array.from(dateSet).sort((a: string, b: string) => Temporal.Instant.compare(Temporal.Instant.from(b), Temporal.Instant.from(a)));
   }, [filteredEvents]);
 
   // Find closest available date and scroll to it
   const handleDateChange = (newDate: any) => {
     if (!newDate || !availableDateKeys.length) return;
-
-    let targetDate: Temporal.PlainDate;
-    try {
-      targetDate = Temporal.PlainDate.from(newDate);
-    } catch { return; }
-
+    const targetDate = Temporal.Instant.from(newDate).toZonedDateTimeISO('UTC')
     let closestDate = availableDateKeys[0];
-    let closestDiff = Math.abs(Temporal.PlainDate.from(availableDateKeys[0]).until(targetDate, { largestUnit: 'days' }).days);
+    let closestDiff = Math.abs(Temporal.Instant.from(availableDateKeys[0]).toZonedDateTimeISO('UTC').until(targetDate, { largestUnit: 'days' }).days);
 
     for (const dateKey of availableDateKeys) {
-      const diff = Math.abs(Temporal.PlainDate.from(dateKey).until(targetDate, { largestUnit: 'days' }).days);
+      const diff = Math.abs(Temporal.Instant.from(dateKey).toZonedDateTimeISO('UTC').until(targetDate, { largestUnit: 'days' }).days);
       if (diff < closestDiff) {
         closestDiff = diff;
         closestDate = dateKey;
@@ -255,6 +250,7 @@ export const EventLog = () => {
         <Stack direction="row" alignItems="center" spacing={1}>
           <Typography variant="body2">Event Data:</Typography>
           <DatePicker
+            convertString
             value={selectedDate}
             slotProps={{
               textField: { size: 'small', sx: { width: 150 } },
@@ -269,7 +265,7 @@ export const EventLog = () => {
             size="small"
             startIcon={<Icon>vertical_align_top</Icon>}
             onClick={() => {
-              setSelectedDate(Temporal.Now.plainDateISO());
+              setSelectedDate(Temporal.Now.instant().toString() as Database.JSONDate);
               eventListRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >

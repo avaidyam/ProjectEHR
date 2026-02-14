@@ -6,19 +6,16 @@ import {
   Button,
   Icon,
   IconButton,
-  TextField,
   Label,
   DataGrid,
   TitledCard,
+  Autocomplete,
+  DatePicker,
 } from 'components/ui/Core';
 import {
   Checkbox,
   FormControlLabel,
   Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
 
@@ -49,8 +46,8 @@ const sourceOptions = ['Approved by Clinician', 'From Patient Questionnaire'];
 function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
   const [formData, setFormData] = React.useState({ ...row });
 
-  const handleChange = (e: any) => {
-    setFormData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleFieldChange = (name: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -60,37 +57,65 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
       </Label>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Procedure *</InputLabel>
-            <Select name="procedure" value={formData.procedure} onChange={handleChange} label="Procedure *">
-              {procedures.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            freeSolo
+            label="Procedure *"
+            options={procedures}
+            value={formData.procedure}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, procedure: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, procedure: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 3 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Laterality</InputLabel>
-            <Select name="laterality" value={formData.laterality} onChange={handleChange} label="Laterality">
-              {lateralityOptions.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            label="Laterality"
+            options={lateralityOptions}
+            value={formData.laterality}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, laterality: newValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 3 }}>
-          <TextField label="Date" name="date" type="date" value={formData.date} onChange={handleChange} fullWidth size="small" InputLabelProps={{ shrink: true }} />
+          <DatePicker
+            convertString
+            label="Date"
+            value={formData.date}
+            onChange={(date: any) => handleFieldChange('date', date)}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Age" name="age" value={formData.age} onChange={handleChange} fullWidth size="small" />
+          <Autocomplete
+            freeSolo
+            label="Age"
+            options={['10', '20', '30', '40', '50', '60', '70', '80']}
+            value={formData.age}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, age: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, age: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Source</InputLabel>
-            <Select name="src" value={formData.src} onChange={handleChange} label="Source">
-              {sourceOptions.map((o) => <MenuItem key={o} value={o}>{o}</MenuItem>)}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            freeSolo
+            label="Source"
+            options={sourceOptions}
+            value={formData.src}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, src: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, src: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={12}>
-          <TextField label="Comment/Notes" name="notes" value={formData.notes} onChange={handleChange} fullWidth multiline rows={2} size="small" />
+          <Autocomplete
+            freeSolo
+            label="Comment/Notes"
+            fullWidth
+            value={formData.notes}
+            onInputChange={(_e, newValue) => handleFieldChange('notes', newValue)}
+            options={[]}
+            TextFieldProps={{ multiline: true, rows: 2, size: 'small' }}
+          />
         </Grid>
         <Grid size={12}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -160,7 +185,7 @@ export function SurgicalHistory() {
       width: 70,
       sortable: false,
       renderCell: (params: any) => (
-        <IconButton onClick={() => handleEdit(params.row.id)} color="primary">edit</IconButton>
+        <IconButton onClick={() => handleEdit(params.id)} color="primary">edit</IconButton>
       )
     }
   ];

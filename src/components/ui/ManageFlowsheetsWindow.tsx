@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { MenuItem, Select, InputLabel, FormControl, Menu } from '@mui/material';
-import { Box, Button, Window, TextField, TreeView, TreeItem, Icon, IconButton, Divider } from './Core';
+import { Menu } from '@mui/material';
+import { Box, Button, Window, TreeView, TreeItem, Icon, IconButton, Divider, Autocomplete, MenuItem } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 
@@ -193,11 +193,14 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     if (isAddingGroup || isEditingGroup) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Group Name"
+            fullWidth
             value={groupData.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGroupData(prev => ({ ...prev, name: e.target.value }))}
+            onInputChange={(_e, newValue) => setGroupData(prev => ({ ...prev, name: newValue }))}
             autoFocus
+            options={[]}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => { setIsAddingGroup(false); setIsEditingGroup(false); }}>Cancel</Button>
@@ -212,38 +215,39 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     if (isAddingRow || isEditingRow) {
       return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Name (ID)"
+            fullWidth
             value={rowData.name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, name: e.target.value }))}
-            disabled={isEditingRow} // Name key cannot change
-            required
+            onInputChange={(_e, newValue) => setRowData(prev => ({ ...prev, name: newValue }))}
+            TextFieldProps={{ disabled: isEditingRow, required: true }}
+            options={[]}
           />
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Label (Display Name)"
+            fullWidth
             value={rowData.label}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, label: e.target.value }))}
-            required
-            autoFocus={isEditingRow}
+            onInputChange={(_e, newValue) => setRowData(prev => ({ ...prev, label: newValue }))}
+            TextFieldProps={{ required: true, autoFocus: isEditingRow }}
+            options={[]}
           />
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Category"
+            fullWidth
             value={rowData.category}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRowData(prev => ({ ...prev, category: e.target.value }))}
+            onInputChange={(_e, newValue) => setRowData(prev => ({ ...prev, category: newValue }))}
+            options={[]}
           />
-          <FormControl fullWidth>
-            <InputLabel>Type</InputLabel>
-            <Select
-              value={rowData.type}
-              label="Type"
-              onChange={(e) => setRowData(prev => ({ ...prev, type: e.target.value as string }))}
-            >
-              <MenuItem value="number">Number</MenuItem>
-              <MenuItem value="string">String</MenuItem>
-              <MenuItem value="select">Select</MenuItem>
-              {/* Add other types if found in usage */}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            label="Type"
+            options={['number', 'string', 'select']}
+            value={rowData.type}
+            onChange={(_e, newValue) => setRowData(prev => ({ ...prev, type: newValue as string }))}
+            getOptionLabel={(option) => typeof option === 'string' ? option.charAt(0).toUpperCase() + option.slice(1) : option}
+          />
 
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button onClick={() => { setIsAddingRow(false); setIsEditingRow(false); }}>Cancel</Button>
@@ -264,8 +268,8 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
       >
         {flowsheets && flowsheets.map((group) => (
           <TreeItem
-            key={`group-${group.id}`}
-            itemId={`group-${group.id}`}
+            key={`group - ${group.id} `}
+            itemId={`group - ${group.id} `}
             label={
               <Box
                 sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}
@@ -286,8 +290,8 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
           >
             {group.rows?.map(row => (
               <TreeItem
-                key={`row-${row.name}`}
-                itemId={`row-${row.name}`}
+                key={`row - ${row.name} `}
+                itemId={`row - ${row.name} `}
                 label={
                   <Box
                     sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}

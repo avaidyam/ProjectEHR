@@ -15,7 +15,7 @@ export const SidebarSepsisAlert = () => {
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
   const labsFiltered = filterDocuments(labs!, conditionals, orders)
 
-  const _t = (x: Database.Flowsheet.Entry) => Temporal.Instant.from(new Date(x.date as any).toISOString()).epochMilliseconds
+  const _t = (x: Database.Flowsheet.Entry | Database.Lab) => !!x.date ? Temporal.Instant.from(x.date).epochMilliseconds : 0
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
   const wbcLabs = (labsFiltered ?? [])

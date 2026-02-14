@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Window, TextField, Stack, Label, Icon, IconButton, Divider } from './Core';
+import { Box, Button, Window, Stack, Label, Icon, IconButton, Divider, Autocomplete } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 import { List, ListItem, ListItemText, ListItemButton, InputAdornment } from '@mui/material';
@@ -46,19 +46,23 @@ export const OpenPatientChartDialog = ({ open, onClose }: {
 
   const renderStep1 = () => (
     <Stack spacing={2} sx={{ height: '100%' }}>
-      <TextField
+      <Autocomplete
+        freeSolo
         autoFocus
         placeholder="Search by Name or MRN..."
         value={searchQuery}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <Icon>search</Icon>
-            </InputAdornment>
-          ),
+        onInputChange={(_e, newValue) => setSearchQuery(newValue)}
+        TextFieldProps={{
+          InputProps: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <Icon>search</Icon>
+              </InputAdornment>
+            ),
+          }
         }}
         fullWidth
+        options={[]}
       />
       <List sx={{ overflow: 'auto', flex: 1, border: '1px solid #e0e0e0', borderRadius: 1 }}>
         {patientList.map(patient => (

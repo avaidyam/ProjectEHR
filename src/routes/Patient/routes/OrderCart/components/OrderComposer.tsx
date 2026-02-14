@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, ButtonGroup, Autocomplete, TextField, RichTextEditor, Icon, Label, Grid, Window, DatePicker } from 'components/ui/Core';
+import { Box, Button, ButtonGroup, Autocomplete, RichTextEditor, Icon, Label, Grid, Window, DatePicker } from 'components/ui/Core';
 import { Typography } from '@mui/material';
 
 /**
@@ -601,6 +601,9 @@ const getNonCalculableDescription = (formulation: string | null) => {
   return 'Use as directed';
 };
 
+const DEFAULT_FREQUENCIES = ['QD', 'BID', 'TID', 'QID', 'QHS', 'QAM', 'PRN', 'Every 4 hours', 'Every 6 hours', 'Every 8 hours', 'Weekly', 'Monthly'];
+const DEFAULT_ROUTES = ['Oral', 'Sublingual', 'Buccal', 'Rectal', 'Vaginal', 'Topical', 'Inhalation', 'Intravenous (IV)', 'Intramuscular (IM)', 'Subcutaneous (SC)', 'Intradermal (ID)', 'Transdermal', 'Nasal', 'Ophthalmic', 'Otic'];
+
 export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }: { medication: any; open: any; onSelect: (item: any) => void;[key: string]: any }) => {
   const [params, setParams] = React.useState<Record<string, any>>({})
   const [doseAmount, setDoseAmount] = React.useState('') // The numeric dose amount (e.g., "1600")
@@ -701,15 +704,15 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                 isDoseCalculable ? (
                   // Calculable medications: show dose input + formulation buttons
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                    <TextField
+                    <Autocomplete
+                      freeSolo
                       fullWidth={false}
                       size="small"
-                      type="number"
-                      placeholder="Enter dose"
                       value={doseAmount}
-                      onChange={(e) => setDoseAmount(e.target.value)}
+                      options={[]}
+                      onInputChange={(e, newVal) => setDoseAmount(newVal)}
                       sx={{ width: 120 }}
-                      inputProps={{ min: 0, step: "any" }}
+                      TextFieldProps={{ placeholder: "Enter dose", type: 'number', inputProps: { min: 0, step: "any" } }}
                     />
                     <Autocomplete
                       size="small"
@@ -718,7 +721,6 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                       onChange={(e: any, value: any) => setDoseUnit(value || 'mg')}
                       disableClearable
                       sx={{ width: 90 }}
-                      renderInput={(inputProps: any) => <TextField {...inputProps} />}
                     />
                     <ButtonGroup
                       exclusive
@@ -780,28 +782,26 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                 )
               ) : (
                 <>
-                  {x.type === "string" && x.options?.length > 0 &&
+                  {x.type === "string" &&
                     <Autocomplete
+                      freeSolo
                       fullWidth={false}
                       size="small"
-                      options={x.options ?? []}
+                      options={x.options || (x.name === "Frequency" ? DEFAULT_FREQUENCIES : (x.name === "Route" ? DEFAULT_ROUTES : []))}
                       value={params[x.name] ?? null}
                       onChange={(event, value) => setParams((prev) => ({ ...prev, [x.name]: value }))}
-                      sx={{ display: "inline-flex", width: 300, mr: 1 }}
-                    />
-                  }
-                  {x.type === "string" && (x.options?.length ?? 0) === 0 &&
-                    <TextField
-                      fullWidth={false}
-                      size="small"
-                      value={params[x.name]}
-                      onChange={(event) => setParams((prev) => ({ ...prev, [x.name]: event.target.value }))}
+                      onInputChange={(event, value) => {
+                        if (x.name !== "Route") { // Route is handled by selection typically but let's allow freeSolo
+                          setParams((prev) => ({ ...prev, [x.name]: value }))
+                        }
+                      }}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}
                     />
                   }
                   {x.type === "date" &&
                     <DatePicker
-                      value={Temporal.Now.plainDateISO()} // FIXME
+                      convertString
+                      value={Temporal.Now.instant().toString()}
                       onChange={(event, value) => setParams((prev) => ({ ...prev, [x.name]: value }))}
                       slotProps={{ textField: { size: 'small' } }}
                       sx={{ display: "inline-flex", width: 300, mr: 1 }}

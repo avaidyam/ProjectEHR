@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, MenuItem, IconButton, Label, Autocomplete, Stack, TextField } from 'components/ui/Core';
+import { Box, MenuItem, IconButton, Label, Autocomplete, Stack, Icon } from 'components/ui/Core';
 
 const VOICE_OPTIONS: Record<string, string> = {
   "Zephyr": "Bright, Higher pitch",
@@ -43,8 +43,8 @@ export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePro
     setLocalPrompt(systemPrompt);
   }, [systemPrompt]);
 
-  const handlePromptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalPrompt(e.target.value);
+  const handlePromptChange = (newValue: string) => {
+    setLocalPrompt(newValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -113,7 +113,7 @@ export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePro
                 }}
                 sx={{ mr: 1 }}
               >
-                {playingVoice === name ? 'volume_up' : 'play_arrow'}
+                <Icon>{playingVoice === name ? 'volume_up' : 'play_arrow'}</Icon>
               </IconButton>
               <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                 <Label sx={{ lineHeight: 1.2 }}>{name}</Label>
@@ -129,16 +129,21 @@ export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePro
           }
         }}
       />
-      <TextField
+      <Autocomplete
+        freeSolo
         label="System Prompt"
-        multiline
-        minRows={6}
-        maxRows={12}
-        value={localPrompt}
-        onChange={handlePromptChange}
-        onKeyDown={handleKeyDown}
-        helperText="Press Enter to update settings"
         fullWidth
+        value={localPrompt}
+        onInputChange={(_e, newValue) => handlePromptChange(newValue)}
+        onKeyDown={handleKeyDown}
+        clearIcon={null}
+        options={[]}
+        TextFieldProps={{
+          multiline: true,
+          minRows: 6,
+          maxRows: 12,
+          helperText: "Press Enter to update settings"
+        }}
         sx={{ mt: 2 }}
       />
       <Label sx={{ mt: 2, mb: 1 }}>Full System Instruction (Read Only)</Label>

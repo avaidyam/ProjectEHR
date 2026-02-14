@@ -4,7 +4,6 @@ import {
   Box,
   Button,
   IconButton,
-  TextField,
   Table,
   TableBody,
   TableCell,
@@ -13,6 +12,7 @@ import {
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
 } from 'components/ui/Core';
 import {
   Checkbox,
@@ -21,7 +21,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Autocomplete,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../components/contexts/PatientContext';
@@ -245,31 +244,33 @@ export function FamilyHistory() {
               <TableRow key={member.relationship}>
                 <StyledTableCell sx={{ fontWeight: 'bold' }}>{member.relationship}</StyledTableCell>
                 <StyledTableCell>
-                  <TextField
-                    variant="standard"
+                  <Autocomplete
+                    freeSolo
                     value={member.name}
-                    onChange={(e) => {
+                    options={[]}
+                    onInputChange={(_e, newValue) => {
                       const updatedData = familyData.map((m: any) =>
-                        m.relationship === member.relationship ? { ...m, name: e.target.value } : m
+                        m.relationship === member.relationship ? { ...m, name: newValue } : m
                       );
                       setFamilyData(updatedData);
                       setFamilyHx(updatedData);
                     }}
-                    InputProps={{ disableUnderline: true }}
+                    TextFieldProps={{ variant: 'standard', InputProps: { disableUnderline: true } }}
                   />
                 </StyledTableCell>
                 <StyledTableCell>
-                  <TextField
-                    variant="standard"
+                  <Autocomplete
+                    freeSolo
                     value={member.status}
-                    onChange={(e) => {
+                    options={[]}
+                    onInputChange={(_e, newValue) => {
                       const updatedData = familyData.map((m: any) =>
-                        m.relationship === member.relationship ? { ...m, status: e.target.value } : m
+                        m.relationship === member.relationship ? { ...m, status: newValue } : m
                       );
                       setFamilyData(updatedData);
                       setFamilyHx(updatedData);
                     }}
-                    InputProps={{ disableUnderline: true }}
+                    TextFieldProps={{ variant: 'standard', InputProps: { disableUnderline: true } }}
                   />
                 </StyledTableCell>
                 <StyledActionCell onClick={() => toggleProblem(member, 'No Pertinent History')}>
@@ -312,16 +313,10 @@ export function FamilyHistory() {
           disablePortal
           options={familyRelationships}
           sx={{ width: 300, ml: 2 }}
-          renderInput={(params: any) => (
-            <TextField
-              {...params}
-              label="Select Relationship"
-              variant="outlined"
-              size="small"
-            />
-          )}
+          label="Select Relationship"
+          size="small"
           value={newRelationship}
-          onChange={(event, newValue) => setNewRelationship(newValue)}
+          onChange={(event: any, newValue: any) => setNewRelationship(newValue)}
         />
       </Box>
 
@@ -334,11 +329,9 @@ export function FamilyHistory() {
             options={icd10Options}
             getOptionLabel={(option) => option.label}
             sx={{ width: 400, mt: 2 }}
-            onChange={(event, newValue) => setSelectedProblem(newValue)}
+            onChange={(event: any, newValue: any) => setSelectedProblem(newValue)}
             value={selectedProblem}
-            renderInput={(params: any) => (
-              <TextField {...params} label="Select a Problem" />
-            )}
+            label="Select a Problem"
           />
         </DialogContent>
         <DialogActions>
@@ -351,13 +344,14 @@ export function FamilyHistory() {
       <Dialog open={isCommentsOpen} onClose={handleCloseComments}>
         <DialogTitle>Comments for {selectedMember?.relationship}</DialogTitle>
         <DialogContent>
-          <TextField
+          <Autocomplete
+            freeSolo
             autoFocus
-            multiline
-            rows={4}
+            options={[]}
+            TextFieldProps={{ multiline: true, rows: 4 }}
             fullWidth
             value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
+            onInputChange={(_e, newValue) => setCommentText(newValue)}
           />
         </DialogContent>
         <DialogActions>

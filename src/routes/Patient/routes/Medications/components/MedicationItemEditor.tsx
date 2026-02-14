@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Box, TextField, Button, Autocomplete, MenuItem, Select, FormControl, InputLabel, FormControlLabel, Checkbox, FormGroup, Grid, Typography, styled } from '@mui/material';
+import { FormControlLabel, FormGroup, styled, FormControl } from '@mui/material';
+import { Box, Button, Autocomplete, Label, DatePicker, Checkbox, Grid } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
 
 const routesOfAdministration = [
@@ -32,7 +33,7 @@ const unitMap: any = units.reduce((acc: any, unit: any) => {
   return acc;
 }, {});
 
-const Label = styled(Typography)({
+const StyledLabel = styled(Label)({
   alignSelf: 'flex-start',
   paddingTop: 8,
 });
@@ -51,44 +52,37 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
     unit: unitMap[medication.unit] || medication.unit,
   });
 
+  console.dir(editedMedication)
+
   React.useEffect(() => {
-    const selectedMedication = orderables!.rxnorm.find((med: any) => med.name === editedMedication.name);
     setEditedMedication((prevState: any) => ({
       ...prevState,
-      brandName: '', // FIXME
-      possiblePrnReasons: [] // FIXME
+      brandName: prevState.brandName || '',
+      possiblePrnReasons: prevState.possiblePrnReasons || []
     }));
   }, [editedMedication.name]);
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
+  const handleEditorChange = (name: string, value: any) => {
     setEditedMedication({
       ...editedMedication,
       [name]: value,
     });
   };
 
-  const handleRouteChange = (event: any, value: any) => {
+  const handleUnitChange = (value: any) => {
+    const selectedUnit = units.find(unit => unit.full === value);
     setEditedMedication({
       ...editedMedication,
-      route: value,
+      unit: selectedUnit ? selectedUnit.full : value,
     });
   };
 
-  const handleUnitChange = (event: any) => {
-    const selectedUnit = units.find(unit => unit.full === event.target.value);
-    setEditedMedication({
-      ...editedMedication,
-      unit: selectedUnit ? selectedUnit.full : event.target.value,
-    });
-  };
-
-  const handlePrnReasonChange = (event: any) => {
+  const handlePrnReasonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
     setEditedMedication((prevState: any) => {
       const activePrnReasons = checked
-        ? [...prevState.activePrnReasons, value]
-        : prevState.activePrnReasons.filter((reason: any) => reason !== value);
+        ? [...(prevState.activePrnReasons || []), value]
+        : (prevState.activePrnReasons || []).filter((reason: any) => reason !== value);
       return {
         ...prevState,
         activePrnReasons
@@ -108,90 +102,78 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
   return (
     <Box>
       <Grid container spacing={2} alignItems="flex-start">
-        <Grid size={3}>
-          <Label>Dose:</Label>
+        <Grid size={{ xs: 3 }}>
+          <StyledLabel>Dose:</StyledLabel>
         </Grid>
-        <Grid size={6}>
-          <TextField
-            name="dose"
-            value={editedMedication.dose}
-            onChange={handleChange}
-            type="number"
+        <Grid size={{ xs: 6 }}>
+          <Autocomplete
+            freeSolo
+            label="Dose"
+            options={['5', '10', '20', '50', '100', '200', '500', '1000']}
+            value={editedMedication.dose?.toString()}
+            onInputChange={(_e, newInputValue) => handleEditorChange('dose', newInputValue)}
             fullWidth
           />
         </Grid>
-        <Grid size={3}>
-          <FormControl fullWidth>
-            <InputLabel id="unit-label" />
-            <Select
-              labelId="unit-label"
-              value={editedMedication.unit}
-              onChange={handleUnitChange}
-              fullWidth
-              style={{ minWidth: 100 }}
-            >
-              {units.map((unit) => (
-                <MenuItem key={unit.abbrev} value={unit.full}>
-                  {unit.full}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+        <Grid size={{ xs: 3 }}>
+          <Autocomplete
+            options={units.map(u => u.full)}
+            value={editedMedication.unit}
+            onChange={(_e, newValue: any) => handleUnitChange(newValue)}
+            sx={{ minWidth: 100 }}
+          />
         </Grid>
-        <Grid size={3}>
-          <Label>Route:</Label>
+        <Grid size={{ xs: 3 }}>
+          <StyledLabel>Route:</StyledLabel>
         </Grid>
-        <Grid size={9}>
+        <Grid size={{ xs: 9 }}>
           <Autocomplete
             options={routesOfAdministration}
             getOptionLabel={(option) => option}
             value={editedMedication.route}
-            onChange={handleRouteChange}
-            renderInput={(params: any) => (
-              <TextField {...params} variant="outlined" fullWidth />
-            )}
+            onChange={(_e, newValue) => handleEditorChange('route', newValue)}
           />
         </Grid>
-        <Grid size={3}>
-          <Label>Frequency:</Label>
+        <Grid size={{ xs: 3 }}>
+          <StyledLabel>Frequency:</StyledLabel>
         </Grid>
-        <Grid size={9}>
-          <TextField
-            name="frequency"
+        <Grid size={{ xs: 9 }}>
+          <Autocomplete
+            freeSolo
+            label="Frequency"
+            options={['QD', 'BID', 'TID', 'QID', 'QHS', 'QAM', 'PRN', 'Every 4 hours', 'Every 6 hours', 'Every 8 hours', 'Weekly', 'Monthly']}
             value={editedMedication.frequency}
-            onChange={handleChange}
+            onInputChange={(_e, newInputValue) => handleEditorChange('frequency', newInputValue)}
             fullWidth
           />
         </Grid>
 
-        <Grid size={3}>
-          <Label>Date Range:</Label>
+        <Grid size={{ xs: 3 }}>
+          <StyledLabel>Date Range:</StyledLabel>
         </Grid>
-        <Grid size={4}>
-          <TextField
-            name="startDate"
-            placeholder="mm/dd/yyyy"
+        <Grid size={{ xs: 4 }}>
+          <DatePicker
+            convertString
+            label="Start Date"
             value={editedMedication.startDate}
-            onChange={handleChange}
-            fullWidth
+            onChange={(date: any) => handleEditorChange('startDate', date)}
           />
         </Grid>
-        <Grid size={5}>
-          <TextField
-            name="endDate"
-            placeholder="mm/dd/yyyy"
+        <Grid size={{ xs: 5 }}>
+          <DatePicker
+            convertString
+            label="End Date"
             value={editedMedication.endDate}
-            onChange={handleChange}
-            fullWidth
+            onChange={(date: any) => handleEditorChange('endDate', date)}
           />
         </Grid>
 
         {editedMedication.possiblePrnReasons && editedMedication.possiblePrnReasons.length > 0 && (
           <>
-            <Grid size={3}>
-              <Label component="legend">PRN Reasons:</Label>
+            <Grid size={{ xs: 3 }}>
+              <StyledLabel>PRN Reasons:</StyledLabel>
             </Grid>
-            <Grid size={9}>
+            <Grid size={{ xs: 9 }}>
               <FormControl component="fieldset" fullWidth margin="normal">
                 <PrnFormGroup>
                   {editedMedication.possiblePrnReasons.map((reason: any) => (
@@ -199,7 +181,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
                       key={reason}
                       control={
                         <Checkbox
-                          checked={editedMedication.activePrnReasons.includes(reason)}
+                          checked={editedMedication.activePrnReasons?.includes(reason)}
                           onChange={handlePrnReasonChange}
                           value={reason}
                         />
@@ -213,11 +195,11 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
           </>
         )}
       </Grid>
-      <Box mt={2}>
+      <Box mt={2} sx={{ display: 'flex', gap: 1 }}>
         <Button variant="contained" color="primary" onClick={handleSave}>
           Save
         </Button>
-        <Button variant="outlined" color="secondary" onClick={onCancel} style={{ marginLeft: '8px' }}>
+        <Button variant="outlined" color="secondary" onClick={onCancel}>
           Cancel
         </Button>
       </Box>

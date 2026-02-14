@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Stack, Tabs, Tab, Typography, Toolbar, Button, Icon } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, Spacer, IconButton, Label, Window, Grid, Autocomplete, TextField, Menu, MenuItem } from 'components/ui/Core';
+import { DataGrid, Spacer, IconButton, Label, Window, Grid, Autocomplete, Menu, MenuItem } from 'components/ui/Core';
 import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';

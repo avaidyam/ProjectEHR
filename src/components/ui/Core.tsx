@@ -20,6 +20,7 @@ import {
   Divider as MUIDivider,
   Paper as MUIPaper,
   Chip as MUIChip,
+  Checkbox as MUICheckbox,
   Table as MUITable,
   TableHead as MUITableHead,
   TableBody as MUITableBody,
@@ -46,6 +47,7 @@ import {
   DividerProps,
   PaperProps,
   ChipProps,
+  CheckboxProps,
   TableProps,
   TableHeadProps,
   TableBodyProps,
@@ -74,7 +76,8 @@ import {
 } from '@mui/x-date-pickers-pro'
 import {
   TemporalPlainDateProvider,
-  TemporalPlainDateTimeProvider
+  TemporalPlainDateTimeProvider,
+  TemporalZonedDateTimeProvider
 } from 'mui-temporal-pickers'
 import {
   DataGridPremium as MUIDataGrid,
@@ -149,25 +152,27 @@ export const RichTextEditor: React.FC<any> = ({ ...props }) => (
   <MUIEditor {...props} />
 )
 
-export const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, ...props }) => (
-  <MUITextField
-    label={label}
-    value={value}
-    onChange={onChange}
-    variant="outlined"
-    fullWidth
-    {...props}
-  />
-)
-
-export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
+export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
-    fullWidth
     options={options}
     value={value}
     onChange={onChange}
-    // @ts-ignore
-    renderInput={(params) => <TextField {...params} variant="outlined" label={label} {...TextFieldProps} />}
+    renderInput={(params) => (
+      <MUITextField
+        {...params}
+        {...TextFieldProps}
+        variant="outlined"
+        label={label}
+        placeholder={placeholder}
+        InputProps={{
+          ...params.InputProps,
+          ...TextFieldProps?.InputProps,
+          endAdornment: TextFieldProps?.InputProps?.endAdornment ?
+            <>{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</> :
+            params.InputProps.endAdornment
+        }}
+      />
+    )}
     {...props}
   />
 )
@@ -220,6 +225,10 @@ export const IconButton: React.FC<IconButtonProps & { iconProps?: any }> = ({ si
 
 export const Chip: React.FC<ChipProps> = ({ children, ...props }) => (
   <MUIChip label={children} {...props} />
+)
+
+export const Checkbox: React.FC<CheckboxProps> = ({ ...props }) => (
+  <MUICheckbox {...props} />
 )
 
 // FIXME: Set default verticalAlign=text-top for Icon?
@@ -333,16 +342,33 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
-export const DatePicker: React.FC<DatePickerProps<any>> = ({ ...props }) => (
-  <TemporalPlainDateProvider>
-    <MUIDatePicker {...props} />
-  </TemporalPlainDateProvider>
+export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainDateProvider>
+      <MUIDatePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        slotProps={!!size ? { textField: { size } } : undefined}
+        {...props}
+      />
+    </TemporalPlainDateProvider>
+  </ErrorBoundary>
 )
 
-export const DateTimePicker: React.FC<DateTimePickerProps<any>> = ({ ...props }) => (
-  <TemporalPlainDateTimeProvider>
-    <MUIDateTimePicker {...props} />
-  </TemporalPlainDateTimeProvider>
+// wraps the Temporal conversion to JSONDate for you
+export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainDateTimeProvider>
+      <MUIDateTimePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        slotProps={!!size ? { textField: { size } } : undefined}
+        {...props}
+      />
+    </TemporalPlainDateTimeProvider>
+  </ErrorBoundary>
 )
 
 export const Tab: React.FC<TabProps> = ({ children, ...props }) => (

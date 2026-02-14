@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Label, Stack, Button, Spacer, Autocomplete, TextField, RichTextEditor } from 'components/ui/Core';
+import { Box, Label, Stack, Button, Autocomplete, RichTextEditor } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import * as Database from 'components/contexts/Database';
 
@@ -74,13 +74,13 @@ export const Handoff: React.FC = () => {
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Label variant="h6">Handoff</Label>
         <Autocomplete
+          label="Select Department"
           size="small"
           sx={{ maxWidth: 250 }}
           options={departmentsDB}
           getOptionLabel={(option: Database.Department) => option.name}
           value={departmentsDB.find((d: Database.Department) => d.id === currentDepartment) || null}
           onChange={(_, newValue) => handleDepartmentChange(newValue?.id || '')}
-          renderInput={(params: any) => <TextField {...params} label="Select Department" />}
         />
       </Stack>
       <Stack spacing={1} flex={1} sx={{ overflow: 'hidden' }}>
