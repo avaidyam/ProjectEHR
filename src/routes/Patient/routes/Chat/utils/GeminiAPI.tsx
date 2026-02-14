@@ -40,7 +40,7 @@ export type UseMediaStreamResult = {
 
 /** log types */
 export type StreamingLog = {
-  date: Date;
+  date: string;
   type: string;
   count?: number;
   message:
@@ -274,7 +274,7 @@ export class GenAILiveClient extends EventEmitter<LiveClientEventTypes> {
 
   protected log(type: string, message: StreamingLog["message"]) {
     const log: StreamingLog = {
-      date: new Date(),
+      date: Temporal.Now.instant().toString(),
       type,
       message,
     };

@@ -6,17 +6,19 @@ import {
   Button,
   Icon,
   IconButton,
-  TextField,
   Label,
   DataGrid,
   TitledCard,
+  Autocomplete,
+  DatePicker,
 } from 'components/ui/Core';
 import {
   Checkbox,
   FormControlLabel,
   Grid,
 } from '@mui/material';
-import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
+import { Database, usePatient } from 'components/contexts/PatientContext';
+import { GridColDef, GridRowId } from '@mui/x-data-grid';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: any; onSave: (row: any) => void; onCancel: (row: any) => void; onDelete: (id: any) => void }) {
   const [formData, setFormData] = React.useState({ ...row });
@@ -32,16 +34,45 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: a
       </Label>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Diagnosis" name="diagnosis" value={formData.diagnosis} onChange={handleChange} fullWidth size="small" />
+          <Autocomplete
+            freeSolo
+            label="Diagnosis"
+            options={['Hypertension', 'Diabetes Mellitus Type 2', 'Hyperlipidemia', 'Asthma', 'GERD', 'Anxiety', 'Depression', 'Hypothyroidism']}
+            value={formData.diagnosis}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, diagnosis: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, diagnosis: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 3 }}>
-          <TextField label="Date" name="date" value={formData.date} onChange={handleChange} fullWidth size="small" />
+          <DatePicker
+            convertString
+            label="Date"
+            value={formData.date}
+            onChange={(date: any) => setFormData((prev: any) => ({ ...prev, date: date }))}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 3 }}>
-          <TextField label="Age" name="age" value={formData.age} onChange={handleChange} fullWidth size="small" />
+          <Autocomplete
+            freeSolo
+            label="Age"
+            options={['10', '20', '30', '40', '50', '60', '70', '80']}
+            value={formData.age}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, age: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, age: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField label="Source" name="src" value={formData.src} onChange={handleChange} fullWidth size="small" />
+          <Autocomplete
+            freeSolo
+            label="Source"
+            options={['Approved by Clinician', 'From Patient Questionnaire']}
+            value={formData.src}
+            onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, src: newValue }))}
+            onInputChange={(_e, newInputValue) => setFormData((prev: any) => ({ ...prev, src: newInputValue }))}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Grid>
         <Grid size={12}>
           <FormControlLabel
@@ -76,7 +107,7 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: a
 export function MedicalHistory() {
   const { useEncounter } = usePatient();
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
-  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
   const [reviewed, setReviewed] = React.useState(false);
 
   const handleAddNew = () => {
@@ -112,7 +143,7 @@ export function MedicalHistory() {
     setReviewed(e.target.checked);
   };
 
-  const columns = [
+  const columns: GridColDef[] = [
     { field: 'diagnosis', headerName: 'Diagnosis', flex: 1 },
     { field: 'date', headerName: 'Date', width: 120 },
     { field: 'age', headerName: 'Age', width: 120 },
@@ -121,7 +152,7 @@ export function MedicalHistory() {
       field: 'problemList',
       headerName: 'Problem List',
       width: 150,
-      renderCell: (params: any) => (
+      renderCell: (params) => (
         <Checkbox
           checked={params.value === 'True'}
           disabled
@@ -136,27 +167,15 @@ export function MedicalHistory() {
       headerName: 'Actions',
       width: 70,
       sortable: false,
-      renderCell: (params: any) => (
+      renderCell: (params) => (
         <Box>
-          <IconButton onClick={() => handleEdit(params.row.id)} color="primary">
+          <IconButton onClick={() => handleEdit(params.id)} color="primary">
             edit
           </IconButton>
         </Box>
       )
     }
   ];
-
-  const getDetailPanelContent = React.useCallback(
-    ({ row }: any) => (
-      <MedicalHistoryDetailPanel
-        row={row}
-        onSave={handleSave}
-        onCancel={handleCancel}
-        onDelete={handleDelete}
-      />
-    ),
-    [handleSave, handleCancel, handleDelete],
-  );
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medical History</>} color="#9F3494">
@@ -180,9 +199,16 @@ export function MedicalHistory() {
           hideFooter
           disableRowSelectionOnClick
           getDetailPanelHeight={() => 'auto'}
-          getDetailPanelContent={getDetailPanelContent}
+          getDetailPanelContent={({ row }: any) => (
+            <MedicalHistoryDetailPanel
+              row={row}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              onDelete={handleDelete}
+            />
+          )}
           detailPanelExpandedRowIds={expandedRowIds}
-          onDetailPanelExpandedRowIdsChange={(newIds: any) => setExpandedRowIds(new Set(newIds))}
+          onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
         />
       </Box>
       <Stack direction="row" alignItems="center">

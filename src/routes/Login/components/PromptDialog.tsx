@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, TextField, Window } from 'components/ui/Core';
+import { Box, Button, Window, Autocomplete } from 'components/ui/Core';
 
 interface PromptDialogProps {
   open: boolean;
@@ -37,13 +37,15 @@ export const PromptDialog: React.FC<PromptDialogProps> = ({ open, onClose, onCon
 
   return (
     <Window title={title || 'Enter a Value'} open={open} onClose={handleCancel}>
-      <TextField
+      <Autocomplete
+        freeSolo
         autoFocus
         fullWidth
         placeholder={placeholder}
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onInputChange={(_e, newValue) => setInputValue(newValue)}
         onKeyDown={handleKeyPress} // Listen for Enter key
+        options={[]}
       />
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
         <Button onClick={handleCancel} color="secondary">

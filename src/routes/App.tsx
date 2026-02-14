@@ -2,8 +2,7 @@ import * as React from 'react';
 import { ErrorBoundary } from "react-error-boundary";
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material'
-import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { TemporalRootProvider } from 'mui-temporal-pickers';
 import { DatabaseProvider } from 'components/contexts/PatientContext';
 import { AuthContext } from 'components/contexts/AuthContext';
 import { Titlebar } from 'components/ui/Titlebar';
@@ -39,7 +38,7 @@ export const App: React.FC = () => {
     let lastRightClickTime = 0;
 
     const handleContextMenu: EventListener = (e) => {
-      const currentTime = new Date().getTime();
+      const currentTime = Temporal.Now.instant().epochMilliseconds;
       const timeDiff = currentTime - lastRightClickTime;
 
       if (timeDiff < 300) {
@@ -61,7 +60,7 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <TemporalRootProvider>
       <DatabaseProvider>
         <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
           {isLoggedIn && <Titlebar onLogout={handleLogout} />}
@@ -116,6 +115,6 @@ export const App: React.FC = () => {
           </Routes>
         </ErrorBoundary>
       </DatabaseProvider>
-    </LocalizationProvider>
+    </TemporalRootProvider>
   )
 }

@@ -2,19 +2,16 @@
 import * as React from 'react';
 import {
   Box,
-  TextField,
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
+  DatePicker,
 } from 'components/ui/Core';
 import {
   Grid,
   FormControlLabel,
   Checkbox,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../components/contexts/PatientContext';
@@ -66,15 +63,7 @@ export function BirthHistory() {
     if (!birthdate) return '';
 
     try {
-      const birthDate = new Date(birthdate);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-
+      const age = Temporal.Now.plainDateISO().since(birthdate, { largestUnit: 'year' }).years;
       return `${age} years old`;
     } catch (error) {
       return '';
@@ -95,7 +84,7 @@ export function BirthHistory() {
     }));
   };
 
-  const handleReviewedChange = (e: any) => {
+  const handleReviewedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReviewed(e.target.checked);
   };
 
@@ -107,46 +96,50 @@ export function BirthHistory() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Birth length"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.birthLength || ''}
-                  onChange={(e) => handleFieldChange('birthLength', parseFloat(e.target.value) || 0)}
-                  inputProps={{ min: 0, step: 0.1 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('birthLength', parseFloat(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, step: 0.1 } }}
                 />
               </Grid>
 
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Birth weight"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.birthWeight || ''}
-                  onChange={(e) => handleFieldChange('birthWeight', parseFloat(e.target.value) || 0)}
-                  inputProps={{ min: 0, step: 0.1 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('birthWeight', parseFloat(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, step: 0.1 } }}
                 />
               </Grid>
 
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Birth head circ"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.birthHeadCirc || ''}
-                  onChange={(e) => handleFieldChange('birthHeadCirc', parseFloat(e.target.value) || 0)}
-                  inputProps={{ min: 0, step: 0.1 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('birthHeadCirc', parseFloat(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, step: 0.1 } }}
                 />
               </Grid>
 
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Discharge weight"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.dischargeWeight || ''}
-                  onChange={(e) => handleFieldChange('dischargeWeight', parseFloat(e.target.value) || 0)}
-                  inputProps={{ min: 0, step: 0.1 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('dischargeWeight', parseFloat(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, step: 0.1 } }}
                 />
               </Grid>
             </Grid>
@@ -156,98 +149,112 @@ export function BirthHistory() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Birth Date"
                   fullWidth
                   value={birthdate || ''}
-                  disabled
-                  sx={{
-                    '& .MuiInputBase-input.Mui-disabled': {
-                      WebkitTextFillColor: 'black',
-                      color: 'black'
+                  options={[]}
+                  TextFieldProps={{
+                    disabled: true,
+                    sx: {
+                      '& .MuiInputBase-input.Mui-disabled': {
+                        WebkitTextFillColor: 'black',
+                        color: 'black'
+                      }
                     }
                   }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Age"
                   fullWidth
                   value={patientAge}
-                  disabled
-                  sx={{
-                    '& .MuiInputBase-input.Mui-disabled': {
-                      WebkitTextFillColor: 'black',
-                      color: 'black'
+                  options={[]}
+                  TextFieldProps={{
+                    disabled: true,
+                    sx: {
+                      '& .MuiInputBase-input.Mui-disabled': {
+                        WebkitTextFillColor: 'black',
+                        color: 'black'
+                      }
                     }
                   }}
                 />
               </Grid>
 
               <Grid size={12}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Birth Time"
-                  type="time"
                   fullWidth
                   value={birthHistoryData?.birthTime || ''}
-                  onChange={(e) => handleFieldChange('birthTime', e.target.value)}
-                  InputLabelProps={{ shrink: true }}
+                  onInputChange={(_e, newValue) => handleFieldChange('birthTime', newValue)}
+                  options={[]}
+                  TextFieldProps={{ type: 'time', InputLabelProps: { shrink: true } }}
                 />
               </Grid>
 
               <Grid size={6}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Gestation age (Weeks)"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.gestationWeeks || ''}
-                  onChange={(e) => handleFieldChange('gestationWeeks', parseInt(e.target.value) || 0)}
-                  inputProps={{ min: 0, max: 50 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('gestationWeeks', parseInt(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 50 } }}
                 />
               </Grid>
 
               <Grid size={6}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="Gestation age (Days)"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.gestationDays || ''}
-                  onChange={(e) => handleFieldChange('gestationDays', parseInt(e.target.value) || 0)}
-                  inputProps={{ min: 0, max: 6 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('gestationDays', parseInt(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 6 } }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="APGAR 1"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.apgar1 || ''}
-                  onChange={(e) => handleFieldChange('apgar1', parseInt(e.target.value) || 0)}
-                  inputProps={{ min: 0, max: 10 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar1', parseInt(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="APGAR 5"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.apgar5 || ''}
-                  onChange={(e) => handleFieldChange('apgar5', parseInt(e.target.value) || 0)}
-                  inputProps={{ min: 0, max: 10 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar5', parseInt(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, sm: 4 }}>
-                <TextField
+                <Autocomplete
+                  freeSolo
                   label="APGAR 10"
-                  type="number"
                   fullWidth
                   value={birthHistoryData?.apgar10 || ''}
-                  onChange={(e) => handleFieldChange('apgar10', parseInt(e.target.value) || 0)}
-                  inputProps={{ min: 0, max: 10 }}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar10', parseInt(newValue) || 0)}
+                  options={[]}
+                  TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />
               </Grid>
             </Grid>
@@ -257,42 +264,32 @@ export function BirthHistory() {
           <Grid size={12}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, md: 6 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Delivery method</InputLabel>
-                  <Select
-                    value={birthHistoryData?.deliveryMethod || ''}
-                    onChange={(e) => handleFieldChange('deliveryMethod', e.target.value)}
-                    label="Delivery method"
-                  >
-                    {deliveryMethodOptions.map(option => (
-                      <MenuItem key={option} value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <TextField
-                  label="Duration of labor"
-                  fullWidth
-                  value={birthHistoryData?.durationOfLabor || ''}
-                  onChange={(e) => handleFieldChange('durationOfLabor', e.target.value)}
+                <Autocomplete
+                  label="Delivery method"
+                  options={deliveryMethodOptions}
+                  value={birthHistoryData?.deliveryMethod || ''}
+                  onChange={(_e, newValue) => handleFieldChange('deliveryMethod', newValue)}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, md: 6 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Feeding method</InputLabel>
-                  <Select
-                    value={birthHistoryData?.feedingMethod || ''}
-                    onChange={(e) => handleFieldChange('feedingMethod', e.target.value)}
-                    label="Feeding method"
-                  >
-                    {feedingMethodOptions.map(option => (
-                      <MenuItem key={option} value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Autocomplete
+                  freeSolo
+                  label="Duration of labor"
+                  fullWidth
+                  value={birthHistoryData?.durationOfLabor || ''}
+                  onInputChange={(_e, newValue) => handleFieldChange('durationOfLabor', newValue)}
+                  options={[]}
+                />
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Autocomplete
+                  label="Feeding method"
+                  options={feedingMethodOptions}
+                  value={birthHistoryData?.feedingMethod || ''}
+                  onChange={(_e, newValue) => handleFieldChange('feedingMethod', newValue)}
+                />
               </Grid>
             </Grid>
           </Grid>
@@ -303,31 +300,33 @@ export function BirthHistory() {
         <SectionHeader>Hospital information</SectionHeader>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
+            <DatePicker
+              convertString
               label="Date in hospital"
-              type="date"
-              fullWidth
               value={birthHistoryData?.dateInHospital || ''}
-              onChange={(e) => handleFieldChange('dateInHospital', e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              onChange={(date: any) => handleFieldChange('dateInHospital', date)}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Hospital name"
               fullWidth
               value={birthHistoryData?.hospitalName || ''}
-              onChange={(e) => handleFieldChange('hospitalName', e.target.value)}
+              onInputChange={(_e, newValue) => handleFieldChange('hospitalName', newValue)}
+              options={[]}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Hospital location"
               fullWidth
               value={birthHistoryData?.hospitalLocation || ''}
-              onChange={(e) => handleFieldChange('hospitalLocation', e.target.value)}
+              onInputChange={(_e, newValue) => handleFieldChange('hospitalLocation', newValue)}
+              options={[]}
             />
           </Grid>
         </Grid>

@@ -68,7 +68,7 @@ export const VitalsPopup = ({ vitals, definition }: { vitals: Database.Flowsheet
                     key={entry.date?.toString()}
                     style={{ display: 'flex', flexDirection: "column", textAlign: "right", padding: "10px 10px 10px 10px" }}
                   >
-                    <span>{new Date(entry.date).toLocaleDateString('en-US', { year: '2-digit', month: '2-digit', day: '2-digit' })}</span>
+                    <span>{Temporal.Instant.from(entry.date).toZonedDateTimeISO('UTC').toPlainDate().toLocaleString('en-US', { year: '2-digit', month: '2-digit', day: '2-digit' })}</span>
                     {processedRows.map((row) => {
                       if (row.name === 'bp') {
                         const { sbp: sys, dbp: dia } = entry;
@@ -95,14 +95,14 @@ export const SidebarVitals = () => {
   const [orders] = useEncounter().orders()
   const [flowsheetDefs] = useDatabase().flowsheets()
 
-  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339" as Database.Flowsheet.Definition.ID) ?? []
-  const vitalsDefinition = flowsheetDefs?.find(f => f.id === "1002339" as Database.Flowsheet.Definition.ID)
-  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
+  const allFlowsheets = flowsheets?.filter((f: any) => f.flowsheet === "1002339" as Database.Flowsheet.Definition.ID) ?? []
+  const vitalsDefinition = flowsheetDefs?.find((f: any) => f.id === "1002339" as Database.Flowsheet.Definition.ID)
+  const vitals2 = filterDocuments(allFlowsheets, conditionals, orders) as Database.Flowsheet.Entry[]
 
-  const _t = (x: Database.Flowsheet.Entry) => new Date(x.date).getTime()
+  const _t = (x: Database.Flowsheet.Entry) => Temporal.Instant.from(new Date(x.date).toISOString()).epochMilliseconds
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
   const mostRecentDate = allVitals[0]?.date;
-  const vitalsDateLabel = mostRecentDate ? ` ${new Date(mostRecentDate).toLocaleDateString()}` : '';
+  const vitalsDateLabel = mostRecentDate ? ` ${Database.JSONDate.toDateString(mostRecentDate)}` : '';
 
   if (!vitalsDefinition) {
     return <i>No vitals definition found</i>

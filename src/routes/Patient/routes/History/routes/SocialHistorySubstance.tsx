@@ -2,10 +2,10 @@ import * as React from 'react';
 import {
   Box,
   Button,
-  TextField,
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
 } from 'components/ui/Core';
 import {
   Checkbox,
@@ -208,13 +208,14 @@ export function SubstanceAndSexualHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Comments"
-              multiline
-              rows={2}
               fullWidth
               value={substanceData?.tobacco?.comments || ''}
-              onChange={(e) => handleDataChange('tobacco', 'comments', e.target.value)}
+              onInputChange={(_e, newValue) => handleDataChange('tobacco', 'comments', newValue)}
+              options={[]}
+              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
@@ -254,68 +255,69 @@ export function SubstanceAndSexualHistory() {
           </Grid>
 
           <Grid size={{ xs: 6, md: 2 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Glasses of wine"
-              type="number"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.wine || ''}
-              onChange={(e) => handleDrinksChange('wine', e.target.value)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.alcohol?.drinksPerWeek?.wine?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDrinksChange('wine', newValue)}
+              options={['0', '1', '2', '3', '7', '14']}
             />
           </Grid>
 
           <Grid size={{ xs: 6, md: 2 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Cans of beer"
-              type="number"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.beer || ''}
-              onChange={(e) => handleDrinksChange('beer', e.target.value)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.alcohol?.drinksPerWeek?.beer?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDrinksChange('beer', newValue)}
+              options={['0', '1', '2', '3', '6', '12']}
             />
           </Grid>
 
           <Grid size={{ xs: 6, md: 2 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Shots of liquor"
-              type="number"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.liquor || ''}
-              onChange={(e) => handleDrinksChange('liquor', e.target.value)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.alcohol?.drinksPerWeek?.liquor?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDrinksChange('liquor', newValue)}
+              options={['0', '1', '2', '3', '5']}
             />
           </Grid>
 
           <Grid size={{ xs: 6, md: 3 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Drinks containing 1.5 oz of alcohol"
-              type="number"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.mixedDrinks || ''}
-              onChange={(e) => handleDrinksChange('mixedDrinks', e.target.value)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.alcohol?.drinksPerWeek?.mixedDrinks?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDrinksChange('mixedDrinks', newValue)}
+              options={['0', '1', '2', '3']}
             />
           </Grid>
 
           <Grid size={{ xs: 6, md: 3 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Standard drinks or equivalent"
-              type="number"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.standardDrinks || ''}
-              onChange={(e) => handleDrinksChange('standardDrinks', e.target.value)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.alcohol?.drinksPerWeek?.standardDrinks?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDrinksChange('standardDrinks', newValue)}
+              options={['0', '1', '2', '3', '7', '14', '21']}
             />
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Comments"
-              multiline
-              rows={2}
               fullWidth
               value={substanceData?.alcohol?.comments || ''}
-              onChange={(e) => handleDataChange('alcohol', 'comments', e.target.value)}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'comments', newValue)}
+              options={[]}
+              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
@@ -349,13 +351,13 @@ export function SubstanceAndSexualHistory() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Use/week"
-              type="number"
               fullWidth
-              value={substanceData?.drugs?.usePerWeek || ''}
-              onChange={(e) => handleDataChange('drugs', 'usePerWeek', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={substanceData?.drugs?.usePerWeek?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('drugs', 'usePerWeek', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5', '6', '7']}
             />
           </Grid>
 
@@ -379,13 +381,14 @@ export function SubstanceAndSexualHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Comments"
-              multiline
-              rows={2}
               fullWidth
               value={substanceData?.drugs?.comments || ''}
-              onChange={(e) => handleDataChange('drugs', 'comments', e.target.value)}
+              onInputChange={(_e, newValue) => handleDataChange('drugs', 'comments', newValue)}
+              options={[]}
+              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
@@ -461,13 +464,14 @@ export function SubstanceAndSexualHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Comments"
-              multiline
-              rows={2}
               fullWidth
               value={substanceData?.sexualActivity?.comments || ''}
-              onChange={(e) => handleDataChange('sexualActivity', 'comments', e.target.value)}
+              onInputChange={(_e, newValue) => handleDataChange('sexualActivity', 'comments', newValue)}
+              options={[]}
+              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>

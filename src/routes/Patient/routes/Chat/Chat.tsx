@@ -32,8 +32,8 @@ export function Chat() {
   const [currentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
-  const allSortedEncounters = Object.values(chart.encounters).sort((a: any, b: any) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
-  const nextEncounter = allSortedEncounters.find((x: any) => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
+  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
+  const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
   const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
   console.log("🩺 allSortedEncounters:", allSortedEncounters);
   console.log("currentEncounter", currentEncounter)

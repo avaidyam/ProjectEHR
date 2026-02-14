@@ -11,11 +11,11 @@ export const SidebarSepsisAlert = () => {
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders()
 
-  const allFlowsheets = flowsheets?.filter(f => f.flowsheet === "1002339") ?? []
+  const allFlowsheets = flowsheets?.filter((f: any) => f.flowsheet === "1002339") ?? []
   const vitals2 = filterDocuments(allFlowsheets, conditionals, orders)
   const labsFiltered = filterDocuments(labs!, conditionals, orders)
 
-  const _t = (x: Database.Flowsheet.Entry) => new Date(x.date).getTime()
+  const _t = (x: Database.Flowsheet.Entry | Database.Lab) => !!x.date ? Temporal.Instant.from(x.date).epochMilliseconds : 0
   const allVitals = (vitals2 ?? []).toSorted((a, b) => _t(b) - _t(a))
 
   const wbcLabs = (labsFiltered ?? [])

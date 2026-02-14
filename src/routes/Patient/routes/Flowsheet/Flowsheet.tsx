@@ -1,12 +1,10 @@
 import * as React from 'react';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
 import { FlowsheetGrid } from './components/FlowsheetGrid';
 import { LeftRail } from './components/LeftRail';
 import { CollapsiblePane } from 'components/ui/CollapsiblePane';
-import { v4 as uuidv4 } from 'uuid';
-
 
 export interface FlowsheetEntry {
   id: string;
@@ -43,11 +41,11 @@ export interface TimeColumn {
   index: number;
 }
 
-const generateId = () => uuidv4();
+const generateId = () => crypto.randomUUID();
 
 const createNowColumn = (): TimeColumn => ({
   id: generateId(),
-  timestamp: new Date().toISOString(),
+  timestamp: Temporal.Now.instant().toString(),
   displayTime: 'Now',
   isCurrentTime: true,
   index: 0,
@@ -102,17 +100,17 @@ export const Flowsheet = () => {
     const groupData = (flowsheetData || []).filter((d: any) => d.flowsheet === activeGroup.id);
 
     const sortedData = groupData.sort((a: any, b: any) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+      Temporal.Instant.from(a.date).epochMilliseconds - Temporal.Instant.from(b.date).epochMilliseconds
     );
 
     const persistedColumns: TimeColumn[] = sortedData.map((d: any, index: number) => ({
       id: d.id,
       timestamp: d.date,
       displayTime: (() => {
-        const dObj = new Date(d.date);
-        const hours = String(dObj.getHours()).padStart(2, '0');
-        const minutes = String(dObj.getMinutes()).padStart(2, '0');
-        return `${hours}${minutes}`;
+        const dObj = Temporal.Instant.from(d.date).toZonedDateTimeISO(Temporal.Now.timeZoneId());
+        const hours = String(dObj.hour).padStart(2, '0');
+        const minutes = String(dObj.minute).padStart(2, '0');
+        return `${hours}${minutes} `;
       })(),
       isCurrentTime: false,
       index: index,
@@ -135,7 +133,7 @@ export const Flowsheet = () => {
         const key = row.name;
         if (d[key] !== undefined && d[key] !== null) {
           flattenedEntries.push({
-            id: `${d.id}::${key}`, // synthetic ID
+            id: `${d.id}::${key} `, // synthetic ID
             rowId: key,
             columnId: d.id,
             value: d[key],
@@ -154,7 +152,7 @@ export const Flowsheet = () => {
 
     const groupData = (flowsheetData || [])
       .filter((d: any) => d.flowsheet === activeGroup.id)
-      .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort((a: any, b: any) => Temporal.Instant.from(a.date).epochMilliseconds - Temporal.Instant.from(b.date).epochMilliseconds);
 
     const lastValues: { [key: string]: string | number } = {};
 
@@ -228,7 +226,7 @@ export const Flowsheet = () => {
 
       const newObj = {
         id: entry.columnId,
-        date: new Date().toISOString(), // Fallback
+        date: Temporal.Now.instant().toString(), // Fallback
         flowsheet: activeGroup?.id,
         [entry.rowId]: entry.value
       };

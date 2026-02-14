@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { Card, FormControl, Icon, InputLabel, MenuItem, TextField, Typography, Select } from '@mui/material'
-import { alpha, Box, Button, ButtonGroup, TitledCard } from 'components/ui/Core'
+import { Card, Stack } from '@mui/material'
+import { alpha, Box, Button, ButtonGroup, TitledCard, Autocomplete, Icon, Label } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
 import { OrderComposer } from './components/OrderComposer'
 import { OrderPicker } from './components/OrderPicker'
@@ -72,50 +72,57 @@ export const OrderCart = () => {
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
         <Card sx={{ m: 1, p: 1 }}>
-          <Box>
+          <Stack direction="row">
             <ButtonGroup sx={{ whiteSpace: 'nowrap' }} size="small">
               <Button>Manage Orders</Button>
               <Button>Order Sets</Button>
             </ButtonGroup>
-            <FormControl sx={{ minWidth: 100 }} size="small">
-              <InputLabel>Options</InputLabel>
-              <Select>
-                <MenuItem>Test</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-          <Box sx={{ pt: 4 }}>
+            <Autocomplete
+              label="Options"
+              options={['Test']}
+              size="small"
+              sx={{ flexGrow: 1 }}
+            />
+          </Stack>
+          <Stack direction="row" sx={{ pt: 4 }}>
             <Button><Icon>person_outline</Icon>Providers</Button>
             <Button><Icon>edit</Icon>Edit Multiple</Button>
-          </Box>
-          <Box>
-            <Box>
-              <TextField
+          </Stack>
+          <Stack direction="column">
+            <Stack direction="row">
+              <Autocomplete
+                freeSolo
                 label="Add orders or order sets"
                 size="small"
-                sx={{ minWidth: 300 }}
-                variant="outlined"
-                inputRef={inputRef}
+                options={[]}
+                value={searchTerm}
+                onChange={(_e, newValue: any) => {
+                  setSearchTerm(newValue || '')
+                  if (newValue) startSearch();
+                }}
+                onInputChange={(_e, newInputValue) => setSearchTerm(newInputValue)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter')
                     startSearch()
                 }}
+                sx={{ flexGrow: 1 }}
               />
               <Button variant="outlined" onClick={startSearch}>
                 <Icon color="success">add</Icon> New
               </Button>
-            </Box>
-            <Box>
-              <FormControl sx={{ minWidth: 300 }} size="small">
-                <Select value="">
-                  <MenuItem value='test'>Test</MenuItem>
-                </Select>
-              </FormControl>
+            </Stack>
+            <Stack direction="row">
+              <Autocomplete
+                size="small"
+                options={['test']}
+                value=""
+                sx={{ flexGrow: 1 }}
+              />
               <Button variant="outlined" disabled>
                 <Icon color="error">error</Icon> Next
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </Stack>
         </Card>
         {(Object.keys(categories) as (keyof typeof categories)[])
           .filter(category => orderCart.filter((x: any) => getCategoryForOrder(x) === category).length > 0)
@@ -123,13 +130,13 @@ export const OrderCart = () => {
             <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
               {orderCart.filter((x: any) => getCategoryForOrder(x) === category).map((order: any) => (
                 <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
-                  <Typography variant="body1">{order.name}</Typography>
-                  <Typography fontSize="9pt" sx={{ color: categories[category].color }}>
+                  <Label variant="body1">{order.name}</Label>
+                  <Label fontSize="9pt" sx={{ color: categories[category].color }}>
                     {order.dose}
-                  </Typography>
-                  <Typography fontSize="8pt" color="grey">
+                  </Label>
+                  <Label fontSize="8pt" color="grey">
                     {order.route}, {order.frequency}, {order['Refills']} refills
-                  </Typography>
+                  </Label>
                   <Button
                     sx={{
                       display: 'flex',
@@ -183,7 +190,7 @@ export const OrderCart = () => {
           setOpenSearchList(null)
           if (item !== null) {
             if (Array.isArray(item)) {
-              const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: new Date(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
+              const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: Temporal.Now.instant().toString(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
               setOrderCart((prev: any) => prev.upsert(newItems, "id"))
             } else {
               setOpenOrder(item)

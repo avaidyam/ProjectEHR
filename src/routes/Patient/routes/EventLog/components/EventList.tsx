@@ -2,8 +2,25 @@ import * as React from 'react';
 import { List, Popover, Typography } from '@mui/material';
 import { Box, Stack, Icon, Label, Button, Divider } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
-import { formatComponentDate } from 'util/helpers';
 
+/**
+ * Formats a date for display in the component popover (MM/DD/YY HHmm format)
+ * @param {string} date - The ISO date string to format
+ * @returns {string} - Formatted date string
+ */
+function formatComponentDate(date: any) {
+  try {
+    const d = Temporal.PlainDateTime.from(date);
+    const month = String(d.month).padStart(2, '0');
+    const day = String(d.day).padStart(2, '0');
+    const year = String(d.year).slice(-2);
+    const hours = String(d.hour).padStart(2, '0');
+    const minutes = String(d.minute).padStart(2, '0');
+    return `${month}/${day}/${year} ${hours}${minutes}`;
+  } catch {
+    return '';
+  }
+}
 const ComponentPopover = ({ item, historyData }: { item: any; historyData: any }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const isAbnormal = item.flag === 'H' || item.flag === 'L';
@@ -130,10 +147,11 @@ const EventItem = ({ event, categories, componentHistory, flowsheetHistory }: { 
   const color = filter?.color ?? '#9e9e9e';
   const icon = filter?.icon ?? 'help_outline';
 
-  const dateObj = new Date(event.timestamp);
-  const timeString = isNaN(dateObj.getTime())
-    ? event.timestamp
-    : `${dateObj.getHours().toString().padStart(2, '0')}${dateObj.getMinutes().toString().padStart(2, '0')}`;
+  let timeString = event.timestamp;
+  try {
+    const zdt = Temporal.Instant.from(event.timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId());
+    timeString = `${String(zdt.hour).padStart(2, '0')}${String(zdt.minute).padStart(2, '0')}`;
+  } catch { /* keep original */ }
 
   const handleClick = () => {
     const category = event.category?.toLowerCase();
@@ -197,18 +215,24 @@ const EventItem = ({ event, categories, componentHistory, flowsheetHistory }: { 
   );
 };
 
-const formatDateHeader = (date: Date) => {
+const formatDateHeader = (dateKey: string) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const currentYear = new Date().getFullYear();
-  const dateYear = date.getFullYear();
-  const base = `${months[date.getMonth()]} ${date.getDate()}`;
-  return dateYear !== currentYear ? `${base}, ${dateYear}` : base;
+  try {
+    const pd = Temporal.Instant.from(dateKey).toZonedDateTimeISO('UTC');
+    const currentYear = Temporal.Now.plainDateISO().year;
+    const base = `${months[pd.month - 1]} ${pd.day}`;
+    return pd.year !== currentYear ? `${base}, ${pd.year}` : base;
+  } catch {
+    return dateKey;
+  }
 };
 
 const getDateKey = (timestamp: string) => {
-  const date = new Date(timestamp);
-  if (isNaN(date.getTime())) return 'Unknown';
-  return date.toISOString().split('T')[0];
+  try {
+    return Temporal.Instant.from(timestamp).toZonedDateTimeISO(Temporal.Now.timeZoneId()).toPlainDate().toString();
+  } catch {
+    return 'Unknown';
+  }
 };
 
 const DateHeader = ({ date, dateKey }: { date: string; dateKey: string }) => (
@@ -241,13 +265,18 @@ export const EventList = ({ events, categories, componentHistory, flowsheetHisto
     return groups;
   }, {} as Record<string, any[]>);
 
-  const sortedDateKeys = Object.keys(groupedEvents).sort((a: string, b: string) => new Date(b).getTime() - new Date(a).getTime());
+  const sortedDateKeys = Object.keys(groupedEvents).sort((a: string, b: string) => {
+    try {
+      return Temporal.Instant.compare(Temporal.Instant.from(b), Temporal.Instant.from(a));
+    } catch {
+      return 0;
+    }
+  });
 
   return (
     <List sx={{ width: '100%', p: 0 }}>
       {sortedDateKeys.map((dateKey) => {
-        const dateObj = new Date(dateKey);
-        const dateLabel = isNaN(dateObj.getTime()) ? dateKey : formatDateHeader(dateObj);
+        const dateLabel = formatDateHeader(dateKey);
         return (
           <Box key={dateKey}>
             <DateHeader date={dateLabel} dateKey={dateKey} />

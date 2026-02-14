@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Box, Button, MenuItem, Tab, TabList, TabPanel, TabView, TextField } from 'components/ui/Core';
-import { FormControl, Select, IconButton, Grid, Checkbox, Typography, Icon, Popover } from '@mui/material';
+import { Box, Button, MenuItem, Tab, TabList, TabPanel, TabView, Autocomplete } from 'components/ui/Core';
+import { IconButton, Grid, Checkbox, Typography, Icon, Popover } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
 
 const systemsTemplate = {
@@ -540,17 +540,21 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
         }}
       >
         <Box sx={{ p: 2, width: 300 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             autoFocus
             fullWidth
-            multiline
-            minRows={3}
-            maxRows={6}
+            options={[]}
             value={tempNote}
-            onChange={(e) => setTempNote(e.target.value)}
-            placeholder={`Add note for ${title}...`}
-            variant="outlined"
-            size="small"
+            onInputChange={(_e, newValue) => setTempNote(newValue)}
+            TextFieldProps={{
+              multiline: true,
+              minRows: 3,
+              maxRows: 6,
+              placeholder: `Add note for ${title}...`,
+              variant: "outlined",
+              size: "small"
+            }}
           />
         </Box>
       </Popover>

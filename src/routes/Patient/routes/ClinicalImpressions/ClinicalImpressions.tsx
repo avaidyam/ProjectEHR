@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core';
+import { Box, Button, Icon, Stack, TreeView, TreeItem, Label, Autocomplete } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
 
@@ -53,24 +53,29 @@ export const ClinicalImpressions = () => {
     <Stack direction="column" spacing={2} sx={{ padding: 2, textAlign: 'left' }}>
       <Label variant="h6" sx={{ mb: 1, display: 'block' }}>Clinical Impressions</Label>
       <Stack direction="row">
-        <TextField
-          placeholder="Add a new impression"
+        <Autocomplete
+          freeSolo
+          fullWidth
+          disableClearable
+          label="Add a new impression"
           value={searchTerm}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          onInputChange={(_e, newValue) => setSearchTerm(newValue)}
+          onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleOpenModal(searchTerm);
             }
           }}
-          InputProps={{
-            endAdornment:
-              <Button
-                variant="text"
-                onClick={() => handleOpenModal(searchTerm)}
-                sx={{ height: '56px' }}
-              >
-                <Icon color="success">add_task</Icon> Add
-              </Button>
+          options={[]}
+          TextFieldProps={{
+            InputProps: {
+              endAdornment:
+                <Button
+                  variant="text"
+                  onClick={() => handleOpenModal(searchTerm)}
+                >
+                  <Icon color="success">add_task</Icon> Add
+                </Button>
+            }
           }}
         />
       </Stack>

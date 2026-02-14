@@ -1,8 +1,7 @@
 // eslint-disable-file no-nested-ternary
 import React from "react"
-// @ts-ignore
-import { debounce } from "lodash"
-import dayjs2 from "dayjs"
+import { debounce } from "../../util/helpers"
+
 import {
   alpha as MUIalpha,
   Box as MUIBox,
@@ -21,6 +20,7 @@ import {
   Divider as MUIDivider,
   Paper as MUIPaper,
   Chip as MUIChip,
+  Checkbox as MUICheckbox,
   Table as MUITable,
   TableHead as MUITableHead,
   TableBody as MUITableBody,
@@ -47,6 +47,7 @@ import {
   DividerProps,
   PaperProps,
   ChipProps,
+  CheckboxProps,
   TableProps,
   TableHeadProps,
   TableBodyProps,
@@ -56,7 +57,9 @@ import {
   TabProps,
   MenuProps,
   MenuItemProps,
-  ToggleButtonGroupProps
+  ToggleButtonGroupProps,
+  InputAdornment as MUIInputAdornment,
+  TextFieldVariants
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -73,6 +76,11 @@ import {
   DatePickerProps,
   DateTimePickerProps
 } from '@mui/x-date-pickers-pro'
+import {
+  TemporalPlainDateProvider,
+  TemporalPlainDateTimeProvider,
+  TemporalZonedDateTimeProvider
+} from 'mui-temporal-pickers'
 import {
   DataGridPremium as MUIDataGrid,
   useGridApiRef as MUIuseGridApiRef,
@@ -98,16 +106,22 @@ import {
   Editor as MUIEditor,
   EditorReadOnly as MUIEditorReadOnly
 } from './Editor'
+import {
+  ErrorBoundary as ReactErrorBoundary
+} from 'react-error-boundary'
 
 LicenseInfo.setLicenseKey("")
 
 // Add an alpha value dynamically to any color string.
 export const alpha = (_color: string, _alpha: number) => MUIalpha(_color, _alpha)
 
-// Re-export dayjs from the library
-export const dayjs = dayjs2
+export const ErrorBoundary: React.FC<React.PropsWithChildren> = ({ children }) => (
+  <ReactErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+    {children}
+  </ReactErrorBoundary>
+)
 
-export const Box = React.forwardRef<any, BoxProps & { paper?: boolean, elevation?: number }>(({ paper, children, ...props }, ref) => {
+export const Box = React.forwardRef<any, BoxProps & PaperProps & { paper?: boolean }>(({ paper, children, ...props }, ref) => {
   if (paper === true)
     return (<MUIPaper ref={ref} {...props as any}>{children}</MUIPaper>)
   return (<MUIBox ref={ref} {...props as any}>{children}</MUIBox>)
@@ -140,25 +154,30 @@ export const RichTextEditor: React.FC<any> = ({ ...props }) => (
   <MUIEditor {...props} />
 )
 
-export const TextField: React.FC<TextFieldProps> = ({ label, value, onChange, ...props }) => (
-  <MUITextField
-    label={label}
-    value={value}
-    onChange={onChange}
-    variant="outlined"
-    fullWidth
-    {...props}
-  />
-)
-
-export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, options, value, onChange, TextFieldProps, ...props }) => (
+export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, variant?: TextFieldVariants, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, variant, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
-    fullWidth
     options={options}
     value={value}
     onChange={onChange}
-    // @ts-ignore
-    renderInput={(params) => <TextField {...params} variant="outlined" label={label} {...TextFieldProps} />}
+    renderInput={(params) => (
+      <MUITextField
+        {...params}
+        {...TextFieldProps}
+        variant={variant ?? "outlined"}
+        label={label}
+        placeholder={placeholder}
+        InputProps={{
+          ...params.InputProps,
+          ...TextFieldProps?.InputProps,
+          startAdornment: TextFieldProps?.InputProps?.startAdornment ?
+            <MUIInputAdornment position="start">{params.InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
+            params.InputProps.startAdornment,
+          endAdornment: TextFieldProps?.InputProps?.endAdornment ?
+            <MUIInputAdornment position="end">{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
+            params.InputProps.endAdornment
+        }}
+      />
+    )}
     {...props}
   />
 )
@@ -213,6 +232,10 @@ export const Chip: React.FC<ChipProps> = ({ children, ...props }) => (
   <MUIChip label={children} {...props} />
 )
 
+export const Checkbox: React.FC<CheckboxProps> = ({ ...props }) => (
+  <MUICheckbox {...props} />
+)
+
 // FIXME: Set default verticalAlign=text-top for Icon?
 
 // To see a complete list of icons, visit: https://fonts.google.com/icons
@@ -230,7 +253,7 @@ export const Divider: React.FC<DividerProps> = ({ ...props }) => (
 
 // Use this to space out a stack: [Content -----Spacer----- Content]
 export const Spacer: React.FC<BoxProps> = ({ ...props }) => (
-  <Box {...props} sx={{ flexGrow: 1 }} />
+  <MUIBox {...props} sx={{ flexGrow: 1 }} />
 )
 
 // FIXME: Pass props for TableHead, TableBody, TableRow, and TableCell.
@@ -324,12 +347,33 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
-export const DatePicker: React.FC<DatePickerProps<any>> = ({ ...props }) => (
-  <MUIDatePicker {...props} />
+export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainDateProvider>
+      <MUIDatePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        slotProps={!!size ? { textField: { size } } : undefined}
+        {...props}
+      />
+    </TemporalPlainDateProvider>
+  </ErrorBoundary>
 )
 
-export const DateTimePicker: React.FC<DateTimePickerProps<any>> = ({ ...props }) => (
-  <MUIDateTimePicker {...props} />
+// wraps the Temporal conversion to JSONDate for you
+export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainDateTimeProvider>
+      <MUIDateTimePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
+        slotProps={!!size ? { textField: { size } } : undefined}
+        {...props}
+      />
+    </TemporalPlainDateTimeProvider>
+  </ErrorBoundary>
 )
 
 export const Tab: React.FC<TabProps> = ({ children, ...props }) => (

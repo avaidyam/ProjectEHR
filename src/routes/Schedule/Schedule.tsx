@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { AuthContext } from 'components/contexts/AuthContext';
-import { Avatar, Badge, Box, Checkbox, FormControl, FormControlLabel, MenuItem, Select, Icon, Tooltip, Typography } from '@mui/material';
+import { Avatar, Badge, Checkbox, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker, Button, Window, Label, IconButton } from 'components/ui/Core';
+import { DataGrid, DatePicker, Box, Icon, Autocomplete } from 'components/ui/Core';
 import { useRouter } from 'util/helpers';
 import { Notification } from '../Login/components/Notification';
 import { useDatabase, Database } from 'components/contexts/PatientContext'
@@ -25,8 +24,8 @@ function customFilterBar({
   setHide
 }: {
   setFilterElem: React.RefObject<HTMLButtonElement>,
-  selectedDate: dayjs.Dayjs,
-  setSelectedDate: (date: dayjs.Dayjs | null) => void,
+  selectedDate: Temporal.PlainDate,
+  setSelectedDate: (date: Temporal.PlainDate | null) => void,
   selectedDept: string,
   setSelectedDept: (dept: string) => void,
   schedulesDB: Database.Schedule[],
@@ -42,22 +41,18 @@ function customFilterBar({
     <GridToolbarContainer sx={{ gap: 2, alignItems: 'center', justifyContent: "flex-start" }}>
       <GridToolbarFilterButton ref={setFilterElem} />
       <DatePicker
+        convertString
         value={selectedDate}
         onChange={(newValue) => setSelectedDate(newValue)}
       />
-      <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-        <Select
-          value={selectedDept}
-          onChange={(e) => setSelectedDept(e.target.value)}
-          displayEmpty
-        >
-          {schedulesDB.map((s) => (
-            <MenuItem key={s.department} value={s.department}>
-              {departments.find((d) => d.id === s.department)?.name || `Dept ${s.department}`}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Autocomplete
+        disableClearable
+        options={schedulesDB.map(s => ({ id: s.department, label: departments.find(d => d.id === s.department)?.name || `Dept ${s.department}` }))}
+        value={selectedDept}
+        onChange={(_e, newValue: any) => setSelectedDept(newValue?.id)}
+        getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : option.label}
+        sx={{ width: 250 }}
+      />
       <FormControlLabel
         onClick={() => {
           setOpen(!open);
@@ -68,15 +63,6 @@ function customFilterBar({
         label="Preview"
       />
     </GridToolbarContainer>
-  );
-}
-
-// display circle badge by noted color
-function changeBadge(badgeColor: React.CSSProperties['color']) {
-  return (
-    <Badge>
-      <Icon style={{ color: badgeColor }}>circle</Icon>
-    </Badge>
   );
 }
 
@@ -186,21 +172,21 @@ export function Schedule() {
   const [filterElem, setFilterElem] = React.useState(null); // for filter
   const { enabledEncounters } = React.useContext(AuthContext) as any; // Access the enabled encounters
 
-  const { department, date } = useParams();
+  const { department, _date } = useParams();
+  const date = !!_date ? Temporal.PlainDate.from(_date).toZonedDateTime('UTC').toInstant().toString() as Database.JSONDate : undefined
   const navigate = useNavigate();
 
   const [selPatient, setPatient] = React.useState<Database.Appointment | null>(null);
 
-  // Initialize state from URL or defaults
   const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
-  const initialDate = date ? dayjs(date) : dayjs()//dayjs('2026-01-01')
+  const initialDate = date ?? Temporal.Now.instant().toString()//"2026-01-01"
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
-  const [selectedDate, setSelectedDate] = React.useState(initialDate);
+  const [selectedDate, setSelectedDate] = React.useState(initialDate as Database.JSONDate);
 
   // Update URL function
-  const updateUrl = (dept: Database.Department.ID, dateObj: dayjs.Dayjs) => {
-    const dateStr = dateObj.format('YYYY-MM-DD');
+  const updateUrl = (dept: Database.Department.ID, dateObj: Database.JSONDate) => {
+    const dateStr = Temporal.Instant.from(dateObj).toZonedDateTimeISO('UTC').toPlainDate().toString();
     navigate(`/schedule/${dept}/${dateStr}`, { replace: true });
   };
 
@@ -210,7 +196,7 @@ export function Schedule() {
     updateUrl(dept, selectedDate);
   };
 
-  const handleSetSelectedDate = (date: dayjs.Dayjs) => {
+  const handleSetSelectedDate = (date: Database.JSONDate) => {
     setSelectedDate(date);
     updateUrl(selectedDept, date);
   };
@@ -221,13 +207,17 @@ export function Schedule() {
       setSelectedDept(department);
     }
     if (date) {
-      setSelectedDate(dayjs(date));
+      setSelectedDate(date);
     }
   }, [department, date]);
 
   const scheduleDB = React.useMemo(() => {
     const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+    return deptSchedule.filter((appt) => {
+      const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
+      const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
+      return apptDate.equals(selectedPlainDate);
+    });
   }, [schedulesDB, selectedDept, selectedDate]);
 
   const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
@@ -264,7 +254,7 @@ export function Schedule() {
               {selPatient ? (
                 <>
                   Name: {patientsDB[selPatient.patient.mrn].firstName} {patientsDB[selPatient.patient.mrn].lastName} <br />
-                  Age: {(new Date(patientsDB[selPatient.patient.mrn].birthdate)).age()} <br />
+                  Age: {Database.JSONDate.toAge(patientsDB[selPatient.patient.mrn].birthdate)} <br />
                   Gender: {patientsDB[selPatient.patient.mrn].gender} <br />
                   CC: {selPatient.cc} <br />
                   Notes: {selPatient.notes}
@@ -293,20 +283,20 @@ export function Schedule() {
                 headerName: '',
                 sortable: false,
                 width: 100,
-                renderCell: () => {
+                renderCell: (params) => {
                   return (
-                    <FormControl>
-                      <Select defaultValue="gray">
-                        <MenuItem value="white">{changeBadge('white')}</MenuItem>
-                        <MenuItem value="gray">{changeBadge('gray')}</MenuItem>
-                        <MenuItem value="red">{changeBadge('red')}</MenuItem>
-                        <MenuItem value="orange">{changeBadge('orange')}</MenuItem>
-                        <MenuItem value="yellow">{changeBadge('yellow')}</MenuItem>
-                        <MenuItem value="green">{changeBadge('green')}</MenuItem>
-                        <MenuItem value="blue">{changeBadge('blue')}</MenuItem>
-                        <MenuItem value="purple">{changeBadge('purple')}</MenuItem>
-                      </Select>
-                    </FormControl>
+                    <Autocomplete
+                      disableClearable
+                      options={['gray', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']}
+                      defaultValue="gray"
+                      sx={{ width: 64 }}
+                      renderOption={(props, option) => (
+                        <li {...props}>
+                          <Badge><Icon style={{ color: option }}>circle</Icon></Badge>
+                        </li>
+                      )}
+                      renderValue={(value) => <Badge><Icon style={{ color: value }}>circle</Icon></Badge>}
+                    />
                   );
                 },
               },
@@ -315,8 +305,8 @@ export function Schedule() {
                 headerName: 'Time',
                 width: 100,
                 renderCell: (params) => (
-                  <Tooltip title={new Date(params.value).toLocaleString()}>
-                    <span>{new Date(params.value).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</span>
+                  <Tooltip title={Temporal.Instant.from(params.value).toLocaleString()}>
+                    <span>{Temporal.Instant.from(params.value).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                   </Tooltip>
                 ),
               },
@@ -350,7 +340,7 @@ export function Schedule() {
                           {data.lastName}, {data.firstName} ({data.id})
                         </Typography>
                         <Typography color="textSecondary" fontSize="12px">
-                          {(new Date(data.birthdate)).age()} years old / {data.gender}
+                          {Database.JSONDate.toAge(data.birthdate)} years old / {data.gender}
                         </Typography>
                       </Box>
                     </Box>
@@ -358,8 +348,7 @@ export function Schedule() {
                 },
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
-                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${(new Date(data.birthdate)).age()
-                    } years old / ${data.gender}`;
+                  return `${data.lastName || ''}, ${data.firstName || ''} \n (${data.id}) ${Database.JSONDate.toAge(data.birthdate)} years old / ${data.gender}`;
                 },
               },
               {
@@ -399,7 +388,7 @@ export function Schedule() {
                 valueGetter: (value, row) => {
                   const data = patientsDB[row.patient.mrn]
                   const providerId = data.encounters[row.patient.enc]?.provider;
-                  const provider = providers.find((p) => p.id === providerId);
+                  const provider = providers.find((p: Database.Provider) => p.id === providerId);
                   return provider ? provider.name : providerId;
                 },
               },
@@ -435,7 +424,7 @@ export function Schedule() {
               // } // FIXME later
               if (
                 !(Object.values(patientsDB[selectedMRN]
-                  .encounters)).map((x) => x.id)
+                  .encounters)).map((x: any) => x.id)
                   .includes(selectedEnc)
               ) {
                 alert(

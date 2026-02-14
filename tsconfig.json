@@ -1,12 +1,26 @@
 {
-  "include": ["src/**/*"],
-  "exclude": ["node_modules","build"],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ],
   "compilerOptions": {
     "baseUrl": "src",
-    "target": "es2015",
+    "paths": {
+      "teaful": [
+        "../node_modules/teaful/dist/index.d.ts"
+      ]
+    },
+    "target": "es2017",
     "module": "esnext",
-    "moduleResolution": "node",
-    "lib": ["dom","dom.iterable","esnext"],
+    "moduleResolution": "bundler",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "strict": true,
     "allowJs": true,
     "jsx": "react-jsx",

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Paper, Box, TextField, Button, Typography, Stack } from "@mui/material";
+import { Box, Button, Stack, Autocomplete } from "components/ui/Core";
 import { useGeminiAPIContext } from "../utils/GeminiAPI";
 
 export function ChatPanel() {
@@ -29,11 +29,11 @@ export function ChatPanel() {
 
   return (
     <Stack spacing={2} sx={{ height: '100%' }}>
-      <Paper variant="outlined" sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
+      <Box paper variant="outlined" sx={{ flexGrow: 1, overflowY: "auto", p: 2 }}>
         <Stack spacing={1.5}>
           {messages.map((msg: any, i: number) => (
             <Box key={i} display="flex" justifyContent={msg.role === "user" ? "flex-end" : "flex-start"}>
-              <Typography
+              <Box paper
                 sx={{
                   bgcolor: msg.role === "user" ? "primary.main" : "secondary.main",
                   color: "white",
@@ -46,22 +46,23 @@ export function ChatPanel() {
                 }}
               >
                 {msg.parts.map((x: any) => x.text).join("\n")}
-              </Typography>
+              </Box>
             </Box>
           ))}
         </Stack>
-      </Paper>
-      <TextField
+      </Box>
+      <Autocomplete
+        freeSolo
         fullWidth
-        size="small"
-        variant="outlined"
         placeholder="Ask the patient..."
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onInputChange={(_e, newValue) => setInput(newValue)}
         onKeyDown={(e) => e.key === "Enter" && sendMessage2()}
         disabled={loading}
-        slotProps={{
-          input: {
+        options={[]}
+        TextFieldProps={{
+          size: "small",
+          InputProps: {
             endAdornment: (
               <Button
                 color="primary"
@@ -77,6 +78,3 @@ export function ChatPanel() {
     </Stack>
   );
 }
-
-
-

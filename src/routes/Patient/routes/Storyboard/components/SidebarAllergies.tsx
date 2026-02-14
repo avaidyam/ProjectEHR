@@ -9,7 +9,7 @@ export const SidebarAllergies = () => {
   return (
     <>
       {allergies && allergies.length > 0 ? (
-        allergies.some(a => a.severity?.toLowerCase() === 'high') ? (
+        allergies.some((a: any) => a.severity?.toLowerCase() === 'high') ? (
           <Alert
             icon={false}
             sx={{
@@ -19,10 +19,10 @@ export const SidebarAllergies = () => {
               fontWeight: 'bold',
             }}
           >
-            Allergies: {allergies.map(a => a.allergen).join(", ")}
+            Allergies: {allergies.map((a: any) => a.allergen).join(", ")}
           </Alert>
         ) : (
-          <span>Allergies: {allergies.map(a => a.allergen).join(", ")}</span>
+          <span>Allergies: {allergies.map((a: any) => a.allergen).join(", ")}</span>
         )
       ) : (
         <span>Allergies: None on file</span>

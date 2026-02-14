@@ -19,7 +19,7 @@ export const NoteViewer = ({ data }: { data: Database.Note }) => {
           <Label>{data.status}</Label>
         </Stack>
       </Stack>
-      <Label><span style={{ color: '#888' }}>Date of Service:</span> {data.serviceDate.toString()}</Label>
+      <Label><span style={{ color: '#888' }}>Date of Service:</span> {Database.JSONDate.toDateString(data.serviceDate)}</Label>
       <Divider sx={{ mb: 1 }} />
       <Label bold sx={data.status === "Incomplete" ? { color: 'error.main' } : { display: "none" }}>Incomplete</Label>
       <Box sx={{ p: 1, pt: 0, ...(data.status === "Incomplete" ? { borderLeft: 4, borderColor: "error.main" } : {}) }}>

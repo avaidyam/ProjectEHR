@@ -6,14 +6,13 @@ import {
   Icon,
   IconButton,
   DataGrid,
-  TextField,
-  MenuItem,
   Autocomplete,
   Label,
-  Grid
+  Grid,
+  DatePicker,
 } from 'components/ui/Core';
 import { Checkbox, FormControlLabel, colors } from '@mui/material';
-import dayjs from 'dayjs';
+
 import { usePatient, Database } from 'components/contexts/PatientContext';
 
 const dummyAgents = [
@@ -63,18 +62,25 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
               <FieldLabel>Agent</FieldLabel>
               {formData.isNew ? (
                 <Autocomplete
+                  freeSolo
                   fullWidth
                   size="small"
                   options={dummyAgents}
                   getOptionLabel={(option) => option.allergen || ''}
-                  onChange={(e, newVal) => {
-                    setFormData((prev: any) => ({
-                      ...prev,
-                      allergen: newVal?.allergen || '',
-                      type: newVal?.type || prev.type
-                    }));
+                  onChange={(e, newVal: any) => {
+                    setFormData((prev: any) => {
+                      const allergen = typeof newVal === 'string' ? newVal : newVal?.allergen;
+                      const type = typeof newVal === 'string' ? Database.Allergy.Type.Other : (newVal?.type || prev.type);
+                      return {
+                        ...prev,
+                        allergen: allergen || '',
+                        type: type
+                      };
+                    });
                   }}
-                  renderInput={(params: any) => <TextField {...params} />}
+                  onInputChange={(e, newInputValue) => {
+                    setFormData((prev: any) => ({ ...prev, allergen: newInputValue }));
+                  }}
                   renderOption={(props, option) => (
                     <li {...props}>
                       <Grid container alignItems="center">
@@ -93,13 +99,13 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
                   )}
                 />
               ) : (
-                <TextField
+                <Autocomplete
+                  freeSolo
                   fullWidth
                   size="small"
-                  name="allergen"
                   value={formData.allergen}
-                  disabled
-                  sx={{ '& .MuiInputBase-input': { bgcolor: 'grey.100' } }}
+                  options={[]}
+                  TextFieldProps={{ disabled: true, sx: { '& .MuiInputBase-input': { bgcolor: 'grey.100' } } }}
                 />
               )}
             </Stack>
@@ -118,8 +124,8 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
                     size="small"
                     options={Object.values(Database.Allergy.Reaction)}
                     value={formData.reaction}
-                    onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, reaction: newVal }))}
-                    renderInput={(params: any) => <TextField {...params} />}
+                    onChange={(e, newVal: any) => setFormData((prev: any) => ({ ...prev, reaction: newVal || '' }))}
+                    onInputChange={(e, newInputValue) => setFormData((prev: any) => ({ ...prev, reaction: newInputValue }))}
                     disableClearable
                   />
                 </Stack>
@@ -132,20 +138,15 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
                       options={Object.values(Database.Allergy.Severity)}
                       value={formData.severity}
                       onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, severity: newVal }))}
-                      renderInput={(params: any) => <TextField {...params} />}
                       disableClearable
                     />
                   </Stack>
                   <Stack direction="row" alignItems="center">
-                    <Label variant="caption" sx={{ minWidth: 60, color: 'text.secondary' }}>Noted:</Label>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      size="small"
-                      name="recorded"
+                    <DatePicker
+                      convertString
+                      label="Noted"
                       value={formData.recorded}
-                      onChange={handleChange}
-                      InputLabelProps={{ shrink: true }}
+                      onChange={(date) => setFormData((prev: any) => ({ ...prev, recorded: date }))}
                     />
                   </Stack>
                 </Stack>
@@ -159,7 +160,6 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
                   options={Object.values(Database.Allergy.ReactionType)}
                   value={formData.reactionType}
                   onChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, reactionType: newVal }))}
-                  renderInput={(params: any) => <TextField {...params} />}
                   disableClearable
                 />
               </Stack>
@@ -169,14 +169,13 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
 
         <Grid size={{ xs: 12, md: 6.5 }}>
           <Stack spacing={1} sx={{ height: '100%' }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               fullWidth
-              multiline
-              rows={6}
-              name="comment"
+              TextFieldProps={{ multiline: true, rows: 6, sx: { '& .MuiInputBase-root': { py: 1 } } }}
               value={formData.comment}
-              onChange={handleChange}
-              sx={{ '& .MuiInputBase-root': { py: 1 } }}
+              options={[]}
+              onInputChange={(e, newVal) => setFormData((prev: any) => ({ ...prev, comment: newVal }))}
             />
           </Stack>
         </Grid>
@@ -282,7 +281,7 @@ export const Allergies = () => {
       reactionType: Database.Allergy.ReactionType.Unknown,
       recorded: '',
       comment: '',
-      resovled: false,
+      resolved: false,
       verified: false,
       recorder: '',
       isNew: true
@@ -295,7 +294,7 @@ export const Allergies = () => {
   const handleReviewedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReviewed(e.target.checked);
     if (e.target.checked) {
-      setLastReviewed(dayjs().format('MMM D, YYYY h:mm A'));
+      setLastReviewed(Temporal.Now.instant().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }));
     }
   };
 
@@ -339,7 +338,7 @@ export const Allergies = () => {
       field: 'recorded',
       headerName: 'Noted',
       width: 120,
-      valueFormatter: (params: any) => params.value ? dayjs(params.value).format('MM-DD-YYYY') : ''
+      valueFormatter: (params: any) => params.value ? Temporal.Instant.from(params.value).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : ''
     },
     {
       field: 'actions',
