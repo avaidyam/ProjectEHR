@@ -56,6 +56,7 @@ export const ClinicalImpressions = () => {
         <Autocomplete
           freeSolo
           fullWidth
+          disableClearable
           label="Add a new impression"
           value={searchTerm}
           onInputChange={(_e, newValue) => setSearchTerm(newValue)}
@@ -71,11 +72,10 @@ export const ClinicalImpressions = () => {
                 <Button
                   variant="text"
                   onClick={() => handleOpenModal(searchTerm)}
-                  sx={{ height: '56px' }}
                 >
                   <Icon color="success">add_task</Icon> Add
                 </Button>
-            } as any
+            }
           }}
         />
       </Stack>

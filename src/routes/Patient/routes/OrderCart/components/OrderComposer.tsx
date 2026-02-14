@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Button, ButtonGroup, Autocomplete, RichTextEditor, Icon, Label, Grid, Window, DatePicker } from 'components/ui/Core';
-import { Typography } from '@mui/material';
+import { TextField } from '@mui/material';
 
 /**
  * Parse a dose string like "500 mg Tab" or "100 mg/5ml Susp" to extract:
@@ -704,15 +704,14 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                 isDoseCalculable ? (
                   // Calculable medications: show dose input + formulation buttons
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                    <Autocomplete
-                      freeSolo
-                      fullWidth={false}
+                    <TextField
                       size="small"
+                      placeholder="Enter dose"
+                      type="number"
                       value={doseAmount}
-                      options={[]}
-                      onInputChange={(e, newVal) => setDoseAmount(newVal)}
+                      onChange={(e) => setDoseAmount(e.target.value)}
                       sx={{ width: 120 }}
-                      TextFieldProps={{ placeholder: "Enter dose", type: 'number', inputProps: { min: 0, step: "any" } }}
+                      inputProps={{ min: 0, step: "any" }}
                     />
                     <Autocomplete
                       size="small"
@@ -775,9 +774,9 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                         </Button>
                       ))}
                     </ButtonGroup>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
+                    <Label variant="body2" sx={{ color: 'text.secondary', fontStyle: 'italic' }}>
                       {getNonCalculableDescription(selectedFormulation)}
-                    </Typography>
+                    </Label>
                   </Box>
                 )
               ) : (
@@ -840,11 +839,11 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                     borderRadius: 1,
                     minHeight: 32
                   }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                    <Label variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                       Calculated dose:
-                    </Typography>
+                    </Label>
                     {calculatedDoseDisplay ? (
-                      <Typography
+                      <Label
                         variant="body2"
                         sx={{
                           fontWeight: 600,
@@ -854,19 +853,19 @@ export const OrderComposer = ({ medication: tempMed, open, onSelect, ...props }:
                         }}
                       >
                         {calculatedDoseDisplay}
-                      </Typography>
+                      </Label>
                     ) : doseAmount && !selectedFormulation ? (
-                      <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+                      <Label variant="body2" sx={{ color: 'text.disabled' }}>
                         Select a formulation
-                      </Typography>
+                      </Label>
                     ) : doseAmount && selectedFormulation && !parsedFormulation ? (
-                      <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+                      <Label variant="body2" sx={{ color: 'text.disabled' }}>
                         —
-                      </Typography>
+                      </Label>
                     ) : (
-                      <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+                      <Label variant="body2" sx={{ color: 'text.disabled' }}>
                         —
-                      </Typography>
+                      </Label>
                     )}
                   </Box>
                 </Grid>

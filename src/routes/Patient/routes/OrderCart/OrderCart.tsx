@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Card } from '@mui/material'
+import { Card, Stack } from '@mui/material'
 import { alpha, Box, Button, ButtonGroup, TitledCard, Autocomplete, Icon, Label } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
 import { OrderComposer } from './components/OrderComposer'
@@ -72,7 +72,7 @@ export const OrderCart = () => {
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <Box sx={{ flexGrow: 1, paddingRight: '20px' }}>
         <Card sx={{ m: 1, p: 1 }}>
-          <Box>
+          <Stack direction="row">
             <ButtonGroup sx={{ whiteSpace: 'nowrap' }} size="small">
               <Button>Manage Orders</Button>
               <Button>Order Sets</Button>
@@ -80,21 +80,20 @@ export const OrderCart = () => {
             <Autocomplete
               label="Options"
               options={['Test']}
-              sx={{ minWidth: 100 }}
-              TextFieldProps={{ size: 'small' }}
+              size="small"
+              sx={{ flexGrow: 1 }}
             />
-          </Box>
-          <Box sx={{ pt: 4 }}>
+          </Stack>
+          <Stack direction="row" sx={{ pt: 4 }}>
             <Button><Icon>person_outline</Icon>Providers</Button>
             <Button><Icon>edit</Icon>Edit Multiple</Button>
-          </Box>
-          <Box>
-            <Box>
+          </Stack>
+          <Stack direction="column">
+            <Stack direction="row">
               <Autocomplete
                 freeSolo
                 label="Add orders or order sets"
                 size="small"
-                sx={{ minWidth: 300 }}
                 options={[]}
                 value={searchTerm}
                 onChange={(_e, newValue: any) => {
@@ -106,23 +105,24 @@ export const OrderCart = () => {
                   if (event.key === 'Enter')
                     startSearch()
                 }}
+                sx={{ flexGrow: 1 }}
               />
               <Button variant="outlined" onClick={startSearch}>
                 <Icon color="success">add</Icon> New
               </Button>
-            </Box>
-            <Box>
+            </Stack>
+            <Stack direction="row">
               <Autocomplete
+                size="small"
                 options={['test']}
                 value=""
-                sx={{ minWidth: 300 }}
-                TextFieldProps={{ size: 'small' }}
+                sx={{ flexGrow: 1 }}
               />
               <Button variant="outlined" disabled>
                 <Icon color="error">error</Icon> Next
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </Stack>
         </Card>
         {(Object.keys(categories) as (keyof typeof categories)[])
           .filter(category => orderCart.filter((x: any) => getCategoryForOrder(x) === category).length > 0)

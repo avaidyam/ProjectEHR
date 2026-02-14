@@ -132,6 +132,7 @@ export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePro
       <Autocomplete
         freeSolo
         label="System Prompt"
+        disableClearable
         fullWidth
         value={localPrompt}
         onInputChange={(_e, newValue) => handlePromptChange(newValue)}

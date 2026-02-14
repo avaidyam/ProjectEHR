@@ -57,7 +57,9 @@ import {
   TabProps,
   MenuProps,
   MenuItemProps,
-  ToggleButtonGroupProps
+  ToggleButtonGroupProps,
+  InputAdornment as MUIInputAdornment,
+  TextFieldVariants
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -152,7 +154,7 @@ export const RichTextEditor: React.FC<any> = ({ ...props }) => (
   <MUIEditor {...props} />
 )
 
-export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, options, value, onChange, TextFieldProps, ...props }) => (
+export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, variant?: TextFieldVariants, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, variant, options, value, onChange, TextFieldProps, ...props }) => (
   <MUIAutocomplete
     options={options}
     value={value}
@@ -161,14 +163,17 @@ export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 
       <MUITextField
         {...params}
         {...TextFieldProps}
-        variant="outlined"
+        variant={variant ?? "outlined"}
         label={label}
         placeholder={placeholder}
         InputProps={{
           ...params.InputProps,
           ...TextFieldProps?.InputProps,
+          startAdornment: TextFieldProps?.InputProps?.startAdornment ?
+            <MUIInputAdornment position="start">{params.InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
+            params.InputProps.startAdornment,
           endAdornment: TextFieldProps?.InputProps?.endAdornment ?
-            <>{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</> :
+            <MUIInputAdornment position="end">{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
             params.InputProps.endAdornment
         }}
       />
