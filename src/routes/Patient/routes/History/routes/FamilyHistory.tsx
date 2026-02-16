@@ -2,6 +2,7 @@
 import * as React from 'react';
 import {
   Box,
+  Stack,
   Button,
   IconButton,
   Table,
@@ -13,6 +14,7 @@ import {
   TitledCard,
   Icon,
   Autocomplete,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   Checkbox,
@@ -320,7 +322,8 @@ export function FamilyHistory() {
         />
       </Box>
 
-      {/* Add Problem Dialog */}
+      <MarkReviewed sx={{ mt: 2 }} />
+
       <Dialog open={isAddProblemOpen} onClose={handleCloseAddProblem}>
         <DialogTitle>Add Problem for {selectedMember?.relationship}</DialogTitle>
         <DialogContent>
@@ -359,6 +362,6 @@ export function FamilyHistory() {
           <Button onClick={handleSaveComments} variant="contained" color="primary">Save</Button>
         </DialogActions>
       </Dialog>
-    </TitledCard>
+    </TitledCard >
   );
 }

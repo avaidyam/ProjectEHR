@@ -17,6 +17,7 @@ import {
   Autocomplete
 } from 'components/ui/Core';
 import { getAllCategories, getCodesForChapter, searchICD10Codes } from 'util/helpers';
+import { Database } from 'components/contexts/PatientContext';
 
 const COLUMN_DEFS = {
   DIAGNOSIS: [
@@ -81,10 +82,10 @@ const DiagnosisSearchResults = ({ data, selection, setSelection, onSelect, queue
           onRowDoubleClick={(params: any) => {
             if (queuedDiagnoses.length > 0) {
               if (!queuedDiagnoses.some((x: any) => x.id === params.row.conceptId)) {
-                setQueuedDiagnoses((prev: any[]) => [...prev, { ...params.row, id: params.row.conceptId }])
+                setQueuedDiagnoses((prev: any[]) => [...prev, { ...params.row, id: params.row.conceptId as Database.DiagnosisCode }])
               }
             } else {
-              onSelect({ ...params.row, id: params.row.conceptId })
+              onSelect({ ...params.row, id: params.row.conceptId as Database.DiagnosisCode })
             }
           }}
           disableMultipleRowSelection
@@ -240,7 +241,7 @@ export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { sear
             }
           }}>Select and Stay</Button>
           <Button variant="outlined" onClick={() => onSelect(null)}>Cancel</Button>
-          <Button variant="contained" onClick={() => onSelect(queuedDiagnoses.length > 0 ? queuedDiagnoses : selectedItem ? { ...selectedItem, id: selectedItem.conceptId } : null)}>Accept</Button>
+          <Button variant="contained" onClick={() => onSelect(queuedDiagnoses.length > 0 ? queuedDiagnoses : selectedItem ? { ...selectedItem, id: selectedItem.conceptId as Database.DiagnosisCode } : null)}>Accept</Button>
         </>
       }
     >

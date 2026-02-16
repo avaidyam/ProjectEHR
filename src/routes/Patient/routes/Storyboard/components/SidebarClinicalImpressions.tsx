@@ -14,7 +14,7 @@ export const SidebarClinicalImpressions = () => {
       {clinicalImpressions && clinicalImpressions.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {clinicalImpressions.map((ci: any, idx: number) => (
-            <div key={idx}>{idx + 1}. {ci.name}</div>
+            <div key={idx}>{idx + 1}. {ci.displayAs}</div>
           ))}
         </div>
       ) : (

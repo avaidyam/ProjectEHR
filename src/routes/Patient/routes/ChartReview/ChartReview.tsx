@@ -5,7 +5,7 @@ import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton
 import { Box, Button, Label, DataGrid, Icon, IconButton } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
-import { filterDocuments } from 'util/helpers'
+import { filterDocuments, getICD10CodeDescription } from 'util/helpers'
 
 const tabLabels = [
   "Encounters",
@@ -295,7 +295,7 @@ export const ChartReview = ({ ...props }: any) => {
       encClosed: x.status === "Signed" ? "Yes" : "No",
       with: `${dept ? dept.name : x.department} - ${prov ? prov.name : x.provider}`,
       visitType: appt ? appt.type : (x.type || ""),
-      description: (x.diagnoses || []).join(", "),
+      description: (x.problems || []).filter((p: any) => p.encounterDx).map((p: any) => p.displayAs || getICD10CodeDescription(p.diagnosis) || p.diagnosis).join(", "),
       endDate: x.endDate,
       department: dept ? dept.name : x.department,
       specialty: prov ? prov.specialty : '',

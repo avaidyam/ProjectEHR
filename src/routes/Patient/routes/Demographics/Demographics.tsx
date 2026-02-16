@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker } from 'components/ui/Core';
+import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, MarkReviewed } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
 
 /*
@@ -1098,7 +1098,7 @@ export const Demographics = () => {
         {/* Advance Directives */}
         <TitledCard id="advance-directives" emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>description</Icon> Advance Directives</>} color="#009688">
           <Label variant="body2">No documents to show</Label>
-          <Button variant="outlined" size="small" sx={{ mt: 2 }}>Mark as Reviewed</Button>
+          <MarkReviewed sx={{ mt: 2 }} />
         </TitledCard>
 
         {/* Code Status */}

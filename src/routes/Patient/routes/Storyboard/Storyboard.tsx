@@ -8,6 +8,7 @@ import { SidebarCareTeam } from './components/SidebarCareTeam';
 import { SidebarAllergies } from './components/SidebarAllergies';
 import { SidebarVitals } from './components/SidebarVitals';
 import { SidebarClinicalImpressions } from './components/SidebarClinicalImpressions';
+import { SidebarEncounterDiagnoses } from './components/SidebarEncounterDiagnoses';
 import { SidebarProblemList } from './components/SidebarProblemList';
 
 export const Storyboard = () => {
@@ -29,6 +30,8 @@ export const Storyboard = () => {
           <Label>Type: {encounter?.type}</Label>
           <Label>Date: {Database.JSONDate.toDateString(encounter?.startDate)}</Label>
           <Label>Reason: {encounter?.concerns?.join(", ")}</Label>
+          <Divider sx={{ bgcolor: "primary.light" }} />
+          <ErrorBoundary><SidebarEncounterDiagnoses /></ErrorBoundary>
         </ErrorBoundary> :
         <Label variant="h6">Chart Review</Label>
       }

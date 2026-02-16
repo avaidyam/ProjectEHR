@@ -52,8 +52,6 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
     unit: unitMap[medication.unit] || medication.unit,
   });
 
-  console.dir(editedMedication)
-
   React.useEffect(() => {
     setEditedMedication((prevState: any) => ({
       ...prevState,

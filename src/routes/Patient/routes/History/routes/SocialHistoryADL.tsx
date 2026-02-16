@@ -6,6 +6,7 @@ import {
   Label,
   TitledCard,
   Icon,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -25,7 +26,6 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
   const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL({});
-  const [reviewed, setReviewed] = React.useState(false);
 
   const leftColumnItems = [
     { key: 'backCare', label: 'Back Care' },
@@ -56,9 +56,6 @@ export function SocialHistoryADL() {
     }));
   };
 
-  const handleReviewedChange = (e: any) => {
-    setReviewed(e.target.checked);
-  };
 
   const renderItem = (item: { key: string; label: string }) => (
     <Grid key={item.key} size={12}>
@@ -123,17 +120,7 @@ export function SocialHistoryADL() {
           </Grid>
         </Grid>
       </SectionPaper>
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-        <FormControlLabel
-          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-          label="Mark as Reviewed"
-        />
-        {reviewed && (
-          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-            All social history ADL items have been reviewed.
-          </Label>
-        )}
-      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

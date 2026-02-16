@@ -7,6 +7,7 @@ import {
   Icon,
   Autocomplete,
   DatePicker,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -35,7 +36,6 @@ export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
   const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory({});
-  const [reviewed, setReviewed] = React.useState(false);
 
   const deliveryMethodOptions = [
     'Biochemical',
@@ -84,9 +84,6 @@ export function BirthHistory() {
     }));
   };
 
-  const handleReviewedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setReviewed(e.target.checked);
-  };
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Birth History</>} color="#9F3494">
@@ -340,17 +337,7 @@ export function BirthHistory() {
           disableStickyMenuBar={true}
         />
       </SectionPaper>
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-        <FormControlLabel
-          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-          label="Mark as Reviewed"
-        />
-        {reviewed && (
-          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-            Birth history has been reviewed.
-          </Label>
-        )}
-      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

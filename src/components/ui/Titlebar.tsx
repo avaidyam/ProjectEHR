@@ -81,7 +81,6 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
         specialty: data.specialty,
         provider: data.provider,
         concerns: [],
-        diagnoses: [],
         problems: [],
         flowsheets: [],
         notes: [],

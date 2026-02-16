@@ -13,6 +13,7 @@ import {
   TitledCard,
   Icon,
   Autocomplete,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -60,7 +61,6 @@ export function SocialHistorySocioeconomic() {
     employer: '',
     comment: '',
   });
-  const [reviewed, setReviewed] = React.useState(false);
 
   const maritalStatusOptions = [
     'Divorced',
@@ -149,9 +149,6 @@ export function SocialHistorySocioeconomic() {
     });
   };
 
-  const handleReviewedChange = (e: any) => {
-    setReviewed(e.target.checked);
-  };
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Socioeconomic</>} color="#9F3494">
@@ -401,17 +398,7 @@ export function SocialHistorySocioeconomic() {
           </Grid>
         </Grid>
       </SectionPaper>
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-        <FormControlLabel
-          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-          label="Mark as Reviewed"
-        />
-        {reviewed && (
-          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-            All socioeconomic information has been reviewed.
-          </Label>
-        )}
-      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

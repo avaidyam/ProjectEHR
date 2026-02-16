@@ -109,6 +109,7 @@ import {
 import {
   ErrorBoundary as ReactErrorBoundary
 } from 'react-error-boundary'
+import { MarkReviewed } from "./MarkReviewed"
 
 LicenseInfo.setLicenseKey("")
 
@@ -181,6 +182,137 @@ export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 
     {...props}
   />
 )
+
+/**
+ * A specialized Autocomplete component that manages an array of values.
+ * It automatically appends an empty field at the end to allow for easy multi-item entry.
+ * Clearing a field removes it from the array, but at least one empty field is always presented.
+ *
+ * @param label - The label for the entire group of inputs (appears notched on the border)
+ * @param value - An array of strings representing the currently selected items
+ * @param onChange - Callback triggered when the array of values changes
+ * @param options - The list of options to display in each Autocomplete field
+ * @param exclusive - If true, duplicate values will be automatically removed (defaults to true)
+ */
+export interface AutocompleteListProps extends Omit<AutocompleteProps<any, any, any, any>, 'value' | 'onChange' | 'label' | 'renderInput'> {
+  label?: string;
+  value?: string[];
+  onChange?: (values: string[]) => void;
+  options: any[];
+  exclusive?: boolean;
+}
+
+export const AutocompleteList: React.FC<AutocompleteListProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+  sx,
+  exclusive = true,
+  ...props
+}) => {
+  const values = React.useMemo(() => Array.isArray(value) ? value : (value ? [value] : []), [value]);
+  const [isFocused, setIsFocused] = React.useState(false);
+  const [revision, setRevision] = React.useState(0);
+
+  const handleValueChange = (idx: number, newVal: string | null) => {
+    const updated = [...values];
+    if (idx < updated.length) {
+      updated[idx] = newVal || '';
+    } else if (newVal) {
+      updated.push(newVal);
+    }
+
+    let filtered = updated.filter(v => v && v.trim() !== '');
+    if (exclusive) {
+      const originalCount = filtered.length;
+      filtered = Array.from(new Set(filtered));
+      if (filtered.length < originalCount) {
+        setRevision(r => r + 1); // Force reset of inputs to clear duplicates
+      }
+    }
+    onChange?.(filtered);
+  };
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        mt: label ? 1.5 : 0,
+        ...sx
+      }}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
+    >
+      {label && (
+        <Label
+          variant="caption"
+          sx={{
+            position: 'absolute',
+            top: -10,
+            left: 12,
+            px: 1,
+            bgcolor: 'background.paper',
+            color: isFocused ? 'primary.main' : 'text.secondary',
+            zIndex: 1,
+            transition: 'color 0.2s'
+          }}
+        >
+          {label}
+        </Label>
+      )}
+      <Stack
+        spacing={0}
+        sx={{
+          p: 1,
+          border: '1px solid',
+          borderColor: isFocused ? 'primary.main' : 'rgba(0, 0, 0, 0.23)',
+          borderRadius: 1,
+          bgcolor: 'background.paper',
+          transition: 'border-color 0.2s, box-shadow 0.2s',
+          ...(isFocused && { boxShadow: (theme: any) => `0 0 0 1px ${theme.palette.primary.main}` })
+        }}
+      >
+        {[...values, ''].map((v: string, idx: number) => (
+          <Autocomplete
+            key={`${idx}-${revision}`}
+            fullWidth
+            freeSolo
+            size="small"
+            placeholder={idx === values.length ? `Add ${label || 'item'}...` : ''}
+            options={options}
+            value={v}
+            onChange={(e: any, val: any) => handleValueChange(idx, val)}
+            onInputChange={(e: any, val: any) => {
+              if (!val && idx < values.length) handleValueChange(idx, '');
+            }}
+            onBlur={(e: any) => {
+              const typedVal = e.target.value;
+              if (typedVal && typedVal.trim() !== '' && !values.includes(typedVal)) {
+                handleValueChange(idx, typedVal);
+              }
+            }}
+            variant="standard"
+            TextFieldProps={{
+              sx: {
+                '& .MuiInput-root': {
+                  py: 0.5,
+                  px: 1,
+                  '&:before, &:after': { display: 'none' }
+                },
+              }
+            }}
+            sx={{
+              mb: idx < values.length ? 0.5 : 0,
+              ...(idx < values.length && { borderBottom: '1px solid', borderColor: 'divider' })
+            }}
+            {...props}
+          />
+        ))}
+      </Stack>
+    </Box>
+  );
+};
 
 /**
  * To use as a ToggleButton, MUST provide `value`!
@@ -564,3 +696,5 @@ export const MenuItem: React.FC<MenuItemProps> = ({ children, ...props }) => (
     {children}
   </MUIMenuItem>
 )
+
+export { MarkReviewed }

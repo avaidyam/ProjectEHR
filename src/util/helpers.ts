@@ -359,8 +359,9 @@ const isCodeInRange = (code: string | number, startCode: string | number, endCod
 
 // Helper function to get chapter for a specific code
 export const getChapterForCode = (code: string) => {
+  const normalized = code.replace(/\./g, '').toUpperCase();
   return ICD10_CHAPTERS.find(chapter =>
-    isCodeInRange(code, chapter.startCode, chapter.endCode)
+    isCodeInRange(normalized, chapter.startCode, chapter.endCode)
   );
 };
 
@@ -383,7 +384,7 @@ export const getCodesForChapter = (chapterId: string) => {
   const allCodes = Object.entries(icd10Data)
     .filter(([code]) => isCodeInRange(code, chapter.startCode, chapter.endCode))
     .map(([code, name]) => ({
-      conceptId: code,
+      conceptId: code as Database.DiagnosisCode,
       name: name,
       term: name,
       source: 'ICD10'
@@ -427,6 +428,13 @@ export const getAllCategories = () => {
   }));
 };
 
+// Get a single ICD10 code description
+export const getICD10CodeDescription = (code: Database.DiagnosisCode) => {
+  if (!code) return null;
+  const normalized = code.replace(/\./g, '').toUpperCase();
+  return (icd10Data as Record<string, string>)[normalized] || null;
+};
+
 // Search across all ICD10 codes
 export const searchICD10Codes = (searchTerm: string, limit = 100) => {
   if (!searchTerm || searchTerm.trim().length < 3) {
@@ -441,9 +449,11 @@ export const searchICD10Codes = (searchTerm: string, limit = 100) => {
     if (results.length >= limit) break;
 
     // Check code first (faster)
-    if (code.toLowerCase().includes(term)) {
+    const normalizedCode = code.toLowerCase();
+    const normalizedTerm = term.replace(/\./g, '');
+    if (normalizedCode.includes(normalizedTerm)) {
       results.push({
-        conceptId: code,
+        conceptId: code as Database.DiagnosisCode,
         name: name,
         term: name,
         source: 'ICD10'
@@ -454,7 +464,7 @@ export const searchICD10Codes = (searchTerm: string, limit = 100) => {
     // Then check name
     if (name.toLowerCase().includes(term)) {
       results.push({
-        conceptId: code,
+        conceptId: code as Database.DiagnosisCode,
         name: name,
         term: name,
         source: 'ICD10'

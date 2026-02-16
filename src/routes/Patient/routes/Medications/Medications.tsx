@@ -8,6 +8,7 @@ import {
   IconButton,
   Label,
   DataGrid,
+  useGridApiRef,
   TitledCard,
   Grid,
   Autocomplete,
@@ -21,6 +22,9 @@ export function Medications() {
   const { useEncounter } = usePatient();
   const [medications, setMedications] = useEncounter().medications();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<Database.Medication.ID>>(new Set());
+  const apiRef = useGridApiRef();
+
+  const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
   const handleEdit = (id: Database.Medication.ID) => {
     setExpandedRowIds(new Set([id]));
@@ -155,6 +159,7 @@ export function Medications() {
 
         <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
+            apiRef={apiRef}
             rows={medications ?? []}
             columns={columns}
             getRowId={(row: any) => row.id || `medication-${row.name}-${row.brandName}-${row.dose}`}
@@ -163,6 +168,7 @@ export function Medications() {
             initialState={{ columns: { columnVisibilityModel: { __detail_panel_toggle__: false } } }}
             hideFooter
             disableRowSelectionOnClick
+            onRowDoubleClick={handleRowDoubleClick}
             getDetailPanelHeight={() => 'auto'}
             getDetailPanelContent={getDetailPanelContent}
             detailPanelExpandedRowIds={expandedRowIds}

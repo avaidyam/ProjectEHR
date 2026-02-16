@@ -5,6 +5,7 @@ import {
   Label,
   TitledCard,
   Icon,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   FormControlLabel,
@@ -24,7 +25,6 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 export function SocialHistoryDocumentation() {
   const { useEncounter } = usePatient();
   const [socialDocData, setSocialDocData] = useEncounter().history.SocialDocumentation();
-  const [reviewed, setReviewed] = React.useState(false);
 
   const handleSave = (content: any) => {
     setSocialDocData((prev: any) => ({
@@ -33,9 +33,6 @@ export function SocialHistoryDocumentation() {
     }));
   };
 
-  const handleReviewedChange = (e: any) => {
-    setReviewed(e.target.checked);
-  };
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Social Documentation</>} color="#9F3494">
@@ -48,17 +45,7 @@ export function SocialHistoryDocumentation() {
         />
       </SectionPaper>
 
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-        <FormControlLabel
-          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-          label="Mark as Reviewed"
-        />
-        {reviewed && (
-          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-            Social documentation has been reviewed.
-          </Label>
-        )}
-      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }
