@@ -125,6 +125,7 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
   const [dispenseHistory, setDispenseHistory] = useDatabase().patients[mrn].encounters[encounterId].dispenseHistory([]);
   const [view, setView] = React.useState<'list' | 'add'>('list');
   const [newItem, setNewItem] = React.useState<Database.Medication.DispenseLog>({
+    id: Database.Medication.DispenseLog.ID.create(),
     name: '',
     route: '',
     dosage: '',
@@ -147,6 +148,7 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
     }]);
     setView('list');
     setNewItem({
+      id: Database.Medication.DispenseLog.ID.create(),
       name: '', route: '', dosage: '', drug: '',
       quantity: 0, refills: 0, supply: 0, prescriber: '', pharmacy: '',
       written: '',
@@ -244,7 +246,6 @@ const PDMPManagerContent = ({ mrn, encounterId, onClose }: {
 
   // List View
   const rows = (dispenseHistory || []).map((item, idx) => ({
-    id: idx,
     ...item,
     dispensedFormatted: item.dispensed ? Temporal.Instant.from(item.dispensed).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
     writtenFormatted: item.written ? Temporal.Instant.from(item.written).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',

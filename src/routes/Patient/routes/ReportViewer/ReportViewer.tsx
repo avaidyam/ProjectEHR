@@ -39,7 +39,7 @@ export const ReportViewer = ({ data }: { data: Reportable }) => {
   const isAbnormal = hasLowOrHighValues(data?.components ?? [])
 
   const handleOpenImaging = () => {
-    const isPathologySlide = data?.accessionNumber?.startsWith("PATH") || (data?.id ?? "").startsWith("PATH");
+    const isPathologySlide = !!data?.components?.find(x => x.name === "CKPN3")
     const viewerId = Temporal.Now.instant().epochMilliseconds + '-' + Math.random().toString(36).substr(2, 9);
     openTab("Imaging Viewer", { data: data, viewerId: viewerId, convertMonochrome: !isPathologySlide }, "main", false);
   };

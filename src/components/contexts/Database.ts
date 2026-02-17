@@ -568,7 +568,6 @@ export interface Imaging {
   id?: Imaging.ID
   date: JSONDate
   abnormal?: string
-  accessionNumber?: string
   acuity?: string
   image?: string
   performedBy?: string
@@ -592,7 +591,6 @@ export interface Lab {
   id?: Lab.ID
   date: JSONDate
   abnormal: string
-  accessionNumber?: string
   acuity?: string
   collected: string
   comment?: any
@@ -648,6 +646,7 @@ export namespace Medication {
   }
 
   export interface DispenseLog {
+    id: DispenseLog.ID
     dispensed: string
     dosage: string
     drug: string
@@ -659,6 +658,14 @@ export namespace Medication {
     refills: number
     supply: number
     written: any
+  }
+
+  export namespace DispenseLog {
+    export type ID = Branded<UUID, 'Medication.DispenseLog.ID'>
+    export type Fragment = Partial<Omit<DispenseLog, 'id'>>
+    export namespace ID {
+      export const create = (): ID => crypto.randomUUID() as ID
+    }
   }
 }
 
@@ -721,12 +728,86 @@ export interface History {
   medical: MedicalHistoryItem[]
   surgical: SurgicalHistoryItem[]
   family: FamilyHistoryItem[]
-  SubstanceSexualHealth?: SubstanceSexualHealth
+  SubstanceSexualHealth?: {
+    alcohol?: {
+      alcoholStatus?: string
+      comments?: string
+      drinksPerWeek: {
+        beer?: number
+        beerCans?: number
+        drinksContainingAlcohol?: number
+        liquor?: number
+        liquorShots?: number
+        mixedDrinks?: number
+        standardDrinks: number
+        wine?: number
+        wineGlasses?: number
+      }
+      use?: string
+    }
+    drugs?: {
+      comments: string
+      drugStatus?: string
+      drugTypes?: string[] | any[]
+      types?: any[]
+      use?: string
+      usePerWeek: number | string
+    }
+    gynecologicalHistory?: {
+      comments: string
+      lastMenstrualPeriod: string
+      menarche: string
+      menstrualCycleDuration: string
+      menstrualCycleFrequency: string
+      menstrualFlow: string
+      regularity: string
+    }
+    sexual?: {
+      comments: string
+      sexuallyActive: string
+    }
+    sexualActivity?: {
+      active: string
+      birthControl: any[]
+      comments: string
+      partners: any[]
+    }
+    tobacco?: {
+      comments?: string
+      packYears: any
+      packsPerDay: any
+      passiveExposure?: string
+      smokeless?: string
+      smokelessStatus?: {
+        comments: string
+        smokelessStatus: string
+      }
+      smokingStatus?: string
+      counselingGiven?: boolean
+      startDate: JSONDate
+      status?: string
+      types?: any[] | string[]
+    }
+  }
   Socioeconomic?: {
-    demographics?: Demographics
+    demographics?: {
+      religion?: string
+      ethnicGroup: string
+      highestEducationLevel: any
+      maritalStatus: string
+      numberOfChildren: any
+      preferredLanguage: string
+      race: string
+      spouseName: any
+      spouseOccupation?: string
+      yearsOfEducation: any
+    }
     employer?: string
     occupation?: string
-    occupationalHistory?: OccupationalHistory[]
+    occupationalHistory?: {
+      employer: string
+      occupation: string
+    }[]
   }
   SocialHistoryADL?: any
   ECigaretteVaping?: any
@@ -817,84 +898,4 @@ export interface FamilyHistoryItem {
   }[]
   relationship: string
   status: string
-}
-
-export interface Demographics {
-  religion?: string
-  ethnicGroup: string
-  highestEducationLevel: any
-  maritalStatus: string
-  numberOfChildren: any
-  preferredLanguage: string
-  race: string
-  spouseName: any
-  spouseOccupation?: string
-  yearsOfEducation: any
-}
-
-export interface OccupationalHistory {
-  employer: string
-  occupation: string
-}
-
-export interface SubstanceSexualHealth {
-  alcohol?: {
-    alcoholStatus?: string
-    comments?: string
-    drinksPerWeek: {
-      beer?: number
-      beerCans?: number
-      drinksContainingAlcohol?: number
-      liquor?: number
-      liquorShots?: number
-      mixedDrinks?: number
-      standardDrinks: number
-      wine?: number
-      wineGlasses?: number
-    }
-    use?: string
-  }
-  drugs?: {
-    comments: string
-    drugStatus?: string
-    drugTypes?: string[] | any[]
-    types?: any[]
-    use?: string
-    usePerWeek: number | string
-  }
-  gynecologicalHistory?: {
-    comments: string
-    lastMenstrualPeriod: string
-    menarche: string
-    menstrualCycleDuration: string
-    menstrualCycleFrequency: string
-    menstrualFlow: string
-    regularity: string
-  }
-  sexual?: {
-    comments: string
-    sexuallyActive: string
-  }
-  sexualActivity?: {
-    active: string
-    birthControl: any[]
-    comments: string
-    partners: any[]
-  }
-  tobacco?: {
-    comments?: string
-    packYears: any
-    packsPerDay: any
-    passiveExposure?: string
-    smokeless?: string
-    smokelessStatus?: {
-      comments: string
-      smokelessStatus: string
-    }
-    smokingStatus?: string
-    counselingGiven?: boolean
-    startDate: JSONDate
-    status?: string
-    types?: any[] | string[]
-  }
 }
