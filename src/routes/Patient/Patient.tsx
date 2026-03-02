@@ -34,6 +34,7 @@ import { EditNote } from './routes/EditNote/EditNote';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk';
 import { EditResult } from './routes/EditResult/EditResult';
 import { EventLog } from './routes/EventLog/EventLog';
+import { CreateEncounterTab } from './routes/CreateEncounter/CreateEncounterTab';
 import { MAR } from './routes/MAR/MAR';
 
 const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
@@ -63,6 +64,7 @@ const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "Edit Result": (props) => <EditResult {...props} />,
   "Event Log": (props) => <EventLog {...props} />,
   "MAR": (props) => <MAR {...props} />,
+  "Create Encounter": (props) => <CreateEncounterTab />,
 }
 
 const DEFAULT_MAIN_TABS = [
@@ -74,7 +76,7 @@ const DEFAULT_MAIN_TABS = [
 const OVERFLOW_MENU_TABS = [
   { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
   { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
-  { "Event Log": {} }, { "MAR": {} }, { "Notes": {} }
+  { "Event Log": {} }, { "MAR": {} }, { "Notes": {} }, { "Create Encounter": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [

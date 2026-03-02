@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { Box, Button, Window, Autocomplete, DateTimePicker } from './Core';
-import * as Database from '../contexts/Database';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Button, Window, Autocomplete, DateTimePicker } from '../../../../components/ui/Core';
+import { useDatabase } from '../../../../components/contexts/PatientContext';
+import * as Database from '../../../../components/contexts/Database';
 
 export interface EncounterFormData {
   startDate: Database.JSONDate;
@@ -12,22 +14,23 @@ export interface EncounterFormData {
   status: Database.Encounter.Status;
 }
 
-export const CreateEncounterDialog = ({
+export const CreateEncounter = ({
   open,
   onClose,
-  onSubmit,
   departments,
   providers
 }: {
   open: boolean
   onClose: () => void
-  onSubmit: (data: EncounterFormData) => void
   departments: Database.Department[]
   providers: Database.Provider[]
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [, setPatientsDB] = useDatabase().patients();
   const [formData, setFormData] = React.useState<EncounterFormData>({
-    startDate: Temporal.Now.plainDateTimeISO().toString().slice(0, 16), // Default to now
-    endDate: Temporal.Now.plainDateTimeISO().add({ minutes: 30 }).toString().slice(0, 16), // Default +30m
+    startDate: Temporal.Now.plainDateTimeISO(), // Default to now
+    endDate: Temporal.Now.plainDateTimeISO().add({ minutes: 30 }), // Default +30m
     department: '',
     type: 'Office Visit',
     provider: '',
@@ -35,7 +38,7 @@ export const CreateEncounterDialog = ({
     status: 'Scheduled'
   } as any) // FIXME
 
-  const handleChange = (field: keyof EncounterFormData, value: string) => {
+  const handleChange = (field: keyof EncounterFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -45,7 +48,55 @@ export const CreateEncounterDialog = ({
       alert("Please fill in Department and Provider");
       return;
     }
-    onSubmit(formData);
+
+    const match = location.pathname.match(/^\/patient\/(\d+)/);
+    if (!match) {
+      alert("You must be on a patient chart to create an encounter.");
+      return;
+    }
+    const mrn = match[1];
+    const newID = Database.Encounter.ID.create();
+
+    setPatientsDB((prev: Record<string, Database.Patient>) => {
+      const patient = prev[mrn];
+      if (!patient) return prev;
+
+      const newEncounter: Database.Encounter = {
+        id: newID,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        type: formData.type,
+        status: formData.status,
+        department: formData.department,
+        specialty: formData.specialty,
+        provider: formData.provider,
+        concerns: [],
+        problems: [],
+        flowsheets: [],
+        notes: [],
+        history: {
+          medical: [],
+          surgical: [],
+          family: []
+        },
+        immunizations: [],
+        orders: []
+      };
+
+      return {
+        ...prev,
+        [mrn]: {
+          ...patient,
+          encounters: {
+            ...patient.encounters,
+            [newEncounter.id]: newEncounter
+          }
+        }
+      };
+    });
+
+    onClose();
+    navigate(`/patient/${mrn}/encounter/${newID}`);
   };
 
   const footer = (
@@ -72,14 +123,14 @@ export const CreateEncounterDialog = ({
         <DateTimePicker
           convertString
           label="Start Date/Time"
-          value={formData.startDate}
+          value={formData.startDate as any}
           onChange={(date: any) => handleChange('startDate', date)}
         />
 
         <DateTimePicker
           convertString
           label="End Date/Time"
-          value={formData.endDate}
+          value={formData.endDate as any}
           onChange={(date: any) => handleChange('endDate', date)}
         />
 

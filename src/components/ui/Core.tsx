@@ -487,6 +487,7 @@ export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boole
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         slotProps={!!size ? { textField: { size } } : undefined}
+        minDate={Temporal.PlainDate.from("1890-01-01")}
         {...props}
       />
     </TemporalPlainDateProvider>
@@ -502,6 +503,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         slotProps={!!size ? { textField: { size } } : undefined}
+        minDate={Temporal.PlainDateTime.from("1890-01-01T00:00:00.000")}
         {...props}
       />
     </TemporalPlainDateTimeProvider>
