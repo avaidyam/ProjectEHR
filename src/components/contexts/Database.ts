@@ -23,12 +23,15 @@ export namespace JSONDate {
       return 0
     }
   }
-  export const toDateString = (date: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => {
+  export const toDateString = (date?: JSONDate, tz: Temporal.TimeZoneLike = 'UTC'): string | undefined => {
     try {
-      return Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+      if (!!date) {
+        return Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+      }
+      return undefined
     } catch (e) {
       console.error(e)
-      return 'N/A'
+      return undefined
     }
   }
 }
