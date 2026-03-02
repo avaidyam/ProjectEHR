@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, TextField, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
+import { Button, Autocomplete, Label, Stack, Window, useLazyEffect, Tab, TabList, TabView, Box, TreeView, TreeItem, TitledCard, Icon, DataGrid } from 'components/ui/Core';
 import { Database, useDatabase } from 'components/contexts/PatientContext'
 
 const BROWSE_CATEGORIES = {
@@ -347,24 +347,31 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTe
       onClose={() => onSelect(null)}
       header={
         <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: 'center', mt: 1, mb: -2 }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             label="Search"
             size="small"
             sx={{ flex: 1 }}
-            variant="outlined"
-            defaultValue={searchTerm}
-            inputRef={inputRef}
+            value={value}
+            options={[]}
+            onInputChange={(e, newVal) => {
+              setValue(newVal)
+              if (tab === 'browse') setTab('preference')
+            }}
             onKeyDown={(e: any) => {
               if (e.key === 'Enter') {
                 setValue(inputRef.current?.value ?? '')
                 if (tab === 'browse') setTab('preference')
               }
             }}
-            InputProps={{
-              endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
-                setValue(inputRef.current?.value ?? '')
-                if (tab === 'browse') setTab('preference')
-              }}>search</Icon>
+            TextFieldProps={{
+              inputRef: inputRef,
+              InputProps: {
+                endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
+                  setValue(inputRef.current?.value ?? '')
+                  if (tab === 'browse') setTab('preference')
+                }}>search</Icon>
+              }
             }}
           />
           <TabView value={tab}>

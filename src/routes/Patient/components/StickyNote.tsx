@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { Paper, Box, FormControl, Select, MenuItem, Tooltip, IconButton, TextareaAutosize } from '@mui/material';
+import { Paper, Tooltip, IconButton, TextareaAutosize } from '@mui/material';
+import { Box, Icon, Autocomplete } from 'components/ui/Core';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 import Draggable from 'react-draggable';
-import { Icon } from 'components/ui/Core';
 import * as Database from 'components/contexts/Database';
 
 // Module-level z-index counter so clicked windows come to front
@@ -160,18 +160,14 @@ export const StickyNote = () => {
         onClose={handleDeptClose}
       >
         <Box sx={{ mb: 1 }}>
-          <FormControl fullWidth size="small">
-            <Select
-              value={selectedDepartment}
-              onChange={(e) => handleDepartmentChange(e.target.value)}
-              displayEmpty
-              MenuProps={{ PaperProps: { style: { zIndex: 10000 } } }}
-              sx={{ backgroundColor: 'background.paper', fontSize: '0.95rem', '& .MuiSelect-select': { padding: '6px 8px' }, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' } }}
-            >
-              <MenuItem sx={{ fontSize: '0.95rem', py: 0.5 }} value="">Select Department</MenuItem>
-              {departmentsDB.map((x) => (<MenuItem key={x.id} sx={{ fontSize: '0.95rem', py: 0.5 }} value={x.id}>{x.name}</MenuItem>))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            options={departmentsDB}
+            value={departmentsDB.find(d => d.id === selectedDepartment) || null}
+            onChange={(_e, newValue: any) => handleDepartmentChange(newValue?.id || '')}
+            getOptionLabel={(option: any) => option.name || 'Select Department'}
+            sx={{ backgroundColor: 'background.paper', fontSize: '0.95rem', '& .MuiOutlinedInput-notchedOutline': { borderColor: '#2196f3' } }}
+            TextFieldProps={{ size: 'small' }}
+          />
         </Box>
         <TextareaAutosize
           minRows={2}

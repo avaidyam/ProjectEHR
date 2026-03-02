@@ -5,6 +5,7 @@ import {
   Label,
   TitledCard,
   Icon,
+  MarkReviewed,
 } from 'components/ui/Core';
 import {
   FormControlLabel,
@@ -31,7 +32,6 @@ const ResultItem = styled(Box)(({ theme }) => ({
 export function PapTracking() {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
-  const [reviewed, setReviewed] = React.useState(false);
 
   // Search for Pap tests in the encounter labs
   const papTests = React.useMemo(() => {
@@ -54,18 +54,13 @@ export function PapTracking() {
     if (!lastPapDate) return null;
 
     try {
-      const lastDate = new Date(lastPapDate);
-      const nextDate = new Date(lastDate);
-      nextDate.setFullYear(lastDate.getFullYear() + 3);
-      return nextDate.toLocaleDateString();
+      const nextDate = Temporal.Instant.from(lastPapDate).toZonedDateTimeISO('UTC').add({ years: 3 });
+      return nextDate.toLocaleString();
     } catch {
       return null;
     }
   };
 
-  const handleReviewedChange = (e: any) => {
-    setReviewed(e.target.checked);
-  };
 
   // If no Pap tests found, show blank panel
   if (papTests.length === 0) {
@@ -78,17 +73,7 @@ export function PapTracking() {
           </Box>
         </SectionPaper>
 
-        <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-          <FormControlLabel
-            control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-            label="Mark as Reviewed"
-          />
-          {reviewed && (
-            <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-              Pap tracking has been reviewed.
-            </Label>
-          )}
-        </Box>
+        <MarkReviewed />
       </TitledCard>
     );
   }
@@ -199,17 +184,7 @@ export function PapTracking() {
         })}
       </SectionPaper>
 
-      <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-        <FormControlLabel
-          control={<Checkbox checked={reviewed} onChange={handleReviewedChange} />}
-          label="Mark as Reviewed"
-        />
-        {reviewed && (
-          <Label variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic', color: 'gray' }}>
-            Pap tracking has been reviewed.
-          </Label>
-        )}
-      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

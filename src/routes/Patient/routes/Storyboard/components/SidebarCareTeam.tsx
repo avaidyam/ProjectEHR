@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Avatar, Box, Divider, FormControl, InputLabel, MenuItem, Select, Typography, colors } from '@mui/material';
+import { Window, Button, Icon, IconButton, Box, Label, Divider, Autocomplete } from 'components/ui/Core';
+import { Avatar, colors } from '@mui/material';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
-import { Window, Button, TextField, Icon, IconButton } from 'components/ui/Core';
 
 const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }: {
   open: boolean;
@@ -70,15 +70,17 @@ const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }: 
                 {provider?.name.split(" ").map((x) => x?.charAt(0) ?? '').join("")}
               </Avatar>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle1">{provider?.name}</Typography>
-                <Typography variant="caption" color="textSecondary">{provider?.specialty}</Typography>
+                <Label variant="subtitle1">{provider?.name}</Label>
+                <Label variant="caption" color="textSecondary">{provider?.specialty}</Label>
               </Box>
-              <TextField
+              <Autocomplete
+                freeSolo
                 label="Role"
                 size="small"
+                options={['Attending', 'Resident', 'Fellow', 'Nurse', 'Medical Student', 'Social Worker', 'Consultant']}
                 value={member.role}
-                onChange={(e) => handleRoleChange(member.provider, e.target.value)}
-                sx={{ width: 150 }}
+                onInputChange={(_e, newInputValue) => handleRoleChange(member.provider, newInputValue)}
+                sx={{ width: 170 }}
               />
               <IconButton onClick={() => handleRemoveMember(member.provider)} color="error">
                 <Icon>delete</Icon>
@@ -87,29 +89,27 @@ const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }: 
           );
         })}
 
-        {localCareTeam.length === 0 && <Typography sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No care team members assigned.</Typography>}
+        {localCareTeam.length === 0 && <Label sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No care team members assigned.</Label>}
 
         <Divider sx={{ my: 1 }}>Add New Member</Divider>
 
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-          <FormControl fullWidth size="small">
-            <InputLabel>Provider</InputLabel>
-            <Select
-              value={newProviderId}
-              label="Provider"
-              onChange={(e) => setNewProviderId(e.target.value as Database.Provider.ID)}
-            >
-              {availableProviders.map((p) => (
-                <MenuItem key={p.id} value={p.id}>{p.name} - {p.specialty}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
+          <Autocomplete
+            label="Provider"
+            options={availableProviders}
+            value={availableProviders.find(p => p.id === newProviderId) || null}
+            onChange={(_e, newValue: any) => setNewProviderId(newValue?.id || null)}
+            getOptionLabel={(option: any) => option.name ? `${option.name} - ${option.specialty}` : ''}
+            sx={{ flex: 1 }}
+          />
+          <Autocomplete
+            freeSolo
             label="Role"
             size="small"
-            fullWidth
+            options={['Attending', 'Resident', 'Fellow', 'Nurse', 'Medical Student', 'Social Worker', 'Consultant']}
             value={newProviderRole}
-            onChange={(e) => setNewProviderRole(e.target.value as Database.CareTeam["role"])}
+            onInputChange={(_e, newInputValue) => setNewProviderRole(newInputValue)}
+            sx={{ flex: 1 }}
           />
           <Button variant="contained" onClick={handleAddMember} disabled={!newProviderId || !newProviderRole}>
             Add
@@ -133,11 +133,11 @@ export const SidebarCareTeam = () => {
         style={{ display: 'flex', flexDirection: "column", marginBottom: '1em', cursor: 'pointer' }}
         onClick={() => setOpen(true)}
       >
-        <Typography variant="h6" color="inherit" style={{ fontSize: '1.25em', marginBottom: '0.5em' }}>
+        <Label variant="h6" color="inherit" style={{ fontSize: '1.25em', marginBottom: '0.5em' }}>
           Care Team <Icon sx={{ fontSize: '0.8em', verticalAlign: 'middle', opacity: 0.5 }}>edit</Icon>
-        </Typography>
-        {(careTeam || []).map((member) => {
-          const provider = providers.find((p) => p.id === member.provider);
+        </Label>
+        {(careTeam || []).map((member: any) => {
+          const provider = providers.find((p: any) => p.id === member.provider);
           return (
             <div key={member.provider} style={{ display: 'flex', marginBottom: '0.5em' }}>
               <Avatar

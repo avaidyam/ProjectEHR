@@ -1,8 +1,7 @@
 // This module represents the login configure modal popup that allows the admin to select the viewable pts and encounter values
 
 import * as React from 'react';
-import { MenuItem, Select } from '@mui/material';
-import { Box, Label, Button, Window } from 'components/ui/Core';
+import { Box, Label, Button, Window, Autocomplete } from 'components/ui/Core';
 
 export const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCounts }: {
   open: boolean;
@@ -35,19 +34,12 @@ export const ConfigureDialog = ({ open, onClose, onSubmit, patients, encounterCo
       return (
         <Box key={`pt${pIndex}`} sx={{ marginBottom: 2 }}>
           <Label variant="h6">{patient}</Label>
-          <Select
+          <Autocomplete
+            options={['None', ...Array.from({ length: encounterCount }, (_, eIndex) => eIndex)]}
             value={selectedValue}
-            onChange={(e) => handleSelectEncounter(patient, e.target.value)}
-            displayEmpty
-            fullWidth
-          >
-            <MenuItem value="None">None</MenuItem>
-            {Array.from({ length: encounterCount }, (_, eIndex) => (
-              <MenuItem key={eIndex} value={eIndex}>
-                Encounter {eIndex + 1}
-              </MenuItem>
-            ))}
-          </Select>
+            onChange={(_e, newValue) => handleSelectEncounter(patient, newValue)}
+            getOptionLabel={(option) => option === 'None' ? 'None' : `Encounter ${Number(option) + 1}`}
+          />
         </Box>
       );
     });

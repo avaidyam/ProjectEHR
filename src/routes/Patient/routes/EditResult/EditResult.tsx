@@ -3,13 +3,15 @@ import {
   Box,
   Button,
   Label,
-  TextField,
   IconButton,
   Icon,
   DataGrid,
-  Divider
+  Divider,
+  Autocomplete,
+  DateTimePicker,
+  Grid
 } from 'components/ui/Core';
-import { Autocomplete, Grid, createFilterOptions } from '@mui/material';
+import { createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
 
@@ -27,7 +29,6 @@ const ComponentEditCell = ({ componentList, id, value, field, api }: { component
       getOptionLabel={(option: any) => option.label}
       value={componentList.find((c: any) => c.id === value) ?? null}
       onChange={handleChange}
-      renderInput={(params: any) => <TextField {...params} fullWidth autoFocus />}
       fullWidth
       disableClearable
     />
@@ -44,7 +45,7 @@ export const EditResult = ({ ...props }) => {
   const procedures = Object.entries(orderables!.procedures).map(([key, value]) => ({ label: value, id: key }));
   const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
-  const [testDate, setTestDate] = React.useState(new Date().toISOString().slice(0, 16));
+  const [testDate, setTestDate] = React.useState(Temporal.Now.plainDateTimeISO());
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
   const [results, setResults] = React.useState<any[]>([]);
 
@@ -55,7 +56,7 @@ export const EditResult = ({ ...props }) => {
   const [imageBase64, setImageBase64] = React.useState('');
 
   const handleAddRow = () => {
-    setResults([...results, { id: Date.now(), component: null, value: '', units: '', low: '', high: '', comment: '' }]);
+    setResults([...results, { id: Temporal.Now.instant().epochMilliseconds, component: null, value: '', units: '', low: '', high: '', comment: '' }]);
   };
 
   const handleRemoveRow = (id: any) => {
@@ -82,9 +83,9 @@ export const EditResult = ({ ...props }) => {
     if (!selectedTest && !imageBase64) return;
     if (imageBase64) { // Imaging
       setImaging((prev: any) => [...prev, {
-        "date": new Date(testDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
         "status": status,
-        "statusDate": new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }).replace(/\//g, '-'),
+        "statusDate": Temporal.Now.instant().toString(),
         "test": selectedTest ? selectedTest.label : "Unknown Exam",
         "abnormal": false,
         "acuity": "",
@@ -93,7 +94,7 @@ export const EditResult = ({ ...props }) => {
       }])
     } else { // Labs
       setLabs((prev: any) => [...[prev, {
-        "date": new Date(testDate).toLocaleString(),
+        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
         "test": selectedTest ? selectedTest.label : "Unknown Test",
         "status": "Completed",
         "abnormal": false,
@@ -127,40 +128,41 @@ export const EditResult = ({ ...props }) => {
       <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
         <Grid container spacing={2}>
           <Grid size={6}>
-            <TextField
-              type="datetime-local"
+            <DateTimePicker
+              convertString
               label="Date/Time"
               value={testDate}
-              onChange={(e) => setTestDate(e.target.value)}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
+              onChange={(date: any) => setTestDate(date)}
             />
           </Grid>
           <Grid size={6}>
             <Autocomplete
+              label="Test / Exam Name"
+              fullWidth
               options={procedures}
               filterOptions={filterOptions}
               getOptionLabel={(option: any) => option.label}
               value={selectedTest}
               onChange={(event: any, newValue: any) => setSelectedTest(newValue)}
-              renderInput={(params: any) => <TextField {...params} label="Test / Exam Name" fullWidth />}
             />
           </Grid>
           <Grid size={6}>
             <Autocomplete
+              label="Status"
+              fullWidth
               options={["Final Result", "Preliminary"]}
               value={status}
               onChange={(event: any, newValue: any) => setStatus(newValue)}
-              renderInput={(params: any) => <TextField {...params} label="Status" fullWidth />}
             />
           </Grid>
           <Grid size={6}>
             <Autocomplete
+              label="Provider"
+              fullWidth
               options={providers}
               getOptionLabel={(option: any) => option.name}
               value={providers.find((p: any) => p.name === provider) || null}
               onChange={(event: any, newValue: any) => setProvider(newValue ? newValue.name : '')}
-              renderInput={(params: any) => <TextField {...params} label="Provider" fullWidth />}
             />
           </Grid>
         </Grid>

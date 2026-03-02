@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Box, DataGrid, Label, Button, Window, IconButton } from 'components/ui/Core';
 import { useDatabase, usePatient } from 'components/contexts/PatientContext';
-import dayjs from 'dayjs';
 import { SchedulePatientModal } from './components/SchedulePatientModal';
 
 export const AppointmentDesk = () => {
@@ -163,7 +162,7 @@ export const AppointmentDesk = () => {
       field: 'date',
       headerName: 'Date/Time',
       width: 155,
-      valueFormatter: (value: any) => value ? dayjs(value).format('MM/DD/YYYY h:mm A') : ''
+      valueFormatter: (value: any) => value ? Temporal.Instant.from(value).toLocaleString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) : ''
     },
     { field: 'status', headerName: 'Status', width: 150 },
     { field: 'type', headerName: 'Type', width: 150 },

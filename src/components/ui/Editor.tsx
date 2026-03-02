@@ -385,6 +385,8 @@ export function EditorReadOnly({ value }: { value: string }) {
 
 interface EditorProps {
   placeholder?: string;
+  editable?: boolean;
+  visibleMenuBar?: boolean;
   disableStickyMenuBar?: boolean;
   disableStickyFooter?: boolean;
   initialContent?: string;
@@ -396,13 +398,13 @@ interface EditorProps {
   [key: string]: any;
 }
 
-export function Editor({ placeholder, disableStickyMenuBar, disableStickyFooter = false, initialContent, onSave, onUpdate, ...props }: EditorProps) {
+export function Editor({ placeholder, editable, visibleMenuBar, disableStickyMenuBar, disableStickyFooter = false, initialContent, onSave, onUpdate, ...props }: EditorProps) {
   const extensions = useExtensions({
     placeholder: placeholder,
   });
   const rteRef = React.useRef<any>(null);
-  const [isEditable, setIsEditable] = React.useState(true);
-  const [showMenuBar, setShowMenuBar] = React.useState(true);
+  const [isEditable, setIsEditable] = React.useState(editable ?? true);
+  const [showMenuBar, setShowMenuBar] = React.useState(visibleMenuBar ?? true);
   const [submittedContent, setSubmittedContent] = React.useState(initialContent);
 
   const handleUpdate = React.useCallback(({ editor }: { editor: any }) => {

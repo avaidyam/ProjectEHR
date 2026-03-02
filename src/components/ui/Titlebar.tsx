@@ -81,7 +81,6 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
         specialty: data.specialty,
         provider: data.provider,
         concerns: [],
-        diagnoses: [],
         problems: [],
         flowsheets: [],
         notes: [],
@@ -168,13 +167,13 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
                     id: mrnID,
                     firstName: "Doe",
                     lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
-                    birthdate: "1890-01-01",
+                    birthdate: "1890-01-01T00:00:00.000Z",
                     gender: "Unknown",
-                    encounters: { [encID]: { id: encID } }
+                    encounters: {}
                   }
                 }))
                 setAnchorEl(null)
-                navigate(`/patient/${mrnID}/encounter/${encID}`)
+                navigate(`/patient/${mrnID}`) // /encounter/${encID}
               }}>
                 Create Patient
               </MenuItem>
@@ -221,7 +220,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
             scrollButtons="auto"
             allowScrollButtonsMobile
             TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
-            value={location.pathname}
+            value={['/schedule', '/snapboard', '/list'].includes(location.pathname) || (tabHistory.includes(location.pathname) && location.pathname.startsWith('/patient')) ? location.pathname : false}
             onChange={(event, newValue) => { }}
             sx={{ flexGrow: 1, justifyContent: 'center' }}
           >

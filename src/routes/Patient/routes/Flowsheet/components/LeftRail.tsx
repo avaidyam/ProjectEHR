@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Box, Typography, Checkbox, TextField, IconButton, Collapse } from '@mui/material';
-import { Icon } from '../../../../../components/ui/Core';
+import { Box, Checkbox, Icon, Label, Autocomplete } from 'components/ui/Core';
 import { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
@@ -67,22 +66,26 @@ export const LeftRail: React.FC<LeftRailProps> = ({
     <Box sx={{ position: 'relative', display: 'flex', height: '100%', width: "100%" }} className={className}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
         <Box sx={{ p: 1, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff' }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             size="small"
             placeholder="Search groups..."
             fullWidth
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
+            onInputChange={(_e, newValue) => setSearchTerm(newValue)}
+            options={[]}
+            TextFieldProps={{
+              InputProps: {
+                startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
+              }
             }}
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
           />
           {(searchTerm !== '') && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', cursor: 'pointer' }} onClick={() => setSearchTerm('')}>
+              <Label variant="caption" sx={{ color: 'text.secondary', cursor: 'pointer' }} onClick={() => setSearchTerm('')}>
                 Clear
-              </Typography>
+              </Label>
             </Box>
           )}
         </Box>
@@ -104,9 +107,9 @@ export const LeftRail: React.FC<LeftRailProps> = ({
                   pl: 1,
                   py: 0.5
                 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 600, userSelect: 'none', flex: 1 }}>
+                  <Label variant="subtitle2" sx={{ fontWeight: 600, userSelect: 'none', flex: 1 }}>
                     {category}
-                  </Typography>
+                  </Label>
                   <Checkbox
                     size="small"
                     checked={isAllSelected}
@@ -121,9 +124,9 @@ export const LeftRail: React.FC<LeftRailProps> = ({
 
           {Object.keys(filteredCategories).length === 0 && (
             <Box sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
+              <Label variant="body2" color="text.secondary">
                 No results found
-              </Typography>
+              </Label>
             </Box>
           )}
         </Box>

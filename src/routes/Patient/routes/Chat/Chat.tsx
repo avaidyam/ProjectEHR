@@ -4,7 +4,7 @@ import { GeminiAPIProvider, GeminiAPIProviderProps, LiveClientOptions } from "./
 import { VoicePanel } from "./components/VoicePanel";
 import { ModelConfig } from "./components/ModelConfig";
 import { XORcrypt } from "util/helpers";
-import { usePatient } from "components/contexts/PatientContext";
+import { Database, usePatient } from "components/contexts/PatientContext";
 import { Modality, StartSensitivity } from '@google/genai';
 
 const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u0003)O!<P\t\u000e&:V\u001fSDTW2(\u000e\u00020`;
@@ -32,8 +32,8 @@ export function Chat() {
   const [currentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
-  const allSortedEncounters = Object.values(chart.encounters).sort((a: any, b: any) => (new Date(a.startDate)).getTime() - (new Date(b.startDate)).getTime())
-  const nextEncounter = allSortedEncounters.find((x: any) => (new Date(x.startDate)).getTime() > (new Date(currentEncounter.startDate)).getTime()) ?? currentEncounter
+  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
+  const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
   const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
   console.log("🩺 allSortedEncounters:", allSortedEncounters);
   console.log("currentEncounter", currentEncounter)
@@ -121,14 +121,14 @@ export function Chat() {
     // Medical History
     text += "### Medical History (Diagnosis & Age)\n";
     text += medicalHistory.length
-      ? medicalHistory.map((m: any) => `- ${m.diagnosis} (Age: ${m.age})`).join('\n')
+      ? medicalHistory.map((m: any) => `- ${m.displayAs} (Age: ${Database.JSONDate.toAge(birthdate, m.date)})`).join('\n')
       : "No medical history found.";
     text += "\n\n";
 
     // Surgical History
     text += "### Surgical History (Procedure & Age)\n";
     text += surgicalHistory.length
-      ? surgicalHistory.map((s: any) => `- ${s.procedure} (Age: ${s.age})`).join('\n')
+      ? surgicalHistory.map((s: any) => `- ${s.displayAs} (Age: ${Database.JSONDate.toAge(birthdate, s.date)})`).join('\n')
       : "No surgical history found.";
     text += "\n\n";
 
@@ -193,7 +193,7 @@ export function Chat() {
         text += `- ${a.allergen}: reaction ${a.reaction}\n`;
       });
     } else {
-      text += "No allergies found.\n";
+      text += "No known drug allergies.\n";
     }
     text += "\n";
 

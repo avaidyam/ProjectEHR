@@ -253,7 +253,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
       }}>
         <PanelGroup direction="horizontal" onLayout={(layout: any) => setCollapsed(layout[1] === 0)}>
           <Panel defaultSize={65} minSize={35}>
-            <TabContext value={selectedMainTab.toString()}>
+            <TabContext value={selectedMainTab}>
               <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                   {accessories}
@@ -342,7 +342,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                 </Stack>
                 <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                   {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                    <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i.toString()}>
+                    <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>
                       <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
                         {tabsDirectory[k](v)}
                       </ErrorBoundary>
@@ -403,7 +403,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
           }
           {(!isMobile && sideTabs.length > 0) &&
             <Panel ref={sidePanelRef} collapsible defaultSize={35} minSize={35} collapsedSize={0}>
-              <TabContext value={selectedSideTab.toString()}>
+              <TabContext value={selectedSideTab}>
                 <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
                     <Droppable droppableId="side" direction="horizontal">
@@ -441,7 +441,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
                   </Stack>
                   <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                     {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                      <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i.toString()}>
+                      <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>
                         <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
                           {tabsDirectory[k](v)}
                         </ErrorBoundary>

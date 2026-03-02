@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Typography } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
+import { getICD10CodeDescription } from 'util/helpers';
 
 export const SidebarProblemList = () => {
   const { useEncounter } = usePatient();
@@ -13,7 +14,11 @@ export const SidebarProblemList = () => {
       </Typography>
       {problems && problems.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {problems.map(p => (<div key={JSON.stringify(p)}>{p.display ? p.display : p.diagnosis}</div>))}
+          {problems.map((p: any) => (
+            <div key={p.id || JSON.stringify(p)}>
+              {p.displayAs ?? `${getICD10CodeDescription(p.diagnosis) || 'Unknown'} (${p.diagnosis})`}
+            </div>
+          ))}
         </div>
       ) : (
         <i>No problems on file</i>

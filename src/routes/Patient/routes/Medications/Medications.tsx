@@ -6,15 +6,14 @@ import {
   Button,
   Icon,
   IconButton,
-  TextField,
   Label,
   DataGrid,
+  useGridApiRef,
   TitledCard,
   Grid,
+  Autocomplete,
+  Checkbox
 } from 'components/ui/Core';
-import {
-  Checkbox,
-} from '@mui/material';
 import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { Database, usePatient } from 'components/contexts/PatientContext';
 import { GridColDef } from '@mui/x-data-grid';
@@ -23,6 +22,9 @@ export function Medications() {
   const { useEncounter } = usePatient();
   const [medications, setMedications] = useEncounter().medications();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<Database.Medication.ID>>(new Set());
+  const apiRef = useGridApiRef();
+
+  const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
   const handleEdit = (id: Database.Medication.ID) => {
     setExpandedRowIds(new Set([id]));
@@ -83,7 +85,16 @@ export function Medications() {
       field: 'lastDose',
       headerName: 'Last Dose',
       width: 150,
-      renderCell: () => <TextField disabled size="small" fullWidth color="error" />
+      renderCell: () => (
+        <Autocomplete
+          disabled
+          size="small"
+          fullWidth
+          value=""
+          options={[]}
+          TextFieldProps={{ color: 'error' }}
+        />
+      )
     },
     {
       field: 'taking',
@@ -127,7 +138,14 @@ export function Medications() {
       <Stack spacing={2}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <TextField label="New Medication" variant="outlined" size="small" />
+            <Autocomplete
+              freeSolo
+              label="New Medication"
+              size="small"
+              fullWidth
+              options={[]}
+              sx={{ width: 300 }}
+            />
             <Button variant="contained" startIcon={<Icon>add_task</Icon>}>Add</Button>
           </Stack>
           <Stack direction="row" spacing={1}>
@@ -141,6 +159,7 @@ export function Medications() {
 
         <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
+            apiRef={apiRef}
             rows={medications ?? []}
             columns={columns}
             getRowId={(row: any) => row.id || `medication-${row.name}-${row.brandName}-${row.dose}`}
@@ -149,6 +168,7 @@ export function Medications() {
             initialState={{ columns: { columnVisibilityModel: { __detail_panel_toggle__: false } } }}
             hideFooter
             disableRowSelectionOnClick
+            onRowDoubleClick={handleRowDoubleClick}
             getDetailPanelHeight={() => 'auto'}
             getDetailPanelContent={getDetailPanelContent}
             detailPanelExpandedRowIds={expandedRowIds}

@@ -1,8 +1,8 @@
 import * as React from 'react';
 // @ts-ignore
-import groupBy from 'lodash/groupBy';
 import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core';
-import { usePatient } from 'components/contexts/PatientContext';
+import { Database, usePatient } from 'components/contexts/PatientContext';
+import { groupBy, getICD10CodeDescription } from 'util/helpers';
 
 // FIXME: TitledCard
 // At some point I will need to use a URLBuilder to link the title to corresponding pages
@@ -22,8 +22,7 @@ export const SnapshotTabContent: React.FC = () => {
   const [surgicalHx] = useEncounter().history.surgical()
   const [familyHx] = useEncounter().history.family()
   const [medicationHx] = useEncounter().medications()
-
-  // const { enabledEncounters } = React.useContext(AuthContext); // Access the enabled encounters
+  const [problems] = useEncounter().problems()
 
   const isSectionEmpty = (section: any[] | null | undefined) => {
     return !section || section.length === 0;
@@ -35,8 +34,8 @@ export const SnapshotTabContent: React.FC = () => {
       <Grid masonry sequential columns={{ md: 1, lg: 2 }} spacing={2}>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Patient</>} color='#5EA1F8'>
           <b>Name:</b> {`${firstName} ${lastName}`}<br />
-          <b>Age:</b> {(new Date(birthdate)).age()}<br />
-          <b>Date of Birth:</b> {birthdate}<br />
+          <b>Age:</b> {Database.JSONDate.toAge(birthdate)}<br />
+          <b>Date of Birth:</b> {Database.JSONDate.toDateString(birthdate)}<br />
           <b>Address:</b> {address}<br />
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Allergies</>} color='#9F3494'>
@@ -46,6 +45,17 @@ export const SnapshotTabContent: React.FC = () => {
             allergiesHx?.map((allergy) => (
               <div key={`${allergy.allergen}-${allergy.reaction}`}>
                 <span style={{ color: '#9F3494' }}>{allergy.allergen}</span> {allergy.reaction}
+              </div>
+            ))
+          )}
+        </TitledCard>
+        <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Problem List</>} color='#9F3494'>
+          {isSectionEmpty(problems) ? (
+            <div style={{ fontStyle: 'italic', color: '#666' }}>No active problems</div>
+          ) : (
+            (problems ?? []).map((p: any) => (
+              <div key={p.id || JSON.stringify(p)}>
+                {p.displayAs ?? `${getICD10CodeDescription(p.diagnosis) || p.diagnosis || 'Unknown'} (${p.diagnosis})`}
               </div>
             ))
           )}
@@ -60,7 +70,7 @@ export const SnapshotTabContent: React.FC = () => {
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
                 <span style={{ color: '#9F3494' }}>
-                  {records?.map?.((rec: any) => rec.received).join(', ')}
+                  {records?.map?.((rec) => !!rec.received ? Database.JSONDate.toDateString(rec.received as Database.JSONDate) : 'N/A').join(', ')}
                 </span>
               </div>
             ))
@@ -73,9 +83,11 @@ export const SnapshotTabContent: React.FC = () => {
             medicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.diagnosis}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
-                  {condition?.date?.toString()}
+                  {!!condition.date ? Database.JSONDate.toDateString(condition.date) : 'N/A'}
                 </span>
-                <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.diagnosis}</span>
+                <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>
+                  {condition.displayAs ?? `${getICD10CodeDescription(condition.diagnosis) || condition.diagnosis || 'Unknown'} (${condition.diagnosis})`}
+                </span>
               </div>
             ))
           )}
@@ -102,7 +114,7 @@ export const SnapshotTabContent: React.FC = () => {
             surgicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.procedure}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
-                  {condition.date.toString()}
+                  {Database.JSONDate.toDateString(condition.date!)}
                 </span>
                 <span style={{ flex: '1', textAlign: 'left', marginLeft: '25px' }}>{condition.procedure}</span>
               </div>

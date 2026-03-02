@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import { Box, Button, Window, TextField } from './Core';
+import { Box, Button, Window, Autocomplete, DateTimePicker } from './Core';
 import * as Database from '../contexts/Database';
 
 export interface EncounterFormData {
@@ -27,8 +26,8 @@ export const CreateEncounterDialog = ({
   providers: Database.Provider[]
 }) => {
   const [formData, setFormData] = React.useState<EncounterFormData>({
-    startDate: new Date().toISOString().slice(0, 16), // Default to now
-    endDate: new Date(new Date().getTime() + 30 * 60000).toISOString().slice(0, 16), // Default +30m
+    startDate: Temporal.Now.plainDateTimeISO().toString().slice(0, 16), // Default to now
+    endDate: Temporal.Now.plainDateTimeISO().add({ minutes: 30 }).toString().slice(0, 16), // Default +30m
     department: '',
     type: 'Office Visit',
     provider: '',
@@ -70,75 +69,55 @@ export const CreateEncounterDialog = ({
       maxWidth="sm"
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-        <TextField
+        <DateTimePicker
+          convertString
           label="Start Date/Time"
-          type="datetime-local"
           value={formData.startDate}
-          onChange={(e) => handleChange('startDate', e.target.value)}
-          fullWidth
-          InputLabelProps={{ shrink: true }}
+          onChange={(date: any) => handleChange('startDate', date)}
         />
 
-        <TextField
+        <DateTimePicker
+          convertString
           label="End Date/Time"
-          type="datetime-local"
           value={formData.endDate}
-          onChange={(e) => handleChange('endDate', e.target.value)}
-          fullWidth
-          InputLabelProps={{ shrink: true }}
+          onChange={(date: any) => handleChange('endDate', date)}
         />
 
-        <FormControl fullWidth>
-          <InputLabel>Department</InputLabel>
-          <Select
-            value={formData.department as string}
-            label="Department"
-            onChange={(e) => handleChange('department', e.target.value)}
-          >
-            {departments && departments.map((dept, idx) => (
-              <MenuItem key={idx} value={dept.name}>{dept.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          label="Department"
+          options={departments?.map(d => d.name) ?? []}
+          value={formData.department as string}
+          onChange={(_e, newValue) => handleChange('department', newValue || '')}
+        />
 
-        <FormControl fullWidth>
-          <InputLabel>Type</InputLabel>
-          <Select
-            value={formData.type}
-            label="Type"
-            onChange={(e) => handleChange('type', e.target.value)}
-          >
-            {Object.values(Database.Encounter.VisitType).map((type, idx) => (
-              <MenuItem key={idx} value={type}>{type}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          label="Type"
+          options={Object.values(Database.Encounter.VisitType)}
+          value={formData.type}
+          onChange={(_e, newValue) => handleChange('type', newValue || 'Office Visit')}
+        />
 
-        <TextField
+        <Autocomplete
+          freeSolo
           label="Specialty"
+          options={['Internal Medicine', 'Family Medicine', 'Pediatrics', 'Obstetrics and Gynecology', 'Cardiology', 'Dermatology', 'Gastroenterology', 'Neurology', 'Oncology', 'Orthopedics', 'Psychiatry', 'Surgery']}
           value={formData.specialty}
-          onChange={(e) => handleChange('specialty', e.target.value)}
-          fullWidth
+          onChange={(_e, newValueArg) => handleChange('specialty', newValueArg || '')}
+          onInputChange={(_e, newInputValue) => handleChange('specialty', newInputValue)}
         />
 
-        <FormControl fullWidth>
-          <InputLabel>Provider</InputLabel>
-          <Select
-            value={formData.provider as string}
-            label="Provider"
-            onChange={(e) => handleChange('provider', e.target.value as string)}
-          >
-            {providers && providers
-              .filter(prov => {
-                if (!formData.department) return true;
-                const selectedDept = departments.find(d => d.name === formData.department);
-                return selectedDept ? prov.department === selectedDept.id : true;
-              })
-              .map((prov, idx) => (
-                <MenuItem key={idx} value={prov.name}>{prov.name}</MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          label="Provider"
+          options={providers
+            ?.filter(prov => {
+              if (!formData.department) return true;
+              const selectedDept = departments.find(d => d.name === formData.department);
+              return selectedDept ? prov.department === selectedDept.id : true;
+            })
+            .map(p => p.name) ?? []}
+          value={formData.provider as string}
+          onChange={(_e, newValue) => handleChange('provider', newValue || '')}
+        />
       </Box>
     </Window>
   );

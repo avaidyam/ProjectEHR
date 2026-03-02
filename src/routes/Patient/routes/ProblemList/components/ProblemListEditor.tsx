@@ -1,36 +1,30 @@
 import * as React from 'react';
-import { Grid, Typography, TextField, InputAdornment, Button, IconButton, Icon, MenuItem, FormControl } from '@mui/material';
-import { DatePicker } from 'components/ui/Core';
-import dayjs from 'dayjs';
+import { Box, DatePicker, Autocomplete, Label, Button, IconButton, Icon, Stack, Grid, Checkbox } from 'components/ui/Core';
+import { getICD10CodeDescription } from 'util/helpers';
+import { Database } from 'components/contexts/PatientContext';
 
-// Quicker way to quickly generate generic Probelem List Editor inputs
-const EditorGridItem = ({ label, typographyCols, textFieldCols, icon, value, onChange }: {
+// Quicker way to quickly generate generic Problem List Editor inputs
+const EditorGridItem = ({ label, typographyCols, textFieldCols, value, onChange, options = [] }: {
   label: string;
   typographyCols: any;
   textFieldCols: any;
-  icon?: string;
   value: string;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+  onChange: (value: string) => void;
+  options?: string[];
 }) => {
   return (
     <>
       <Grid size={typographyCols}>
-        <Typography>{label}</Typography>
+        <Label>{label}</Label>
       </Grid>
       <Grid size={textFieldCols}>
-        <TextField
-          label={label}
+        <Autocomplete
+          freeSolo
           fullWidth
+          label={label}
           value={value}
-          onChange={onChange}
-          // Make the icon optional
-          InputProps={{
-            endAdornment: icon && (
-              <InputAdornment position="end">
-                {icon}
-              </InputAdornment>
-            ),
-          }}
+          options={options}
+          onInputChange={(_e, newInputValue) => onChange(newInputValue)}
         />
       </Grid>
     </>
@@ -42,43 +36,32 @@ const EditorDateGridItem = ({ label, typographyCols, textFieldCols, value, onCha
   label: string;
   typographyCols: any;
   textFieldCols: any;
-  icon?: string;
-  value: dayjs.Dayjs;
-  onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+  value: any;
+  onChange: (date: any) => void;
 }) => {
-  //
   return (
     <>
       <Grid size={typographyCols}>
-        <Typography>{label}</Typography>
+        <Label>{label}</Label>
       </Grid>
       <Grid size={textFieldCols}>
-        <DatePicker label={label} value={value} onChange={(date) => onChange({ target: { value: date } } as any)} />
+        <DatePicker convertString label={label} value={value} onChange={onChange} />
       </Grid>
     </>
   );
 };
 
-/**
- * ProblemListEditor component for editing problem details.
- *
- * @param {Object} props - The component props.
- * @param {Object} props.data - The data for the problem being edited.
- * @param {number} props.index - The index of the problem in the list.
- * @param {function} props.expandedRows - Function to handle row expansion.
- * @param {function} props.onDelete - Function to handle deleting the problem.
- * @param {function} props.onOpenModal - Function to open the modal for searching diagnosis.
- * @returns {JSX.Element} The ProblemListEditor component.
- */
-export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal }: {
+export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenModal, medicalHx, onSave }: {
   data: any;
-  index: number;
+  index: any;
   expandedRows: any;
   onDelete: any;
-  onOpenModal: any
+  onOpenModal: any;
+  medicalHx: any[];
+  onSave: (id: any, row: any, addToHistory?: boolean) => void;
 }) => {
-  // Since there is an accept button, we need to use a tempstate that we can modify and then accept or cancel
   const [tempData, setTempData] = React.useState({ ...data });
+  const [shouldAddToHistory, setShouldAddToHistory] = React.useState(false);
 
   const handleEditorTempChange = (key: string, value: any) => {
     setTempData({
@@ -87,11 +70,13 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
     });
   };
 
+  React.useEffect(() => {
+    setTempData({ ...data });
+    setShouldAddToHistory(false);
+  }, [data]);
+
   const handleEditorAccept = () => {
-    Object.keys(tempData).forEach((key) => {
-      data[key] = tempData[key];
-    });
-    expandedRows(index);
+    onSave(index, tempData, shouldAddToHistory);
   };
 
   const handleEditorCancel = () => {
@@ -103,111 +88,163 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
     setTempData({ ...data });
   }, [data]);
 
-
   return (
-    <Grid container spacing={2} alignItems="center">
-      <Grid size={2}>
-        <Typography>Problem</Typography>
-      </Grid>
-      <Grid size={10}>
-        <TextField
-          label='Problem'
-          fullWidth
-          value={tempData.diagnosis}
-          onChange={(e) => handleEditorTempChange('diagnosis', e.target.value)}
-          InputProps={{
-            endAdornment: (
-              // Want deferred funciton call
-              (<IconButton onClick={() => onOpenModal(index)}>
+    <Box paper elevation={5} sx={{ p: 2, mx: 4, my: 1, bgcolor: 'background.paper' }}>
+      <Label variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
+        Details
+      </Label>
+
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Stack spacing={2}>
+            <Stack direction="row" spacing={1}>
+              <Autocomplete
+                freeSolo
+                fullWidth
+                label="Problem"
+                size="small"
+                disabled={!tempData.isNew}
+                value={tempData.diagnosis ? `${getICD10CodeDescription(tempData.diagnosis) || tempData.diagnosis} (${tempData.diagnosis})` : ''}
+                onInputChange={(_e, newVal) => {
+                  // If it looks like "Name (Code)", extract the code part
+                  const match = newVal.match(/\(([^)]+)\)$/);
+                  handleEditorTempChange('diagnosis', (match ? match[1] : newVal) as Database.DiagnosisCode);
+                }}
+                options={[]}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    onOpenModal(index);
+                  }
+                }}
+              />
+              <Button outlined sx={{ minWidth: 40, p: 0, height: 40 }} onClick={() => onOpenModal(index)}>
                 <Icon>search</Icon>
-              </IconButton>)
-            )
-          }}
-        />
+              </Button>
+            </Stack>
+
+            <Autocomplete
+              freeSolo
+              fullWidth
+              label="Display"
+              size="small"
+              value={tempData.displayAs}
+              onInputChange={(_e, newVal) => handleEditorTempChange('displayAs', newVal)}
+              options={[]}
+            />
+
+            <Stack direction="row" spacing={2}>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Checkbox
+                  size="small"
+                  checked={!!tempData.isChronicCondition}
+                  onChange={(e: any) => handleEditorTempChange('isChronicCondition', e.target.checked)}
+                />
+                <Label variant="body2">Chronic Condition</Label>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Checkbox
+                  size="small"
+                  checked={!!tempData.encounterDx}
+                  onChange={(e: any) => handleEditorTempChange('encounterDx', e.target.checked)}
+                />
+                <Label variant="body2">Encounter Diagnosis</Label>
+              </Stack>
+            </Stack>
+
+            <Stack direction="row" spacing={2}>
+              <Autocomplete
+                fullWidth
+                label="Priority"
+                size="small"
+                options={['Low', 'Medium', 'High']}
+                value={tempData.priority || null}
+                onChange={(_e, newValue) => handleEditorTempChange('priority', newValue || '')}
+              />
+              <Autocomplete
+                freeSolo
+                fullWidth
+                label="Class"
+                size="small"
+                value={tempData.class}
+                onInputChange={(_e, newVal) => handleEditorTempChange('class', newVal)}
+                options={['Acute', 'Chronic', 'Resolved', 'Recurrent']}
+              />
+            </Stack>
+
+            <Stack direction="row" spacing={2}>
+              <DatePicker
+                convertString
+                label="Noted"
+                size="small"
+                fullWidth
+                value={tempData.notedDate}
+                onChange={(date) => handleEditorTempChange('notedDate', date)}
+              />
+              <DatePicker
+                convertString
+                label="Diagnosed"
+                size="small"
+                fullWidth
+                value={tempData.diagnosedDate}
+                onChange={(date) => handleEditorTempChange('diagnosedDate', date)}
+              />
+              <DatePicker
+                convertString
+                label="Resolved"
+                size="small"
+                fullWidth
+                value={tempData.resolvedDate}
+                onChange={(date) => handleEditorTempChange('resolvedDate', date)}
+              />
+            </Stack>
+          </Stack>
+        </Grid>
       </Grid>
-      <EditorGridItem
-        label="Display"
-        typographyCols={2}
-        textFieldCols={10}
-        value={tempData.display}
-        onChange={e => handleEditorTempChange('display', e.target.value)}
-      />
-      <Grid size={2}>
-        <Button
-          variant={tempData.isChronicCondition ? 'contained' : 'outlined'}
-          onClick={() => handleEditorTempChange('isChronicCondition', !tempData.isChronicCondition)}
-        >
-          Chronic Condition
-        </Button>
-      </Grid>
-      <Grid size={2}>
-        <Button
-          variant={tempData.isShareWithPatient ? 'contained' : 'outlined'}
-          onClick={() => handleEditorTempChange('isShareWithPatient', !tempData.isShareWithPatient)}
-        >
-          Share with Patient
-        </Button>
-      </Grid>
-      <Grid style={{ width: '100%' }} />
-      <Grid size={2}>
-        <Typography>Priority</Typography>
-      </Grid>
-      <Grid size={4}>
-        <FormControl fullWidth>
-          <TextField
-            select
-            label="Priority"
-            value={tempData.priority}
-            onChange={e => handleEditorTempChange('priority', e.target.value)}
+
+      <Stack direction="row" justifyContent="space-between" mt={4}>
+        <Stack direction="row" spacing={1}>
+          <Button
+            onClick={() => onDelete(index)}
+            variant="outlined"
+            color="error"
+            startIcon={<Icon>delete</Icon>}
+            size="small"
           >
-            <MenuItem value=''>N/A</MenuItem>
-            <MenuItem value='Low'>Low</MenuItem>
-            <MenuItem value='Medium'>Medium</MenuItem>
-            <MenuItem value='High'>High</MenuItem>
-          </TextField>
-        </FormControl>
-      </Grid>
-      <EditorGridItem
-        label="Class"
-        typographyCols={2}
-        textFieldCols={4}
-        value={tempData.class}
-        onChange={e => handleEditorTempChange('class', e.target.value)}
-      />
-      <EditorDateGridItem
-        label="Noted"
-        typographyCols={1}
-        textFieldCols={3}
-        value={tempData.notedDate}
-        onChange={e => handleEditorTempChange('notedDate', e.target.value)}
-      />
-      <EditorDateGridItem
-        label="Diagnosed"
-        typographyCols={1}
-        textFieldCols={3}
-        value={tempData.resolvedDate}
-        onChange={e => handleEditorTempChange('diagnosedDate', e.target.value)}
-      />
-      <EditorDateGridItem
-        label="Resolved"
-        typographyCols={1}
-        textFieldCols={3}
-        value={tempData.resolvedDate}
-        onChange={e => handleEditorTempChange('resolvedDate', e.target.value)}
-      />
-      <Grid size={2}>
-        <Button variant="contained" color='error' onClick={() => onDelete(index)}>Delete</Button>
-      </Grid>
-      <Grid size={2}>
-        <Button variant="outlined">Add to History</Button>
-      </Grid>
-      <Grid size={4} />
-      <Grid size={2}>
-        <Button variant="outlined" color="success" onClick={handleEditorAccept}><Icon>check</Icon>Accept</Button>
-      </Grid>
-      <Grid size={2}>
-        <Button variant="outlined" color="error" onClick={handleEditorCancel}><Icon>close</Icon>Cancel</Button>
-      </Grid>
-    </Grid>
+            Delete
+          </Button>
+          <Button
+            variant={shouldAddToHistory ? "contained" : "outlined"}
+            color="primary"
+            size="small"
+            startIcon={<Icon>{shouldAddToHistory ? "check_circle" : "history"}</Icon>}
+            disabled={(medicalHx ?? []).some(m => m.diagnosis?.replace(/\./g, '') === tempData.diagnosis?.replace(/\./g, ''))}
+            onClick={() => setShouldAddToHistory(!shouldAddToHistory)}
+          >
+            {shouldAddToHistory ? "Added to Session" : "Add to History"}
+          </Button>
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <Button
+            onClick={handleEditorAccept}
+            variant="outlined"
+            color="success"
+            size="small"
+            startIcon={<Icon>check</Icon>}
+            disabled={!tempData.diagnosis || tempData.diagnosis.trim() === ''}
+          >
+            Accept
+          </Button>
+          <Button
+            onClick={handleEditorCancel}
+            variant="outlined"
+            color="error"
+            size="small"
+            startIcon={<Icon>close</Icon>}
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </Stack>
+    </Box>
   );
 };

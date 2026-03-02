@@ -2,10 +2,11 @@ import * as React from 'react';
 import {
   Box,
   Button,
-  TextField,
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
+  DatePicker,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -113,35 +114,31 @@ export function ECigaretteVapingHistory() {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <DatePicker
+              convertString
               label="Start Date"
-              type="date"
-              fullWidth
               value={ecigaretteData?.startDate || ''}
-              onChange={(e) => handleDataChange('startDate', e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              onChange={(date: any) => handleDataChange('startDate', date)}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <DatePicker
+              convertString
               label="Quit Date"
-              type="date"
-              fullWidth
               value={ecigaretteData?.quitDate || ''}
-              onChange={(e) => handleDataChange('quitDate', e.target.value)}
-              InputLabelProps={{ shrink: true }}
+              onChange={(date: any) => handleDataChange('quitDate', date)}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Cartridges/Day"
-              type="number"
               fullWidth
-              value={ecigaretteData?.cartridgesPerDay || ''}
-              onChange={(e) => handleDataChange('cartridgesPerDay', parseInt(e.target.value) || 0)}
-              inputProps={{ min: 0 }}
+              value={ecigaretteData?.cartridgesPerDay?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('cartridgesPerDay', parseInt(newValue) || 0)}
+              options={['1', '2', '3', '4', '5+']}
             />
           </Grid>
 
@@ -218,13 +215,14 @@ export function ECigaretteVapingHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Comments"
-              multiline
-              rows={3}
               fullWidth
               value={ecigaretteData?.comments || ''}
-              onChange={(e) => handleDataChange('comments', e.target.value)}
+              onInputChange={(_e, newValue) => handleDataChange('comments', newValue)}
+              options={[]}
+              TextFieldProps={{ multiline: true, rows: 3 }}
             />
           </Grid>
         </Grid>
@@ -394,11 +392,13 @@ export function ECigaretteVapingHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Other"
               fullWidth
               value={ecigaretteData?.substances?.other || ''}
-              onChange={(e) => handleNestedChange('substances', 'other', e.target.value)}
+              onInputChange={(_e, newValue) => handleNestedChange('substances', 'other', newValue)}
+              options={[]}
             />
           </Grid>
         </Grid>
@@ -568,11 +568,13 @@ export function ECigaretteVapingHistory() {
           </Grid>
 
           <Grid size={12}>
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Other"
               fullWidth
               value={ecigaretteData?.devices?.other || ''}
-              onChange={(e) => handleNestedChange('devices', 'other', e.target.value)}
+              onInputChange={(_e, newValue) => handleNestedChange('devices', 'other', newValue)}
+              options={[]}
             />
           </Grid>
         </Grid>

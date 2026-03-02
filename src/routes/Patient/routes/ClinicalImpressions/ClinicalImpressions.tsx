@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Box, Button, Icon, TextField, Stack, TreeView, TreeItem, Label } from 'components/ui/Core';
-import { usePatient } from 'components/contexts/PatientContext';
+import { Box, Button, Icon, Stack, TreeView, TreeItem, Label, Autocomplete } from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 import { DiagnosisPicker } from '../ProblemList/components/DiagnosisPicker';
 
 export const ClinicalImpressions = () => {
@@ -22,9 +22,9 @@ export const ClinicalImpressions = () => {
     const selectedItems = Array.isArray(selection) ? selection : [selection];
     if (selectedItems.length === 0) return;
     const newImpressions = selectedItems.map((item: any) => ({
-      name: item.name,
-      code: item.conceptId,
-      id: item.conceptId
+      displayAs: item.name,
+      diagnosis: item.conceptId as Database.DiagnosisCode,
+      id: Database.ClinicalImpression.ID.create()
     }));
     const updated = [...clinicalImpressions!, ...newImpressions];
     setClinicalImpressions(updated);
@@ -53,24 +53,29 @@ export const ClinicalImpressions = () => {
     <Stack direction="column" spacing={2} sx={{ padding: 2, textAlign: 'left' }}>
       <Label variant="h6" sx={{ mb: 1, display: 'block' }}>Clinical Impressions</Label>
       <Stack direction="row">
-        <TextField
-          placeholder="Add a new impression"
+        <Autocomplete
+          freeSolo
+          fullWidth
+          disableClearable
+          label="Add a new impression"
           value={searchTerm}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          onInputChange={(_e, newValue) => setSearchTerm(newValue)}
+          onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleOpenModal(searchTerm);
             }
           }}
-          InputProps={{
-            endAdornment:
-              <Button
-                variant="text"
-                onClick={() => handleOpenModal(searchTerm)}
-                sx={{ height: '56px' }}
-              >
-                <Icon color="success">add_task</Icon> Add
-              </Button>
+          options={[]}
+          TextFieldProps={{
+            InputProps: {
+              endAdornment:
+                <Button
+                  variant="text"
+                  onClick={() => handleOpenModal(searchTerm)}
+                >
+                  <Icon color="success">add_task</Icon> Add
+                </Button>
+            }
           }}
         />
       </Stack>
@@ -86,7 +91,7 @@ export const ClinicalImpressions = () => {
               itemId={`impression-${index}`}
               label={
                 <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ width: '100%', pr: 1 }}>
-                  <Label>{index + 1}. {imp.name}</Label>
+                  <Label>{index + 1}. {imp.displayAs}</Label>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button
                       size="small"

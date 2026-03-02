@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Icon, Autocomplete, Box, Stack, Paper, Button, TextField, Typography, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material';
+import { Box, Stack, Button, Label, Icon, Table, TableHead, TableBody, TableRow, TableCell, Autocomplete } from 'components/ui/Core';
+import { TextField } from '@mui/material'
 import { AuthContext, AuthContextType } from 'components/contexts/AuthContext';
 import { AlertColor } from '@mui/material';
-import { ConfigureDialog } from './components/ConfigureDialog'; // Import the dialog component
+import { ConfigureDialog } from './components/ConfigureDialog';
 import { Notification } from './components/Notification';
 import { PromptDialog } from './components/PromptDialog';
 import { useDatabase, Database } from 'components/contexts/PatientContext';
@@ -23,10 +24,10 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const [department, setDepartment] = React.useState<Database.Department>();
   const navigate = useNavigate();
   const { login, verifyPassword, updateEncounters, enabledEncounters } = React.useContext(AuthContext) as AuthContextType;
-  const [isModalOpen, setIsModalOpen] = React.useState(false); // Modal open state
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const [patients, setPatients] = React.useState<string[]>([]); // State to store the extracted patients
-  const [encounterCounts, setEncounterCounts] = React.useState<Record<string, number>>({}); // State as a hash object
+  const [patients, setPatients] = React.useState<string[]>([]);
+  const [encounterCounts, setEncounterCounts] = React.useState<Record<string, number>>({});
 
   const [notification, setNotification] = React.useState<{ open: boolean; message: string; severity: AlertColor }>({ open: false, message: '', severity: 'info' });
 
@@ -44,46 +45,41 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     setPromptState({ ...promptState, open: false });
   };
 
-  // Extract unique MRNs from patient_sample.json -> schedules
   React.useEffect(() => {
     const allAppointments = schedules.flatMap((s) => s.appointments);
     const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn))) as string[];
-    setPatients(uniqueMRNs); // Set patients as a unique array of MRNs
+    setPatients(uniqueMRNs);
   }, [schedules]);
 
-  // Will get encounters in form {MRN: # of enc, MRN2: # of enc}
   React.useEffect(() => {
     const allAppointments = schedules.flatMap((s) => s.appointments)
     const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn)))
 
-    // Retrieve encounters for each MRN and store in a hash
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
       const patientInfo = patientsDB[mrn];
-      acc[mrn] = Object.keys(patientInfo.encounters).length; // Use MRN as key and number of encounters as value
+      acc[mrn] = Object.keys(patientInfo.encounters).length;
       return acc;
     }, {} as Record<Database.Patient.ID, number>);
 
-    setEncounterCounts(encountersHash); // Update state with the hash
+    setEncounterCounts(encountersHash);
   }, [schedules, patientsDB]);
 
   React.useEffect(() => {
     if (Object.keys(enabledEncounters).length === 0 && patients.length > 0) {
       const defaultEncounters: Record<string, number | null> = {};
       patients.forEach((mrn) => {
-        defaultEncounters[mrn] = 0; // Default Encounter 0
+        defaultEncounters[mrn] = 0;
       });
       updateEncounters(defaultEncounters as any);
     }
   }, [enabledEncounters, patients, updateEncounters]);
 
-  // Handle login submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(username, password, department!.name); // Authenticate user
-    setIsLoggedIn(true); // Update parent state
+    login(username, password, department!.name);
+    setIsLoggedIn(true);
   };
 
-  // Handle password validation flow
   const handlePasswordValidation = async () => {
     return new Promise((resolve) => {
       showPrompt('Administrator Password', 'Enter your password', async (enteredPassword) => {
@@ -95,7 +91,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
 
         const isValid = await verifyPassword(enteredPassword);
         if (isValid) {
-          // showNotification('Password verified successfully.', 'success');
           resolve(true);
         } else {
           showNotification('Incorrect password. Access denied.', 'error');
@@ -105,38 +100,36 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     });
   };
 
-  // Open the configuration dialog after password validation
   const handleConfigure = async () => {
-    const isAuthorized = await handlePasswordValidation(); // Validate password first
+    const isAuthorized = await handlePasswordValidation();
     if (isAuthorized) {
-      setIsModalOpen(true); // Open the configuration modal if authorized
+      setIsModalOpen(true);
     }
   };
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", position: "relative", bgcolor: "primary.dark" }}>
-      <Paper elevation={6} sx={{ p: 4, minHeight: "98vh", width: "100%", maxWidth: 600, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", position: "relative" }}>
-        <Typography variant="h2" sx={{ color: "primary.main", fontStyle: "italic", fontWeight: 900 }}>ProjectEHR</Typography>
+      <Box paper elevation={6} sx={{ p: 4, minHeight: "98vh", width: "100%", maxWidth: 600, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", position: "relative" }}>
+        <Label variant="h2" sx={{ color: "primary.main", fontStyle: "italic", fontWeight: 900 }}>ProjectEHR</Label>
         <Box component="form" sx={{ display: !displayDepts ? 'block' : 'none', width: "100%" }} onSubmit={(e) => { setDisplayDepts(true); e.preventDefault() }}>
-          <TextField
+          <Autocomplete
+            freeSolo
             fullWidth
-            margin="normal"
-            type="text"
-            id="username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="User ID"
-            required
+            onInputChange={(_e, newValue) => setUsername(newValue)}
+            label="User ID"
+            options={[]}
+            sx={{ mt: 2, mb: 2 }}
           />
-          <TextField
+          <Autocomplete
+            freeSolo
             fullWidth
-            margin="normal"
-            type="password"
-            id="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
+            onInputChange={(_e, newValue) => setPassword(newValue)}
+            label="Password"
+            options={[]}
+            TextFieldProps={{ type: "password" }}
+            sx={{ mb: 2 }}
           />
           <Button fullWidth sx={{ mt: 2, mb: 2 }} variant="contained" type="submit">
             Log In
@@ -151,7 +144,7 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
             onChange={(e, v) => setDepartment(v || undefined)}
             options={departments}
             getOptionLabel={(option) => option.name}
-            groupBy={(option) => '1' /* we only want one group total to draw the table header */}
+            groupBy={(_) => '1' /* we only want one group total to draw the table header */}
             componentsProps={{ popper: { style: { width: 'fit-content' } } }}
             renderInput={(params) => (
               <TextField
@@ -185,7 +178,7 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
               </Table>
             )}
             renderOption={({ key, ...optionProps }, option) => (
-              <TableRow key={key} component="li" {...optionProps} className={undefined} sx={{ p: 0 }}>
+              <TableRow key={key} component="li" {...(optionProps as any)} className={undefined} sx={{ p: 0 }}>
                 {/* className=MuiAutocomplete-option causes rendering problems */}
                 <TableCell>{option.id}</TableCell>
                 <TableCell>{option.name}</TableCell>
@@ -211,9 +204,8 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         >
           <Icon style={{ fontSize: '36px', cursor: 'pointer' }}>settings</Icon>
         </Box>
-      </Paper>
+      </Box>
 
-      {/* Configure Dialog Component */}
       <ConfigureDialog
         open={isModalOpen}
         onClose={() => {
@@ -227,7 +219,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         encounterCounts={encounterCounts}
       />
 
-      {/* Notification Component */}
       <Notification
         open={notification.open}
         onClose={() => setNotification({ ...notification, open: false })}
@@ -235,7 +226,6 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
         severity={notification.severity}
       />
 
-      {/* Prompt Dialog Component */}
       <PromptDialog
         open={promptState.open}
         onClose={closePrompt}

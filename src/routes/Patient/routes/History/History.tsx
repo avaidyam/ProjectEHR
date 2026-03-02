@@ -1,7 +1,7 @@
 // HistoryTabContent.jsx
 import * as React from 'react';
-import { Tab, Divider } from '@mui/material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { Tab, Tabs, Divider } from '@mui/material';
+import { TabContext, TabPanel } from '@mui/lab';
 import { Box, Label, Stack } from 'components/ui/Core';
 import { usePatient } from '../../../../components/contexts/PatientContext';
 
@@ -35,31 +35,31 @@ export function HistoryTabContent() {
           <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ minWidth: 'max-content', py: 0.5 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               <Label variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', px: 1, fontSize: '0.65rem' }}>GENERAL</Label>
-              <TabList onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="general history tabs" sx={{ minHeight: 32 }}>
+              <Tabs onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="general history tabs" sx={{ minHeight: 32 }} value={['Medical', 'Surgical', 'Family'].includes(value) ? value : false}>
                 <Tab value="Medical" label="Medical" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="Surgical" label="Surgical" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="Family" label="Family" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
-              </TabList>
+              </Tabs>
             </Box>
             <Divider orientation="vertical" flexItem sx={{ my: 0.75 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               <Label variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', px: 1, fontSize: '0.65rem' }}>SOCIAL</Label>
-              <TabList onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="social history tabs" sx={{ minHeight: 32 }}>
+              <Tabs onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="social history tabs" sx={{ minHeight: 32 }} value={['Substance & Sexual History', 'E-cigarette/Vaping', 'Socioeconomic', 'ADL', 'Social Documentation'].includes(value) ? value : false}>
                 <Tab value="Substance & Sexual History" label="Substance & Sexual" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="E-cigarette/Vaping" label="E-cigarette" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="Socioeconomic" label="Socioeconomic" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="ADL" label="ADL" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 <Tab value="Social Documentation" label="Social Doc" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
-              </TabList>
+              </Tabs>
             </Box>
             <Divider orientation="vertical" flexItem sx={{ my: 0.75 }} />
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               <Label variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', px: 1, fontSize: '0.65rem' }}>SPECIALTY</Label>
-              <TabList onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="specialty history tabs" sx={{ minHeight: 32 }}>
+              <Tabs onChange={(event: any, newValue: any) => { setValue(newValue) }} aria-label="specialty history tabs" sx={{ minHeight: 32 }} value={['Birth', 'OB/Gyn', 'Pap Tracking'].includes(value) ? value : false}>
                 <Tab value="Birth" label="Birth" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
                 {gender === 'Female' && <Tab value="OB/Gyn" label="OB/Gyn" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />}
                 <Tab value="Pap Tracking" label="Pap Tracking" sx={{ minHeight: 32, py: 0.5, px: 1.5, fontSize: '0.75rem' }} />
-              </TabList>
+              </Tabs>
             </Box>
           </Stack>
         </Box>

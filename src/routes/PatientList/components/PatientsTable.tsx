@@ -98,12 +98,8 @@ export const PatientsTable = ({
           case 'dob':
             return {
               ...baseCol,
-              valueGetter: (value: any, row: any) => {
-                try {
-                  return new Date(row.birthdate || row.dob).toLocaleDateString();
-                } catch {
-                  return row.birthdate || row.dob;
-                }
+              valueGetter: (value, row) => {
+                return Database.JSONDate.toDateString(row.birthdate)
               }
             };
           case 'location':
@@ -197,7 +193,7 @@ export const PatientsTable = ({
             const patient = params.row as Database.Patient;
             if (patient.encounters && Object.keys(patient.encounters).length > 0) {
               const encounters = Object.values(patient.encounters);
-              const sortedEncounters = encounters.sort((a: any, b: any) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+              const sortedEncounters = encounters.sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate), Temporal.Instant.from(a.startDate)));
               const latestEncounter = sortedEncounters[0];
               navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
             } else {

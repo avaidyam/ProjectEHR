@@ -4,6 +4,37 @@ export type Branded<T, B> = T & Brand<B>
 
 export type UUID = Branded<string, 'UUID'>
 export type JSONDate = Branded<string, 'JSONDate'>
+export type DiagnosisCode = Branded<string, 'DiagnosisCode'>
+
+//type JSONDate =
+//  `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z` |
+//  `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
+export namespace JSONDate {
+  export const toAge = (date: JSONDate, from?: JSONDate, tz: Temporal.TimeZoneLike = 'UTC') => {
+    try {
+      const birthDate = Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate();
+      const referenceDate = from
+        ? Temporal.Instant.from(from).toZonedDateTimeISO(tz).toPlainDate()
+        : Temporal.Now.plainDateISO(tz);
+      return referenceDate.since(birthDate, { largestUnit: 'years' }).years
+    } catch (e) {
+      console.error(e)
+      return 0
+    }
+  }
+  export const toDateString = (date?: JSONDate, tz: Temporal.TimeZoneLike = 'UTC'): string | undefined => {
+    try {
+      if (!!date) {
+        return Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
+      }
+      return undefined
+    } catch (e) {
+      console.error(e)
+      return undefined
+    }
+  }
+}
 
 export namespace Units {
   export enum Mass {
@@ -61,6 +92,15 @@ export interface Root {
 
 export type Specialty = Branded<string, 'Specialty.Name'>
 
+export namespace Specialty {
+  export const SPECIALTIES = [
+    'Internal Medicine',
+    'General Surgery',
+    'Cardiology',
+    'Orthopedic Surgery'
+  ]
+}
+
 export type ServiceArea = Branded<string, 'ServiceArea.Name'>
 
 export interface Department {
@@ -74,6 +114,7 @@ export interface Department {
 
 export namespace Department {
   export type ID = Branded<UUID, 'Department.ID'>
+  export type Fragment = Partial<Omit<Department, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -89,6 +130,7 @@ export interface Location {
 
 export namespace Location {
   export type ID = Branded<UUID, 'Location.ID'>
+  export type Fragment = Partial<Omit<Location, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -104,6 +146,7 @@ export interface Provider {
 
 export namespace Provider {
   export type ID = Branded<UUID, 'Provider.ID'>
+  export type Fragment = Partial<Omit<Provider, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -118,6 +161,7 @@ export namespace Flowsheet {
 
   export namespace Definition {
     export type ID = Branded<UUID, 'Flowsheet.Definition.ID'>
+    export type Fragment = Partial<Omit<Definition, 'id'>>
     export namespace ID {
       export const create = (): ID => crypto.randomUUID() as ID
     }
@@ -141,6 +185,7 @@ export namespace Flowsheet {
 
   export namespace Entry {
     export type ID = Branded<UUID, 'Flowsheet.Entry.ID'>
+    export type Fragment = Partial<Omit<Entry, 'id'>>
     export namespace ID {
       export const create = (): ID => crypto.randomUUID() as ID
     }
@@ -157,6 +202,7 @@ export interface PatientList {
 
 export namespace PatientList {
   export type ID = Branded<UUID, 'PatientList.ID'>
+  export type Fragment = Partial<Omit<PatientList, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -192,6 +238,7 @@ export interface Appointment {
 
 export namespace Appointment {
   export type ID = Branded<UUID, 'Appointment.ID'>
+  export type Fragment = Partial<Omit<Appointment, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -234,44 +281,41 @@ export interface Patient {
 
 export namespace Patient {
   export type ID = Branded<UUID, 'Patient.ID'>
+  export type Fragment = Partial<Omit<Patient, 'id'>>
   export namespace ID {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
   }
 }
 
 export interface Encounter {
-  allergies?: Allergy[]
-  concerns?: string[]
-  conditionals?: any
-  department: Department.ID
-  diagnoses?: string[]
-  dispenseHistory?: Medication.DispenseLog[]
+  id: Encounter.ID
+  startDate: JSONDate
   endDate: JSONDate
+  type: Encounter.VisitType
+  department: Department.ID
+  provider: Provider.ID
+  status: Encounter.Status
+  specialty?: Specialty
+  concerns?: string[]
+  problems?: Problem[]
+  allergies?: Allergy[]
+  dispenseHistory?: Medication.DispenseLog[]
   flowsheets?: Flowsheet.Entry[]
   history: History
-  id: Encounter.ID
   imaging?: Imaging[]
   immunizations: Immunization[]
-  clinicalImpressions?: {
-    id: string
-    code: string
-    name: string
-  }[]
+  clinicalImpressions?: ClinicalImpression[]
   labs?: Lab[]
   medications?: Medication[]
   notes: Note[]
-  problems?: Problem[]
   orders: Order[]
-  provider: string
+  conditionals?: any
   smartData?: SmartData
-  startDate: JSONDate
-  status: Encounter.Status
-  specialty?: Specialty
-  type: Encounter.VisitType
 }
 
 export namespace Encounter {
   export type ID = Branded<UUID, 'Encounter.ID'>
+  export type Fragment = Partial<Omit<Encounter, 'id'>>
   export namespace ID {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
   }
@@ -353,23 +397,58 @@ export namespace SmartData {
     | "Sulafat" | "Umbriel" | "Vindemiatrix" | "Zephyr" | "Zubenelgenubi";
 }
 
+export interface ClinicalImpression {
+  id: ClinicalImpression.ID
+  diagnosis: DiagnosisCode
+  displayAs: string
+}
+
+export namespace ClinicalImpression {
+  export type ID = Branded<UUID, 'ClinicalImpression.ID'>
+  export type Fragment = Partial<Omit<ClinicalImpression, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+}
+
+export interface Problem {
+  id: Problem.ID
+  diagnosis: DiagnosisCode
+  displayAs: string
+  diagnosedDate?: JSONDate
+  notedDate?: JSONDate
+  resolvedDate?: JSONDate
+  class: string
+  chronic: boolean
+  priority: string
+  encounterDx: boolean // if AMB visit, "Visit Dx", if INPT visit, "Hospital Problem"
+}
+
+export namespace Problem {
+  export type ID = Branded<UUID, 'Problem.ID'>
+  export type Fragment = Partial<Omit<Problem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+}
+
 export interface Allergy {
   id: Allergy.ID
   allergen: string
-  comment: any
-  reaction: any
+  comment: string
+  reaction: Allergy.Reaction[]
   reactionType: Allergy.ReactionType
   recorded: string
   recorder: string
-  resovled: boolean
+  resolved: boolean
   severity: Allergy.Severity
   type: Allergy.Type
   verified: boolean
-  isNew?: boolean
 }
 
 export namespace Allergy {
   export type ID = Branded<UUID, 'Allergy.ID'>
+  export type Fragment = Partial<Omit<Allergy, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -460,6 +539,7 @@ export interface Immunization {
 
 export namespace Immunization {
   export type ID = Branded<UUID, 'Immunization.ID'>
+  export type Fragment = Partial<Omit<Immunization, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -491,7 +571,6 @@ export interface Imaging {
   id?: Imaging.ID
   date: JSONDate
   abnormal?: string
-  accessionNumber?: string
   acuity?: string
   image?: string
   performedBy?: string
@@ -505,6 +584,7 @@ export interface Imaging {
 
 export namespace Imaging {
   export type ID = Branded<UUID, 'Imaging.ID'>
+  export type Fragment = Partial<Omit<Imaging, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -514,7 +594,6 @@ export interface Lab {
   id?: Lab.ID
   date: JSONDate
   abnormal: string
-  accessionNumber?: string
   acuity?: string
   collected: string
   comment?: any
@@ -531,6 +610,7 @@ export interface Lab {
 
 export namespace Lab {
   export type ID = Branded<UUID, 'Lab.ID'>
+  export type Fragment = Partial<Omit<Lab, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -563,11 +643,13 @@ export interface Medication {
 
 export namespace Medication {
   export type ID = Branded<UUID, 'Medication.ID'>
+  export type Fragment = Partial<Omit<Medication, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
 
   export interface DispenseLog {
+    id: DispenseLog.ID
     dispensed: string
     dosage: string
     drug: string
@@ -579,6 +661,14 @@ export namespace Medication {
     refills: number
     supply: number
     written: any
+  }
+
+  export namespace DispenseLog {
+    export type ID = Branded<UUID, 'Medication.DispenseLog.ID'>
+    export type Fragment = Partial<Omit<DispenseLog, 'id'>>
+    export namespace ID {
+      export const create = (): ID => crypto.randomUUID() as ID
+    }
   }
 }
 
@@ -595,6 +685,7 @@ export interface Note {
 
 export namespace Note {
   export type ID = Branded<UUID, 'Note.ID'>
+  export type Fragment = Partial<Omit<Note, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -630,6 +721,7 @@ export interface Order {
 
 export namespace Order {
   export type ID = Branded<UUID, 'Order.ID'>
+  export type Fragment = Partial<Omit<Order, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }
@@ -639,12 +731,86 @@ export interface History {
   medical: MedicalHistoryItem[]
   surgical: SurgicalHistoryItem[]
   family: FamilyHistoryItem[]
-  SubstanceSexualHealth?: SubstanceSexualHealth
+  SubstanceSexualHealth?: {
+    alcohol?: {
+      alcoholStatus?: string
+      comments?: string
+      drinksPerWeek: {
+        beer?: number
+        beerCans?: number
+        drinksContainingAlcohol?: number
+        liquor?: number
+        liquorShots?: number
+        mixedDrinks?: number
+        standardDrinks: number
+        wine?: number
+        wineGlasses?: number
+      }
+      use?: string
+    }
+    drugs?: {
+      comments: string
+      drugStatus?: string
+      drugTypes?: string[] | any[]
+      types?: any[]
+      use?: string
+      usePerWeek: number | string
+    }
+    gynecologicalHistory?: {
+      comments: string
+      lastMenstrualPeriod: string
+      menarche: string
+      menstrualCycleDuration: string
+      menstrualCycleFrequency: string
+      menstrualFlow: string
+      regularity: string
+    }
+    sexual?: {
+      comments: string
+      sexuallyActive: string
+    }
+    sexualActivity?: {
+      active: string
+      birthControl: any[]
+      comments: string
+      partners: any[]
+    }
+    tobacco?: {
+      comments?: string
+      packYears: any
+      packsPerDay: any
+      passiveExposure?: string
+      smokeless?: string
+      smokelessStatus?: {
+        comments: string
+        smokelessStatus: string
+      }
+      smokingStatus?: string
+      counselingGiven?: boolean
+      startDate: JSONDate
+      status?: string
+      types?: any[] | string[]
+    }
+  }
   Socioeconomic?: {
-    demographics?: Demographics
+    demographics?: {
+      religion?: string
+      ethnicGroup: string
+      highestEducationLevel: any
+      maritalStatus: string
+      numberOfChildren: any
+      preferredLanguage: string
+      race: string
+      spouseName: any
+      spouseOccupation?: string
+      yearsOfEducation: any
+    }
     employer?: string
     occupation?: string
-    occupationalHistory?: OccupationalHistory[]
+    occupationalHistory?: {
+      employer: string
+      occupation: string
+    }[]
   }
   SocialHistoryADL?: any
   ECigaretteVaping?: any
@@ -676,17 +842,53 @@ export interface History {
   }
 }
 
-export interface Demographics {
-  religion?: string
-  ethnicGroup: string
-  highestEducationLevel: any
-  maritalStatus: string
-  numberOfChildren: any
-  preferredLanguage: string
-  race: string
-  spouseName: any
-  spouseOccupation?: string
-  yearsOfEducation: any
+export interface MedicalHistoryItem {
+  id: MedicalHistoryItem.ID
+  date?: JSONDate
+  diagnosis: DiagnosisCode
+  displayAs?: string
+  source?: MedicalHistoryItem.Source
+  comment?: string
+}
+
+export namespace MedicalHistoryItem {
+  export type ID = Branded<UUID, 'MedicalHistoryItem.ID'>
+  export type Fragment = Partial<Omit<MedicalHistoryItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+  export enum Source {
+    Clinician = 'Approved by Clinician',
+    Patient = 'From Patient Questionnaire'
+  }
+}
+
+export interface SurgicalHistoryItem {
+  id: SurgicalHistoryItem.ID
+  date?: JSONDate
+  procedure: string
+  laterality: SurgicalHistoryItem.Laterality
+  source?: SurgicalHistoryItem.Source
+  comment?: string
+}
+
+export namespace SurgicalHistoryItem {
+  export type ID = Branded<UUID, 'SurgicalHistoryItem.ID'>
+  export type Fragment = Partial<Omit<SurgicalHistoryItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+  export enum Laterality {
+    NA = 'N/A',
+    Bilateral = 'Bilateral',
+    Left = 'Left',
+    Right = 'Right'
+  }
+  export enum Source {
+    Clinician = 'Approved by Clinician',
+    Patient = 'From Patient Questionnaire',
+    SurgicalLog = 'From Surgical Log Entry'
+  }
 }
 
 export interface FamilyHistoryItem {
@@ -699,103 +901,4 @@ export interface FamilyHistoryItem {
   }[]
   relationship: string
   status: string
-}
-
-export interface MedicalHistoryItem {
-  age?: string
-  comment?: string
-  date?: JSONDate
-  diagnosis: string
-  notes?: string
-  problemList?: string
-  src?: string
-  status?: string
-}
-
-export interface SurgicalHistoryItem {
-  age: string
-  comment?: string
-  date: JSONDate
-  laterality: string
-  notes?: string
-  procedure: string
-  src?: string
-}
-
-export interface OccupationalHistory {
-  employer: string
-  occupation: string
-}
-
-export interface Problem {
-  class: string
-  diagnosedDate?: JSONDate
-  diagnosis: string
-  display: string
-  chronic: boolean
-  notedDate?: JSONDate
-  priority: string
-  resolvedDate?: JSONDate
-}
-
-export interface SubstanceSexualHealth {
-  alcohol?: {
-    alcoholStatus?: string
-    comments?: string
-    drinksPerWeek: {
-      beer?: number
-      beerCans?: number
-      drinksContainingAlcohol?: number
-      liquor?: number
-      liquorShots?: number
-      mixedDrinks?: number
-      standardDrinks: number
-      wine?: number
-      wineGlasses?: number
-    }
-    use?: string
-  }
-  drugs?: {
-    comments: string
-    drugStatus?: string
-    drugTypes?: string[] | any[]
-    types?: any[]
-    use?: string
-    usePerWeek: number | string
-  }
-  gynecologicalHistory?: {
-    comments: string
-    lastMenstrualPeriod: string
-    menarche: string
-    menstrualCycleDuration: string
-    menstrualCycleFrequency: string
-    menstrualFlow: string
-    regularity: string
-  }
-  sexual?: {
-    comments: string
-    sexuallyActive: string
-  }
-  sexualActivity?: {
-    active: string
-    birthControl: any[]
-    comments: string
-    partners: any[]
-  }
-  tobacco?: {
-    comments?: string
-    packYears: any
-    packsPerDay: any
-    passiveExposure?: string
-    smokeless?: string
-    smokelessStatus?: {
-      comments: string
-      smokelessStatus: string
-    }
-    smokingStatus?: string
-    counselingGiven?: boolean
-    startDate: JSONDate
-    status?: string
-    types?: any[] | string[]
-  }
 }

@@ -27,7 +27,7 @@ export const VitalsGraph = ({ data }: { data: any[] }) => {
       <Box sx={{ flexGrow: 1, minHeight: 0 }}>
         <LineChart
           hideLegend
-          dataset={data}
+          dataset={data.map(x => ({ ...x, time: new Date(x.time.epochMilliseconds) }))} // Charts needs Date, not Temporal
           xAxis={[{
             dataKey: 'time',
             scaleType: 'time',

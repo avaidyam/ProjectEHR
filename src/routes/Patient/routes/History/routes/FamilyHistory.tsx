@@ -2,18 +2,17 @@
 import * as React from 'react';
 import {
   Box,
+  Stack,
   Button,
   IconButton,
-  TextField,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Label,
   TitledCard,
   Icon,
+  Autocomplete,
+  MarkReviewed,
+  DataGrid,
 } from 'components/ui/Core';
+import { GridColDef } from '@mui/x-data-grid';
 import {
   Checkbox,
   FormControlLabel,
@@ -21,7 +20,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Autocomplete,
+  Popover,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePatient } from '../../../../../components/contexts/PatientContext';
@@ -36,18 +35,6 @@ const icd10Options = Object.entries(icd10).map(([code, description]) => ({
 
 const familyRelationships = ['Mother', 'Father', 'Sister', 'Brother', 'Maternal Grandmother', 'Maternal Grandfather', 'Paternal Grandmother', 'Paternal Grandfather', 'Other'];
 
-const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
-  fontWeight: 'bold',
-  backgroundColor: 'transparent',
-  borderRight: 'none',
-  borderBottom: 'none',
-  position: 'relative',
-  height: '100px',
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-  padding: '8px 4px',
-}));
-
 const RotatedText = styled(Box)(({ theme }) => ({
   transform: 'rotate(-60deg)',
   transformOrigin: 'bottom left',
@@ -56,32 +43,7 @@ const RotatedText = styled(Box)(({ theme }) => ({
   left: '100%',
   paddingBottom: '25px',
   width: '150px',
-}));
-
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  padding: '4px',
-}));
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  border: '1px solid #e0e0e0',
-}));
-
-const StyledActionCell = styled(TableCell)(({ theme }) => ({
-  border: '1px solid #e0e0e0',
-  textAlign: 'center',
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  }
-}));
-
-const StyledProblemCell = styled(TableCell)(({ theme }) => ({
-  border: '1px solid #e0e0e0',
-  textAlign: 'center',
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  }
+  zIndex: 10
 }));
 
 const defaultFamilyMembers = [
@@ -107,17 +69,153 @@ const getUniqueProblems = (familyHistory: any[]) => {
 export function FamilyHistory() {
   const { useEncounter } = usePatient();
   const [familyHx, setFamilyHx] = useEncounter().history.family([]);
-  const [familyData, setFamilyData] = React.useState(
-    familyHx && familyHx.length > 0 ? familyHx : defaultFamilyMembers
-  );
+  const [familyData, setFamilyData] = React.useState<any[]>(() => {
+    const initial = familyHx && familyHx.length > 0 ? familyHx : defaultFamilyMembers;
+    return initial.map((item: any, idx: number) => ({
+      ...item,
+      id: item.id || `fh-${idx}-${item.relationship}`
+    }));
+  });
   const [isAddProblemOpen, setIsAddProblemOpen] = React.useState(false);
-  const [isCommentsOpen, setIsCommentsOpen] = React.useState(false);
+  const [commentAnchorEl, setCommentAnchorEl] = React.useState<HTMLDivElement | null>(null);
   const [selectedMember, setSelectedMember] = React.useState<any>(null);
   const [selectedProblem, setSelectedProblem] = React.useState<any>(null);
   const [commentText, setCommentText] = React.useState('');
   const [newRelationship, setNewRelationship] = React.useState<string | null>('');
 
   const uniqueProblems = getUniqueProblems(familyData);
+
+  // Sync familyData with familyHx and ensure IDs
+  React.useEffect(() => {
+    if (familyHx) {
+      const normalized = familyHx.map((item: any, idx: number) => ({
+        ...item,
+        id: item.id || `fh-${idx}-${item.relationship}`
+      }));
+      if (JSON.stringify(normalized) !== JSON.stringify(familyData)) {
+        setFamilyData(normalized);
+      }
+    }
+  }, [familyHx]);
+
+  const columns: GridColDef[] = React.useMemo(() => [
+    {
+      field: 'relationship',
+      headerName: 'Relationship',
+      width: 140,
+      renderCell: (params) => (
+        <Box sx={{ fontWeight: 'bold' }}>{params.value}</Box>
+      )
+    },
+    {
+      field: 'name',
+      headerName: 'Name',
+      width: 200,
+      renderCell: (params) => (
+        <Autocomplete
+          freeSolo
+          variant="standard"
+          value={params.value}
+          options={[]}
+          onInputChange={(_e, newValue) => {
+            const updatedData = familyData.map((m: any) =>
+              m.id === params.row.id ? { ...m, name: newValue } : m
+            );
+            setFamilyData(updatedData);
+            setFamilyHx(updatedData);
+          }}
+          TextFieldProps={{ InputProps: { disableUnderline: true } }}
+        />
+      )
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 150,
+      renderCell: (params) => (
+        <Autocomplete
+          freeSolo
+          variant="standard"
+          value={params.value}
+          options={[]}
+          onInputChange={(_e, newValue) => {
+            const updatedData = familyData.map((m: any) =>
+              m.id === params.row.id ? { ...m, status: newValue } : m
+            );
+            setFamilyData(updatedData);
+            setFamilyHx(updatedData);
+          }}
+          TextFieldProps={{ InputProps: { disableUnderline: true } }}
+        />
+      )
+    },
+    {
+      field: 'noPertinentHistory',
+      headerName: 'No Pertinent Hx',
+      width: 60,
+      renderHeader: () => <RotatedText>No Pertinent Hx</RotatedText>,
+      renderCell: (params) => (
+        <Box
+          onClick={() => toggleProblem(params.row, 'No Pertinent History')}
+          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
+        >
+          {hasProblem(params.row, 'No Pertinent History') ? (
+            <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
+          ) : (
+            ''
+          )}
+        </Box>
+      )
+    },
+    {
+      field: 'addProblem',
+      headerName: 'Add Problem',
+      width: 60,
+      renderHeader: () => <RotatedText>Add Problem</RotatedText>,
+      renderCell: (params) => (
+        <Box
+          onClick={() => handleOpenAddProblem(params.row)}
+          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
+        >
+          <Icon sx={{ color: '#00c853' }}>add_circle</Icon>
+        </Box>
+      )
+    },
+    {
+      field: 'comments',
+      headerName: 'Comments',
+      width: 60,
+      renderHeader: () => <RotatedText>Comments</RotatedText>,
+      renderCell: (params) => (
+        <Box
+          onClick={(event: React.MouseEvent<HTMLDivElement>) => handleOpenComments(event, params.row)}
+          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
+        >
+          <Icon sx={{ color: params.row.comment ? '#2196f3' : '#546E7A' }}>
+            {params.row.comment ? 'comment' : 'description'}
+          </Icon>
+        </Box>
+      )
+    },
+    ...uniqueProblems.map((problem) => ({
+      field: `problem_${problem}`,
+      headerName: problem,
+      width: 50,
+      renderHeader: () => <RotatedText>{problem}</RotatedText>,
+      renderCell: (params: any) => (
+        <Box
+          onClick={() => toggleProblem(params.row, problem)}
+          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
+        >
+          {hasProblem(params.row, problem) ? (
+            <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
+          ) : (
+            ''
+          )}
+        </Box>
+      )
+    }))
+  ], [familyData, uniqueProblems]);
 
   const handleOpenAddProblem = (member: any) => {
     setSelectedMember(member);
@@ -133,7 +231,7 @@ export function FamilyHistory() {
   const handleAddProblem = () => {
     if (selectedMember && selectedProblem) {
       const updatedFamily = familyData.map((member: any) => {
-        if (member.relationship === selectedMember.relationship) {
+        if (member.id === selectedMember.id) {
           const newProblems = [...member.problems, { description: selectedProblem.description, ageOfOnset: '' }];
           return { ...member, problems: newProblems };
         }
@@ -145,21 +243,21 @@ export function FamilyHistory() {
     }
   };
 
-  const handleOpenComments = (member: any) => {
+  const handleOpenComments = (event: React.MouseEvent<HTMLDivElement>, member: any) => {
+    setCommentAnchorEl(event.currentTarget);
     setSelectedMember(member);
     setCommentText(member.comment || '');
-    setIsCommentsOpen(true);
   };
 
   const handleCloseComments = () => {
-    setIsCommentsOpen(false);
+    setCommentAnchorEl(null);
     setSelectedMember(null);
     setCommentText('');
   };
 
   const handleSaveComments = () => {
     const updatedFamily = familyData.map((member: any) => {
-      if (member.relationship === selectedMember.relationship) {
+      if (member.id === selectedMember.id) {
         return { ...member, comment: commentText };
       }
       return member;
@@ -172,6 +270,7 @@ export function FamilyHistory() {
   const handleAddFamilyMember = () => {
     if (newRelationship) {
       const newMember = {
+        id: `fh-${Date.now()}`,
         relationship: newRelationship,
         name: '',
         status: '',
@@ -187,7 +286,7 @@ export function FamilyHistory() {
 
   const toggleProblem = (member: any, problemDescription: string) => {
     const updatedFamily = familyData.map((m: any) => {
-      if (m.relationship === member.relationship) {
+      if (m.id === member.id) {
         const hasProblem = m.problems.some((p: any) => p.description === problemDescription);
         if (hasProblem) {
           return {
@@ -217,87 +316,14 @@ export function FamilyHistory() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color="#9F3494">
 
-      <Box sx={{ boxShadow: 'none' }}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <StyledTableHeadCell>Relationship</StyledTableHeadCell>
-              <StyledTableHeadCell>Name</StyledTableHeadCell>
-              <StyledTableHeadCell>Status</StyledTableHeadCell>
-              <StyledTableHeadCell>
-                <RotatedText>No Pertinent Hx</RotatedText>
-              </StyledTableHeadCell>
-              <StyledTableHeadCell>
-                <RotatedText>Add Problem</RotatedText>
-              </StyledTableHeadCell>
-              <StyledTableHeadCell>
-                <RotatedText>Comments</RotatedText>
-              </StyledTableHeadCell>
-              {uniqueProblems.map((problem) => (
-                <StyledTableHeadCell key={problem}>
-                  <RotatedText>{problem}</RotatedText>
-                </StyledTableHeadCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(familyData ?? []).map((member: any) => (
-              <TableRow key={member.relationship}>
-                <StyledTableCell sx={{ fontWeight: 'bold' }}>{member.relationship}</StyledTableCell>
-                <StyledTableCell>
-                  <TextField
-                    variant="standard"
-                    value={member.name}
-                    onChange={(e) => {
-                      const updatedData = familyData.map((m: any) =>
-                        m.relationship === member.relationship ? { ...m, name: e.target.value } : m
-                      );
-                      setFamilyData(updatedData);
-                      setFamilyHx(updatedData);
-                    }}
-                    InputProps={{ disableUnderline: true }}
-                  />
-                </StyledTableCell>
-                <StyledTableCell>
-                  <TextField
-                    variant="standard"
-                    value={member.status}
-                    onChange={(e) => {
-                      const updatedData = familyData.map((m: any) =>
-                        m.relationship === member.relationship ? { ...m, status: e.target.value } : m
-                      );
-                      setFamilyData(updatedData);
-                      setFamilyHx(updatedData);
-                    }}
-                    InputProps={{ disableUnderline: true }}
-                  />
-                </StyledTableCell>
-                <StyledActionCell onClick={() => toggleProblem(member, 'No Pertinent History')}>
-                  {hasProblem(member, 'No Pertinent History') ? (
-                    <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
-                  ) : (
-                    ''
-                  )}
-                </StyledActionCell>
-                <StyledActionCell onClick={() => handleOpenAddProblem(member)}>
-                  <Icon sx={{ color: '#00c853' }}>add_circle</Icon>
-                </StyledActionCell>
-                <StyledActionCell onClick={() => handleOpenComments(member)}>
-                  <Icon sx={{ color: '#546E7A' }}>description</Icon>
-                </StyledActionCell>
-                {uniqueProblems.map((problem) => (
-                  <StyledProblemCell key={problem} onClick={() => toggleProblem(member, problem)}>
-                    {hasProblem(member, problem) ? (
-                      <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
-                    ) : (
-                      ''
-                    )}
-                  </StyledProblemCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <Box sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={familyData ?? []}
+          columns={columns}
+          columnHeaderHeight={100}
+          hideFooter
+          disableRowSelectionOnClick
+        />
       </Box>
 
       <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
@@ -312,20 +338,15 @@ export function FamilyHistory() {
           disablePortal
           options={familyRelationships}
           sx={{ width: 300, ml: 2 }}
-          renderInput={(params: any) => (
-            <TextField
-              {...params}
-              label="Select Relationship"
-              variant="outlined"
-              size="small"
-            />
-          )}
+          label="Select Relationship"
+          size="small"
           value={newRelationship}
-          onChange={(event, newValue) => setNewRelationship(newValue)}
+          onChange={(event: any, newValue: any) => setNewRelationship(newValue)}
         />
       </Box>
 
-      {/* Add Problem Dialog */}
+      <MarkReviewed sx={{ mt: 2 }} />
+
       <Dialog open={isAddProblemOpen} onClose={handleCloseAddProblem}>
         <DialogTitle>Add Problem for {selectedMember?.relationship}</DialogTitle>
         <DialogContent>
@@ -334,11 +355,9 @@ export function FamilyHistory() {
             options={icd10Options}
             getOptionLabel={(option) => option.label}
             sx={{ width: 400, mt: 2 }}
-            onChange={(event, newValue) => setSelectedProblem(newValue)}
+            onChange={(event: any, newValue: any) => setSelectedProblem(newValue)}
             value={selectedProblem}
-            renderInput={(params: any) => (
-              <TextField {...params} label="Select a Problem" />
-            )}
+            label="Select a Problem"
           />
         </DialogContent>
         <DialogActions>
@@ -347,24 +366,38 @@ export function FamilyHistory() {
         </DialogActions>
       </Dialog>
 
-      {/* Comments Dialog */}
-      <Dialog open={isCommentsOpen} onClose={handleCloseComments}>
-        <DialogTitle>Comments for {selectedMember?.relationship}</DialogTitle>
-        <DialogContent>
-          <TextField
+      {/* Comments Popover */}
+      <Popover
+        open={Boolean(commentAnchorEl)}
+        anchorEl={commentAnchorEl}
+        onClose={handleCloseComments}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        PaperProps={{ sx: { p: 2, width: 320 } }}
+      >
+        <Stack spacing={2}>
+          <Label variant="subtitle2">Comments for {selectedMember?.relationship}</Label>
+          <Autocomplete
+            freeSolo
             autoFocus
-            multiline
-            rows={4}
+            options={[]}
+            TextFieldProps={{ multiline: true, rows: 4, placeholder: 'Enter comments...' }}
             fullWidth
             value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
+            onInputChange={(_e, newValue) => setCommentText(newValue)}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseComments}>Cancel</Button>
-          <Button onClick={handleSaveComments} variant="contained" color="primary">Save</Button>
-        </DialogActions>
-      </Dialog>
+          <Stack direction="row" justifyContent="flex-end" spacing={1}>
+            <Button onClick={handleCloseComments} size="small">Cancel</Button>
+            <Button onClick={handleSaveComments} variant="contained" color="primary" size="small">Save</Button>
+          </Stack>
+        </Stack>
+      </Popover>
     </TitledCard>
   );
 }

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import { Box, Typography, Card, CardContent, Grid, FormControl, Select, MenuItem, Chip, Avatar } from '@mui/material';
-import { DatePicker, Button } from 'components/ui/Core';
+import { Card, CardContent, Avatar } from '@mui/material';
+import { Box, Grid, Label, DatePicker, Button, Autocomplete, Chip } from 'components/ui/Core';
 import { useDatabase, Database } from 'components/contexts/PatientContext';
 
 interface LocationState {
@@ -17,19 +16,20 @@ export function Snapboard() {
   const [departments] = useDatabase().departments();
   const [locations] = useDatabase().locations();
 
-  const { department, date } = useParams();
+  const { department, _date } = useParams();
+  const date = !!_date ? Temporal.PlainDate.from(_date).toZonedDateTime('UTC').toInstant().toString() as Database.JSONDate : undefined
   const navigate = useNavigate();
 
   // Initialize state from URL or defaults
   const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
-  const initialDate = date ? dayjs(date) : dayjs('2026-01-01');
+  const initialDate = date ?? Temporal.Instant.from('2026-01-01T00:00:00.000Z').toString();
 
-  const [selectedDate, setSelectedDate] = React.useState(initialDate);
-  const [selectedDept, setSelectedDept] = React.useState(initialDept);
+  const [selectedDate, setSelectedDate] = React.useState<Database.JSONDate>(initialDate as Database.JSONDate);
+  const [selectedDept, setSelectedDept] = React.useState<Database.Department.ID>(initialDept);
 
   // Update URL function
-  const updateUrl = (dept: Database.Department.ID, dateObj: dayjs.Dayjs) => {
-    const dateStr = dateObj.format('YYYY-MM-DD');
+  const updateUrl = (dept: Database.Department.ID, dateObj: Database.JSONDate) => {
+    const dateStr = Temporal.Instant.from(dateObj).toZonedDateTimeISO('UTC').toPlainDate().toString();
     navigate(`/snapboard/${dept}/${dateStr}`, { replace: true });
   };
 
@@ -39,7 +39,7 @@ export function Snapboard() {
     updateUrl(dept, selectedDate);
   };
 
-  const handleSetSelectedDate = (date: dayjs.Dayjs) => {
+  const handleSetSelectedDate = (date: Database.JSONDate) => {
     setSelectedDate(date);
     updateUrl(selectedDept, date);
   };
@@ -50,7 +50,7 @@ export function Snapboard() {
       setSelectedDept(department);
     }
     if (date) {
-      setSelectedDate(dayjs(date));
+      setSelectedDate(date);
     }
   }, [department, date]);
 
@@ -61,8 +61,12 @@ export function Snapboard() {
 
   // 2. Get appointments for the date and department
   const deptAppointments = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => dayjs(appt.apptTime).isSame(selectedDate, 'day'));
+    const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
+    return deptSchedule.filter((appt: any) => {
+      const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
+      const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
+      return apptDate.equals(selectedPlainDate);
+    });
   }, [schedulesDB, selectedDept, selectedDate]);
 
   // 3. Map patients to locations
@@ -70,12 +74,12 @@ export function Snapboard() {
     const state = {} as Record<Database.Location.ID, LocationState>;
 
     // Initialize with empty
-    deptLocations.forEach((loc) => {
+    deptLocations.forEach((loc: Database.Location) => {
       state[loc.id] = { location: loc, appointment: null, patient: null };
     });
 
     // Fill with appointments
-    deptAppointments.forEach((appt) => {
+    deptAppointments.forEach((appt: Database.Appointment) => {
       if (appt.location && state[appt.location]) {
         state[appt.location].appointment = appt;
         state[appt.location].patient = patientsDB[appt.patient.mrn];
@@ -84,28 +88,28 @@ export function Snapboard() {
     return Object.values(state).sort((a, b) => a.location.name.localeCompare(b.location.name));
   }, [deptLocations, deptAppointments, patientsDB]);
 
+  const deptOptions = React.useMemo(() => schedulesDB.map((s) => ({
+    id: s.department,
+    label: departments.find((d) => d.id === s.department)?.name || `Dept ${s.department}`
+  })), [schedulesDB, departments]);
+
   return (
     <Box sx={{ p: 3, height: '100vh', overflow: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5">Snapboard</Typography>
+        <Label variant="h5">Snapboard</Label>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <DatePicker
+            convertString
             value={selectedDate}
-            onChange={(newValue) => handleSetSelectedDate(newValue ?? dayjs())}
+            onChange={(newValue) => handleSetSelectedDate(newValue)}
           />
-          <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-            <Select
-              value={selectedDept}
-              onChange={(e) => handleSetSelectedDept(e.target.value)}
-              displayEmpty
-            >
-              {schedulesDB.map((s) => (
-                <MenuItem key={s.department} value={s.department}>
-                  {departments.find((d) => d.id === s.department)?.name || `Dept ${s.department}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            options={deptOptions}
+            value={deptOptions.find(o => o.id === selectedDept)}
+            onChange={(_e, newValue: any) => handleSetSelectedDept(newValue?.id)}
+            getOptionLabel={(option: any) => option.label}
+            sx={{ minWidth: 200 }}
+          />
         </Box>
       </Box>
       <Grid container spacing={3}>
@@ -120,9 +124,9 @@ export function Snapboard() {
             }}>
             <Card variant="outlined" sx={{ height: '100%', borderColor: appointment ? 'primary.main' : 'divider', borderWidth: appointment ? 2 : 1 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom color="text.secondary" sx={{ fontSize: 14 }}>
+                <Label variant="h6" gutterBottom color="text.secondary" sx={{ fontSize: 14 }}>
                   {location.name}
-                </Typography>
+                </Label>
 
                 {appointment ? (
                   <Box>
@@ -131,24 +135,24 @@ export function Snapboard() {
                         {patient?.firstName?.[0]}{patient?.lastName?.[0]}
                       </Avatar>
                       <Box>
-                        <Typography variant="subtitle1" component="div">
+                        <Label variant="subtitle1" component="div">
                           {patient?.lastName}, {patient?.firstName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        </Label>
+                        <Label variant="caption" color="text.secondary">
                           MRN: {patient?.id}
-                        </Typography>
+                        </Label>
                       </Box>
                     </Box>
 
-                    <Typography variant="body2" sx={{ mb: 1 }}>
+                    <Label variant="body2" sx={{ mb: 1 }}>
                       <strong>Status:</strong> {appointment.officeStatus}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      <strong>Time:</strong> {dayjs(appointment.apptTime).format('h:mm A')}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
+                    </Label>
+                    <Label variant="body2" sx={{ mb: 1 }}>
+                      <strong>Time:</strong> {Temporal.Instant.from(appointment.apptTime).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                    </Label>
+                    <Label variant="body2" sx={{ mb: 1 }}>
                       <strong>CC:</strong> {appointment.cc}
-                    </Typography>
+                    </Label>
 
                     <Chip
                       label={appointment.type}
@@ -160,7 +164,7 @@ export function Snapboard() {
                   </Box>
                 ) : (
                   <Box sx={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.disabled' }}>
-                    <Typography variant="body2">Empty</Typography>
+                    <Label variant="body2">Empty</Label>
                   </Box>
                 )}
               </CardContent>
@@ -169,9 +173,9 @@ export function Snapboard() {
         ))}
         {locationState.length === 0 && (
           <Grid size={12}>
-            <Typography variant="body1" color="text.secondary" textAlign="center">
+            <Label variant="body1" color="text.secondary" textAlign="center">
               No locations found for this department.
-            </Typography>
+            </Label>
           </Grid>
         )}
       </Grid>

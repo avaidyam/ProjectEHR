@@ -1,17 +1,23 @@
 import * as React from 'react';
-import { TextField, Checkbox, IconButton } from '@mui/material';
-import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel } from '@mui/x-data-grid';
+import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel, GridRowId } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
-import { DataGrid, Button, Icon, Box, Stack, Label } from 'components/ui/Core';
-import { usePatient } from 'components/contexts/PatientContext';
+import { DataGrid, useGridApiRef, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton, TitledCard, MarkReviewed } from 'components/ui/Core';
+import { Database, usePatient } from 'components/contexts/PatientContext';
+import { getICD10CodeDescription } from 'util/helpers';
 import { ProblemListEditor } from './components/ProblemListEditor';
 import { DiagnosisPicker } from './components/DiagnosisPicker';
 
 const CustomToolbar = () => {
   return (
-    <GridToolbarContainer sx={{ justifyContent: 'flex-end' }}>
-      <GridToolbarFilterButton />
-      <GridToolbarColumnsButton />
+    <GridToolbarContainer sx={{ justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
+      <Stack direction="row" alignItems="center">
+        <Checkbox name="showPastProblems" size="small" />
+        <Label sx={{ fontSize: '0.875rem' }}>Show Past Problems</Label>
+      </Stack>
+      <Box>
+        <GridToolbarFilterButton />
+        <GridToolbarColumnsButton />
+      </Box>
     </GridToolbarContainer>
   );
 };
@@ -19,26 +25,48 @@ const CustomToolbar = () => {
 export const ProblemListTabContent: React.FC = () => {
   const { useEncounter } = usePatient()
   const [problems, setProblems] = useEncounter().problems([])
+  const [medicalHx, setMedicalHx] = useEncounter().history.medical([])
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
-  const [indexToUpdate, setIndexToUpdate] = React.useState<number | null>(null);
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
+  const [idToUpdate, setIdToUpdate] = React.useState<Database.Problem.ID | null>(null);
+  const apiRef = useGridApiRef();
 
-  const handleExpandRow = (rowIndex: any) => {
+  // Ensure all items have an ID
+  React.useEffect(() => {
+    if (problems) {
+      let madeChanges = false;
+      const newProblems = problems.map((item: any) => {
+        if (!item.id) {
+          madeChanges = true;
+          return { ...item, id: Database.Problem.ID.create() };
+        }
+        return item;
+      });
+
+      if (madeChanges) {
+        setProblems(newProblems);
+      }
+    }
+  }, [problems, setProblems]);
+
+  const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
+
+  const handleExpandRow = (id: Database.Problem.ID) => {
     setExpandedRowIds(prev => {
       const next = new Set(prev);
-      if (next.has(rowIndex)) {
-        next.delete(rowIndex);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(rowIndex);
+        next.add(id);
       }
       return next;
     });
   };
 
-  const handleOpenModal = (index: number | null, term = "") => {
-    setIndexToUpdate(index);
+  const handleOpenModal = (id: Database.Problem.ID | null, term = "") => {
+    setIdToUpdate(id);
     setSearchTerm(term);
     setIsModalOpen(true);
   };
@@ -46,7 +74,7 @@ export const ProblemListTabContent: React.FC = () => {
   const handleSelect = (selection: any) => {
     setIsModalOpen(false);
     if (!selection) {
-      setIndexToUpdate(null);
+      setIdToUpdate(null);
       return;
     }
 
@@ -55,25 +83,27 @@ export const ProblemListTabContent: React.FC = () => {
 
     if (selectedItems.length === 0) return;
 
-    if (indexToUpdate !== null && selectedItems.length > 0) {
+    if (idToUpdate !== null && selectedItems.length > 0) {
       // UPDATE the existing problem
       const item = selectedItems[0];
-      const updatedProblems = problems!.map((problem, i) =>
-        i === indexToUpdate ? { ...problem, diagnosis: item.name, code: item.conceptId } : problem
+      const updatedProblems = problems!.map((problem) =>
+        problem.id === idToUpdate ? { ...problem, displayAs: item.name, diagnosis: item.conceptId as Database.DiagnosisCode } : problem
       );
       setProblems(updatedProblems);
     } else {
       // ADD new problem(s)
       const newProblems = selectedItems.map(item => ({
-        diagnosis: item.name,
-        code: item.conceptId,
-        display: item.name,
+        id: Database.Problem.ID.create(),
+        diagnosis: item.conceptId as Database.DiagnosisCode,
+        displayAs: item.name,
         class: '',
         chronic: false,
-        priority: ''
+        priority: '',
+        notedDate: (new Date()).toISOString() as Database.JSONDate,
+        encounterDx: false,
+        isNew: true
       }));
-      const startIdx = problems!.length;
-      const newIds = newProblems.map((_, i) => startIdx + i);
+      const newIds = newProblems.map(p => p.id);
 
       setProblems([...problems!, ...newProblems]);
       setExpandedRowIds(prev => {
@@ -82,19 +112,35 @@ export const ProblemListTabContent: React.FC = () => {
         return next;
       });
     }
-    setIndexToUpdate(null);
+    setIdToUpdate(null);
   };
 
-  const handleDeleteProblem = (index: number) => {
-    const updatedProblems = problems!.filter((_, i) => i !== index);
+  const handleSaveProblem = (id: any, updatedRow: any, addToHistory?: boolean) => {
+    setProblems((prev: any) =>
+      prev.map((row: any) => (row.id === id ? { ...updatedRow, isNew: false } : row))
+    );
+
+    if (addToHistory) {
+      const newHistoryItem = {
+        id: Database.MedicalHistoryItem.ID.create(),
+        diagnosis: updatedRow.diagnosis,
+        displayAs: updatedRow.displayAs || getICD10CodeDescription(updatedRow.diagnosis) || 'Unknown',
+        date: (updatedRow.notedDate || (new Date()).toISOString()) as Database.JSONDate,
+        source: Database.MedicalHistoryItem.Source.Clinician,
+        comment: updatedRow.comment || '',
+      };
+      setMedicalHx((prev: any) => [...(prev ?? []), newHistoryItem]);
+    }
+
+    handleExpandRow(id);
+  };
+
+  const handleDeleteProblem = (id: Database.Problem.ID) => {
+    const updatedProblems = problems!.filter((p) => p.id !== id);
     setProblems(updatedProblems);
     setExpandedRowIds(prev => {
-      const next = new Set();
-      prev.forEach((id: any) => {
-        if (id !== index) {
-          next.add((id as number) > index ? (id as number) - 1 : id);
-        }
-      });
+      const next = new Set(prev);
+      next.delete(id);
       return next;
     });
   };
@@ -110,20 +156,16 @@ export const ProblemListTabContent: React.FC = () => {
       )
     },
     {
-      field: 'diagnosis',
+      field: 'displayAs',
       headerName: 'Diagnosis',
       hideable: false,
       flex: 1,
       valueGetter: (value: any, row: any) => {
-        if (row) return row.display || row.diagnosis;
-        return value.row?.display || value.row?.diagnosis;
+        const r = row || value.row;
+        if (!r) return '';
+        const name = r.displayAs || getICD10CodeDescription(r.diagnosis) || 'Unknown';
+        return `${name} (${r.diagnosis})`;
       }
-    },
-    {
-      field: 'code',
-      headerName: 'Code',
-      initialHidden: true,
-      width: 100
     },
     {
       field: 'priority',
@@ -142,24 +184,49 @@ export const ProblemListTabContent: React.FC = () => {
       headerName: 'Noted',
       initialHidden: true,
       width: 120,
+      valueGetter: (value: any, row: any) => {
+        const r = row || value.row;
+        if (!r?.notedDate) return 'N/A';
+        return Database.JSONDate.toDateString(r.notedDate);
+      }
     },
     {
       field: 'diagnosedDate',
       headerName: 'Diagnosed',
       initialHidden: true,
-      width: 120
+      width: 120,
+      valueGetter: (value: any, row: any) => {
+        const r = row || value.row;
+        if (!r?.diagnosedDate) return 'N/A';
+        return Database.JSONDate.toDateString(r.diagnosedDate);
+      }
     },
     {
       field: 'updatedDate',
       headerName: 'Updated',
       initialHidden: true,
-      width: 120
+      width: 120,
+      valueGetter: (value: any, row: any) => {
+        const r = row || value.row;
+        if (!r?.updatedDate) return 'N/A';
+        return Database.JSONDate.toDateString(r.updatedDate);
+      }
     },
     {
-      field: 'hospital',
-      headerName: 'Hospital',
-      width: 100,
-      renderCell: () => <Checkbox size="small" />
+      field: 'encounterDx',
+      headerName: 'Encounter Dx',
+      width: 120,
+      renderCell: (params: any) => (
+        <Checkbox
+          size="small"
+          checked={!!params.value}
+          onChange={(e) => {
+            setProblems((prev: any) =>
+              prev.map((row: any) => (row.id === params.row.id ? { ...row, encounterDx: e.target.checked } : row))
+            );
+          }}
+        />
+      )
     },
     {
       field: 'principal',
@@ -189,12 +256,7 @@ export const ProblemListTabContent: React.FC = () => {
     },
     {
       ...GRID_DETAIL_PANEL_TOGGLE_COL_DEF,
-      hideable: false,
-      renderCell: (params: any) => (
-        <IconButton size="small" onClick={() => handleExpandRow(params.row.id)}>
-          <Icon>{expandedRowIds.has(params.row.id) ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down'}</Icon>
-        </IconButton>
-      )
+      hideable: false
     }
   ];
 
@@ -211,48 +273,44 @@ export const ProblemListTabContent: React.FC = () => {
         <Label variant="h6" sx={{ pb: 1 }}>Problem List</Label>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
           <Stack direction="row" alignItems="center">
-            <TextField
+            <Autocomplete
+              freeSolo
               label="Search for problem"
-              variant="outlined"
               size="small"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onInputChange={(_e, newValue) => setSearchTerm(newValue)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleOpenModal(null, searchTerm);
                 }
               }}
-              style={{ marginRight: 0 }}
+              options={[]}
+              sx={{ width: 250 }}
             />
             <Button
               variant="outlined"
-              style={{ height: '40px', marginLeft: '-1px' }}
+              sx={{ height: '40px', marginLeft: '-1px' }}
               onClick={() => handleOpenModal(null, searchTerm)}
             >
               <Icon color="success">add_task</Icon>Add
-            </Button>
-          </Stack>
-          <Stack direction="row" alignItems="center" ml={2}>
-            <Label>Show:</Label>
-            <Checkbox name="showPastProblems" />
-            <Label>Past Problems</Label>
-            <Button variant="outlined" style={{ marginLeft: '1em' }}>
-              View Drug-Disease Interactions
             </Button>
           </Stack>
         </Stack>
 
         <Box sx={{ flexGrow: 1, minHeight: 0 }}>
           <DataGrid
+            apiRef={apiRef}
             initialState={{
               columns: {
                 columnVisibilityModel,
               },
             }}
-            rows={problems!.map((p, i) => ({ id: i, ...p }))}
+            rows={problems ?? []}
+            getRowId={(row: any) => row.id}
             columns={columns}
+            onRowDoubleClick={handleRowDoubleClick}
             detailPanelExpandedRowIds={expandedRowIds}
-            onDetailPanelExpandedRowIdsChange={ids => setExpandedRowIds(ids)}
+            onDetailPanelExpandedRowIdsChange={ids => setExpandedRowIds(new Set(ids))}
             getDetailPanelContent={({ row }) => (
               <Box sx={{ p: 2, width: '100%', bgcolor: 'background.paper' }}>
                 <ProblemListEditor
@@ -261,6 +319,8 @@ export const ProblemListTabContent: React.FC = () => {
                   expandedRows={handleExpandRow}
                   onDelete={handleDeleteProblem}
                   onOpenModal={() => handleOpenModal(row.id)}
+                  medicalHx={medicalHx ?? []}
+                  onSave={handleSaveProblem}
                 />
               </Box>
             )}
@@ -271,6 +331,7 @@ export const ProblemListTabContent: React.FC = () => {
             disableColumnMenu
           />
         </Box>
+        <MarkReviewed />
       </Stack>
       <DiagnosisPicker
         open={isModalOpen}

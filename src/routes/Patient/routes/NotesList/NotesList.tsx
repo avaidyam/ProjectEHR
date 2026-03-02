@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Stack, Tabs, Tab, Typography, Toolbar, Button, Icon } from '@mui/material';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, Spacer } from 'components/ui/Core';
+import { DataGrid, Spacer, IconButton, Label, Window, Grid, Autocomplete, Menu, MenuItem } from 'components/ui/Core';
 import { GridToolbarSortButton } from 'components/ui/GridToolbarSortButton';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase } from 'components/contexts/PatientContext';
@@ -58,14 +58,18 @@ export const NotesList = () => {
   // Format date/time
   const formatDateTime = (dateString: string | null | undefined) => {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    try {
+      const instant = Temporal.Instant.from(dateString);
+      return instant.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   const COLUMNS = [
