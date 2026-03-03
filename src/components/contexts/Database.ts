@@ -94,10 +94,20 @@ export type Specialty = Branded<string, 'Specialty.Name'>
 
 export namespace Specialty {
   export const SPECIALTIES = [
-    'Internal Medicine',
-    'General Surgery',
     'Cardiology',
-    'Orthopedic Surgery'
+    'Dermatology',
+    'Family Medicine',
+    'Gastroenterology',
+    'General Surgery',
+    'Internal Medicine',
+    'Neurology',
+    'Obstetrics and Gynecology',
+    'Oncology',
+    'Orthopedic Surgery',
+    'Pediatrics',
+    'Psychiatry',
+    'Surgery',
+    'Urology'
   ]
 }
 

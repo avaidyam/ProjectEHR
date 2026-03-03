@@ -73,12 +73,15 @@ import {
 import {
   DatePicker as MUIDatePicker,
   DateTimePicker as MUIDateTimePicker,
+  TimePicker as MUITimePicker,
   DatePickerProps,
-  DateTimePickerProps
+  DateTimePickerProps,
+  TimePickerProps
 } from '@mui/x-date-pickers-pro'
 import {
   TemporalPlainDateProvider,
   TemporalPlainDateTimeProvider,
+  TemporalPlainTimeProvider,
   TemporalZonedDateTimeProvider
 } from 'mui-temporal-pickers'
 import {
@@ -479,6 +482,20 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
+export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainTimeProvider>
+      <MUITimePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.PlainTime.from(value) : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
+        onAccept={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
+        slotProps={{ textField: { size, fullWidth } }}
+        {...props}
+      />
+    </TemporalPlainTimeProvider>
+  </ErrorBoundary>
+)
+
 export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainDateProvider>
@@ -486,7 +503,7 @@ export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boole
         value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={!!size ? { textField: { size } } : undefined}
+        slotProps={{ textField: { size, fullWidth } }}
         minDate={Temporal.PlainDate.from("1890-01-01")}
         {...props}
       />
@@ -499,10 +516,10 @@ export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString
   <ErrorBoundary>
     <TemporalPlainDateTimeProvider>
       <MUIDateTimePicker
-        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={!!size ? { textField: { size } } : undefined}
+        slotProps={{ textField: { size, fullWidth } }}
         minDate={Temporal.PlainDateTime.from("1890-01-01T00:00:00.000")}
         {...props}
       />
@@ -619,7 +636,7 @@ function _MUIDraggablePaperComponent(props: PaperProps) {
   );
 }
 
-export const Window: React.FC<DialogProps & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, children, ...props }) => {
+export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, children, ...props }) => {
   return (
     <MUIDialog
       open={open}

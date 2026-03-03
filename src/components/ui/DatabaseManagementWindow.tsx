@@ -1,7 +1,74 @@
 import * as React from 'react'
-import { Window, Button, Stack, Label, Icon, Box } from './Core'
+import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
+
+const JSONTreeNode = ({ label, value, path }: { label: string; value: any; path: string }) => {
+  const isObject = value !== null && typeof value === 'object'
+  const isArray = Array.isArray(value)
+
+  if (isObject) {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return (
+        <TreeItem
+          itemId={path}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Label inline bold variant="body2">{label}:</Label>
+              <Label inline color="textSecondary" variant="body2">{isArray ? '[]' : '{}'}</Label>
+            </Box>
+          }
+        />
+      )
+    }
+
+    return (
+      <TreeItem
+        itemId={path}
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Label inline bold variant="body2">{label}</Label>
+            <Label inline color="primary" variant="caption" sx={{ opacity: 0.7 }}>
+              {isArray ? `[${value.length}]` : `{${keys.length}}`}
+            </Label>
+          </Box>
+        }
+      >
+        {keys.map((key) => (
+          <JSONTreeNode
+            key={key}
+            label={key}
+            value={value[key]}
+            path={`${path}.${key}`}
+          />
+        ))}
+      </TreeItem>
+    )
+  }
+
+  return (
+    <TreeItem
+      itemId={path}
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.25 }}>
+          <Label inline bold variant="body2" sx={{ minWidth: 100 }}>{label}:</Label>
+          <Label
+            inline
+            variant="body2"
+            sx={{
+              color: typeof value === 'string' ? 'success.main' : (typeof value === 'number' ? 'info.main' : (typeof value === 'boolean' ? 'warning.main' : 'textSecondary')),
+              fontFamily: 'monospace',
+              wordBreak: 'break-all'
+            }}
+          >
+            {typeof value === 'string' ? `"${value}"` : String(value)}
+          </Label>
+        </Box>
+      }
+    />
+  )
+}
 
 export const DatabaseManagementWindow = ({ open, onClose }: {
   open: boolean;
@@ -131,48 +198,93 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
 
   return (
     <Window
-      title="Database Management"
+      title={(
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Icon color="primary">settings_applications</Icon>
+          <Label variant="h6">Database Management</Label>
+        </Stack>
+      ) as any}
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
+      ContentProps={{ sx: { p: 0, overflow: 'hidden' } }}
     >
-      <Stack spacing={3} sx={{ p: 2 }}>
-        <Box>
-          <Label variant="h6" gutterBottom>Export Database</Label>
-          <Label variant="body2" color="textSecondary" paragraph>
-            Download the entire database as a JSON file. This includes all patients, encounters, departments, and configuration.
-          </Label>
-          <Button variant="contained" onClick={handleExport} startIcon={<Icon>download</Icon>}>
-            Export to JSON
-          </Button>
-        </Box>
-        <Box>
-          <Label variant="h6" gutterBottom>Import Database</Label>
-          <Label variant="body2" color="textSecondary" paragraph>
-            Import a previously exported JSON file. New records will be appended. Existing patients will be updated with new encounters.
-          </Label>
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            accept=".json"
-            onChange={handleFileChange}
-          />
-          <Button variant="outlined" onClick={() => fileInputRef.current?.click()} startIcon={<Icon>upload</Icon>}>
-            Import from JSON
-          </Button>
-        </Box>
-        <Box>
-          <Label variant="h6" gutterBottom color="error">Delete Database</Label>
-          <Label variant="body2" color="textSecondary" paragraph>
-            Warning: This action will permanently delete ALL data from the database, including all patients, encounters, and settings. This action cannot be undone.
-          </Label>
-          <Button variant="contained" color="error" onClick={handleDelete} startIcon={<Icon>delete_forever</Icon>}>
-            Erase Database
-          </Button>
-        </Box>
-      </Stack>
+      <Grid container sx={{ height: '70vh' }}>
+        {/* Left Pane: Explorer */}
+        <Grid size={8} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRight: '1px solid', borderColor: 'divider' }}>
+          <Stack sx={{ flex: 1, overflow: 'hidden' }}>
+            <Box p={2}>
+              <Label variant="subtitle2" color="primary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Icon size={18}>account_tree</Icon> Live Data Explorer
+              </Label>
+              <Label variant="caption" color="textSecondary">
+                Inspect the current state of the database in real-time.
+              </Label>
+            </Box>
+            <Divider />
+            <TreeView
+              aria-label="database explorer"
+              defaultExpandedItems={['root']}
+              sx={{ flex: 1, overflow: 'auto' }}
+            >
+              <JSONTreeNode label="Root" value={db} path="root" />
+            </TreeView>
+          </Stack>
+        </Grid>
+
+        {/* Right Pane: Actions */}
+        <Grid size={4} sx={{ height: '100%', p: 3, bgcolor: 'grey.50' }}>
+          <Stack spacing={4}>
+            <Box>
+              <Label variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Icon>download</Icon> Export
+              </Label>
+              <Label variant="body2" color="textSecondary" paragraph>
+                Download the entire database as a JSON file for backup or transfer. This includes all patients, encounters, departments, and configuration.
+              </Label>
+              <Button variant="contained" onClick={handleExport} startIcon={<Icon>download</Icon>} fullWidth>
+                Export to JSON
+              </Button>
+            </Box>
+
+            <Divider />
+
+            <Box>
+              <Label variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Icon>upload</Icon> Import
+              </Label>
+              <Label variant="body2" color="textSecondary" paragraph>
+                Import a previously exported JSON file. New records will be appended. Existing patients will be updated with new encounters.
+              </Label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                accept=".json"
+                onChange={handleFileChange}
+              />
+              <Button variant="outlined" onClick={() => fileInputRef.current?.click()} startIcon={<Icon>upload</Icon>} fullWidth>
+                Import from JSON
+              </Button>
+            </Box>
+
+            <Divider />
+
+            <Box sx={{ mt: 'auto' }}>
+              <Label variant="h6" gutterBottom color="error" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Icon>delete_forever</Icon> Delete
+              </Label>
+              <Label variant="body2" color="textSecondary" paragraph>
+                Warning: This action will permanently delete ALL data from the database, including all patients, encounters, and settings. This action cannot be undone.
+              </Label>
+              <Button variant="contained" color="error" onClick={handleDelete} startIcon={<Icon>delete_forever</Icon>} fullWidth>
+                Erase Database
+              </Button>
+            </Box>
+          </Stack>
+        </Grid>
+      </Grid>
     </Window>
   )
 }

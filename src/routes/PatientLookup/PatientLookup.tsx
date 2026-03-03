@@ -30,12 +30,18 @@ export const PatientLookup = ({ open, onClose }: {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedPatientMRN, setSelectedPatientMRN] = React.useState<Database.Patient.ID | null>(null);
   const [tabValue, setTabValue] = React.useState("2"); // Default to Recent Patients
+  const [searchName, setSearchName] = React.useState("");
+  const [searchSex, setSearchSex] = React.useState("");
+  const [searchBirthDate, setSearchBirthDate] = React.useState<any>(null);
 
   // Reset state when closing or opening
   const handleClose = () => {
     setSearchQuery("");
     setSelectedPatientMRN(null);
     setTabValue("2");
+    setSearchName("");
+    setSearchSex("");
+    setSearchBirthDate(null);
     onClose();
   };
 
@@ -64,20 +70,40 @@ export const PatientLookup = ({ open, onClose }: {
 
   const handleCreatePatient = () => {
     const mrnID = Database.Patient.ID.create()
+
+    let firstName = "Doe";
+    let lastName = placeholders[Math.floor(Math.random() * placeholders.length)];
+
+    if (searchName) {
+      const parts = searchName.trim().split(/\s+/);
+      if (parts.length > 1) {
+        firstName = parts[0];
+        lastName = parts.slice(1).join(" ");
+      } else {
+        lastName = parts[0];
+      }
+    }
+
     setPatientsDB((prev: Record<string, Database.Patient>) => ({
       ...prev,
       [mrnID]: {
         id: mrnID,
-        firstName: "Doe",
-        lastName: placeholders[Math.floor(Math.random() * placeholders.length)],
-        birthdate: "1890-01-01T00:00:00.000Z",
-        gender: "Unknown",
+        firstName,
+        lastName,
+        birthdate: searchBirthDate || "1890-01-01T00:00:00.000Z",
+        gender: searchSex || "Unknown",
         encounters: {}
       }
     }))
     handleClose()
     navigate(`/patient/${mrnID}`)
   }
+
+  const handleClear = () => {
+    setSearchName("");
+    setSearchSex("");
+    setSearchBirthDate(null);
+  };
 
   const renderRecentPatients = () => (
     <Stack spacing={2} sx={{ height: '100%' }}>
@@ -126,7 +152,15 @@ export const PatientLookup = ({ open, onClose }: {
       <Grid container spacing={2}>
         {/* Row 1 */}
         <Grid size={6}>
-          <Autocomplete fullWidth freeSolo size="small" options={[]} label="Name/MRN" />
+          <Autocomplete
+            fullWidth
+            freeSolo
+            size="small"
+            options={[]}
+            label="Name/MRN"
+            value={searchName}
+            onInputChange={(_e, val) => setSearchName(val)}
+          />
         </Grid>
         <Grid size={6}>
           <Autocomplete fullWidth freeSolo size="small" options={[]} disabled label="EHR ID" />
@@ -158,8 +192,10 @@ export const PatientLookup = ({ open, onClose }: {
             fullWidth
             freeSolo
             size="small"
-            options={[]}
+            options={["Unknown", "Male", "Female", "Other"]}
             label="Sex"
+            value={searchSex}
+            onInputChange={(_e, val) => setSearchSex(val)}
             TextFieldProps={{
               InputProps: {
                 endAdornment: (
@@ -177,7 +213,10 @@ export const PatientLookup = ({ open, onClose }: {
           <DatePicker
             fullWidth
             size="small"
-            label="Birth date"
+            label="Birthdate"
+            value={searchBirthDate}
+            onChange={(val: any) => setSearchBirthDate(val)}
+            convertString
           />
         </Grid>
       </Grid>
@@ -187,7 +226,7 @@ export const PatientLookup = ({ open, onClose }: {
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
         <Button variant="outlined" onClick={handleCreatePatient}>New</Button>
         <Button variant="outlined">Find Patient</Button>
-        <Button variant="outlined">Clear</Button>
+        <Button variant="outlined" onClick={handleClear}>Clear</Button>
         <Spacer />
         <Button variant="outlined" disabled>Accept</Button>
         <Button variant="outlined" onClick={onClose}>Cancel</Button>
