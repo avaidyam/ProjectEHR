@@ -94,7 +94,7 @@ export const Patient = ({ ...props }: any) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
-    <PatientProvider patient={patientMRN} encounter={enc}>
+    <PatientProvider patient={patientMRN} encounter={enc} key={`${patientMRN}-${enc}`}>
       <Box display="flex" direction="row" sx={{ overflowY: 'hidden', height: 'calc(100vh - 48px)', ...props.sx }} {...props}>
         <Drawer
           variant={isMobile ? "temporary" : "persistent"}
