@@ -1,74 +1,7 @@
 import * as React from 'react'
-import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem, Popover, Autocomplete } from './Core'
+import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem, Popover, Autocomplete, JSONTree } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
-
-const JSONTreeNode = ({ label, value, path }: { label: string; value: any; path: string }) => {
-  const isObject = value !== null && typeof value === 'object'
-  const isArray = Array.isArray(value)
-
-  if (isObject) {
-    const keys = Object.keys(value)
-    if (keys.length === 0) {
-      return (
-        <TreeItem
-          itemId={path}
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Label inline bold variant="body2">{label}:</Label>
-              <Label inline color="textSecondary" variant="body2">{isArray ? '[]' : '{}'}</Label>
-            </Box>
-          }
-        />
-      )
-    }
-
-    return (
-      <TreeItem
-        itemId={path}
-        label={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Label inline bold variant="body2">{label}</Label>
-            <Label inline color="primary" variant="caption" sx={{ opacity: 0.7 }}>
-              {isArray ? `[${value.length}]` : `{${keys.length}}`}
-            </Label>
-          </Box>
-        }
-      >
-        {keys.map((key) => (
-          <JSONTreeNode
-            key={key}
-            label={key}
-            value={value[key]}
-            path={`${path}.${key}`}
-          />
-        ))}
-      </TreeItem>
-    )
-  }
-
-  return (
-    <TreeItem
-      itemId={path}
-      label={
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.25 }}>
-          <Label inline bold variant="body2" sx={{ minWidth: 100 }}>{label}:</Label>
-          <Label
-            inline
-            variant="body2"
-            sx={{
-              color: typeof value === 'string' ? 'success.main' : (typeof value === 'number' ? 'info.main' : (typeof value === 'boolean' ? 'warning.main' : 'textSecondary')),
-              fontFamily: 'monospace',
-              wordBreak: 'break-all'
-            }}
-          >
-            {typeof value === 'string' ? `"${value}"` : String(value)}
-          </Label>
-        </Box>
-      }
-    />
-  )
-}
 
 export const DatabaseManagementWindow = ({ open, onClose }: {
   open: boolean;
@@ -406,15 +339,15 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
               </Label>
             </Box>
             <Divider />
-            <TreeView
+            <JSONTree
               aria-label="database explorer"
-              defaultExpandedItems={['root']}
+              data={db}
+              label="Root"
+              path="root"
               selectedItems={selectedPath}
               onSelectedItemsChange={(_, id) => setSelectedPath(id as string)}
               sx={{ flex: 1, overflow: 'auto' }}
-            >
-              <JSONTreeNode label="Root" value={db} path="root" />
-            </TreeView>
+            />
           </Stack>
         </Grid>
 

@@ -9,6 +9,7 @@ import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow'
 import { PatientLookup } from '../../routes/PatientLookup/PatientLookup'
 import { DatabaseManagementWindow } from './DatabaseManagementWindow'
 import { PDMPManagerWindow } from './PDMPManagerWindow'
+import { ManageConditionalsWindow } from './ManageConditionalsWindow'
 
 export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const location = useLocation()
@@ -26,6 +27,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const [dbManagementOpen, setDbManagementOpen] = React.useState(false)
   const [openPatientChartOpen, setOpenPatientChartOpen] = React.useState(false)
   const [pdmpManagerOpen, setPdmpManagerOpen] = React.useState(false)
+  const [manageConditionalsOpen, setManageConditionalsOpen] = React.useState(false)
 
   // Extract MRN and EncounterID from URL if present
   const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/) as string[]
@@ -114,6 +116,14 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
               }}>
                 Database Management
               </MenuItem>
+              <MenuItem
+                disabled={!currentMrn || !currentEncID}
+                onClick={() => {
+                  setManageConditionalsOpen(true);
+                  setAnchorEl(null);
+                }}>
+                Manage Conditionals
+              </MenuItem>
             </Menu>
           </Stack>
           <Tabs
@@ -192,6 +202,13 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
       <PDMPManagerWindow
         open={pdmpManagerOpen}
         onClose={() => setPdmpManagerOpen(false)}
+        mrn={currentMrn as Database.Patient.ID}
+        encounterId={currentEncID as Database.Encounter.ID}
+      />
+
+      <ManageConditionalsWindow
+        open={manageConditionalsOpen}
+        onClose={() => setManageConditionalsOpen(false)}
         mrn={currentMrn as Database.Patient.ID}
         encounterId={currentEncID as Database.Encounter.ID}
       />

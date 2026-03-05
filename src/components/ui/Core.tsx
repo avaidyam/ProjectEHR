@@ -61,7 +61,9 @@ import {
   PopoverProps,
   ToggleButtonGroupProps,
   InputAdornment as MUIInputAdornment,
-  TextFieldVariants
+  TextFieldVariants,
+  Tooltip as MUITooltip,
+  TooltipProps,
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -484,6 +486,88 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
+export const JSONTreeItem = ({ label, value, path, ...props }: { label: string; value: any; path: string } & Partial<TreeItemProps>) => {
+  const { itemId: _itemId, ...rest } = props;
+  const isObject = value !== null && typeof value === 'object'
+  const isArray = Array.isArray(value)
+
+  if (isObject) {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return (
+        <TreeItem
+          {...rest}
+          itemId={path}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Label inline bold variant="body2">{label}:</Label>
+              <Label inline color="textSecondary" variant="body2">{isArray ? '[]' : '{}'}</Label>
+            </Box>
+          }
+        />
+      )
+    }
+
+    return (
+      <TreeItem
+        {...rest}
+        itemId={path}
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Label inline bold variant="body2">{label}</Label>
+            <Label inline color="primary" variant="caption" sx={{ opacity: 0.7 }}>
+              {isArray ? `[${value.length}]` : `{${keys.length}}`}
+            </Label>
+          </Box>
+        }
+      >
+        {keys.map((key) => (
+          <JSONTreeItem
+            key={key}
+            label={key}
+            value={value[key]}
+            path={`${path}.${key}`}
+          />
+        ))}
+      </TreeItem>
+    )
+  }
+
+  return (
+    <TreeItem
+      {...rest}
+      itemId={path}
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.25 }}>
+          <Label inline bold variant="body2" sx={{ minWidth: 100 }}>{label}:</Label>
+          <Label
+            inline
+            variant="body2"
+            sx={{
+              color: typeof value === 'string' ? 'success.main' : (typeof value === 'number' ? 'info.main' : (typeof value === 'boolean' ? 'warning.main' : 'textSecondary')),
+              fontFamily: 'monospace',
+              wordBreak: 'break-all'
+            }}
+          >
+            {typeof value === 'string' ? `"${value}"` : String(value)}
+          </Label>
+        </Box>
+      }
+    />
+  )
+}
+
+export const JSONTree = ({ data, label = "Root", path = "root", ...props }: { data: any, label?: string, path?: string } & SimpleTreeViewProps<any>) => {
+  return (
+    <TreeView
+      defaultExpandedItems={[path]}
+      {...props}
+    >
+      <JSONTreeItem label={label} value={data} path={path} />
+    </TreeView>
+  )
+}
+
 export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainTimeProvider>
@@ -637,7 +721,7 @@ function _MUIDraggablePaperComponent(props: PaperProps) {
   );
 }
 
-export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, children, ...props }) => {
+export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, HeaderProps, ContentProps, FooterProps, children, ...props }) => {
   return (
     <MUIDialog
       open={open}
@@ -645,7 +729,7 @@ export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.React
       PaperComponent={_MUIDraggablePaperComponent}
       {...props}
     >
-      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...props.HeaderProps}>
+      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...HeaderProps}>
         {title}
         <MUIIconButton
           onClick={onClose as any}
@@ -660,11 +744,11 @@ export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.React
         </MUIIconButton>
         {header}
       </MUIDialogTitle>
-      <MUIDialogContent dividers {...props.ContentProps}>
+      <MUIDialogContent dividers {...ContentProps}>
         {children}
       </MUIDialogContent>
       {!!footer &&
-        <MUIDialogActions {...props.FooterProps}>
+        <MUIDialogActions {...FooterProps}>
           {footer}
         </MUIDialogActions>
       }
@@ -683,6 +767,8 @@ export const Scrollable: React.FC<{ children: React.ReactNode }> = ({ children }
     </>
   )
 }
+
+export const Tooltip: React.FC<TooltipProps> = (props) => <MUITooltip {...props} />;
 
 export function useLazyEffect(effect: () => void | (() => void), deps: any[] = [], wait = 250) {
   const cleanUp = React.useRef<void | (() => void)>(undefined)

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { createFilterOptions } from '@mui/material';
 import { Autocomplete } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
@@ -108,6 +109,50 @@ export const LocationSelectField: React.FC<BaseSelectFieldProps<Database.Locatio
       getOptionLabel={(option: Database.Location) => option.name}
       value={selectedValue}
       onChange={(_e, newValue: Database.Location | null) => onChange(newValue?.id || null)}
+      {...props}
+    />
+  );
+};
+
+const ordersFilter = createFilterOptions({
+  limit: 100,
+  stringify: (option: any) => `${option.name} ${option.id}`,
+});
+
+export const OrderSelectField: React.FC<BaseSelectFieldProps<any, string> & { onSelect?: (value: any) => void, freeSolo?: boolean }> = ({
+  value,
+  onChange,
+  onSelect,
+  label = "Search to add conditional order...",
+  ...props
+}) => {
+  const [orderables] = useDatabase().orderables();
+
+  const options = React.useMemo(() => {
+    const procedures = (orderables as any)?.procedures || {};
+    return [
+      ...Object.entries(procedures).map(([id, name]) => ({ id, name: name as string })),
+      ...((orderables as any)?.rxnorm || []).map((rx: any) => ({ id: rx.name, name: rx.name }))
+    ];
+  }, [orderables]);
+
+  const selectedValue = React.useMemo(() => {
+    if (!value) return null;
+    return options.find(o => o.id === value);
+  }, [options, value]);
+
+  return (
+    <Autocomplete
+      label={label}
+      options={options}
+      getOptionLabel={(option) => typeof option === 'string' ? option : option.name || ''}
+      filterOptions={ordersFilter}
+      value={selectedValue}
+      onChange={(_e, newValue: any) => {
+        if (onSelect) onSelect(newValue);
+        const val = typeof newValue === 'string' ? newValue : newValue?.id || null;
+        onChange(val);
+      }}
       {...props}
     />
   );
