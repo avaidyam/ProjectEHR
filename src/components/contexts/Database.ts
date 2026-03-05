@@ -736,6 +736,7 @@ export interface History {
   medical: MedicalHistoryItem[]
   surgical: SurgicalHistoryItem[]
   family: FamilyHistoryItem[]
+  familyStatus: FamilyStatusItem[]
   SubstanceSexualHealth?: {
     alcohol?: {
       alcoholStatus?: string
@@ -896,14 +897,34 @@ export namespace SurgicalHistoryItem {
   }
 }
 
-export interface FamilyHistoryItem {
+export interface FamilyStatusItem {
+  id: FamilyStatusItem.ID
   age?: number | null
   comment?: string
   name: string
-  problems: {
-    description: string
-    ageOfOnset: string | null
-  }[]
   relationship: string
   status: string
+}
+
+export namespace FamilyStatusItem {
+  export type ID = Branded<UUID, 'FamilyStatusItem.ID'>
+  export type Fragment = Partial<Omit<FamilyStatusItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+}
+
+export interface FamilyHistoryItem {
+  id: FamilyHistoryItem.ID
+  person: FamilyStatusItem.ID
+  description: string
+  age: string | null
+}
+
+export namespace FamilyHistoryItem {
+  export type ID = Branded<UUID, 'FamilyHistoryItem.ID'>
+  export type Fragment = Partial<Omit<FamilyHistoryItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
 }

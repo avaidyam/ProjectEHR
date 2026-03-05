@@ -181,11 +181,13 @@ export function Chat() {
 
     // Family History
     text += "### Family History\n";
-    if (familyHistory.length) {
-      familyHistory.forEach((member: any) => {
-        text += `- ${member.relationship} (${member.status || 'Unknown'}, Age: ${member.age || 'N/A'})`;
-        if (member.problems?.length) {
-          text += `: ${member.problems.map((p: any) => `${p.description} (Onset: ${p.ageOfOnset})`).join(', ')}`;
+    const familyStatus = history?.familyStatus || [];
+    if (familyStatus.length) {
+      familyStatus.forEach((relative: any) => {
+        const conditions = (history?.family || []).filter((fh: any) => fh.person === relative.id);
+        text += `- ${relative.relationship} (${relative.status || 'Unknown'}, Age: ${relative.age || 'N/A'})`;
+        if (conditions.length) {
+          text += `: ${conditions.map((p: any) => `${p.description} (Onset: ${p.age || 'Unknown'})`).join(', ')}`;
         }
         text += "\n";
       });

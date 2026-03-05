@@ -23,8 +23,8 @@ import {
   Popover,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
-import icd10 from '../../../../../util/data/icd10cm.json';
+import { usePatient, Database } from 'components/contexts/PatientContext';
+import icd10 from 'util/data/icd10cm.json';
 
 
 const icd10Options = Object.entries(icd10).map(([code, description]) => ({
@@ -47,9 +47,9 @@ const RotatedText = styled(Box)(({ theme }) => ({
 }));
 
 const defaultFamilyMembers = [
-  { relationship: 'Father', name: '', status: '', problems: [], comment: '' },
-  { relationship: 'Mother', name: '', status: '', problems: [], comment: '' },
-  { relationship: 'Brother', name: '', status: '', problems: [], comment: '' },
+  { id: 'status-father' as Database.FamilyStatusItem.ID, relationship: 'Father', name: '', status: '', comment: '' },
+  { id: 'status-mother' as Database.FamilyStatusItem.ID, relationship: 'Mother', name: '', status: '', comment: '' },
+  { id: 'status-brother' as Database.FamilyStatusItem.ID, relationship: 'Brother', name: '', status: '', comment: '' },
 ];
 
 const defaultProblems = [
@@ -59,8 +59,8 @@ const defaultProblems = [
   'Heart disease',
 ];
 
-const getUniqueProblems = (familyHistory: any[]) => {
-  const allProblems = familyHistory.flatMap((member: any) => member.problems.map((p: any) => p.description));
+const getUniqueProblems = (familyHistory: Database.FamilyHistoryItem[]) => {
+  const allProblems = familyHistory.map((p) => p.description);
   const problemsSet = new Set([...defaultProblems, ...allProblems]);
   problemsSet.delete('No Pertinent History');
   return [...problemsSet].sort();
@@ -69,34 +69,50 @@ const getUniqueProblems = (familyHistory: any[]) => {
 export function FamilyHistory() {
   const { useEncounter } = usePatient();
   const [familyHx, setFamilyHx] = useEncounter().history.family([]);
-  const [familyData, setFamilyData] = React.useState<any[]>(() => {
-    const initial = familyHx && familyHx.length > 0 ? familyHx : defaultFamilyMembers;
-    return initial.map((item: any, idx: number) => ({
-      ...item,
-      id: item.id || `fh-${idx}-${item.relationship}`
-    }));
-  });
+  const [familyStatus, setFamilyStatus] = useEncounter().history.familyStatus([]);
+
   const [isAddProblemOpen, setIsAddProblemOpen] = React.useState(false);
   const [commentAnchorEl, setCommentAnchorEl] = React.useState<HTMLDivElement | null>(null);
-  const [selectedMember, setSelectedMember] = React.useState<any>(null);
+  const [selectedStatusItem, setSelectedStatusItem] = React.useState<Database.FamilyStatusItem | null>(null);
   const [selectedProblem, setSelectedProblem] = React.useState<any>(null);
   const [commentText, setCommentText] = React.useState('');
   const [newRelationship, setNewRelationship] = React.useState<string | null>('');
 
-  const uniqueProblems = getUniqueProblems(familyData);
+  const uniqueProblems = getUniqueProblems(familyHx);
 
-  // Sync familyData with familyHx and ensure IDs
+  // Initialize defaults if empty
   React.useEffect(() => {
-    if (familyHx) {
-      const normalized = familyHx.map((item: any, idx: number) => ({
-        ...item,
-        id: item.id || `fh-${idx}-${item.relationship}`
-      }));
-      if (JSON.stringify(normalized) !== JSON.stringify(familyData)) {
-        setFamilyData(normalized);
-      }
+    if (familyStatus.length === 0) {
+      setFamilyStatus(defaultFamilyMembers);
     }
-  }, [familyHx]);
+  }, [familyStatus, setFamilyStatus]);
+
+  const toggleProblem = (memberId: Database.FamilyStatusItem.ID, problemDescription: string) => {
+    const existing = familyHx.find(fh => fh.person === memberId && fh.description === problemDescription);
+    if (existing) {
+      setFamilyHx(familyHx.filter(fh => fh.id !== existing.id));
+    } else {
+      let nextHx = familyHx;
+      // Remove "No Pertinent History" if a specific problem is added
+      if (problemDescription !== 'No Pertinent History') {
+        nextHx = nextHx.filter(fh => !(fh.person === memberId && fh.description === 'No Pertinent History'));
+      } else {
+        // If adding "No Pertinent History", remove all other problems for this person
+        nextHx = nextHx.filter(fh => fh.person !== memberId);
+      }
+
+      const newItem: Database.FamilyHistoryItem = {
+        id: Database.FamilyHistoryItem.ID.create(),
+        person: memberId,
+        description: problemDescription,
+        age: ''
+      };
+      setFamilyHx([...nextHx, newItem]);
+    }
+  };
+
+  const hasProblem = (memberId: Database.FamilyStatusItem.ID, problem: string) =>
+    familyHx.some((p) => p.person === memberId && p.description === problem);
 
   const columns: GridColDef[] = React.useMemo(() => [
     {
@@ -115,14 +131,12 @@ export function FamilyHistory() {
         <Autocomplete
           freeSolo
           variant="standard"
-          value={params.value}
+          value={params.value || ''}
           options={[]}
           onInputChange={(_e, newValue) => {
-            const updatedData = familyData.map((m: any) =>
+            setFamilyStatus(prev => prev.map(m =>
               m.id === params.row.id ? { ...m, name: newValue } : m
-            );
-            setFamilyData(updatedData);
-            setFamilyHx(updatedData);
+            ));
           }}
           TextFieldProps={{ InputProps: { disableUnderline: true } }}
         />
@@ -136,14 +150,12 @@ export function FamilyHistory() {
         <Autocomplete
           freeSolo
           variant="standard"
-          value={params.value}
+          value={params.value || ''}
           options={[]}
           onInputChange={(_e, newValue) => {
-            const updatedData = familyData.map((m: any) =>
+            setFamilyStatus(prev => prev.map(m =>
               m.id === params.row.id ? { ...m, status: newValue } : m
-            );
-            setFamilyData(updatedData);
-            setFamilyHx(updatedData);
+            ));
           }}
           TextFieldProps={{ InputProps: { disableUnderline: true } }}
         />
@@ -156,10 +168,10 @@ export function FamilyHistory() {
       renderHeader: () => <RotatedText>No Pertinent Hx</RotatedText>,
       renderCell: (params) => (
         <Box
-          onClick={() => toggleProblem(params.row, 'No Pertinent History')}
+          onClick={() => toggleProblem(params.row.id, 'No Pertinent History')}
           sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
         >
-          {hasProblem(params.row, 'No Pertinent History') ? (
+          {hasProblem(params.row.id, 'No Pertinent History') ? (
             <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
           ) : (
             ''
@@ -174,7 +186,10 @@ export function FamilyHistory() {
       renderHeader: () => <RotatedText>Add Problem</RotatedText>,
       renderCell: (params) => (
         <Box
-          onClick={() => handleOpenAddProblem(params.row)}
+          onClick={() => {
+            setSelectedStatusItem(params.row);
+            setIsAddProblemOpen(true);
+          }}
           sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
         >
           <Icon sx={{ color: '#00c853' }}>add_circle</Icon>
@@ -188,7 +203,11 @@ export function FamilyHistory() {
       renderHeader: () => <RotatedText>Comments</RotatedText>,
       renderCell: (params) => (
         <Box
-          onClick={(event: React.MouseEvent<HTMLDivElement>) => handleOpenComments(event, params.row)}
+          onClick={(event: React.MouseEvent<HTMLDivElement>) => {
+            setCommentAnchorEl(event.currentTarget);
+            setSelectedStatusItem(params.row);
+            setCommentText(params.row.comment || '');
+          }}
           sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
         >
           <Icon sx={{ color: params.row.comment ? '#2196f3' : '#546E7A' }}>
@@ -204,10 +223,10 @@ export function FamilyHistory() {
       renderHeader: () => <RotatedText>{problem}</RotatedText>,
       renderCell: (params: any) => (
         <Box
-          onClick={() => toggleProblem(params.row, problem)}
+          onClick={() => toggleProblem(params.row.id, problem)}
           sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
         >
-          {hasProblem(params.row, problem) ? (
+          {hasProblem(params.row.id, problem) ? (
             <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
           ) : (
             ''
@@ -215,110 +234,48 @@ export function FamilyHistory() {
         </Box>
       )
     }))
-  ], [familyData, uniqueProblems]);
-
-  const handleOpenAddProblem = (member: any) => {
-    setSelectedMember(member);
-    setIsAddProblemOpen(true);
-  };
-
-  const handleCloseAddProblem = () => {
-    setIsAddProblemOpen(false);
-    setSelectedMember(null);
-    setSelectedProblem(null);
-  };
+  ], [familyStatus, familyHx, uniqueProblems]);
 
   const handleAddProblem = () => {
-    if (selectedMember && selectedProblem) {
-      const updatedFamily = familyData.map((member: any) => {
-        if (member.id === selectedMember.id) {
-          const newProblems = [...member.problems, { description: selectedProblem.description, ageOfOnset: '' }];
-          return { ...member, problems: newProblems };
-        }
-        return member;
-      });
-      setFamilyData(updatedFamily);
-      setFamilyHx(updatedFamily); // Update the main context
-      handleCloseAddProblem();
+    if (selectedStatusItem && selectedProblem) {
+      toggleProblem(selectedStatusItem.id, selectedProblem.description);
+      setIsAddProblemOpen(false);
+      setSelectedStatusItem(null);
+      setSelectedProblem(null);
     }
   };
 
-  const handleOpenComments = (event: React.MouseEvent<HTMLDivElement>, member: any) => {
-    setCommentAnchorEl(event.currentTarget);
-    setSelectedMember(member);
-    setCommentText(member.comment || '');
-  };
-
-  const handleCloseComments = () => {
-    setCommentAnchorEl(null);
-    setSelectedMember(null);
-    setCommentText('');
-  };
-
   const handleSaveComments = () => {
-    const updatedFamily = familyData.map((member: any) => {
-      if (member.id === selectedMember.id) {
-        return { ...member, comment: commentText };
-      }
-      return member;
-    });
-    setFamilyData(updatedFamily);
-    setFamilyHx(updatedFamily); // Update the main context
-    handleCloseComments();
+    if (selectedStatusItem) {
+      setFamilyStatus(prev => prev.map(m =>
+        m.id === selectedStatusItem.id ? { ...m, comment: commentText } : m
+      ));
+      setCommentAnchorEl(null);
+      setSelectedStatusItem(null);
+      setCommentText('');
+    }
   };
 
   const handleAddFamilyMember = () => {
     if (newRelationship) {
-      const newMember = {
-        id: `fh-${Date.now()}`,
+      const newMember: Database.FamilyStatusItem = {
+        id: Database.FamilyStatusItem.ID.create(),
         relationship: newRelationship,
         name: '',
         status: '',
-        problems: [],
         comment: '',
       };
-      const updatedFamily = [...familyData, newMember];
-      setFamilyData(updatedFamily);
-      setFamilyHx(updatedFamily); // Update the main context
+      setFamilyStatus([...familyStatus, newMember]);
       setNewRelationship('');
     }
   };
-
-  const toggleProblem = (member: any, problemDescription: string) => {
-    const updatedFamily = familyData.map((m: any) => {
-      if (m.id === member.id) {
-        const hasProblem = m.problems.some((p: any) => p.description === problemDescription);
-        if (hasProblem) {
-          return {
-            ...m,
-            problems: m.problems.filter((p: any) => p.description !== problemDescription)
-          };
-        } else {
-          // Remove "No Pertinent History" if a specific problem is added
-          const problems = problemDescription !== 'No Pertinent History'
-            ? m.problems.filter((p: any) => p.description !== 'No Pertinent History')
-            : m.problems;
-
-          return {
-            ...m,
-            problems: [...problems, { description: problemDescription, ageOfOnset: '' }]
-          };
-        }
-      }
-      return m;
-    });
-    setFamilyData(updatedFamily);
-    setFamilyHx(updatedFamily); // Update the main context
-  };
-
-  const hasProblem = (member: any, problem: string) => member.problems.some((p: any) => p.description === problem);
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color="#9F3494">
 
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
-          rows={familyData ?? []}
+          rows={familyStatus}
           columns={columns}
           columnHeaderHeight={100}
           hideFooter
@@ -347,8 +304,8 @@ export function FamilyHistory() {
 
       <MarkReviewed sx={{ mt: 2 }} />
 
-      <Dialog open={isAddProblemOpen} onClose={handleCloseAddProblem}>
-        <DialogTitle>Add Problem for {selectedMember?.relationship}</DialogTitle>
+      <Dialog open={isAddProblemOpen} onClose={() => setIsAddProblemOpen(false)}>
+        <DialogTitle>Add Problem for {selectedStatusItem?.relationship}</DialogTitle>
         <DialogContent>
           <Autocomplete
             disablePortal
@@ -361,7 +318,7 @@ export function FamilyHistory() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseAddProblem}>Cancel</Button>
+          <Button onClick={() => setIsAddProblemOpen(false)}>Cancel</Button>
           <Button onClick={handleAddProblem} variant="contained" color="primary">Add</Button>
         </DialogActions>
       </Dialog>
@@ -370,7 +327,7 @@ export function FamilyHistory() {
       <Popover
         open={Boolean(commentAnchorEl)}
         anchorEl={commentAnchorEl}
-        onClose={handleCloseComments}
+        onClose={() => setCommentAnchorEl(null)}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -382,7 +339,7 @@ export function FamilyHistory() {
         PaperProps={{ sx: { p: 2, width: 320 } }}
       >
         <Stack spacing={2}>
-          <Label variant="subtitle2">Comments for {selectedMember?.relationship}</Label>
+          <Label variant="subtitle2">Comments for {selectedStatusItem?.relationship}</Label>
           <Autocomplete
             freeSolo
             autoFocus
@@ -393,7 +350,7 @@ export function FamilyHistory() {
             onInputChange={(_e, newValue) => setCommentText(newValue)}
           />
           <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button onClick={handleCloseComments} size="small">Cancel</Button>
+            <Button onClick={() => setCommentAnchorEl(null)} size="small">Cancel</Button>
             <Button onClick={handleSaveComments} variant="contained" color="primary" size="small">Save</Button>
           </Stack>
         </Stack>

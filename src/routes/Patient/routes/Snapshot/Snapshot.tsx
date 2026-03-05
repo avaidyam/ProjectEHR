@@ -20,7 +20,8 @@ export const SnapshotTabContent: React.FC = () => {
   const [immunizationHx] = useEncounter().immunizations()
   const [medicalHx] = useEncounter().history.medical()
   const [surgicalHx] = useEncounter().history.surgical()
-  const [familyHx] = useEncounter().history.family()
+  const [familyHx] = useEncounter().history.family([])
+  const [familyStatus] = useEncounter().history.familyStatus([])
   const [medicationHx] = useEncounter().medications()
   const [problems] = useEncounter().problems()
 
@@ -122,15 +123,18 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color='#9F3494'>
-          {isSectionEmpty(familyHx) ? (
+          {isSectionEmpty(familyStatus) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            familyHx?.map((relative) => (
-              <div key={`${relative.relationship}-${relative.problems.length}`}>
-                <span style={{ color: '#bbbbbb' }}>{relative.relationship}</span>
-                <span style={{ marginLeft: '35px' }}>{relative.problems?.map(x => x.description).join(', ')}</span>
-              </div>
-            ))
+            familyStatus?.map((relative) => {
+              const conditions = (familyHx ?? []).filter((fh: any) => fh.person === relative.id).map((fh: any) => fh.description);
+              return (
+                <div key={relative.id}>
+                  <span style={{ color: '#bbbbbb' }}>{relative.relationship}</span>
+                  <span style={{ marginLeft: '35px' }}>{conditions.length > 0 ? conditions.join(', ') : 'No pertinent history'}</span>
+                </div>
+              )
+            })
           )}
         </TitledCard>
       </Grid>
