@@ -19,7 +19,7 @@ import orderables from 'util/data/orderables.json'
 const initialStore: Database.Root = {
   departments: (patient_sample as unknown as Database.Root).departments,
   patients: (patient_sample as unknown as Database.Root).patients,
-  schedules: (patient_sample as unknown as Database.Root).schedules,
+  appointments: (patient_sample as unknown as Database.Root).appointments,
   lists: (patient_sample as unknown as Database.Root).lists,
   providers: (patient_sample as unknown as Database.Root).providers,
   locations: (patient_sample as unknown as Database.Root).locations,

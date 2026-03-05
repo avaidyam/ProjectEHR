@@ -64,7 +64,7 @@ export interface Root {
   providers: Provider[]
   flowsheets: Flowsheet.Definition[]
   lists: PatientList[]
-  schedules: Schedule[]
+  appointments: Appointment[]
   patients: {
     [key: Patient.ID]: Patient
   },
@@ -225,13 +225,9 @@ export namespace PatientList {
   }
 }
 
-export interface Schedule {
-  department: Department.ID
-  appointments: Appointment[]
-}
-
 export interface Appointment {
   id: Appointment.ID
+  department: Department.ID
   patient: {
     mrn: Patient.ID,
     enc: Encounter.ID

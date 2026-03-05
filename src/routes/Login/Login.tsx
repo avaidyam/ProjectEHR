@@ -15,7 +15,7 @@ interface LoginProps {
 
 export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   const [patientsDB] = useDatabase().patients();
-  const [schedules] = useDatabase().schedules();
+  const [appointmentsDB] = useDatabase().appointments();
   const [departments] = useDatabase().departments();
 
   const [displayDepts, setDisplayDepts] = React.useState(false);
@@ -46,14 +46,12 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
   };
 
   React.useEffect(() => {
-    const allAppointments = schedules.flatMap((s) => s.appointments);
-    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn))) as string[];
+    const uniqueMRNs = Array.from(new Set(appointmentsDB.map((appt) => appt.patient.mrn))) as string[];
     setPatients(uniqueMRNs);
-  }, [schedules]);
+  }, [appointmentsDB]);
 
   React.useEffect(() => {
-    const allAppointments = schedules.flatMap((s) => s.appointments)
-    const uniqueMRNs = Array.from(new Set(allAppointments.map((appt) => appt.patient.mrn)))
+    const uniqueMRNs = Array.from(new Set(appointmentsDB.map((appt) => appt.patient.mrn)))
 
     const encountersHash = uniqueMRNs.reduce((acc, mrn) => {
       const patientInfo = patientsDB[mrn];
@@ -62,7 +60,7 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     }, {} as Record<Database.Patient.ID, number>);
 
     setEncounterCounts(encountersHash);
-  }, [schedules, patientsDB]);
+  }, [appointmentsDB, patientsDB]);
 
   React.useEffect(() => {
     if (Object.keys(enabledEncounters).length === 0 && patients.length > 0) {

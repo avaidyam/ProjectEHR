@@ -124,7 +124,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       const patient = db.patients[pId]
       if (!patient) return
 
-      const appointments = db.schedules.flatMap((s: Database.Schedule) => s.appointments).filter((a: Database.Appointment) => a.patient.mrn === pId)
+      const appointments = db.appointments.filter((a: Database.Appointment) => a.patient.mrn === pId)
       const encounters = Object.values(patient.encounters)
       const careTeamProviders = patient.careTeam?.map(ct => ct.provider) || []
 
@@ -139,7 +139,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         ...encounters.map(e => e.department),
         ...db.providers.filter((p: Database.Provider) => providerIds.has(p.id)).map(p => p.department),
         ...db.locations.filter((l: Database.Location) => locationIds.has(l.id)).map(l => l.departmentId),
-        ...db.schedules.filter((s: Database.Schedule) => s.appointments.some(a => a.patient.mrn === pId)).map(s => s.department)
+        ...appointments.map(a => a.department)
       ])
 
       exportData = {
@@ -147,10 +147,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         providers: db.providers.filter((p: Database.Provider) => providerIds.has(p.id)),
         locations: db.locations.filter((l: Database.Location) => locationIds.has(l.id)),
         departments: db.departments.filter((d: Database.Department) => departmentIds.has(d.id)),
-        schedules: db.schedules.map((s: Database.Schedule) => ({
-          ...s,
-          appointments: s.appointments.filter(a => a.patient.mrn === pId)
-        })).filter(s => s.appointments.length > 0)
+        appointments: appointments
       }
       filename = `patient_${patient.lastName}_${pId}_export.json`
     } else if (encounterMatch) {
@@ -160,7 +157,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       const encounter = patient?.encounters[eId]
       if (!patient || !encounter) return
 
-      const appointments = db.schedules.flatMap((s: Database.Schedule) => s.appointments).filter((a: Database.Appointment) => a.patient.enc === eId)
+      const appointments = db.appointments.filter((a: Database.Appointment) => a.patient.enc === eId)
 
       const providerIds = new Set<Database.Provider.ID>([encounter.provider])
       const locationIds = new Set<Database.Location.ID>(appointments.map((a: Database.Appointment) => a.location).filter(Boolean) as Database.Location.ID[])
@@ -169,7 +166,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         encounter.department,
         ...db.providers.filter((p: Database.Provider) => providerIds.has(p.id)).map(p => p.department),
         ...db.locations.filter((l: Database.Location) => locationIds.has(l.id)).map(l => l.departmentId),
-        ...db.schedules.filter((s: Database.Schedule) => s.appointments.some(a => a.patient.enc === eId)).map(s => s.department)
+        ...appointments.map(a => a.department)
       ])
 
       exportData = {
@@ -182,10 +179,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         providers: db.providers.filter((p: Database.Provider) => providerIds.has(p.id)),
         locations: db.locations.filter((l: Database.Location) => locationIds.has(l.id)),
         departments: db.departments.filter((d: Database.Department) => departmentIds.has(d.id)),
-        schedules: db.schedules.map((s: Database.Schedule) => ({
-          ...s,
-          appointments: s.appointments.filter(a => a.patient.enc === eId)
-        })).filter(s => s.appointments.length > 0)
+        appointments: appointments
       }
       filename = `encounter_${eId}_export.json`
     } else {
@@ -218,11 +212,8 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         setDb(prev => {
           const newPatients = { ...prev.patients }
           delete newPatients[pId]
-          const newSchedules = prev.schedules.map(s => ({
-            ...s,
-            appointments: s.appointments.filter(a => a.patient.mrn !== pId)
-          })).filter(s => s.appointments.length > 0)
-          return { ...prev, patients: newPatients, schedules: newSchedules }
+          const newAppointments = prev.appointments.filter(a => a.patient.mrn !== pId);
+          return { ...prev, patients: newPatients, appointments: newAppointments }
         })
         setSelectedPath(null)
       }
@@ -239,11 +230,8 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
           const newEncounters = { ...newPatients[pId].encounters }
           delete newEncounters[eId]
           newPatients[pId] = { ...newPatients[pId], encounters: newEncounters }
-          const newSchedules = prev.schedules.map(s => ({
-            ...s,
-            appointments: s.appointments.filter(a => a.patient.enc !== eId)
-          })).filter(s => s.appointments.length > 0)
-          return { ...prev, patients: newPatients, schedules: newSchedules }
+          const newAppointments = prev.appointments.filter(a => a.patient.enc !== eId);
+          return { ...prev, patients: newPatients, appointments: newAppointments }
         })
         setSelectedPath(null)
       }
@@ -349,7 +337,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       setDb({
         departments: [],
         patients: {},
-        schedules: [],
+        appointments: [],
         lists: [],
         providers: [],
         locations: [],

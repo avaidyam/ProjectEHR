@@ -14,7 +14,7 @@ function customFilterBar({
   setSelectedDate,
   selectedDept,
   setSelectedDept,
-  schedulesDB,
+  appointmentsDB,
   departments,
   open,
   setOpen,
@@ -28,7 +28,7 @@ function customFilterBar({
   setSelectedDate: (date: Temporal.PlainDate | null) => void,
   selectedDept: string,
   setSelectedDept: (dept: string) => void,
-  schedulesDB: Database.Schedule[],
+  appointmentsDB: Database.Appointment[],
   departments: Database.Department[],
   open: boolean,
   setOpen: (open: boolean) => void,
@@ -47,7 +47,7 @@ function customFilterBar({
       />
       <Autocomplete
         disableClearable
-        options={schedulesDB.map(s => ({ id: s.department, label: departments.find(d => d.id === s.department)?.name || `Dept ${s.department}` }))}
+        options={Array.from(new Set(appointmentsDB.map(a => a.department))).map(deptId => ({ id: deptId, label: departments.find(d => d.id === deptId)?.name || `Dept ${deptId}` }))}
         value={selectedDept}
         onChange={(_e, newValue: any) => setSelectedDept(newValue?.id)}
         getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : option.label}
@@ -160,7 +160,7 @@ function changeTextByStatus(officeStatus: Database.Appointment.Status, checkinTi
 // takes rows from json file and set columns to make table
 export function Schedule() {
   const [patientsDB] = useDatabase().patients()
-  const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
+  const [appointmentsDB, setAppointmentsDB] = useDatabase().appointments()
   const [departments] = useDatabase().departments()
   const [locations] = useDatabase().locations()
   const [providers] = useDatabase().providers()
@@ -178,7 +178,7 @@ export function Schedule() {
 
   const [selPatient, setPatient] = React.useState<Database.Appointment | null>(null);
 
-  const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDept = department ?? (appointmentsDB[0]?.department || (departments[0]?.id));
   const initialDate = date ?? Temporal.Now.instant().toString()//"2026-01-01"
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
@@ -212,13 +212,14 @@ export function Schedule() {
   }, [department, date]);
 
   const scheduleDB = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => {
-      const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
-      const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
-      return apptDate.equals(selectedPlainDate);
-    });
-  }, [schedulesDB, selectedDept, selectedDate]);
+    return appointmentsDB
+      .filter((appt) => appt.department === selectedDept)
+      .filter((appt) => {
+        const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
+        const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
+        return apptDate.equals(selectedPlainDate);
+      });
+  }, [appointmentsDB, selectedDept, selectedDate]);
 
   const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
 
@@ -447,7 +448,7 @@ export function Schedule() {
                 setSelectedDate: handleSetSelectedDate,
                 selectedDept,
                 setSelectedDept: handleSetSelectedDept,
-                schedulesDB,
+                appointmentsDB,
                 departments,
                 open,
                 setOpen,
