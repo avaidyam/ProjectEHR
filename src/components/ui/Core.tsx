@@ -34,6 +34,7 @@ import {
   Tab as MUITab,
   Menu as MUIMenu,
   MenuItem as MUIMenuItem,
+  Popover as MUIPopover,
   BoxProps,
   StackProps,
   GridProps,
@@ -57,6 +58,7 @@ import {
   TabProps,
   MenuProps,
   MenuItemProps,
+  PopoverProps,
   ToggleButtonGroupProps,
   InputAdornment as MUIInputAdornment,
   TextFieldVariants
@@ -714,6 +716,12 @@ export const MenuItem: React.FC<MenuItemProps> = ({ children, ...props }) => (
   <MUIMenuItem {...props}>
     {children}
   </MUIMenuItem>
+)
+
+export const Popover: React.FC<PopoverProps> = ({ children, ...props }) => (
+  <MUIPopover {...props}>
+    {children}
+  </MUIPopover>
 )
 
 export { MarkReviewed }
