@@ -7,6 +7,7 @@ import {
   Icon,
   Autocomplete,
   MarkReviewed,
+  DatePicker,
 } from 'components/ui/Core';
 import {
   Grid,
@@ -187,6 +188,16 @@ export function SpecialtyOB() {
       <SectionPaper>
         <SectionHeader>Gynecology History</SectionHeader>
         <Grid container spacing={3}>
+          <Grid size={{ xs: 12, sm: 4 }}>
+            <DatePicker
+              label="LMP"
+              fullWidth
+              size="small"
+              value={obgynData?.gynecologyHistory?.lastMenstrualPeriod || ''}
+              onChange={(newValue: any) => handleGynecologyChange('lastMenstrualPeriod', newValue)}
+              convertString
+            />
+          </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
               freeSolo

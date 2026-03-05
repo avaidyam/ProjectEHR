@@ -2,7 +2,7 @@ declare const __brand: unique symbol
 type Brand<B> = { readonly [__brand]: B }
 export type Branded<T, B> = T & Brand<B>
 
-export type UUID = Branded<string, 'UUID'>
+export type UUID = string
 export type JSONDate = Branded<string, 'JSONDate'>
 export type DiagnosisCode = Branded<string, 'DiagnosisCode'>
 
@@ -634,7 +634,6 @@ export namespace Lab {
 export interface Medication {
   id: Medication.ID
   activePrnReasons: string[]
-  brandName?: string | null
   dose?: number
   endDate: JSONDate
   frequency: string

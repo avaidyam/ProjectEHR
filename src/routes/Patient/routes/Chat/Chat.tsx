@@ -63,13 +63,13 @@ export function Chat() {
 
   // Notes
   const hpiNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'History of Present Illness'
+    (doc: any) => doc?.summary === "HPI" || doc?.summary === 'History of Present Illness'
   );
   const rosNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'Review of Systems'
+    (doc: any) => doc?.summary === "ROS" || doc?.summary === 'Review of Systems'
   );
   const physicalExamNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'Physical Exam' || doc?.summary === 'Physical Examination'
+    (doc: any) => doc?.summary === "PE" || doc?.summary === 'Physical Exam' || doc?.summary === 'Physical Examination'
   );
 
   // Histories
@@ -77,6 +77,7 @@ export function Chat() {
   const surgicalHistory = history?.surgical || [];
   const familyHistory = history?.family || [];
   const socialDocumentation = history?.SocialDocumentation || null;
+  const obgynHistory = history?.OBGynHistory || null;
 
   // 🧠 Compose the full prompt
   const fullPrompt = React.useMemo(() => {
@@ -128,9 +129,55 @@ export function Chat() {
     // Surgical History
     text += "### Surgical History (Procedure & Age)\n";
     text += surgicalHistory.length
-      ? surgicalHistory.map((s: any) => `- ${s.displayAs} (Age: ${Database.JSONDate.toAge(birthdate, s.date)})`).join('\n')
+      ? surgicalHistory.map((s: any) => `- ${s.displayAs ?? s.procedure} (Age: ${Database.JSONDate.toAge(birthdate, s.date)})`).join('\n')
       : "No surgical history found.";
     text += "\n\n";
+
+    // ObGyn History (only if patient is NOT male)
+    if (gender !== 'Male') {
+      text += "### ObGyn History\n";
+      const ob = obgynHistory?.obstetricHistory;
+      const gyn = obgynHistory?.gynecologyHistory;
+
+      if (ob) {
+        text += "#### Obstetric History\n";
+        const obFields = [];
+        if (ob.gravida !== undefined) obFields.push(`Gravida: ${ob.gravida}`);
+        if (ob.para !== undefined) obFields.push(`Para: ${ob.para}`);
+        if (ob.term !== undefined) obFields.push(`Term: ${ob.term}`);
+        if (ob.preterm !== undefined) obFields.push(`Preterm: ${ob.preterm}`);
+        if (ob.ab !== undefined) obFields.push(`AB: ${ob.ab}`);
+        if (ob.living !== undefined) obFields.push(`Living: ${ob.living}`);
+        if (obFields.length) text += `- ${obFields.join(', ')}\n`;
+
+        const secondaryFields = [];
+        if (ob.sab !== undefined) secondaryFields.push(`SAB: ${ob.sab}`);
+        if (ob.iab !== undefined) secondaryFields.push(`IAB: ${ob.iab}`);
+        if (ob.ectopic !== undefined) secondaryFields.push(`Ectopic: ${ob.ectopic}`);
+        if (ob.multiple !== undefined) secondaryFields.push(`Multiple: ${ob.multiple}`);
+        if (secondaryFields.length) text += `- ${secondaryFields.join(', ')}\n`;
+
+        if (ob.currentlyPregnant) text += "- Currently pregnant\n";
+        if (ob.neverPregnant) text += "- Never pregnant\n";
+        if (ob.comments) text += `- Comments: ${ob.comments.replace(/<[^>]+>/g, '').trim()}\n`;
+      }
+
+      if (gyn) {
+        text += "#### Gynecology History\n";
+        if (gyn.lastMenstrualPeriod) text += `- LMP: ${gyn.lastMenstrualPeriod}\n`;
+        if (gyn.ageAtMenarche) text += `- Age at menarche: ${gyn.ageAtMenarche}\n`;
+        if (gyn.ageAtFirstPregnancy) text += `- Age at first pregnancy: ${gyn.ageAtFirstPregnancy}\n`;
+        if (gyn.ageAtFirstLiveBirth) text += `- Age at first live birth: ${gyn.ageAtFirstLiveBirth}\n`;
+        if (gyn.monthsBreastfeeding) text += `- Months breastfeeding: ${gyn.monthsBreastfeeding}\n`;
+        if (gyn.ageAtMenopause) text += `- Age at menopause: ${gyn.ageAtMenopause}\n`;
+        if (gyn.comment) text += `- Comments: ${gyn.comment.replace(/<[^>]+>/g, '').trim()}\n`;
+      }
+
+      if (!ob && !gyn) {
+        text += "No ObGyn history found.\n";
+      }
+      text += "\n";
+    }
 
     // Family History
     text += "### Family History\n";
@@ -211,7 +258,7 @@ export function Chat() {
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
     hpiNote, rosNote, physicalExamNote, medicalHistory, surgicalHistory, familyHistory,
-    socialDocumentation, medications, immunizations, allergies
+    socialDocumentation, medications, immunizations, allergies, obgynHistory
   ]);
 
   const [systemPrompt, setSystemPrompt] = React.useState(`

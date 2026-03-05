@@ -157,7 +157,7 @@ export const RichText: React.FC<{ children?: any } & any> = ({ children, ...prop
 )
 
 export const RichTextEditor: React.FC<any> = ({ ...props }) => (
-  <MUIEditor {...props} />
+  <MUIEditor disableStickyMenuBar disableStickyFooter {...props} />
 )
 
 export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, variant?: TextFieldVariants, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, variant, options, value, onChange, TextFieldProps, ...props }) => (
@@ -484,44 +484,43 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
-export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainTimeProvider>
       <MUITimePicker
         value={!!value && value.length > 0 && convertString ? Temporal.PlainTime.from(value) : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
         onAccept={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth } }}
+        slotProps={{ textField: { size, fullWidth, helperText } }}
         {...props}
       />
     </TemporalPlainTimeProvider>
   </ErrorBoundary>
 )
 
-export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainDateProvider>
       <MUIDatePicker
         value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth } }}
+        slotProps={{ textField: { size, fullWidth, helperText } }}
         minDate={Temporal.PlainDate.from("1890-01-01")}
-        {...props}
       />
     </TemporalPlainDateProvider>
   </ErrorBoundary>
 )
 
 // wraps the Temporal conversion to JSONDate for you
-export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainDateTimeProvider>
       <MUIDateTimePicker
         value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth } }}
+        slotProps={{ textField: { size, fullWidth, helperText } }}
         minDate={Temporal.PlainDateTime.from("1890-01-01T00:00:00.000")}
         {...props}
       />

@@ -34,7 +34,7 @@ export const SidebarPatientInfo = () => {
         <span>DOB: {Database.JSONDate.toDateString(birthdate)}</span>
         <span>MRN: {mrn}</span>
         <strong>Preferred language: {preferredLanguage}</strong>
-        {preferredLanguage !== 'English' &&
+        {!!preferredLanguage && preferredLanguage !== 'English' &&
           <Alert variant="filled" severity="warning">Needs Interpreter</Alert>
         }
       </div>

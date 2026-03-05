@@ -193,7 +193,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
         open={pdmpManagerOpen}
         onClose={() => setPdmpManagerOpen(false)}
         mrn={currentMrn as Database.Patient.ID}
-        encounterId={currentEncID as Database.Patient.ID}
+        encounterId={currentEncID as Database.Encounter.ID}
       />
     </>
   )

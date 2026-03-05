@@ -16,6 +16,7 @@ import {
 } from 'components/ui/Core';
 import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { Database, usePatient } from 'components/contexts/PatientContext';
+import { OrderPicker } from '../OrderCart/components/OrderPicker';
 import { GridColDef } from '@mui/x-data-grid';
 
 export function Medications() {
@@ -23,6 +24,9 @@ export function Medications() {
   const [medications, setMedications] = useEncounter().medications();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<Database.Medication.ID>>(new Set());
   const apiRef = useGridApiRef();
+
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [openOrderPicker, setOpenOrderPicker] = React.useState(false);
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
@@ -45,6 +49,54 @@ export function Medications() {
     setMedications((prev) => prev?.filter((med) => med.id !== id));
   };
 
+  const handleAdd = () => {
+    setOpenOrderPicker(true);
+  };
+
+  const mapResultToMedication = (result: any): Database.Medication => {
+    let baseName = result.originalName || result.name;
+    let doseStr = result.dose || '';
+    let doseValue = 0;
+    let doseUnit = '';
+
+    // If we have a descriptive dose string (e.g. "325 mg Tab"), parse it
+    if (doseStr && typeof doseStr === 'string') {
+      const match = doseStr.match(/^([\d.]+)\s*(\w+)\s*(.*)$/);
+      if (match) {
+        doseValue = parseFloat(match[1]);
+        doseUnit = match[2];
+        if (match[3]) doseUnit += ' ' + match[3];
+      } else {
+        doseValue = parseFloat(doseStr) || 0;
+        doseUnit = doseStr.replace(/[0-9.]/g, '').trim();
+      }
+    }
+    // Otherwise, if the name itself looks like it contains a dose (e.g. from the Browse tab)
+    else if (result.name && !result.originalName) {
+      const match = result.name.match(/^(.*?)\s*([\d.]+)\s*(\w+)\s*(.*)$/);
+      if (match) {
+        baseName = match[1].trim();
+        doseValue = parseFloat(match[2]);
+        doseUnit = match[3];
+        if (match[4]) doseUnit += ' ' + match[4];
+      }
+    }
+
+    return {
+      id: Database.Medication.ID.create(),
+      name: baseName,
+      dose: doseValue,
+      unit: doseUnit,
+      route: result.Route || result.route || '',
+      frequency: result.Frequency || result.frequency || 'ONE TIME',
+      activePrnReasons: [],
+      possiblePrnReasons: [],
+      startDate: new Date().toISOString() as Database.JSONDate,
+      endDate: new Date().toISOString() as Database.JSONDate,
+      status: 'Active'
+    };
+  };
+
   const columns: GridColDef[] = [
     {
       field: 'name',
@@ -53,7 +105,7 @@ export function Medications() {
       renderCell: (params) => (
         <Box sx={{ py: 1 }}>
           <Label variant="body1" color="primary" bold>
-            {params.row.name} ({params.row.brandName}) {params.row.dose}{params.row.unit} {params.row.route}
+            {params.row.name} {params.row.dose > 0 ? `${params.row.dose} ` : ''}{params.row.unit} {params.row.route}
           </Label>
           <Label variant="body2" color="textSecondary">
             {[
@@ -144,16 +196,14 @@ export function Medications() {
               size="small"
               fullWidth
               options={[]}
+              value={searchTerm}
+              onInputChange={(_e, newValue) => setSearchTerm(newValue)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAdd();
+              }}
               sx={{ width: 300 }}
             />
-            <Button variant="contained" startIcon={<Icon>add_task</Icon>}>Add</Button>
-          </Stack>
-          <Stack direction="row" spacing={1}>
-            <Button variant="outlined" size="small">Check Interactions</Button>
-            <Button variant="outlined" size="small">Informants</Button>
-            <Button variant="outlined" size="small">Find Medications Needing Review</Button>
-            <Button variant="outlined" size="small">Mark all Unselected Today</Button>
-            <Button variant="outlined" size="small">Mark all Unselected Yesterday</Button>
+            <Button variant="contained" startIcon={<Icon>add_task</Icon>} onClick={handleAdd}>Add</Button>
           </Stack>
         </Box>
 
@@ -162,7 +212,7 @@ export function Medications() {
             apiRef={apiRef}
             rows={medications ?? []}
             columns={columns}
-            getRowId={(row: any) => row.id || `medication-${row.name}-${row.brandName}-${row.dose}`}
+            getRowId={(row: any) => row.id || `medication-${row.name}-${row.dose}`}
             rowHeight={70}
             getRowHeight={() => 'auto'}
             initialState={{ columns: { columnVisibilityModel: { __detail_panel_toggle__: false } } }}
@@ -176,6 +226,26 @@ export function Medications() {
           />
         </Box>
       </Stack>
+
+      {openOrderPicker && (
+        <OrderPicker
+          open={openOrderPicker}
+          searchTerm={searchTerm}
+          categories={['medication']}
+          onSelect={(result: any) => {
+            setOpenOrderPicker(false);
+            if (result) {
+              if (Array.isArray(result)) {
+                const newMeds = result.map(mapResultToMedication);
+                setMedications((prev) => [...(prev ?? []), ...newMeds]);
+              } else {
+                const newMed = mapResultToMedication(result);
+                setMedications((prev) => [...(prev ?? []), newMed]);
+              }
+            }
+          }}
+        />
+      )}
     </TitledCard>
   );
 }

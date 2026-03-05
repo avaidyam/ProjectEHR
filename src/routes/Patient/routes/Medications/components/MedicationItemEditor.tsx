@@ -55,7 +55,6 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
   React.useEffect(() => {
     setEditedMedication((prevState: any) => ({
       ...prevState,
-      brandName: prevState.brandName || '',
       possiblePrnReasons: prevState.possiblePrnReasons || []
     }));
   }, [editedMedication.name]);

@@ -80,7 +80,7 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
               <Autocomplete
                 freeSolo
                 fullWidth
-                label="Procedure *"
+                label="Procedure"
                 size="small"
                 options={procedures}
                 value={formData.procedure}
@@ -101,23 +101,19 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
               onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, laterality: newValue }))}
             />
 
-            <Stack direction="row" spacing={2} alignItems="center">
-              <DatePicker
-                convertString
-                label="Date"
-                size="small"
-                fullWidth
-                value={formData.date}
-                onChange={(date: any) => setFormData((prev: any) => ({ ...prev, date }))}
-              />
-              <Label variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-                {(() => {
-                  if (!patientData?.birthdate || !formData.date) return 'Age: —';
-                  const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
-                  return `Age: ${age} years old`;
-                })()}
-              </Label>
-            </Stack>
+            <DatePicker
+              convertString
+              label="Date"
+              size="small"
+              helperText={(() => {
+                if (!patientData?.birthdate || !formData.date) return 'Age: —';
+                const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
+                return `Age: ${age} years old`;
+              })()}
+              fullWidth
+              value={formData.date}
+              onChange={(date: any) => setFormData((prev: any) => ({ ...prev, date }))}
+            />
 
             <Autocomplete
               freeSolo

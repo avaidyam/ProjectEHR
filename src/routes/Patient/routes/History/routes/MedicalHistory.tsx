@@ -108,26 +108,21 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete, onOpenModa
               value={formData.displayAs}
               onInputChange={(_e, newVal) => setFormData((prev: any) => ({ ...prev, displayAs: newVal }))}
             />
-
-            <Stack direction="row" spacing={2} alignItems="center">
-              <DatePicker
-                convertString
-                label="Date"
-                size="small"
-                fullWidth
-                value={formData.date}
-                onChange={(date: any) => {
-                  setFormData((prev: any) => ({ ...prev, date }));
-                }}
-              />
-              <Label variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-                {(() => {
-                  if (!patientData?.birthdate || !formData.date) return 'Age: —';
-                  const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
-                  return `Age: ${age} years old`;
-                })()}
-              </Label>
-            </Stack>
+            <DatePicker
+              convertString
+              label="Date"
+              size="small"
+              helperText={(() => {
+                if (!patientData?.birthdate || !formData.date) return 'Age: —';
+                const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
+                return `Age: ${age} years old`;
+              })()}
+              fullWidth
+              value={formData.date}
+              onChange={(date: any) => {
+                setFormData((prev: any) => ({ ...prev, date }));
+              }}
+            />
 
             <Autocomplete
               freeSolo

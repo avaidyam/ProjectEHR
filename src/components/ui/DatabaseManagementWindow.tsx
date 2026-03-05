@@ -82,7 +82,24 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
   const [isFetchingUrl, setIsFetchingUrl] = React.useState(false)
 
   const handleExport = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' }))
+    // Filter out encounters with undefined IDs from all patients
+    const cleanedDb = {
+      ...db,
+      patients: Object.fromEntries(
+        Object.entries(db.patients).map(([pId, patient]) => [
+          pId,
+          {
+            ...patient,
+            encounters: Object.fromEntries(
+              Object.entries(patient.encounters || {}).filter(([eId, enc]) => eId && eId !== 'undefined' && enc.id && (enc.id as any) !== 'undefined')
+            )
+          }
+        ])
+      ),
+      appointments: db.appointments.filter(a => a.patient.enc && (a.patient.enc as any) !== 'undefined')
+    }
+
+    const url = URL.createObjectURL(new Blob([JSON.stringify(cleanedDb, null, 2)], { type: 'application/json' }))
     const a = document.createElement('a')
     a.href = url
     a.download = `database_export_${Temporal.Now.plainDateISO().toString()}.json`
@@ -121,10 +138,16 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
 
     if (patientMatch) {
       const pId = patientMatch[1] as Database.Patient.ID
-      const patient = db.patients[pId]
-      if (!patient) return
+      const originalPatient = db.patients[pId]
+      if (!originalPatient) return
 
-      const appointments = db.appointments.filter((a: Database.Appointment) => a.patient.mrn === pId)
+      // Filter out encounters with undefined IDs
+      const filteredEncounters = Object.fromEntries(
+        Object.entries(originalPatient.encounters || {}).filter(([id, enc]) => id && id !== 'undefined' && enc.id && (enc.id as any) !== 'undefined')
+      )
+      const patient = { ...originalPatient, encounters: filteredEncounters }
+
+      const appointments = db.appointments.filter((a: Database.Appointment) => a.patient.mrn === pId && a.patient.enc && (a.patient.enc as any) !== 'undefined')
       const encounters = Object.values(patient.encounters)
       const careTeamProviders = patient.careTeam?.map(ct => ct.provider) || []
 
@@ -153,6 +176,12 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     } else if (encounterMatch) {
       const pId = encounterMatch[1] as Database.Patient.ID
       const eId = encounterMatch[2] as Database.Encounter.ID
+
+      if (eId === 'undefined') {
+        window.alert("Cannot export an encounter with an undefined ID.")
+        return
+      }
+
       const patient = db.patients[pId]
       const encounter = patient?.encounters[eId]
       if (!patient || !encounter) return
@@ -348,7 +377,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     }
   }
 
-  const isSelectedExportable = selectedPath && (selectedPath.match(/^root\.patients\.([^.]+)$/) || selectedPath.match(/^root\.patients\.([^.]+)\.encounters\.([^.]+)$/))
+  const isSelectedExportable = selectedPath && (selectedPath.match(/^root\.patients\.([^.]+)$/) || (selectedPath.match(/^root\.patients\.([^.]+)\.encounters\.([^.]+)$/) && !selectedPath.endsWith('.undefined')))
 
   return (
     <Window
