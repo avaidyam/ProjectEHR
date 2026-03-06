@@ -902,8 +902,8 @@ export interface FamilyStatusItem {
   age?: number | null
   comment?: string
   name: string
-  relationship: string
-  status: string
+  relationship: FamilyStatusItem.Relationship
+  status: FamilyStatusItem.Status
 }
 
 export namespace FamilyStatusItem {
@@ -911,6 +911,30 @@ export namespace FamilyStatusItem {
   export type Fragment = Partial<Omit<FamilyStatusItem, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
+  }
+  export enum Relationship {
+    Mother = 'Mother',
+    Father = 'Father',
+    Brother = 'Brother',
+    Sister = 'Sister',
+    Daughter = 'Daughter',
+    Son = 'Son',
+    MaternalGrandmother = 'Maternal Grandmother',
+    MaternalGrandfather = 'Maternal Grandfather',
+    PaternalGrandmother = 'Paternal Grandmother',
+    PaternalGrandfather = 'Paternal Grandfather',
+    MaternalAunt = 'Maternal Aunt',
+    MaternalUncle = 'Maternal Uncle',
+    PaternalAunt = 'Paternal Aunt',
+    PaternalUncle = 'Paternal Uncle',
+    MaternalCousin = 'Maternal Cousin',
+    PaternalCousin = 'Paternal Cousin',
+    Other = 'Other'
+  }
+  export enum Status {
+    Alive = 'Alive',
+    Deceased = 'Deceased',
+    Unknown = 'Unknown'
   }
 }
 

@@ -11,6 +11,7 @@ import {
   Autocomplete,
   MarkReviewed,
   DataGrid,
+  Tooltip,
 } from 'components/ui/Core';
 import { GridColDef } from '@mui/x-data-grid';
 import {
@@ -24,18 +25,9 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { usePatient, Database } from 'components/contexts/PatientContext';
-import icd10 from 'util/data/icd10cm.json';
 
 
-const icd10Options = Object.entries(icd10).map(([code, description]) => ({
-  code,
-  description,
-  label: `${code} - ${description}`,
-}));
-
-const familyRelationships = ['Mother', 'Father', 'Sister', 'Brother', 'Maternal Grandmother', 'Maternal Grandfather', 'Paternal Grandmother', 'Paternal Grandfather', 'Other'];
-
-const RotatedText = styled(Box)(({ theme }) => ({
+const RotatedTextInner = styled(Box)(({ theme }) => ({
   transform: 'rotate(-60deg)',
   transformOrigin: 'bottom left',
   position: 'absolute',
@@ -46,24 +38,70 @@ const RotatedText = styled(Box)(({ theme }) => ({
   zIndex: 10
 }));
 
-const defaultFamilyMembers = [
-  { id: 'status-father' as Database.FamilyStatusItem.ID, relationship: 'Father', name: '', status: '', comment: '' },
-  { id: 'status-mother' as Database.FamilyStatusItem.ID, relationship: 'Mother', name: '', status: '', comment: '' },
-  { id: 'status-brother' as Database.FamilyStatusItem.ID, relationship: 'Brother', name: '', status: '', comment: '' },
-];
-
-const defaultProblems = [
-  'Breast cancer',
-  'Coronary artery bypass graft surgery',
-  'Coronary artery disease with MI',
-  'Heart disease',
-];
+const RotatedText: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
+  <Tooltip title={children} placement="bottom">
+    <RotatedTextInner>{children}</RotatedTextInner>
+  </Tooltip>
+)
 
 const getUniqueProblems = (familyHistory: Database.FamilyHistoryItem[]) => {
   const allProblems = familyHistory.map((p) => p.description);
-  const problemsSet = new Set([...defaultProblems, ...allProblems]);
+  const problemsSet = new Set(allProblems);
   problemsSet.delete('No Pertinent History');
   return [...problemsSet].sort();
+};
+
+const NameCell = ({ value, onSave }: { value: string, onSave: (newValue: string) => void }) => {
+  const [inputValue, setInputValue] = React.useState(value || '');
+
+  React.useEffect(() => {
+    setInputValue(value || '');
+  }, [value]);
+
+  return (
+    <Autocomplete
+      freeSolo
+      variant="standard"
+      inputValue={inputValue}
+      options={[]}
+      onInputChange={(_e, newValue) => setInputValue(newValue)}
+      onBlur={() => {
+        if (inputValue !== value) {
+          onSave(inputValue);
+        }
+      }}
+      TextFieldProps={{
+        InputProps: { disableUnderline: true },
+        onKeyDown: (e) => {
+          e.stopPropagation(); // Stop DataGrid from intercepting Space/Enter/etc
+        }
+      }}
+    />
+  );
+};
+
+const StatusCell = ({ value, onSave }: { value: Database.FamilyStatusItem.Status, onSave: (newValue: Database.FamilyStatusItem.Status) => void }) => {
+  const [val, setVal] = React.useState<Database.FamilyStatusItem.Status>(value);
+
+  React.useEffect(() => {
+    setVal(value);
+  }, [value]);
+
+  return (
+    <Autocomplete
+      variant="standard"
+      value={val || ''}
+      options={Object.values(Database.FamilyStatusItem.Status)}
+      onChange={(_e, newValue) => {
+        const next = newValue as Database.FamilyStatusItem.Status;
+        setVal(next);
+        if (next !== value) {
+          onSave(next);
+        }
+      }}
+      TextFieldProps={{ InputProps: { disableUnderline: true } }}
+    />
+  );
 };
 
 export function FamilyHistory() {
@@ -76,28 +114,19 @@ export function FamilyHistory() {
   const [selectedStatusItem, setSelectedStatusItem] = React.useState<Database.FamilyStatusItem | null>(null);
   const [selectedProblem, setSelectedProblem] = React.useState<any>(null);
   const [commentText, setCommentText] = React.useState('');
-  const [newRelationship, setNewRelationship] = React.useState<string | null>('');
+  const [newRelationship, setNewRelationship] = React.useState<Database.FamilyStatusItem.Relationship | null>(null);
 
-  const uniqueProblems = getUniqueProblems(familyHx);
+  const uniqueProblems = React.useMemo(() => getUniqueProblems(familyHx), [familyHx]);
 
-  // Initialize defaults if empty
-  React.useEffect(() => {
-    if (familyStatus.length === 0) {
-      setFamilyStatus(defaultFamilyMembers);
-    }
-  }, [familyStatus, setFamilyStatus]);
-
-  const toggleProblem = (memberId: Database.FamilyStatusItem.ID, problemDescription: string) => {
+  const toggleProblem = React.useCallback((memberId: Database.FamilyStatusItem.ID, problemDescription: string) => {
     const existing = familyHx.find(fh => fh.person === memberId && fh.description === problemDescription);
     if (existing) {
       setFamilyHx(familyHx.filter(fh => fh.id !== existing.id));
     } else {
       let nextHx = familyHx;
-      // Remove "No Pertinent History" if a specific problem is added
       if (problemDescription !== 'No Pertinent History') {
         nextHx = nextHx.filter(fh => !(fh.person === memberId && fh.description === 'No Pertinent History'));
       } else {
-        // If adding "No Pertinent History", remove all other problems for this person
         nextHx = nextHx.filter(fh => fh.person !== memberId);
       }
 
@@ -109,10 +138,10 @@ export function FamilyHistory() {
       };
       setFamilyHx([...nextHx, newItem]);
     }
-  };
+  }, [familyHx, setFamilyHx]);
 
-  const hasProblem = (memberId: Database.FamilyStatusItem.ID, problem: string) =>
-    familyHx.some((p) => p.person === memberId && p.description === problem);
+  const hasProblem = React.useCallback((memberId: Database.FamilyStatusItem.ID, problem: string) =>
+    familyHx.some((p) => p.person === memberId && p.description === problem), [familyHx]);
 
   const columns: GridColDef[] = React.useMemo(() => [
     {
@@ -128,17 +157,13 @@ export function FamilyHistory() {
       headerName: 'Name',
       width: 200,
       renderCell: (params) => (
-        <Autocomplete
-          freeSolo
-          variant="standard"
-          value={params.value || ''}
-          options={[]}
-          onInputChange={(_e, newValue) => {
+        <NameCell
+          value={params.value}
+          onSave={(newValue) => {
             setFamilyStatus(prev => prev.map(m =>
               m.id === params.row.id ? { ...m, name: newValue } : m
             ));
           }}
-          TextFieldProps={{ InputProps: { disableUnderline: true } }}
         />
       )
     },
@@ -147,17 +172,13 @@ export function FamilyHistory() {
       headerName: 'Status',
       width: 150,
       renderCell: (params) => (
-        <Autocomplete
-          freeSolo
-          variant="standard"
-          value={params.value || ''}
-          options={[]}
-          onInputChange={(_e, newValue) => {
+        <StatusCell
+          value={params.value as Database.FamilyStatusItem.Status}
+          onSave={(newValue) => {
             setFamilyStatus(prev => prev.map(m =>
               m.id === params.row.id ? { ...m, status: newValue } : m
             ));
           }}
-          TextFieldProps={{ InputProps: { disableUnderline: true } }}
         />
       )
     },
@@ -167,16 +188,29 @@ export function FamilyHistory() {
       width: 60,
       renderHeader: () => <RotatedText>No Pertinent Hx</RotatedText>,
       renderCell: (params) => (
-        <Box
-          onClick={() => toggleProblem(params.row.id, 'No Pertinent History')}
-          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
-        >
-          {hasProblem(params.row.id, 'No Pertinent History') ? (
-            <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
-          ) : (
-            ''
-          )}
-        </Box>
+        <Tooltip title="No Pertinent History" arrow placement="bottom">
+          <Box
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleProblem(params.row.id, 'No Pertinent History');
+            }}
+            sx={{
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              alignItems: 'center',
+              '&:hover .hover-icon': { opacity: 1 }
+            }}
+          >
+            {hasProblem(params.row.id, 'No Pertinent History') ? (
+              <Icon sx={{ color: '#00c853' }}>check_circle</Icon>
+            ) : (
+              <Icon className="hover-icon" sx={{ color: 'action.disabled', opacity: 0, transition: 'opacity 0.2s' }}>radio_button_unchecked</Icon>
+            )}
+          </Box>
+        </Tooltip>
       )
     },
     {
@@ -210,8 +244,8 @@ export function FamilyHistory() {
           }}
           sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
         >
-          <Icon sx={{ color: params.row.comment ? '#2196f3' : '#546E7A' }}>
-            {params.row.comment ? 'comment' : 'description'}
+          <Icon sx={{ color: params.row.comment ? 'primary.main' : 'action.disabled', opacity: params.row.comment ? 1 : 0.5 }}>
+            description
           </Icon>
         </Box>
       )
@@ -221,24 +255,40 @@ export function FamilyHistory() {
       headerName: problem,
       width: 50,
       renderHeader: () => <RotatedText>{problem}</RotatedText>,
-      renderCell: (params: any) => (
-        <Box
-          onClick={() => toggleProblem(params.row.id, problem)}
-          sx={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%', height: '100%', alignItems: 'center' }}
-        >
-          {hasProblem(params.row.id, problem) ? (
-            <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
-          ) : (
-            ''
-          )}
-        </Box>
-      )
+      renderCell: (params: any) => {
+        if (!params?.id) return null;
+        return (
+          <Tooltip title={problem} arrow placement="bottom">
+            <Box
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleProblem(params.id as Database.FamilyStatusItem.ID, problem);
+              }}
+              sx={{
+                cursor: 'pointer',
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%',
+                height: '100%',
+                alignItems: 'center',
+                '&:hover .hover-icon': { opacity: 1 }
+              }}
+            >
+              {hasProblem(params.id as Database.FamilyStatusItem.ID, problem) ? (
+                <Icon sx={{ color: '#d50000' }}>check_circle</Icon>
+              ) : (
+                <Icon className="hover-icon" sx={{ color: 'action.disabled', opacity: 0, transition: 'opacity 0.2s' }}>radio_button_unchecked</Icon>
+              )}
+            </Box>
+          </Tooltip>
+        );
+      }
     }))
-  ], [familyStatus, familyHx, uniqueProblems]);
+  ], [familyStatus, familyHx, uniqueProblems, toggleProblem, hasProblem]);
 
   const handleAddProblem = () => {
     if (selectedStatusItem && selectedProblem) {
-      toggleProblem(selectedStatusItem.id, selectedProblem.description);
+      toggleProblem(selectedStatusItem.id, selectedProblem);
       setIsAddProblemOpen(false);
       setSelectedStatusItem(null);
       setSelectedProblem(null);
@@ -262,11 +312,11 @@ export function FamilyHistory() {
         id: Database.FamilyStatusItem.ID.create(),
         relationship: newRelationship,
         name: '',
-        status: '',
+        status: Database.FamilyStatusItem.Status.Unknown,
         comment: '',
       };
       setFamilyStatus([...familyStatus, newMember]);
-      setNewRelationship('');
+      setNewRelationship(null);
     }
   };
 
@@ -288,12 +338,12 @@ export function FamilyHistory() {
           variant="outlined"
           startIcon={<Icon>add_circle</Icon>}
           onClick={handleAddFamilyMember}
+          disabled={!newRelationship}
         >
           Add Family Member
         </Button>
         <Autocomplete
-          disablePortal
-          options={familyRelationships}
+          options={Object.values(Database.FamilyStatusItem.Relationship)}
           sx={{ width: 300, ml: 2 }}
           label="Select Relationship"
           size="small"
@@ -308,13 +358,12 @@ export function FamilyHistory() {
         <DialogTitle>Add Problem for {selectedStatusItem?.relationship}</DialogTitle>
         <DialogContent>
           <Autocomplete
-            disablePortal
-            options={icd10Options}
-            getOptionLabel={(option) => option.label}
+            freeSolo
+            options={uniqueProblems}
             sx={{ width: 400, mt: 2 }}
-            onChange={(event: any, newValue: any) => setSelectedProblem(newValue)}
-            value={selectedProblem}
-            label="Select a Problem"
+            onInputChange={(event: any, newValue: any) => setSelectedProblem(newValue)}
+            value={selectedProblem || ''}
+            label="Enter a problem name"
           />
         </DialogContent>
         <DialogActions>
@@ -327,7 +376,7 @@ export function FamilyHistory() {
       <Popover
         open={Boolean(commentAnchorEl)}
         anchorEl={commentAnchorEl}
-        onClose={() => setCommentAnchorEl(null)}
+        onClose={() => { setCommentAnchorEl(null); handleSaveComments() }}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -338,22 +387,15 @@ export function FamilyHistory() {
         }}
         PaperProps={{ sx: { p: 2, width: 320 } }}
       >
-        <Stack spacing={2}>
-          <Label variant="subtitle2">Comments for {selectedStatusItem?.relationship}</Label>
-          <Autocomplete
-            freeSolo
-            autoFocus
-            options={[]}
-            TextFieldProps={{ multiline: true, rows: 4, placeholder: 'Enter comments...' }}
-            fullWidth
-            value={commentText}
-            onInputChange={(_e, newValue) => setCommentText(newValue)}
-          />
-          <Stack direction="row" justifyContent="flex-end" spacing={1}>
-            <Button onClick={() => setCommentAnchorEl(null)} size="small">Cancel</Button>
-            <Button onClick={handleSaveComments} variant="contained" color="primary" size="small">Save</Button>
-          </Stack>
-        </Stack>
+        <Autocomplete
+          freeSolo
+          autoFocus
+          options={[]}
+          TextFieldProps={{ multiline: true, rows: 4, placeholder: 'Enter comments...' }}
+          fullWidth
+          value={commentText}
+          onInputChange={(_e, newValue) => setCommentText(newValue)}
+        />
       </Popover>
     </TitledCard>
   );
