@@ -22,7 +22,8 @@ export const Demographics = () => {
     birthdate,
     address,
     preferredLanguage,
-    gender
+    gender,
+    insurance
   }, setChart] = useChart()();
   const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic()
   const [demographics, setDemographics] = useEncounter().history.Socioeconomic.demographics()
@@ -60,6 +61,13 @@ export const Demographics = () => {
     patientStatus: 'Alive',
     mrn: id || '',
     patientType: 'TPL',
+
+    // Insurance section (only carrierName is stored in DB)
+    insuranceCarrier: insurance?.carrierName || '',
+    insurancePlan: (insurance as any)?.planName || '',
+    insuranceMemberId: (insurance as any)?.memberId || '',
+    insuranceGroupId: (insurance as any)?.groupId || '',
+    insuranceDetails: (insurance as any)?.details || '',
 
     // Contacts section (managed separately in contacts state)
   })
@@ -231,6 +239,7 @@ export const Demographics = () => {
   const sections = [
     { id: 'basics', label: 'Basics' },
     { id: 'employer-identification', label: 'Employer & Identification' },
+    { id: 'insurance', label: 'Insurance' },
     { id: 'patient-contacts', label: 'Contacts' },
     { id: 'pharm-labs', label: 'Pharmacies & Labs' },
     { id: 'patient-lists', label: 'Patient Lists' },
@@ -278,6 +287,11 @@ export const Demographics = () => {
       patientStatus: 'Alive',
       mrn: id || '',
       patientType: 'TPL',
+      insuranceCarrier: insurance?.carrierName || '',
+      insurancePlan: (insurance as any)?.planName || '',
+      insuranceMemberId: (insurance as any)?.memberId || '',
+      insuranceGroupId: (insurance as any)?.groupId || '',
+      insuranceDetails: (insurance as any)?.details || '',
     })
   }
 
@@ -312,7 +326,15 @@ export const Demographics = () => {
         birthdate: formData.birthdate,
         address: formData.address,
         preferredLanguage: formData.language,
-        gender: formData.gender
+        gender: formData.gender,
+        insurance: {
+          carrierName: formData.insuranceCarrier,
+          // Extra insurance fields are not stored in the data structure yet
+          // planName: formData.insurancePlan,
+          // memberId: formData.insuranceMemberId,
+          // groupId: formData.insuranceGroupId,
+          // details: formData.insuranceDetails,
+        }
       }))
 
       // Update socioeconomic data
@@ -905,6 +927,105 @@ export const Demographics = () => {
                       />
                     </Grid>
                   </Grid>
+                </Grid>
+              </Grid>
+
+              <Stack direction="row" justifyContent="flex-start" spacing={2} sx={{ mt: 2 }}>
+                <Button variant="outlined" color="error" onClick={handleCancel}>
+                  <Icon sx={{ mr: 1 }}>close</Icon>Cancel
+                </Button>
+                <Button variant="contained" color="success" onClick={handleSave}>
+                  <Icon sx={{ mr: 1 }}>check</Icon>Save
+                </Button>
+              </Stack>
+            </>
+          )}
+        </TitledCard>
+
+        {/* INSURANCE */}
+        <TitledCard
+          id="insurance"
+          emphasized
+          title={
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box>
+                <Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>account_balance_wallet</Icon> Insurance
+              </Box>
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setEditingCard(editingCard === 'insurance' ? null : 'insurance')}
+                sx={{ minWidth: 'unset', p: 0 }}
+              >
+                <Icon>{editingCard === 'insurance' ? "close" : "edit"}</Icon>
+              </Button>
+            </Box>
+          }
+          color="#5EA1F8"
+        >
+          {editingCard !== 'insurance' ? (
+            // ----- READ-ONLY VIEW -----
+            <Grid container spacing={2}>
+              <Grid size={4}><TitledCardItem label="Carrier Name" value={insurance?.carrierName} /></Grid>
+              <Grid size={4}><TitledCardItem label="Plan Name" value={(insurance as any)?.planName || formData.insurancePlan} /></Grid>
+              <Grid size={4}><TitledCardItem label="Member ID" value={(insurance as any)?.memberId || formData.insuranceMemberId} /></Grid>
+              <Grid size={4}><TitledCardItem label="Group ID" value={(insurance as any)?.groupId || formData.insuranceGroupId} /></Grid>
+              <Grid size={8}><TitledCardItem label="Other Details" value={(insurance as any)?.details || formData.insuranceDetails} /></Grid>
+            </Grid>
+          ) : (
+            // ----- EDIT VIEW -----
+            <>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid size={6}>
+                  <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Carrier Name"
+                    value={formData.insuranceCarrier}
+                    onInputChange={(_e, newValue) => handleFormDataChange('insuranceCarrier', newValue)}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Plan Name"
+                    value={formData.insurancePlan}
+                    onInputChange={(_e, newValue) => handleFormDataChange('insurancePlan', newValue)}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Member ID"
+                    value={formData.insuranceMemberId}
+                    onInputChange={(_e, newValue) => handleFormDataChange('insuranceMemberId', newValue)}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={6}>
+                  <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Group ID"
+                    value={formData.insuranceGroupId}
+                    onInputChange={(_e, newValue) => handleFormDataChange('insuranceGroupId', newValue)}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <Autocomplete
+                    freeSolo
+                    fullWidth
+                    label="Other Details"
+                    value={formData.insuranceDetails}
+                    onInputChange={(_e, newValue) => handleFormDataChange('insuranceDetails', newValue)}
+                    options={[]}
+                    TextFieldProps={{ multiline: true, rows: 2 }}
+                  />
                 </Grid>
               </Grid>
 
