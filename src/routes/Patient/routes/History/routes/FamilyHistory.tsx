@@ -80,6 +80,39 @@ const NameCell = ({ value, onSave }: { value: string, onSave: (newValue: string)
   );
 };
 
+const AgeCell = ({ value, onSave }: { value: number | null | undefined, onSave: (newValue: number | null) => void }) => {
+  const [inputValue, setInputValue] = React.useState(value?.toString() || '');
+
+  React.useEffect(() => {
+    setInputValue(value?.toString() || '');
+  }, [value]);
+
+  return (
+    <Autocomplete
+      freeSolo
+      variant="standard"
+      disableClearable
+      inputValue={inputValue}
+      options={[]}
+      onInputChange={(_e, newValue) => setInputValue(newValue)}
+      onBlur={() => {
+        const num = parseInt(inputValue, 10);
+        const next = isNaN(num) ? null : num;
+        if (next !== (value ?? null)) {
+          onSave(next);
+        }
+      }}
+      TextFieldProps={{
+        type: 'number',
+        InputProps: { disableUnderline: true },
+        onKeyDown: (e) => {
+          e.stopPropagation(); // Stop DataGrid from intercepting Space/Enter/etc
+        }
+      }}
+    />
+  );
+};
+
 const StatusCell = ({ value, onSave }: { value: Database.FamilyStatusItem.Status, onSave: (newValue: Database.FamilyStatusItem.Status) => void }) => {
   const [val, setVal] = React.useState<Database.FamilyStatusItem.Status>(value);
 
@@ -162,6 +195,21 @@ export function FamilyHistory() {
           onSave={(newValue) => {
             setFamilyStatus(prev => prev.map(m =>
               m.id === params.row.id ? { ...m, name: newValue } : m
+            ));
+          }}
+        />
+      )
+    },
+    {
+      field: 'age',
+      headerName: 'Age',
+      width: 80,
+      renderCell: (params) => (
+        <AgeCell
+          value={params.value as number}
+          onSave={(newValue) => {
+            setFamilyStatus(prev => prev.map(m =>
+              m.id === params.row.id ? { ...m, age: newValue } : m
             ));
           }}
         />
@@ -312,6 +360,7 @@ export function FamilyHistory() {
         id: Database.FamilyStatusItem.ID.create(),
         relationship: newRelationship,
         name: '',
+        age: null,
         status: Database.FamilyStatusItem.Status.Unknown,
         comment: '',
       };
