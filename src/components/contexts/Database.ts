@@ -327,21 +327,25 @@ export namespace Encounter {
   }
 
   export enum Status {
-    CHECKED_IN = 'CHECKED_IN',
-    CHECKED_OUT = 'CHECKED_OUT',
-    IN_ROOM = 'IN_ROOM',
-    WAITING = 'WAITING',
-    CANCELLED = 'CANCELLED',
-    NO_SHOW = 'NO_SHOW',
-    RESCHEDULED = 'RESCHEDULED',
-    NO_CHARGE = 'NO_CHARGE',
-    NO_CHARGE_NO_SHOW = 'NO_CHARGE_NO_SHOW',
-    NO_CHARGE_RESCHEDULED = 'NO_CHARGE_RESCHEDULED',
-    NO_CHARGE_CANCELLED = 'NO_CHARGE_CANCELLED',
-    NO_CHARGE_NO_SHOW_RESCHEDULED = 'NO_CHARGE_NO_SHOW_RESCHEDULED',
-    NO_CHARGE_NO_SHOW_CANCELLED = 'NO_CHARGE_NO_SHOW_CANCELLED',
-    NO_CHARGE_RESCHEDULED_CANCELLED = 'NO_CHARGE_RESCHEDULED_CANCELLED',
-    NO_CHARGE_NO_SHOW_RESCHEDULED_CANCELLED = 'NO_CHARGE_NO_SHOW_RESCHEDULED_CANCELLED',
+    Planned = 'planned',
+    InProgress = 'in progress',
+    OnHold = 'on hold',
+    Discharged = 'discharged',
+    Completed = 'completed',
+    Signed = 'signed',
+    Cancelled = 'cancelled',
+    Discontinued = 'discontinued',
+    EnteredInError = 'entered in error',
+    Unknown = 'unknown',
+  }
+
+  export enum Class {
+    Inpatient = 'inpatient',
+    Ambulatory = 'ambulatory',
+    Emergency = 'emergency',
+    Observation = 'observation',
+    Virtual = 'virtual',
+    Home = 'home',
   }
 
   export enum VisitType {
