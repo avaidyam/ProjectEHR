@@ -36,6 +36,7 @@ import { EditResult } from './routes/EditResult/EditResult';
 import { EventLog } from './routes/EventLog/EventLog';
 import { CreateEncounterTab } from './routes/CreateEncounter/CreateEncounterTab';
 import { MAR } from './routes/MAR/MAR';
+import { VisitInfo } from './routes/VisitInfo/VisitInfo';
 
 const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -65,10 +66,11 @@ const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "Event Log": (props) => <EventLog {...props} />,
   "MAR": (props) => <MAR {...props} />,
   "Create Encounter": (props) => <CreateEncounterTab />,
+  "Visit Info": (props) => <VisitInfo {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
-  { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
+  { "SnapShot": {} }, { "Chart Review": {} }, { "Visit Info": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "Results Review": {} },
 ]

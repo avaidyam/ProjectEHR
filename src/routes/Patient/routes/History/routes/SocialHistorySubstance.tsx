@@ -10,14 +10,10 @@ import {
 import {
   Checkbox,
   FormControlLabel,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Grid
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { usePatient } from 'components/contexts/PatientContext';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
