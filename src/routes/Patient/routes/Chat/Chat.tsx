@@ -34,10 +34,8 @@ export function Chat() {
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
   const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
   const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
-  const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
-  console.log("🩺 allSortedEncounters:", allSortedEncounters);
-  console.log("currentEncounter", currentEncounter)
-  console.log("nextEncounter", nextEncounter)
+  const [nextEnc, setNextEnc] = usePatient().useChart().encounters[nextEncounter.id]();
+  const concernsArr = Array.isArray(nextEnc?.concerns) ? nextEnc.concerns : [];
 
   // Other encounter-sourced data
   const {
@@ -47,7 +45,7 @@ export function Chat() {
     allergies,
     immunizations,
     smartData
-  } = nextEncounter
+  } = nextEnc
 
   // get voice
   const smartVoice = smartData?.chat?.voice;
@@ -96,17 +94,11 @@ export function Chat() {
     text += hpiNote?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
     text += "\n\n";
 
-    // Add patient perspective + custom prompt (from smartData)
-    const patientPerspective = smartData?.chat?.patient_perspective;
+    // Add custom prompt (from smartData)
     const customPrompt = smartData?.chat?.custom_prompt;
-    if (patientPerspective || customPrompt) {
+    if (customPrompt) {
       text += "### Patient Context\n";
-      if (patientPerspective) {
-        text += `Patient Perspective: ${patientPerspective}\n`;
-      }
-      if (customPrompt) {
-        text += `\nCustom Prompt: ${customPrompt}\n`;
-      }
+      text += `Custom Prompt: ${customPrompt}\n`;
       text += "\n";
     }
 
@@ -260,7 +252,8 @@ export function Chat() {
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
     hpiNote, rosNote, physicalExamNote, medicalHistory, surgicalHistory, familyHistory,
-    socialDocumentation, medications, immunizations, allergies, obgynHistory
+    socialDocumentation, medications, immunizations, allergies, obgynHistory,
+    smartData
   ]);
 
   const [systemPrompt, setSystemPrompt] = React.useState(`
@@ -362,6 +355,17 @@ Here is the standardized patient's chart information:`);
           setVoiceName={setVoiceName}
           systemPrompt={systemPrompt}
           onChangePrompt={setSystemPrompt}
+          customPrompt={nextEnc?.smartData?.chat?.custom_prompt ?? ""}
+          onChangeCustomPrompt={(val: string) => setNextEnc((prev: any) => ({
+            ...prev,
+            smartData: {
+              ...prev?.smartData,
+              chat: {
+                ...prev?.smartData?.chat,
+                custom_prompt: val
+              }
+            }
+          }))}
           fullPrompt={fullPrompt}
         />
       </Window>

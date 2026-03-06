@@ -369,7 +369,6 @@ export interface CareTeam {
 export interface SmartData {
   chat?: {
     custom_prompt: string
-    patient_perspective: string
     voice: SmartData.Voice
   }
   handoff?: {

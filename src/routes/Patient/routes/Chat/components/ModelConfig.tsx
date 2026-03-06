@@ -34,23 +34,33 @@ const VOICE_OPTIONS: Record<string, string> = {
   "Sulafat": "Warm, Middle pitch"
 };
 
-export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePrompt, fullPrompt }: any) => {
+export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePrompt, customPrompt, onChangeCustomPrompt, fullPrompt }: any) => {
   const [playingVoice, setPlayingVoice] = React.useState<string | null>(null);
   const [localPrompt, setLocalPrompt] = React.useState(systemPrompt);
+  const [localCustomPrompt, setLocalCustomPrompt] = React.useState(customPrompt);
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
   React.useEffect(() => {
     setLocalPrompt(systemPrompt);
   }, [systemPrompt]);
 
+  React.useEffect(() => {
+    setLocalCustomPrompt(customPrompt);
+  }, [customPrompt]);
+
   const handlePromptChange = (newValue: string) => {
     setLocalPrompt(newValue);
+  };
+
+  const handleCustomPromptChange = (newValue: string) => {
+    setLocalCustomPrompt(newValue);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (onChangePrompt) onChangePrompt(localPrompt);
+      if (onChangeCustomPrompt) onChangeCustomPrompt(localCustomPrompt);
     }
   };
 
@@ -88,83 +98,108 @@ export const ModelConfig = ({ voiceName, setVoiceName, systemPrompt, onChangePro
   }, []);
 
   return (
-    <Stack sx={{ height: '100%', overflow: 'hidden', pt: 1 }}>
-      <Autocomplete
-        label="Speech Voice"
-        options={Object.keys(VOICE_OPTIONS)}
-        value={voiceName}
-        onChange={(event, newValue) => {
-          if (newValue) setVoiceName(newValue);
-        }}
-        renderOption={(props, name) => {
-          const description = VOICE_OPTIONS[name];
-          return (
-            <MenuItem
-              {...props}
-              key={name}
-              sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}
-            >
-              <IconButton
-                size="small"
-                color={playingVoice === name ? "primary" : "inherit"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  playSample(name);
-                }}
-                sx={{ mr: 1 }}
+    <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden', gap: 3, pt: 1 }}>
+      {/* Left Pane: Config Inputs */}
+      <Stack sx={{ flex: 1, overflowY: 'auto', minWidth: 0, pr: 1, pt: 1 }}>
+        <Autocomplete
+          label="Speech Voice"
+          options={Object.keys(VOICE_OPTIONS)}
+          value={voiceName}
+          onChange={(event, newValue) => {
+            if (newValue) setVoiceName(newValue);
+          }}
+          renderOption={(props, name) => {
+            const description = VOICE_OPTIONS[name];
+            return (
+              <MenuItem
+                {...props}
+                key={name}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 1 }}
               >
-                <Icon>{playingVoice === name ? 'volume_up' : 'play_arrow'}</Icon>
-              </IconButton>
-              <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                <Label sx={{ lineHeight: 1.2 }}>{name}</Label>
-                <Label variant="caption" sx={{ color: 'text.secondary', opacity: 0.8 }}>{description}</Label>
-              </Box>
-            </MenuItem>
-          );
-        }}
-        onClose={() => {
-          if (audioRef.current) {
-            audioRef.current.pause();
-            setPlayingVoice(null);
-          }
-        }}
-      />
-      <Autocomplete
-        freeSolo
-        label="System Prompt"
-        disableClearable
-        fullWidth
-        value={localPrompt}
-        onInputChange={(_e, newValue) => handlePromptChange(newValue)}
-        onKeyDown={handleKeyDown}
-        clearIcon={null}
-        options={[]}
-        TextFieldProps={{
-          multiline: true,
-          minRows: 6,
-          maxRows: 12,
-          helperText: "Press Enter to update settings"
-        }}
-        sx={{ mt: 2 }}
-      />
-      <Label sx={{ mt: 2, mb: 1 }}>Full System Instruction (Read Only)</Label>
-      <Box
-        component="pre"
-        sx={{
-          background: '#0d0d0d',
-          color: 'limegreen',
-          p: 2,
-          borderRadius: 2,
-          fontSize: '0.85rem',
-          overflowY: 'auto',
-          flexGrow: 1,
-          minHeight: 0,
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word',
-        }}
-      >
-        {`${systemPrompt}\n\n${fullPrompt}`}
-      </Box>
-    </Stack>
+                <IconButton
+                  size="small"
+                  color={playingVoice === name ? "primary" : "inherit"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playSample(name);
+                  }}
+                  sx={{ mr: 1 }}
+                >
+                  <Icon>{playingVoice === name ? 'volume_up' : 'play_arrow'}</Icon>
+                </IconButton>
+                <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                  <Label sx={{ lineHeight: 1.2 }}>{name}</Label>
+                  <Label variant="caption" sx={{ color: 'text.secondary', opacity: 0.8 }}>{description}</Label>
+                </Box>
+              </MenuItem>
+            );
+          }}
+          onClose={() => {
+            if (audioRef.current) {
+              audioRef.current.pause();
+              setPlayingVoice(null);
+            }
+          }}
+        />
+        <Autocomplete
+          freeSolo
+          label="System Prompt"
+          disableClearable
+          fullWidth
+          value={localPrompt}
+          onInputChange={(_e, newValue) => handlePromptChange(newValue)}
+          onKeyDown={handleKeyDown}
+          clearIcon={null}
+          options={[]}
+          TextFieldProps={{
+            multiline: true,
+            minRows: 6,
+            maxRows: 12,
+            helperText: "Press Enter to update settings. (This will NOT save in the patient's chart!)"
+          }}
+          sx={{ mt: 2 }}
+        />
+        <Autocomplete
+          freeSolo
+          label="Custom Prompt"
+          disableClearable
+          fullWidth
+          value={localCustomPrompt}
+          onInputChange={(_e, newValue) => handleCustomPromptChange(newValue)}
+          onKeyDown={handleKeyDown}
+          clearIcon={null}
+          options={[]}
+          TextFieldProps={{
+            multiline: true,
+            minRows: 6,
+            maxRows: 12,
+            helperText: "Press Enter to update settings. (This will be saved to the patient's chart for the current encounter.)"
+          }}
+          sx={{ mt: 2 }}
+        />
+      </Stack>
+
+      {/* Right Pane: Live Preview */}
+      <Stack sx={{ flex: 1, minWidth: 0, height: '100%', overflow: 'hidden' }}>
+        <Label sx={{ mb: 1, fontWeight: 'bold' }}>Full System Instruction (Read Only)</Label>
+        <Box
+          component="pre"
+          sx={{
+            background: '#0d0d0d',
+            color: 'limegreen',
+            p: 2,
+            borderRadius: 2,
+            fontSize: '0.85rem',
+            overflowY: 'auto',
+            flexGrow: 1,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }}
+        >
+          {`${systemPrompt}\n\n${fullPrompt}`}
+        </Box>
+      </Stack>
+    </Box>
   );
 };
