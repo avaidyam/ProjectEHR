@@ -586,7 +586,7 @@ export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boole
   <ErrorBoundary>
     <TemporalPlainDateProvider>
       <MUIDatePicker
-        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : (value || undefined)}
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         slotProps={{ textField: { size, fullWidth, helperText } }}
@@ -601,7 +601,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString
   <ErrorBoundary>
     <TemporalPlainDateTimeProvider>
       <MUIDateTimePicker
-        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : (value || undefined)}
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         slotProps={{ textField: { size, fullWidth, helperText } }}

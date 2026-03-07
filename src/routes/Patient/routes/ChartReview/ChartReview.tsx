@@ -261,7 +261,7 @@ export const ChartReview = ({ ...props }: any) => {
       authorSpecialty: authorProv?.specialty,
       provider: d.provider ? providers.find((p: any) => p.id === d.provider)?.name || d.provider : d.provider,
       performedBy: d.performedBy ? providers.find((p: any) => p.id === d.performedBy)?.name || d.performedBy : d.performedBy,
-      encDate: enc?.startDate?.split("T")[0], // Assuming StartDate is "YYYY-MM-DD HH:MM"
+      encDate: enc?.startDate,
       encDept: departments.find((dep: any) => dep.id === enc?.department)?.name,
       encType: enc?.type,
       encounterProvider: providers.find((p: any) => p.id === enc?.provider)?.name

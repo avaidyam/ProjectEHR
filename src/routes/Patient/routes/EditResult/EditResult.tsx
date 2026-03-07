@@ -41,11 +41,11 @@ export const EditResult = ({ ...props }) => {
   const [providers] = useDatabase().providers()
   const { useEncounter } = usePatient();
   const [labs, setLabs] = useEncounter().labs();
-  const [imaging, setImaging] = useEncounter().labs();
+  const [imaging, setImaging] = useEncounter().imaging();
   const procedures = Object.entries(orderables!.procedures).map(([key, value]) => ({ label: value, id: key }));
   const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
-  const [testDate, setTestDate] = React.useState(Temporal.Now.plainDateTimeISO());
+  const [testDate, setTestDate] = React.useState<string>(Temporal.Now.instant().toString());
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
   const [results, setResults] = React.useState<any[]>([]);
 
@@ -82,8 +82,8 @@ export const EditResult = ({ ...props }) => {
   const handleSave = () => {
     if (!selectedTest && !imageBase64) return;
     if (imageBase64) { // Imaging
-      setImaging((prev: any) => [...prev, {
-        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
+      setImaging((prev: any) => [...(prev || []), {
+        "date": testDate,
         "status": status,
         "statusDate": Temporal.Now.instant().toString(),
         "test": selectedTest ? selectedTest.label : "Unknown Exam",
@@ -93,8 +93,8 @@ export const EditResult = ({ ...props }) => {
         "image": imageBase64
       }])
     } else { // Labs
-      setLabs((prev: any) => [...[prev, {
-        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
+      setLabs((prev: any) => [...(prev || []), {
+        "date": testDate,
         "test": selectedTest ? selectedTest.label : "Unknown Test",
         "status": "Completed",
         "abnormal": false,
@@ -115,7 +115,7 @@ export const EditResult = ({ ...props }) => {
         "resulted": null,
         "comment": null,
         "resultingAgency": null
-      }]])
+      }])
     }
     closeTab("Edit Result", "main");
   };
