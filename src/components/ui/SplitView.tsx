@@ -1,80 +1,8 @@
 import * as React from 'react'
 import { ErrorBoundary } from "react-error-boundary";
-import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels'
-import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } from '@mui/material'
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { SplitViewProvider, TabObject, TabsDirectory } from '../contexts/SplitViewContext';
-
-const DraggableTab: React.FC<{ index: number; value: number; label: string; child: React.ReactElement }> = ({ index, child, ...props }) => {
-  return (
-    <Draggable
-      draggableId={`${index}`}
-      index={index}
-      disableInteractiveElementBlocking
-    >
-      {(draggableProvided: any) => (
-        <div
-          ref={draggableProvided.innerRef}
-          {...draggableProvided.draggableProps}
-        >
-          {React.cloneElement(child, {
-            ...props,
-            ...draggableProvided.dragHandleProps
-          })}
-        </div>
-      )}
-    </Draggable>
-  );
-}
-
-const TabWithMenu: React.FC<{ onMove: () => void; onClose: () => void; isSelected: boolean } & any> = ({ onMove, onClose, isSelected, ...props }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  return (
-    <>
-      <Tab
-        onContextMenu={(event) => {
-          event.preventDefault()
-          setAnchorEl(event.currentTarget)
-        }}
-        sx={{
-          whiteSpace: 'nowrap',
-          minHeight: 48,
-          height: 48,
-          ...props.sx
-        }}
-        style={{ marginLeft: "-8px", marginRight: "-8px" }}
-        {...props}
-        iconPosition="end"
-        icon={<IconButton
-          component="span"
-          size="small"
-          onClick={(e) => {
-            e.stopPropagation()
-            setAnchorEl(e.currentTarget)
-          }}
-          sx={{ color: 'inherit', visibility: isSelected ? undefined : "hidden" }}
-          style={{ marginLeft: "-8px", marginRight: "-16px" }}
-        >
-          <span className="material-icons">expand_more</span>
-        </IconButton>}
-      />
-      <Menu
-        anchorEl={anchorEl}
-        open={!!anchorEl}
-        onClose={() => setAnchorEl(null)}>
-        <MenuItem onClick={() => {
-          onMove()
-          setAnchorEl(null)
-        }}>Move to Sidebar</MenuItem>
-        <MenuItem onClick={() => {
-          onClose()
-          setAnchorEl(null)
-        }}>Close</MenuItem>
-      </Menu>
-    </>
-  )
-}
+import { Box, Stack, Menu, MenuItem, IconButton, Tab, useMediaQuery, useTheme, alpha } from '@mui/material'
+import { SplitViewContext, SplitViewProvider, TabObject, TabsDirectory, SplitViewContextType } from '../contexts/SplitViewContext';
+import { DockviewReact, DockviewReadyEvent, IDockviewPanelProps, DockviewApi, IDockviewPanelHeaderProps } from 'dockview-react';
 
 // Additional extension to Math prototype for clamp
 declare global {
@@ -89,6 +17,69 @@ if (!Number.prototype.clamp) {
   };
 }
 
+// FIXME: CustomTab doesn't re-render when props.api.isActive changes!
+// FIXME: The dockview divider can't be customized!
+
+const CustomTab = (props: IDockviewPanelHeaderProps) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [isSelected, setSelected] = React.useState(props.api.isActive)
+  React.useEffect(() => setSelected(props.api.isActive), [props.api.isActive])
+
+  const onMove = () => {
+    const groups = props.containerApi.groups;
+    const currentGroup = props.api.group;
+    const targetGroup = groups.find(g => g !== currentGroup) || groups[0];
+
+    props.api.moveTo({ group: targetGroup });
+  };
+
+  return (
+    <>
+      <Tab
+        label={props.api.title}
+        {...(isSelected && { selected: true })}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          setAnchorEl(event.currentTarget);
+        }}
+        sx={{
+          whiteSpace: 'nowrap',
+          minHeight: 48,
+          height: 48,
+        }}
+        style={{ marginLeft: "-8px", marginRight: "-8px" }}
+        iconPosition="end"
+        icon={
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setAnchorEl(e.currentTarget);
+            }}
+            sx={{
+              color: 'inherit',
+              visibility: isSelected ? 'visible' : 'hidden'
+            }}
+            style={{ marginLeft: "-8px", marginRight: "-16px" }}
+          >
+            <span className="material-icons" style={{ fontSize: 18 }}>expand_more</span>
+          </IconButton>
+        }
+      />
+      <Menu
+        anchorEl={anchorEl}
+        open={!!anchorEl}
+        onClose={() => setAnchorEl(null)}
+      >
+        <MenuItem onClick={() => { onMove(); setAnchorEl(null); }}>
+          {props.api.group === props.containerApi.groups[0] ? 'Move to Sidebar' : 'Move to Main'}
+        </MenuItem>
+        <MenuItem onClick={() => { props.api.close(); setAnchorEl(null); }}>Close</MenuItem>
+      </Menu>
+    </>
+  );
+};
+
 export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs = [], tabsDirectory, accessories, ...props }: {
   defaultMainTabs: TabObject[];
   defaultSideTabs: TabObject[];
@@ -97,10 +88,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
   accessories?: React.ReactNode;
 }) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'))
-  const [isCollapsed, setCollapsed] = React.useState(false)
-  const sidePanelRef = React.useRef<any>(null)
-
-  // FIXME: if isCollapsed=true, display sideTabs alongside mainTabs
+  const [api, setApi] = React.useState<DockviewApi>();
 
   const [mainTabs, setMainTabs] = React.useState<TabObject[]>(defaultMainTabs)
   const [sideTabs, setSideTabs] = React.useState<TabObject[]>(defaultSideTabs)
@@ -108,101 +96,218 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
   const [selectedSideTab, setSelectedSideTab] = React.useState(0)
   const [overflowMenuAnchor, setOverflowMenuAnchor] = React.useState<null | HTMLElement>(null)
 
-  const closeMainTab = (index: number) => {
-    const newTabs = mainTabs.filter((_, i) => i !== index)
-    setMainTabs(newTabs)
-    setSelectedMainTab(prevSelected => {
-      if (newTabs.length === 0) return 0
-      if (index === prevSelected) {
-        // Closing currently selected tab - select closest neighbor
-        return Math.min(index, newTabs.length - 1)
-      } else if (index < prevSelected) {
-        // Closing a tab before selected - shift index down
-        return prevSelected - 1
-      }
-      return prevSelected
-    })
-  }
+  const dockviewComponents = React.useMemo(() => {
+    const comps: any = {};
+    for (const [key, Renderer] of Object.entries(tabsDirectory)) {
+      comps[key] = (props: IDockviewPanelProps) => (
+        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', bgcolor: 'background.paper', color: 'text.primary' }}>⚠️ Something went wrong</Box>}>
+          <Box sx={{ height: '100%', overflowY: 'auto', bgcolor: 'background.default' }}>
+            {Renderer(props.params)}
+          </Box>
+        </ErrorBoundary>
+      );
+    }
+    return comps;
+  }, [tabsDirectory]);
 
-  const closeSideTab = (index: number) => {
-    const newTabs = sideTabs.filter((_, i) => i !== index)
-    setSideTabs(newTabs)
-    setSelectedSideTab(prevSelected => {
-      if (newTabs.length === 0) return 0
-      if (index === prevSelected) {
-        // Closing currently selected tab - select closest neighbor
-        return Math.min(index, newTabs.length - 1)
-      } else if (index < prevSelected) {
-        // Closing a tab before selected - shift index down
-        return prevSelected - 1
-      }
-      return prevSelected
-    })
-  }
+  const updateStateFromApi = React.useCallback(() => {
+    if (!api) return;
 
-  /**
-   * Close a tab by name
-   * @param {string} name - The name of the tab to close
-   * @param {"main"|"side"|null} pane - Which pane to search ("main", "side", or null for either)
-   * @returns {boolean} - True if a tab was closed, false otherwise
-   */
-  const closeTab = (name: string, pane: "main" | "side" | null = null): boolean => {
-    if (pane === null || pane === "main") {
-      const index = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
-      if (index !== -1) {
-        closeMainTab(index)
-        return true
+    // We expect exactly two groups if possible, but at least one.
+    // Dockview might merge them if empty and not configured otherwise, 
+    // but we'll try to find panels by their group association.
+    const groups = api.groups;
+    if (groups.length === 0) return;
+
+    const mainGroup = groups[0];
+    const sideGroup = groups[1];
+
+    const newMainTabs = mainGroup.panels.map(p => ({ [p.id]: p.params }));
+    setMainTabs(newMainTabs);
+
+    const newSideTabs = sideGroup ? sideGroup.panels.map(p => ({ [p.id]: p.params })) : [];
+    setSideTabs(newSideTabs);
+
+    const activePanel = api.activePanel;
+    if (activePanel) {
+      if (activePanel.group === mainGroup) {
+        setSelectedMainTab(mainGroup.panels.indexOf(activePanel));
+      } else if (sideGroup && activePanel.group === sideGroup) {
+        setSelectedSideTab(sideGroup.panels.indexOf(activePanel));
       }
     }
+  }, [api]);
 
-    if (pane === null || pane === "side") {
-      const index = sideTabs.findIndex(tab => Object.keys(tab)[0] === name)
-      if (index !== -1) {
-        closeSideTab(index)
-        return true
+  React.useEffect(() => {
+    if (!api) return;
+    const disposables = [
+      api.onDidAddPanel(updateStateFromApi),
+      api.onDidRemovePanel(updateStateFromApi),
+      api.onDidActivePanelChange(updateStateFromApi),
+      api.onDidLayoutChange(updateStateFromApi) // Catch group movements/merges
+    ];
+    return () => disposables.forEach(d => d.dispose());
+  }, [api, updateStateFromApi]);
+
+  const closeTab = React.useCallback((name: string, pane: "main" | "side" | null = null): boolean => {
+    if (!api) return false;
+    const panel = api.getPanel(name);
+    if (panel) {
+      api.removePanel(panel);
+      return true;
+    }
+    return false;
+  }, [api]);
+
+  const closeMainTab = React.useCallback((index: number) => {
+    // Note: with Dockview, the user might have moved tabs around.
+    // We'll try to find the panel from the main group's index.
+    if (api && api.groups[0] && api.groups[0].panels[index]) {
+      api.removePanel(api.groups[0].panels[index]);
+    }
+  }, [api]);
+
+  const closeSideTab = React.useCallback((index: number) => {
+    if (api && api.groups[1] && api.groups[1].panels[index]) {
+      api.removePanel(api.groups[1].panels[index]);
+    }
+  }, [api]);
+
+  const openTab = React.useCallback((name: string, data: any, pane: "main" | "side" = "main", selectIfExists = true): number => {
+    if (!api) return -1;
+    const existingPanel = api.getPanel(name);
+    if (existingPanel) {
+      if (selectIfExists) {
+        existingPanel.api.setActive();
       }
+      return api.panels.indexOf(existingPanel);
     }
 
-    return false
-  }
+    // Ensure we have at least one group (main)
+    if (api.groups.length === 0) api.addGroup();
 
-  /**
-   * Open a tab, or select it if it already exists
-   * @param {string} name - The name of the tab
-   * @param {any} data - The data to pass to the tab
-   * @param {"main"|"side"} pane - Which pane to open in ("main" or "side")
-   * @param {boolean} selectIfExists - If true and tab exists, select it instead of opening duplicate
-   * @returns {number} - The index of the opened/selected tab
-   */
-  const openTab = (name: string, data: any, pane: "main" | "side" = "main", selectIfExists = true): number => {
-    if (pane === "main") {
-      const existingIndex = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
-      if (existingIndex !== -1 && selectIfExists) {
-        setSelectedMainTab(existingIndex)
-        return existingIndex
-      }
-
-      const newTab = { [name]: data }
-      setMainTabs(prev => [...prev, newTab])
-      const newIndex = mainTabs.length
-      setSelectedMainTab(newIndex)
-      return newIndex
-    } else if (pane === "side") {
-      const existingIndex = sideTabs.findIndex(tab => Object.keys(tab)[0] === name)
-      if (existingIndex !== -1 && selectIfExists) {
-        setSelectedSideTab(existingIndex)
-        return existingIndex
-      }
-
-      const newTab = { [name]: data }
-      setSideTabs(prev => [...prev, newTab])
-      const newIndex = sideTabs.length
-      setSelectedSideTab(newIndex)
-      return newIndex
+    // Ensure we have a second group (side) if requested
+    if (pane === 'side' && api.groups.length === 1) {
+      api.addGroup({ direction: 'right' });
     }
 
-    return -1
-  }
+    const referenceGroup = pane === 'side' ? api.groups[1] : api.groups[0];
+
+    const panel = api.addPanel({
+      id: name,
+      component: name,
+      title: name,
+      params: data,
+      position: { referenceGroup }
+    });
+
+    if (panel && selectIfExists) {
+      panel.api.setActive();
+    }
+    return api.panels.length - 1;
+  }, [api]);
+
+  const onReady = (event: DockviewReadyEvent) => {
+    setApi(event.api);
+
+    // Create the two primary groups immediately
+    const mainGroup = event.api.addGroup();
+    const sideGroup = event.api.addGroup({ direction: 'right' });
+
+    // Load main tabs into the first group
+    defaultMainTabs.forEach((tab) => {
+      const title = Object.keys(tab)[0];
+      const data = tab[title];
+      event.api.addPanel({
+        id: title,
+        component: title,
+        title: title,
+        params: data,
+        position: { referenceGroup: mainGroup }
+      });
+    });
+
+    // Load side tabs into the second group
+    defaultSideTabs.forEach((tab) => {
+      const title = Object.keys(tab)[0];
+      const data = tab[title];
+      event.api.addPanel({
+        id: title,
+        component: title,
+        title: title,
+        params: data,
+        position: { referenceGroup: sideGroup }
+      });
+    });
+  };
+
+  const RightHeaderActions = ({ group }: { group: any }) => {
+    const { openTab, mainTabs, sideTabs } = React.useContext(SplitViewContext);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', px: 0.5 }}>
+        <IconButton
+          size="small"
+          sx={{ color: 'common.white', p: 0.5 }}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        >
+          <span className="material-icons" style={{ fontSize: 18 }}>more_vert</span>
+        </IconButton>
+        <Menu
+          anchorEl={anchorEl}
+          open={!!anchorEl}
+          onClose={() => setAnchorEl(null)}
+        >
+          {(() => {
+            const currentMainTabNames = mainTabs.flatMap((x: TabObject) => Object.keys(x));
+            const currentSideTabNames = sideTabs.flatMap((x: TabObject) => Object.keys(x));
+
+            const closedDefaultMainTabs = defaultMainTabs
+              .flatMap((x: TabObject) => Object.entries(x))
+              .filter(([name]) => !currentMainTabNames.includes(name))
+              .map(([name, data]) => ({ name, data, pane: "main" as const }));
+
+            const closedDefaultSideTabs = defaultSideTabs
+              .flatMap((x: TabObject) => Object.entries(x))
+              .filter(([name]) => !currentSideTabNames.includes(name))
+              .map(([name, data]) => ({ name, data, pane: "side" as const }));
+
+            const overflowTabs = (overflowMenuTabs || [])
+              .flatMap((x: TabObject) => Object.entries(x))
+              .filter(([name]) => !currentMainTabNames.includes(name) && !currentSideTabNames.includes(name))
+              .map(([name, data]) => ({ name, data, pane: "main" as const }));
+
+            const allClosedDefaultTabs = [...closedDefaultMainTabs, ...closedDefaultSideTabs, ...overflowTabs];
+
+            if (allClosedDefaultTabs.length === 0) {
+              return <MenuItem disabled>No closed tabs</MenuItem>;
+            }
+
+            return allClosedDefaultTabs.map(({ name, data, pane }) => (
+              <MenuItem
+                key={name}
+                onClick={() => {
+                  openTab(name, data, pane, false);
+                  setAnchorEl(null);
+                }}
+              >
+                {name}
+              </MenuItem>
+            ));
+          })()}
+        </Menu>
+      </Box>
+    );
+  };
+
+  const PrefixHeaderActions = ({ group }: { group: any }) => {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', height: '100%', px: 0.5 }}>
+        {accessories}
+      </Box>
+    );
+  };
 
   const providerState = {
     mainTabs, setMainTabs,
@@ -213,247 +318,58 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
     closeSideTab,
     closeTab,
     openTab,
-  }
+  };
 
   return (
     <SplitViewProvider value={providerState}>
-      <DragDropContext onDragEnd={({ source, destination }: any) => {
-        if (destination == null) return;
-        if (source.droppableId === "main" && destination.droppableId === "main") {
-          const newTabs = [...mainTabs];
-          const draggedTab = newTabs.splice(source.index, 1)[0];
-          newTabs.splice(destination.index, 0, draggedTab);
-          setMainTabs(newTabs);
-          setSelectedMainTab(destination.index)
-        } else if (source.droppableId === "side" && destination.droppableId === "side") {
-          const newTabs = [...sideTabs];
-          const draggedTab = newTabs.splice(source.index, 1)[0];
-          newTabs.splice(destination.index, 0, draggedTab);
-          setSideTabs(newTabs);
-          setSelectedSideTab(destination.index)
-        } else if (source.droppableId === "main" && destination.droppableId === "side") {
-          const newMainTabs = [...mainTabs];
-          const newSideTabs = [...sideTabs];
-          const draggedTab = newMainTabs.splice(source.index, 1)[0];
-          newSideTabs.splice(destination.index, 0, draggedTab);
-          setMainTabs(newMainTabs);
-          setSideTabs(newSideTabs);
-          setSelectedMainTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-          setSelectedSideTab(destination.index);
-        } else if (source.droppableId === "side" && destination.droppableId === "main") {
-          const newMainTabs = [...mainTabs];
-          const newSideTabs = [...sideTabs];
-          const draggedTab = newSideTabs.splice(source.index, 1)[0];
-          newMainTabs.splice(destination.index, 0, draggedTab);
-          setMainTabs(newMainTabs);
-          setSideTabs(newSideTabs);
-          setSelectedSideTab((source.index - 1).clamp(0, newMainTabs.length - 1));
-          setSelectedMainTab(destination.index);
-        }
-      }}>
-        <PanelGroup direction="horizontal" onLayout={(layout: any) => setCollapsed(layout[1] === 0)}>
-          <Panel defaultSize={65} minSize={35}>
-            <TabContext value={selectedMainTab}>
-              <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                  {accessories}
-                  <Droppable droppableId="main" direction="horizontal">
-                    {(droppable: any) => (
-                      <TabList
-                        ref={droppable.innerRef}
-                        {...droppable.droppableProps}
-                        variant="scrollable"
-                        textColor="inherit"
-                        scrollButtons="auto"
-                        allowScrollButtonsMobile
-                        TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
-                        onChange={(event, newValue) => setSelectedMainTab(Number(newValue))}
-                      >
-                        {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) =>
-                          <DraggableTab
-                            label={k}
-                            index={i}
-                            value={i}
-                            key={i}
-                            child={<TabWithMenu
-                              isSelected={selectedMainTab === i}
-                              onClose={() => closeMainTab(i)}
-                              onMove={() => {
-                                setMainTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                setSideTabs(prev => [...prev, { [k]: v }])
-                              }}
-                            />}
-                          />
-                        )}
-                        {droppable ? droppable.placeholder : null}
-                      </TabList>
-                    )}
-                  </Droppable>
-                  <IconButton
-                    size="small"
-                    sx={{ color: 'inherit', borderRadius: 1, ml: 'auto' }}
-                    onClick={(e) => setOverflowMenuAnchor(e.currentTarget)}
-                  >
-                    <span className="material-icons">more_vert</span>
-                  </IconButton>
-                  <Menu
-                    anchorEl={overflowMenuAnchor}
-                    open={!!overflowMenuAnchor}
-                    onClose={() => setOverflowMenuAnchor(null)}
-                  >
-                    {(() => {
-                      const currentMainTabNames = mainTabs.flatMap(x => Object.keys(x));
-                      const currentSideTabNames = sideTabs.flatMap(x => Object.keys(x));
-
-                      const closedDefaultMainTabs = defaultMainTabs
-                        .flatMap(x => Object.entries(x))
-                        .filter(([name, data]) => !currentMainTabNames.includes(name))
-                        .map(([name, data]) => ({ name, data, pane: "main" as const }));
-
-                      const closedDefaultSideTabs = defaultSideTabs
-                        .flatMap(x => Object.entries(x))
-                        .filter(([name, data]) => !currentSideTabNames.includes(name))
-                        .map(([name, data]) => ({ name, data, pane: "side" as const }));
-
-                      const overflowTabs = overflowMenuTabs
-                        .flatMap(x => Object.entries(x))
-                        .filter(([name, data]) => !currentMainTabNames.includes(name) && !currentSideTabNames.includes(name))
-                        .map(([name, data]) => ({ name, data, pane: "main" as const }));
-
-                      const allClosedDefaultTabs = [...closedDefaultMainTabs, ...closedDefaultSideTabs, ...overflowTabs];
-
-                      if (allClosedDefaultTabs.length === 0) {
-                        return <MenuItem disabled>No closed tabs</MenuItem>;
-                      }
-
-                      return allClosedDefaultTabs.map(({ name, data, pane }) => (
-                        <MenuItem
-                          key={name}
-                          onClick={() => {
-                            openTab(name, data, pane, false);
-                            setOverflowMenuAnchor(null);
-                          }}
-                        >
-                          {name}
-                        </MenuItem>
-                      ));
-                    })()}
-                  </Menu>
-                </Stack>
-                <Box sx={{ flexGrow: 1, minHeight: 0 }}>
-                  {mainTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                    <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>
-                      <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
-                        {tabsDirectory[k](v)}
-                      </ErrorBoundary>
-                    </TabPanel>
-                  ))}
-                </Box>
-              </Box>
-            </TabContext>
-          </Panel>
-          {(!isMobile && sideTabs.length > 0) &&
-            <PanelResizeHandle>
-              <Box
-                sx={{
-                  bgcolor: "primary.main",
-                  width: "8px",
-                  height: "100%",
-                  position: "relative",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <IconButton
-                  size="small"
-                  onClick={() => {
-                    if (sidePanelRef.current) {
-                      if (sidePanelRef.current.isCollapsed()) {
-                        sidePanelRef.current.expand()
-                        setCollapsed(false)
-                      } else {
-                        sidePanelRef.current.collapse()
-                        setCollapsed(true)
-                      }
-                    }
-                  }}
-                  sx={{
-                    bgcolor: "primary.main",
-                    color: "primary.contrastText",
-                    position: "absolute",
-                    padding: "4px",
-                    borderRadius: "4px",
-                    "&:hover": {
-                      bgcolor: "primary.dark"
-                    },
-                    zIndex: 1000,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 0.5
-                  }}
-                >
-                  <span className="material-icons" style={{ fontSize: 16 }}>
-                    {isCollapsed ? 'chevron_left' : 'chevron_right'}
-                  </span>
-                  {isCollapsed && <span style={{ writingMode: 'vertical-rl', fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>Open Sidebar</span>}
-                </IconButton>
-              </Box>
-            </PanelResizeHandle>
-          }
-          {(!isMobile && sideTabs.length > 0) &&
-            <Panel ref={sidePanelRef} collapsible defaultSize={35} minSize={35} collapsedSize={0}>
-              <TabContext value={selectedSideTab}>
-                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <Stack direction="row" sx={{ position: "sticky", top: 0, width: "100%", zIndex: 100, borderBottom: 1, borderColor: 'divider', bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                    <Droppable droppableId="side" direction="horizontal">
-                      {(droppable: any) => (
-                        <TabList
-                          ref={droppable.innerRef}
-                          {...droppable.droppableProps}
-                          variant="scrollable"
-                          textColor="inherit"
-                          scrollButtons="auto"
-                          allowScrollButtonsMobile
-                          TabIndicatorProps={{ style: { backgroundColor: '#fff' } }}
-                          onChange={(event, newValue) => setSelectedSideTab(Number(newValue))}
-                        >
-                          {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) =>
-                            <DraggableTab
-                              label={k}
-                              index={i}
-                              value={i}
-                              key={i}
-                              child={<TabWithMenu
-                                isSelected={selectedSideTab === i}
-                                onClose={() => closeSideTab(i)}
-                                onMove={() => {
-                                  setMainTabs(prev => [...prev, { [k]: v }])
-                                  setSideTabs(prev => prev.filter((x2, i2) => i2 !== i))
-                                }}
-                              />}
-                            />
-                          )}
-                          {droppable ? droppable.placeholder : null}
-                        </TabList>
-                      )}
-                    </Droppable>
-                  </Stack>
-                  <Box sx={{ flexGrow: 1, minHeight: 0 }}>
-                    {sideTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
-                      <TabPanel sx={{ p: 0, height: '100%', overflowY: "auto" }} key={i} value={i}>
-                        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
-                          {tabsDirectory[k](v)}
-                        </ErrorBoundary>
-                      </TabPanel>
-                    ))}
-                  </Box>
-                </Box>
-              </TabContext>
-            </Panel>
-          }
-        </PanelGroup>
-      </DragDropContext>
+      <Box
+        sx={(theme) => ({
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          '--dv-paneview-active-outline-color': theme.palette.primary.main,
+          '--dv-tabs-and-actions-container-font-size': '13px',
+          '--dv-tabs-and-actions-container-height': '48px',
+          '--dv-tab-close-icon': '"close"',
+          '--dv-drag-over-background-color': alpha(theme.palette.primary.main, 0.12),
+          '--dv-drag-over-border-color': theme.palette.primary.main,
+          '--dv-tabs-container-scrollbar-color': alpha(theme.palette.text.primary, 0.2),
+          '--dv-group-view-background-color': theme.palette.background.default,
+          '--dv-tabs-and-actions-container-background-color': theme.palette.primary.main,
+          '--dv-activegroup-visiblepanel-tab-background-color': 'transparent',
+          '--dv-activegroup-hiddenpanel-tab-background-color': 'transparent',
+          '--dv-inactivegroup-visiblepanel-tab-background-color': 'transparent',
+          '--dv-inactivegroup-hiddenpanel-tab-background-color': 'transparent',
+          '--dv-tab-divider-color': 'transparent',
+          '--dv-activegroup-visiblepanel-tab-color': theme.palette.primary.contrastText,
+          '--dv-activegroup-hiddenpanel-tab-color': alpha(theme.palette.primary.contrastText, 0.7),
+          '--dv-inactivegroup-visiblepanel-tab-color': alpha(theme.palette.primary.contrastText, 0.6),
+          '--dv-inactivegroup-hiddenpanel-tab-color': alpha(theme.palette.primary.contrastText, 0.4),
+          '--dv-separator-border': theme.palette.divider,
+          '--dv-paneview-header-border-color': theme.palette.divider,
+          '--dv-icon-hover-background-color': alpha(theme.palette.common.white, 0.1),
+          '--dv-floating-box-shadow': theme.shadows[8],
+          '--dv-active-sash-color': theme.palette.primary.main,
+          '--dv-background-color': theme.palette.background.default,
+        })}
+      >
+        <Box sx={{ flexGrow: 1, position: 'relative' }}>
+          <DockviewReact
+            components={dockviewComponents}
+            defaultTabComponent={CustomTab}
+            onReady={onReady}
+            prefixHeaderActionsComponent={PrefixHeaderActions}
+            rightHeaderActionsComponent={RightHeaderActions}
+            theme={{
+              name: 'mui-theme',
+              className: 'dockview-theme-mui',
+              gap: 0,
+              dndOverlayMounting: 'absolute' as const,
+              dndPanelOverlay: 'group' as const,
+            }}
+          />
+        </Box>
+      </Box>
     </SplitViewProvider>
   )
 }
