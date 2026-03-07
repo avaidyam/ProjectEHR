@@ -14,7 +14,23 @@ export interface BaseSelectFieldProps<T, V> {
   helperText?: string;
   required?: boolean;
   disabled?: boolean;
+  disableClearable?: boolean;
+  freeSolo?: boolean;
 }
+
+const defaultFilter = createFilterOptions({
+  limit: 100,
+  stringify: (option: any) => `${option.name || option.label} ${option.id}`,
+});
+
+const renderOptionWithId = (props: any, option: any) => (
+  <li {...props} key={option.id}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', gap: '8px' }}>
+      <span>{option.name || option.label}</span>
+      <span style={{ opacity: 0.4, fontSize: '0.85em', fontFamily: 'monospace' }}>{option.id}</span>
+    </div>
+  </li>
+);
 
 export const DepartmentSelectField: React.FC<BaseSelectFieldProps<Database.Department, Database.Department.ID>> = ({
   value,
@@ -30,6 +46,8 @@ export const DepartmentSelectField: React.FC<BaseSelectFieldProps<Database.Depar
       label={label}
       options={departments || []}
       getOptionLabel={(option: Database.Department) => option.name}
+      filterOptions={defaultFilter}
+      renderOption={renderOptionWithId}
       value={selectedValue}
       onChange={(_e, newValue: Database.Department | null) => onChange(newValue?.id || null)}
       {...props}
@@ -78,6 +96,8 @@ export const ProviderSelectField: React.FC<BaseSelectFieldProps<Database.Provide
       label={label}
       options={filteredOptions}
       getOptionLabel={(option: Database.Provider) => option.name}
+      filterOptions={defaultFilter}
+      renderOption={renderOptionWithId}
       value={selectedValue}
       onChange={(_e, newValue: Database.Provider | null) => onChange(newValue?.id || null)}
       {...props}
@@ -107,6 +127,8 @@ export const LocationSelectField: React.FC<BaseSelectFieldProps<Database.Locatio
       label={label}
       options={filteredOptions}
       getOptionLabel={(option: Database.Location) => option.name}
+      filterOptions={defaultFilter}
+      renderOption={renderOptionWithId}
       value={selectedValue}
       onChange={(_e, newValue: Database.Location | null) => onChange(newValue?.id || null)}
       {...props}
@@ -147,12 +169,47 @@ export const OrderSelectField: React.FC<BaseSelectFieldProps<any, string> & { on
       options={options}
       getOptionLabel={(option) => typeof option === 'string' ? option : option.name || ''}
       filterOptions={ordersFilter}
+      renderOption={renderOptionWithId}
       value={selectedValue}
       onChange={(_e, newValue: any) => {
         if (onSelect) onSelect(newValue);
         const val = typeof newValue === 'string' ? newValue : newValue?.id || null;
         onChange(val);
       }}
+      {...props}
+    />
+  );
+};
+
+const componentsFilter = createFilterOptions({
+  limit: 100,
+  stringify: (option: any) => `${option.name} ${option.id}`,
+});
+
+export const ComponentSelectField: React.FC<BaseSelectFieldProps<any, string>> = ({
+  value,
+  onChange,
+  label = "Component",
+  ...props
+}) => {
+  const [orderables] = useDatabase().orderables();
+
+  const options = React.useMemo(() => {
+    const components = (orderables as any)?.components || {};
+    return Object.entries(components).map(([id, name]) => ({ id, name: name as string }));
+  }, [orderables]);
+
+  const selectedValue = options.find(o => o.id === value) || null;
+
+  return (
+    <Autocomplete
+      label={label}
+      options={options}
+      getOptionLabel={(option: any) => option.name}
+      renderOption={renderOptionWithId}
+      filterOptions={componentsFilter}
+      value={selectedValue}
+      onChange={(_e, newValue: any) => onChange(newValue?.id || null)}
       {...props}
     />
   );
