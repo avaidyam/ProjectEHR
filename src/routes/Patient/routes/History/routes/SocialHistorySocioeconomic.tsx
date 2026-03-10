@@ -21,7 +21,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -51,7 +51,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
-  const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic();
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+
+  const socioeconomicData = socialHistory[0]?.Socioeconomic || {};
+  const setSocioeconomicData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentSocio = next[0].Socioeconomic || {};
+      const newSocio = typeof update === 'function' ? update(currentSocio) : update;
+      next[0] = { ...next[0], Socioeconomic: newSocio };
+      return next;
+    });
+  };
 
   const [editingEntry, setEditingEntry] = React.useState<any>(null);
   const [isAddingNew, setIsAddingNew] = React.useState(false);

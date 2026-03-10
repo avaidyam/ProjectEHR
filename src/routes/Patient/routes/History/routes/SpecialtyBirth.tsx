@@ -15,7 +15,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
 import { Editor } from 'components/ui/Editor';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
@@ -35,7 +35,21 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
-  const [birthHistoryData, setBirthHistoryData] = useEncounter().history.BirthHistory({});
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+
+  const birthHistoryData = socialHistory[0]?.BirthHistory || {};
+  const setBirthHistoryData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentBirth = next[0].BirthHistory || {};
+      const newBirth = typeof update === 'function' ? update(currentBirth) : update;
+      next[0] = { ...next[0], BirthHistory: newBirth };
+      return next;
+    });
+  };
 
   const deliveryMethodOptions = [
     'Biochemical',

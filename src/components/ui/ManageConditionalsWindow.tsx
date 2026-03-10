@@ -12,6 +12,7 @@ const categoryIcons: Record<string, string> = {
   surgicalHistory: 'precision_manufacturing',
   familyStatus: 'people',
   familyHistory: 'diversity_1',
+  social: 'diversity_1',
   medications: 'medication',
   labs: 'science',
   imaging: 'image',
@@ -186,6 +187,7 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
             {renderCategory('Surgical History', categoryIcons.surgicalHistory, encounter.history?.surgical || [], 'history.surgical', (s: Database.SurgicalHistoryItem) => s.procedure)}
             {renderCategory('Family Status', categoryIcons.familyStatus, encounter.history?.familyStatus || [], 'history.familyStatus', (f: Database.FamilyStatusItem) => `${f.name} (${f.relationship})`)}
             {renderCategory('Family History', categoryIcons.familyHistory, encounter.history?.family || [], 'history.family', (h: Database.FamilyHistoryItem) => h.description)}
+            {renderCategory('Social History', categoryIcons.social, encounter.history?.social || [], 'history.social', (_s: Database.SocialHistoryItem) => 'Social History')}
             {renderCategory('Medications', categoryIcons.medications, encounter.medications || [], 'medications', (m: Database.Medication) => m.name)}
             {renderCategory('Labs', categoryIcons.labs, encounter.labs || [], 'labs', (l: Database.Lab) => l.test)}
             {renderCategory('Imaging', categoryIcons.imaging, encounter.imaging || [], 'imaging', (i: Database.Imaging) => i.test)}
@@ -214,19 +216,34 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
                 <Box sx={{ p: 1.5, bgcolor: 'primary.50', borderRadius: 1, border: '1px solid', borderColor: 'primary.100' }}>
                   <Stack spacing={0.5}>
                     <Label bold variant="caption" color="primary" sx={{ mb: 0.5, textTransform: 'uppercase', letterSpacing: 0.5 }}>Item Properties</Label>
-                    {Object.entries(selectedItem || {})
-                      .sort(([a], [b]) => a === 'id' ? -1 : b === 'id' ? 1 : 0)
-                      .map(([key, value]) => {
+                    {(() => {
+                      const flattenObject = (obj: any, prefix = ''): [string, any][] => {
+                        return Object.entries(obj || {}).reduce((acc: [string, any][], [key, value]) => {
+                          const newKey = prefix ? `${prefix}.${key}` : key;
+                          if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+                            acc.push(...flattenObject(value, newKey));
+                          } else {
+                            acc.push([newKey, value]);
+                          }
+                          return acc;
+                        }, []);
+                      };
+
+                      const properties = flattenObject(selectedItem).filter(([key]) => key !== 'id');
+                      return [
+                        ['id', selectedItem?.id],
+                        ...properties.sort(([a], [b]) => a.localeCompare(b))
+                      ].map(([key, value]) => {
+                        if (value === undefined || value === null || value === '') return null;
+
                         let displayValue = "";
-                        if (key === 'components' && Array.isArray(value)) {
-                          displayValue = (value as any[]).map(c => {
+                        if (Array.isArray(value)) {
+                          displayValue = value.map(c => {
                             const k = c.name || c.id || c.label || '';
                             const v = c.value || c.result || c.state || '';
                             if (k && v !== undefined && v !== '') return `${k}=${v}`;
                             return k || v || String(c);
                           }).join(',');
-                        } else if (typeof value === 'object' && value !== null) {
-                          return null;
                         } else {
                           displayValue = String(value);
                         }
@@ -248,7 +265,8 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
                             }}>{displayValue}</Label>
                           </Stack>
                         );
-                      })}
+                      });
+                    })()}
                   </Stack>
                 </Box>
 

@@ -14,7 +14,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
+import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -25,7 +25,21 @@ const SectionPaper = styled(Box)(({ theme }) => ({
 
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
-  const [socialHistoryData, setSocialHistoryData] = useEncounter().history.SocialHistoryADL({});
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+
+  const socialHistoryData = socialHistory[0]?.SocialHistoryADL || {};
+  const setSocialHistoryData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentADL = next[0].SocialHistoryADL || {};
+      const newADL = typeof update === 'function' ? update(currentADL) : update;
+      next[0] = { ...next[0], SocialHistoryADL: newADL };
+      return next;
+    });
+  };
 
   const leftColumnItems = [
     { key: 'backCare', label: 'Back Care' },

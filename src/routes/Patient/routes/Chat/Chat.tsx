@@ -74,8 +74,9 @@ export function Chat() {
   const medicalHistory = history?.medical || [];
   const surgicalHistory = history?.surgical || [];
   const familyHistory = history?.family || [];
-  const socialDocumentation = history?.SocialDocumentation || null;
-  const obgynHistory = history?.OBGynHistory || null;
+  const socialItem = history?.social?.[0] || {};
+  const socialDocumentation = socialItem.SocialDocumentation || null;
+  const obgynHistory = socialItem.OBGynHistory || null;
 
   // 🧠 Compose the full prompt
   const fullPrompt = React.useMemo(() => {

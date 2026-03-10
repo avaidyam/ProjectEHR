@@ -13,7 +13,7 @@ import {
   Grid
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { usePatient } from 'components/contexts/PatientContext';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 
 const SectionPaper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -31,7 +31,21 @@ const SectionHeader = styled(Label)(({ theme }) => ({
 
 export function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
-  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth({});
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+
+  const substanceData = socialHistory[0]?.SubstanceSexualHealth || {};
+  const setSubstanceData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentSubstance = next[0].SubstanceSexualHealth || {};
+      const newSubstance = typeof update === 'function' ? update(currentSubstance) : update;
+      next[0] = { ...next[0], SubstanceSexualHealth: newSubstance };
+      return next;
+    });
+  };
 
   const tobaccoOptions = ['Never', 'Former', 'Every Day', 'Some Days', 'Unknown'];
   const smokelessOptions = ['Never', 'Former', 'Current', 'Unknown'];

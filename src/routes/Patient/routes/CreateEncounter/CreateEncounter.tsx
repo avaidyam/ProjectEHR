@@ -74,7 +74,8 @@ export const CreateEncounter = ({
           medical: [],
           surgical: [],
           family: [],
-          familyStatus: []
+          familyStatus: [],
+          social: []
         },
         immunizations: [],
         orders: []

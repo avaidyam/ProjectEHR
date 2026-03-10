@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, MarkReviewed } from 'components/ui/Core';
-import { usePatient } from 'components/contexts/PatientContext';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 
 /*
  * FIELDS NOT IN CURRENT DATA STRUCTURE (commented out for future use):
@@ -25,8 +25,30 @@ export const Demographics = () => {
     gender,
     insurance
   }, setChart] = useChart()();
-  const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic()
-  const [demographics, setDemographics] = useEncounter().history.Socioeconomic.demographics()
+
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const socioeconomicData: any = socialHistory[0]?.Socioeconomic || {};
+  const demographics: any = socioeconomicData.demographics || {};
+
+  const setSocioeconomicData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentSocio = next[0].Socioeconomic || {};
+      const newSocio = typeof update === 'function' ? update(currentSocio) : update;
+      next[0] = { ...next[0], Socioeconomic: newSocio };
+      return next;
+    });
+  };
+
+  const setDemographics = (update: any) => {
+    setSocioeconomicData((prev: any) => ({
+      ...prev,
+      demographics: typeof update === 'function' ? update(prev.demographics || {}) : update
+    }));
+  };
   const [editingCard, setEditingCard] = React.useState<string | null>(null)
 
   // State for editable form data

@@ -740,6 +740,11 @@ export interface History {
   surgical: SurgicalHistoryItem[]
   family: FamilyHistoryItem[]
   familyStatus: FamilyStatusItem[]
+  social: SocialHistoryItem[]
+}
+
+export interface SocialHistoryItem {
+  id: SocialHistoryItem.ID
   SubstanceSexualHealth?: {
     alcohol?: {
       alcoholStatus?: string
@@ -848,6 +853,14 @@ export interface History {
     hospitalName?: string
     hospitalLocation?: string
     comments?: string
+  }
+}
+
+export namespace SocialHistoryItem {
+  export type ID = Branded<UUID, 'SocialHistoryItem.ID'>
+  export type Fragment = Partial<Omit<SocialHistoryItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
   }
 }
 
