@@ -65,6 +65,9 @@ import {
   Tooltip as MUITooltip,
   TooltipProps,
   FormControlLabel as MUIFormControlLabel,
+  Snackbar as MUISnackbar,
+  Alert as MUIAlert,
+  AlertColor,
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -1061,6 +1064,215 @@ export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.React
     </MUIDialog>
   );
 }
+
+export const Prompt: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  onAccept: (value: string) => void;
+  title: React.ReactNode;
+  label: string;
+  defaultValue?: string;
+  type?: string;
+}> = ({ open, onClose, onAccept, title, label, defaultValue = '', type = 'text' }) => {
+  const [value, setValue] = React.useState(defaultValue);
+
+  React.useEffect(() => {
+    if (open) setValue(defaultValue);
+    else setValue(''); // Reset when closed
+  }, [open, defaultValue]);
+
+  const handleAccept = () => {
+    onAccept(value);
+    onClose();
+  };
+
+  return (
+    <Window
+      open={open}
+      onClose={onClose}
+      title={title}
+      maxWidth="xs"
+      fullWidth
+      footer={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleAccept}>OK</Button>
+        </>
+      }
+    >
+      <Autocomplete
+        freeSolo
+        autoFocus
+        fullWidth
+        label={label}
+        value={value}
+        onInputChange={(_e, newValue) => setValue(newValue)}
+        options={[]}
+        TextFieldProps={{
+          type: type as any,
+          variant: 'standard',
+          onKeyDown: (e) => {
+            if (e.key === 'Enter') {
+              handleAccept();
+            }
+          }
+        }}
+        sx={{ mt: 1 }}
+      />
+    </Window>
+  );
+};
+
+export const AlertDialog: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  title: React.ReactNode;
+  message: React.ReactNode;
+}> = ({ open, onClose, title, message }) => (
+  <Window
+    open={open}
+    onClose={onClose}
+    title={title}
+    maxWidth="xs"
+    fullWidth
+    footer={
+      <Button variant="contained" onClick={onClose}>OK</Button>
+    }
+  >
+    <Label>{message}</Label>
+  </Window>
+);
+
+export const Confirm: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: React.ReactNode;
+  message: React.ReactNode;
+  confirmLabel?: string;
+  confirmColor?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+}> = ({ open, onClose, onConfirm, title, message, confirmLabel = 'Confirm', confirmColor = 'primary' }) => (
+  <Window
+    open={open}
+    onClose={onClose}
+    title={title}
+    maxWidth="xs"
+    fullWidth
+    footer={
+      <>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" color={confirmColor} onClick={() => { onConfirm(); onClose(); }}>{confirmLabel}</Button>
+      </>
+    }
+  >
+    <Label>{message}</Label>
+  </Window>
+);
+
+export const PromptContext = React.createContext<{
+  alert: (message: string, title?: string) => Promise<void>;
+  confirm: (message: string, title?: string) => Promise<boolean>;
+  prompt: (message: string, defaultValue?: string, title?: string) => Promise<string | null>;
+  notify: (message: string, severity?: AlertColor) => void;
+} | null>(null);
+
+export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, setState] = React.useState<{
+    type: 'alert' | 'confirm' | 'prompt' | null;
+    message: string;
+    title: string;
+    defaultValue: string;
+    resolve: (value: any) => void;
+  }>({
+    type: null,
+    message: '',
+    title: '',
+    defaultValue: '',
+    resolve: () => { },
+  });
+
+  const [notification, setNotification] = React.useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info',
+  });
+
+  const alert = (message: string, title = 'Alert') =>
+    new Promise<void>((resolve) => {
+      setState({ type: 'alert', message, title, defaultValue: '', resolve });
+    });
+
+  const confirm = (message: string, title = 'Confirm') =>
+    new Promise<boolean>((resolve) => {
+      setState({ type: 'confirm', message, title, defaultValue: '', resolve });
+    });
+
+  const prompt = (message: string, defaultValue = '', title = 'Prompt') =>
+    new Promise<string | null>((resolve) => {
+      setState({ type: 'prompt', message, title, defaultValue, resolve });
+    });
+
+  const notify = (message: string, severity: AlertColor = 'info') => {
+    setNotification({ open: true, message, severity });
+  };
+
+  const handleClose = (value: any) => {
+    state.resolve(value);
+    setState((prev) => ({ ...prev, type: null }));
+  };
+
+  return (
+    <PromptContext.Provider value={{ alert, confirm, prompt, notify }}>
+      {children}
+      <AlertDialog
+        open={state.type === 'alert'}
+        onClose={() => handleClose(undefined)}
+        title={state.title}
+        message={state.message}
+      />
+      <Confirm
+        open={state.type === 'confirm'}
+        onClose={() => handleClose(false)}
+        onConfirm={() => handleClose(true)}
+        title={state.title}
+        message={state.message}
+      />
+      <Prompt
+        open={state.type === 'prompt'}
+        onClose={() => handleClose(null)}
+        onAccept={(val) => handleClose(val)}
+        title={state.title}
+        label={state.message}
+        defaultValue={state.defaultValue}
+      />
+      <MUISnackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MUIAlert
+          onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+          severity={notification.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </MUIAlert>
+      </MUISnackbar>
+    </PromptContext.Provider>
+  );
+};
+
+export const usePrompts = () => {
+  const context = React.useContext(PromptContext);
+  if (!context) throw new Error('usePrompts must be used within a PromptProvider');
+  return context;
+};
 
 export const Scrollable: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

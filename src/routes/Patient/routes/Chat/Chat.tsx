@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, IconButton, Icon, Window } from "components/ui/Core";
+import { Box, IconButton, Icon, Window, usePrompts } from "components/ui/Core";
 import { GeminiAPIProvider, GeminiAPIProviderProps, LiveClientOptions } from "./utils/GeminiAPI";
 import { VoicePanel } from "./components/VoicePanel";
 import { ModelConfig } from "./components/ModelConfig";
@@ -11,7 +11,8 @@ const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u00
 let _PWD: string | null = null;
 
 export function Chat() {
-  const [apiKey, setApiKey] = React.useState(_API_KEY);
+  const { prompt, alert } = usePrompts();
+  const [apiKey, setApiKey] = React.useState(XORcrypt(_API_KEY, _PWD ?? ""));
   // Default to "voice" now that LLM chat is disabled
   const [tab, setTab] = React.useState("voice");
   const [configUnlocked, setConfigUnlocked] = React.useState(false);
@@ -274,10 +275,15 @@ Here is the standardized patient's chart information:`);
 
   React.useEffect(() => {
     if (!_PWD) {
-      _PWD = window.prompt("Please enter your authorization code:");
-      setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
+      (async () => {
+        const code = await prompt("Authorization Code", "", "Authorization Required");
+        if (code) {
+          _PWD = code;
+          setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
+        }
+      })();
     }
-  }, []);
+  }, [prompt]);
 
   const geminiOptions: LiveClientOptions = React.useMemo(() => ({
     httpOptions: { apiVersion: "v1alpha" },
@@ -309,22 +315,21 @@ Here is the standardized patient's chart information:`);
     },
   }), [apiKey, voiceName, fullPrompt, systemPrompt]);
 
-  if (!_PWD) return <></>;
-
-  const handleTabChange = (event: any, newValue: string) => {
+  const handleTabChange = async (event: any, newValue: string) => {
     if (newValue === "modelConfig" && !configUnlocked) {
-      const pass = window.prompt("Enter password to unlock Model Config:");
+      const pass = await prompt("Password", "", "Unlock Configuration");
       if (pass === "config") {
         setConfigUnlocked(true);
         setSettingsOpen(true);
-      } else {
-        alert("Incorrect password.");
-        return;
+      } else if (pass !== null) {
+        await alert("The password you entered is incorrect. Please try again.", "Access Denied");
       }
     } else {
       setSettingsOpen(true);
     }
   };
+
+  if (!_PWD) return <></>;
 
   return (
     <GeminiAPIProvider

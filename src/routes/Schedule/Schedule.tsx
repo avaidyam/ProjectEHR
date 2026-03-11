@@ -3,9 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components/contexts/AuthContext';
 import { Avatar, Badge, Checkbox, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker, Box, Icon, Autocomplete } from 'components/ui/Core';
+import { DataGrid, DatePicker, Box, Icon, Autocomplete, usePrompts } from 'components/ui/Core';
 import { useRouter } from 'util/helpers';
-import { Notification } from '../Login/components/Notification';
 import { useDatabase, Database } from 'components/contexts/PatientContext'
 
 function customFilterBar({
@@ -164,6 +163,7 @@ export function Schedule() {
   const [departments] = useDatabase().departments()
   const [locations] = useDatabase().locations()
   const [providers] = useDatabase().providers()
+  const { prompt, alert, notify } = usePrompts();
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -221,11 +221,6 @@ export function Schedule() {
       });
   }, [appointmentsDB, selectedDept, selectedDate]);
 
-  const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
-
-  const showNotification = (message: string, severity: 'info' | 'warning' | 'error' | 'success' = 'info') => {
-    setNotification({ open: true, message, severity });
-  };
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -233,12 +228,6 @@ export function Schedule() {
         <Typography variant="h5" gutterBottom>Schedule</Typography>
       </Box>
 
-      <Notification
-        open={notification.open}
-        onClose={() => setNotification({ ...notification, open: false })}
-        message={notification.message}
-        severity={notification.severity}
-      />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
         <div>
@@ -407,13 +396,13 @@ export function Schedule() {
             onRowClick={(params) => {
               setPatient(params.row);
             }}
-            onRowDoubleClick={({
+            onRowDoubleClick={async ({
               row: {
                 patient: { mrn: selectedMRN, enc: selectedEnc },
               },
             }) => {
               if (!!enabledEncounters && Object.keys(enabledEncounters).length > 0 && (enabledEncounters)[selectedMRN] == null) {
-                showNotification(
+                notify(
                   'You cannot view this chart because no encounter is associated with this MRN.',
                   'warning'
                 );
@@ -428,8 +417,9 @@ export function Schedule() {
                   .encounters)).map((x: any) => x.id)
                   .includes(selectedEnc)
               ) {
-                alert(
-                  'You cannot view this chart because this encounter DOES NOT EXIST [system error].'
+                await alert(
+                  'You cannot view this chart because this encounter DOES NOT EXIST [system error].',
+                  'System Error'
                 );
                 return; // Prevent routing
               }

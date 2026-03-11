@@ -6,6 +6,7 @@ import { TemporalRootProvider } from 'mui-temporal-pickers';
 import { DatabaseProvider } from 'components/contexts/PatientContext';
 import { AuthContext } from 'components/contexts/AuthContext';
 import { Titlebar } from 'components/ui/Titlebar';
+import { PromptProvider } from 'components/ui/Core';
 import { Schedule } from './Schedule/Schedule';
 import { PatientLists } from './PatientList/PatientList';
 import { Login } from './Login/Login';
@@ -61,60 +62,62 @@ export const App: React.FC = () => {
 
   return (
     <TemporalRootProvider>
-      <DatabaseProvider>
-        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
-          {isLoggedIn && <Titlebar onLogout={handleLogout} />}
-        </ErrorBoundary>
-        <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
-          <Routes>
-            <Route
-              path="/"
-              element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/schedule"
-              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/schedule/:department"
-              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/schedule/:department/:date"
-              element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/list"
-              element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/list/:listId"
-              element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/patient/:mrn"
-              element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/patient/:mrn/encounter/:enc"
-              element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/snapboard"
-              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/snapboard/:department"
-              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route
-              path="/snapboard/:department/:date"
-              element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
-            />
-            <Route path="*" element={<Navigate replace to="/" />} />
-          </Routes>
-        </ErrorBoundary>
-      </DatabaseProvider>
+      <PromptProvider>
+        <DatabaseProvider>
+          <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+            {isLoggedIn && <Titlebar onLogout={handleLogout} />}
+          </ErrorBoundary>
+          <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+            <Routes>
+              <Route
+                path="/"
+                element={isLoggedIn ? <Navigate replace to="/schedule" /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/schedule"
+                element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/schedule/:department"
+                element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/schedule/:department/:date"
+                element={isLoggedIn ? <Schedule /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/list"
+                element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/list/:listId"
+                element={isLoggedIn ? <PatientLists /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/patient/:mrn"
+                element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/patient/:mrn/encounter/:enc"
+                element={isLoggedIn ? <Patient /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/snapboard"
+                element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/snapboard/:department"
+                element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route
+                path="/snapboard/:department/:date"
+                element={isLoggedIn ? <Snapboard /> : <Login setIsLoggedIn={handleLogin} />}
+              />
+              <Route path="*" element={<Navigate replace to="/" />} />
+            </Routes>
+          </ErrorBoundary>
+        </DatabaseProvider>
+      </PromptProvider>
     </TemporalRootProvider>
   )
 }
