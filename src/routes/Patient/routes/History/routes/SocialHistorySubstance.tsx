@@ -50,7 +50,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Smoking"
-              options={['Never', 'Former', 'Every Day', 'Some Days', 'Unknown']}
+              options={Object.values(Database.SocialHistoryItem.SmokingStatus)}
               value={substanceData?.tobacco?.status}
               onChange={(_e, val) => handleDataChange('tobacco', 'status', val)}
             />
@@ -58,7 +58,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Passive Exposure"
-              options={['Never', 'Past', 'Current']}
+              options={Object.values(Database.SocialHistoryItem.PassiveExposure)}
               value={substanceData?.tobacco?.passiveExposure}
               onChange={(_e, val) => handleDataChange('tobacco', 'passiveExposure', val)}
             />
@@ -66,7 +66,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Smoking Types"
-              options={['Cigarettes', 'Pipe', 'Cigars', 'Other']}
+              options={Object.values(Database.SocialHistoryItem.SmokingType)}
               checkbox
               multiple
               value={substanceData?.tobacco?.types || []}
@@ -118,7 +118,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Smokeless"
-              options={['Never', 'Former', 'Current', 'Unknown']}
+              options={Object.values(Database.SocialHistoryItem.SmokelessStatus)}
               value={substanceData?.tobacco?.smokeless}
               onChange={(_e, val) => handleDataChange('tobacco', 'smokeless', val)}
             />
@@ -144,7 +144,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Alcohol Use?"
-              options={['Yes', 'No', 'Not Currently', 'Never']}
+              options={Object.values(Database.SocialHistoryItem.AlcoholStatus)}
               value={substanceData?.alcohol?.status}
               onChange={(_e, val) => handleDataChange('alcohol', 'status', val)}
             />
@@ -230,7 +230,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Drug Use"
-              options={['Yes', 'No', 'Not Currently', 'Never']}
+              options={Object.values(Database.SocialHistoryItem.DrugStatus)}
               value={substanceData?.drugs?.status}
               onChange={(_e, val) => handleDataChange('drugs', 'status', val)}
             />
@@ -238,17 +238,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Types"
-              options={[
-                'Anabolic Steroids',
-                'Barbiturates',
-                'Benzodiazepines',
-                'Cannabinoids - Marijuana, Hashish, Synthetics',
-                'Hallucinogens - e.g. LSD, Mushrooms',
-                'Inhalants - e.g. Nitrous Oxide, Amyl Nitrite',
-                'Opioids',
-                'Stimulants - e.g. Amphetamines, Crack/Cocaine, Methyphenidate',
-                'Other'
-              ]}
+              options={Object.values(Database.SocialHistoryItem.DrugType)}
               checkbox
               multiple
               value={substanceData?.drugs?.types || []}
@@ -288,7 +278,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Sexually active"
-              options={['Yes', 'Not Currently', 'Never']}
+              options={Object.values(Database.SocialHistoryItem.SexualStatus)}
               value={substanceData?.sexual?.status}
               onChange={(_e, val) => handleDataChange('sexual', 'status', val)}
             />
@@ -296,25 +286,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Birth Control Methods"
-              options={[
-                'Abstinence',
-                'Coitus Interruptus',
-                'Condom',
-                'Diaphragm',
-                'IUD',
-                'Implant',
-                'Injection',
-                'None',
-                'Patch',
-                'Pill',
-                'Progesterone only pill (mini-pill)',
-                'Rhythm',
-                'Ring',
-                'Spermicide',
-                'Sponge',
-                'Spouse/Partner w/vasectomy',
-                'Surgical'
-              ]}
+              options={Object.values(Database.SocialHistoryItem.BirthControlMethod)}
               checkbox
               multiple
               value={substanceData?.sexual?.birthControl || []}
@@ -325,7 +297,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Partners"
-              options={['Female', 'Male']}
+              options={Object.values(Database.SocialHistoryItem.SexualPartner)}
               checkbox
               multiple
               value={substanceData?.sexual?.partners || []}

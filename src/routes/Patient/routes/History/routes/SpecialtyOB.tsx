@@ -292,7 +292,7 @@ export function SpecialtyOB() {
               Comments
             </Label>
             <RichTextEditor
-              initialContent={socialData?.gynecology?.comment || ''}
+              initialContent={socialData?.gynecology?.comments || ''}
               onUpdate={(content: any) => handleDataChange('gynecology', 'comment', content)}
               disableStickyMenuBar={true}
             />

@@ -51,15 +51,7 @@ export function ECigaretteVapingHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="E-cigarette/Vaping Use"
-              options={[
-                'Current Every Day User',
-                'Current Some Day User',
-                'Former User',
-                'Never Assessed',
-                'Never User',
-                'User - Current Status Unknown',
-                'Unknown If Ever Used'
-              ]}
+              options={Object.values(Database.SocialHistoryItem.VapingStatus)}
               value={ecigaretteData?.status}
               onChange={(_e, val) => handleDataChange('vaping', 'status', val)}
             />
@@ -131,12 +123,7 @@ export function ECigaretteVapingHistory() {
         <Grid container spacing={2}>
           <Grid size={12}>
             <AutocompleteButtons
-              options={[
-                { label: 'Nicotine', value: 'nicotine' },
-                { label: 'THC', value: 'thc' },
-                { label: 'CBD', value: 'cbd' },
-                { label: 'Flavoring', value: 'flavoring' }
-              ]}
+              options={Object.values(Database.SocialHistoryItem.VapingSubstance)}
               checkbox
               multiple
               value={ecigaretteData?.substances || []}
@@ -150,9 +137,9 @@ export function ECigaretteVapingHistory() {
               freeSolo
               label="Other"
               fullWidth
-              value={(ecigaretteData?.substances || []).filter((s: string) => !['nicotine', 'thc', 'cbd', 'flavoring'].includes(s)).join(', ')}
+              value={(ecigaretteData?.substances || []).filter((s: string) => !Object.values(Database.SocialHistoryItem.VapingSubstance).includes(s as any)).join(', ')}
               onInputChange={(_e, newValue) => {
-                const known = (ecigaretteData?.substances || []).filter((s: string) => ['nicotine', 'thc', 'cbd', 'flavoring'].includes(s));
+                const known = (ecigaretteData?.substances || []).filter((s: string) => Object.values(Database.SocialHistoryItem.VapingSubstance).includes(s as any));
                 const other = newValue ? [newValue] : [];
                 handleDataChange('vaping', 'substances', [...known, ...other]);
               }}
@@ -167,12 +154,7 @@ export function ECigaretteVapingHistory() {
         <Grid container spacing={2}>
           <Grid size={12}>
             <AutocompleteButtons
-              options={[
-                { label: 'Disposable', value: 'disposable' },
-                { label: 'Pre-filled Pod', value: 'preFilledPod' },
-                { label: 'Pre-filled or Refillable Cartridge', value: 'preFilledOrRefillableCartridge' },
-                { label: 'Refillable Tank', value: 'refillableTank' }
-              ]}
+              options={Object.values(Database.SocialHistoryItem.VapingDevice)}
               checkbox
               multiple
               value={ecigaretteData?.devices || []}
@@ -186,9 +168,9 @@ export function ECigaretteVapingHistory() {
               freeSolo
               label="Other"
               fullWidth
-              value={(ecigaretteData?.devices || []).filter((s: string) => !['disposable', 'preFilledPod', 'preFilledOrRefillableCartridge', 'refillableTank'].includes(s)).join(', ')}
+              value={(ecigaretteData?.devices || []).filter((s: string) => !Object.values(Database.SocialHistoryItem.VapingDevice).includes(s as any)).join(', ')}
               onInputChange={(_e, newValue) => {
-                const known = (ecigaretteData?.devices || []).filter((s: string) => ['disposable', 'preFilledPod', 'preFilledOrRefillableCartridge', 'refillableTank'].includes(s));
+                const known = (ecigaretteData?.devices || []).filter((s: string) => Object.values(Database.SocialHistoryItem.VapingDevice).includes(s as any));
                 const other = newValue ? [newValue] : [];
                 handleDataChange('vaping', 'devices', [...known, ...other]);
               }}

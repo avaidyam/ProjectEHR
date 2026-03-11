@@ -237,18 +237,7 @@ export function BirthHistory() {
               <Grid size={12}>
                 <AutocompleteButtons
                   label="Delivery method"
-                  options={[
-                    'Biochemical',
-                    'C-section, low transverse',
-                    'C-Section, low vertical',
-                    'C-Section, classical',
-                    'C-section, unspecified',
-                    'Vaginal, breech',
-                    'VBAC',
-                    'Vaginal, forceps',
-                    'Vaginal, spontaneous',
-                    'Vaginal, vacuum'
-                  ]}
+                  options={Object.values(Database.SocialHistoryItem.DeliveryMethod)}
                   value={birthHistoryData?.deliveryMethod}
                   onChange={(_e, val) => handleFieldChange('deliveryMethod', val)}
                 />
@@ -269,13 +258,7 @@ export function BirthHistory() {
               <Grid size={12}>
                 <AutocompleteButtons
                   label="Feeding method"
-                  options={[
-                    'Breast Fed',
-                    'Bottle Fed-Formula',
-                    'Bottle Fed- Breast Milk',
-                    'Both Breast and Bottle Fed',
-                    'Unknown'
-                  ]}
+                  options={Object.values(Database.SocialHistoryItem.FeedingMethod)}
                   value={birthHistoryData?.feedingMethod}
                   onChange={(_e, val) => handleFieldChange('feedingMethod', val)}
                 />

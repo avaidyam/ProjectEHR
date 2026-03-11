@@ -851,18 +851,18 @@ export namespace FamilyHistoryItem {
 export interface SocialHistoryItem {
   id: SocialHistoryItem.ID
   tobacco?: {
-    status?: string
-    types?: string[]
-    passiveExposure?: string
+    status?: SocialHistoryItem.SmokingStatus
+    types?: SocialHistoryItem.SmokingType[]
+    passiveExposure?: SocialHistoryItem.PassiveExposure
     packsPerDay?: number
     packYears?: number
     startDate?: JSONDate
     quitDate?: JSONDate
-    smokeless?: string
+    smokeless?: SocialHistoryItem.SmokelessStatus
     comments?: string
   }
   alcohol?: {
-    status?: string
+    status?: SocialHistoryItem.AlcoholStatus
     wine?: number
     beer?: number
     liquor?: number
@@ -871,27 +871,27 @@ export interface SocialHistoryItem {
     comments?: string
   }
   drugs?: {
-    status?: string
-    types?: string[]
+    status?: SocialHistoryItem.DrugStatus
+    types?: SocialHistoryItem.DrugType[]
     usage?: number
     comments?: string
   }
   sexual?: {
-    status?: string
-    birthControl?: string[]
-    partners?: string[]
+    status?: SocialHistoryItem.SexualStatus
+    birthControl?: SocialHistoryItem.BirthControlMethod[]
+    partners?: SocialHistoryItem.SexualPartner[]
     comments?: string
   }
   vaping?: {
-    status?: string
+    status?: SocialHistoryItem.VapingStatus
     startDate?: JSONDate
     quitDate?: JSONDate
     cartridgesPerDay?: number
     passiveExposure?: boolean
     counselingGiven?: boolean
     comments?: string
-    substances?: string[]
-    devices?: string[]
+    substances?: (SocialHistoryItem.VapingSubstance | string)[]
+    devices?: (SocialHistoryItem.VapingDevice | string)[]
   }
   occupational?: {
     employer?: string
@@ -903,29 +903,29 @@ export interface SocialHistoryItem {
     }[]
   }
   demographics?: {
-    maritalStatus?: string
+    maritalStatus?: SocialHistoryItem.MaritalStatus
     spouseName?: string
     numberOfChildren?: number
     yearsOfEducation?: number
-    highestEducationLevel?: string
-    preferredLanguage?: string
-    ethnicGroup?: string
-    race?: string
+    highestEducationLevel?: SocialHistoryItem.HighestEducationLevel
+    preferredLanguage?: SocialHistoryItem.PreferredLanguage | string
+    ethnicGroup?: SocialHistoryItem.EthnicGroup | string
+    race?: SocialHistoryItem.Race | string
   }
   birth?: {
-    birthLength?: string
-    birthWeight?: string
-    birthHeadCirc?: string
-    dischargeWeight?: string
-    birthTime?: string
-    gestationWeeks?: string
-    gestationDays?: string
-    apgar1?: string
-    apgar5?: string
-    apgar10?: string
-    deliveryMethod?: string
-    durationOfLabor?: string
-    feedingMethod?: string
+    birthLength?: number
+    birthWeight?: number
+    birthHeadCirc?: number
+    dischargeWeight?: number
+    birthTime?: JSONDate
+    gestationWeeks?: number
+    gestationDays?: number
+    apgar1?: number
+    apgar5?: number
+    apgar10?: number
+    deliveryMethod?: SocialHistoryItem.DeliveryMethod
+    durationOfLabor?: number
+    feedingMethod?: SocialHistoryItem.FeedingMethod
     dateInHospital?: JSONDate
     hospitalName?: string
     hospitalLocation?: string
@@ -954,9 +954,9 @@ export interface SocialHistoryItem {
     ageAtFirstLiveBirth?: number
     monthsBreastfeeding?: number
     ageAtMenopause?: number
-    comment?: string
+    comments?: string
   }
-  adl?: string[]
+  adl?: SocialHistoryItem.ADL[]
   comments?: string
 }
 
@@ -965,5 +965,197 @@ export namespace SocialHistoryItem {
   export type Fragment = Partial<Omit<SocialHistoryItem, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
+  }
+
+  export enum ADL {
+    BackCare = 'Back Care',
+    BloodTransfusions = 'Blood Transfusions',
+    Exercise = 'Exercise',
+    Homebound = 'Homebound',
+    MilitaryService = 'Military Service',
+    SeatBelt = 'Seat Belt',
+    SleepConcern = 'Sleep Concern',
+    StressConcern = 'Stress Concern',
+    BikeHelmet = 'Bike Helmet',
+    CaffeineConcern = 'Caffeine Concern',
+    HobbyHazards = 'Hobby Hazards',
+    Homeless = 'Homeless',
+    OccupationalExposure = 'Occupational Exposure',
+    SelfExams = 'Self-Exams',
+    SpecialDiet = 'Special Diet',
+    WeightConcern = 'Weight Concern'
+  }
+
+  export enum MaritalStatus {
+    Divorced = 'Divorced',
+    LegallySeparated = 'Legally Separated',
+    LifePartner = 'Life Partner',
+    Married = 'Married',
+    Single = 'Single',
+    Unknown = 'Unknown',
+    WidowWidower = 'Widow/Widower'
+  }
+
+  export enum HighestEducationLevel {
+    HighSchool = 'High School',
+    AssociateDegree = 'Associate Degree',
+    BachelorDegree = 'Bachelor Degree',
+    MasterDegree = 'Master Degree',
+    DoctoralDegree = 'Doctoral Degree'
+  }
+
+  export enum PreferredLanguage {
+    English = 'English',
+    Spanish = 'Spanish',
+    French = 'French',
+    German = 'German',
+    Chinese = 'Chinese',
+    Japanese = 'Japanese',
+    Korean = 'Korean'
+  }
+
+  export enum EthnicGroup {
+    NonHispanic = 'Non-Hispanic',
+    Latino = 'Latino',
+    Hispanic = 'Hispanic'
+  }
+
+  export enum Race {
+    White = 'White',
+    BlackOrAfricanAmerican = 'Black or African American',
+    Asian = 'Asian',
+    AmericanIndian = 'American Indian',
+    NativeHawaiian = 'Native Hawaiian',
+    Other = 'Other'
+  }
+
+  export enum SmokingStatus {
+    Never = 'Never',
+    Former = 'Former',
+    EveryDay = 'Every Day',
+    SomeDays = 'Some Days',
+    Unknown = 'Unknown'
+  }
+
+  export enum PassiveExposure {
+    Never = 'Never',
+    Past = 'Past',
+    Current = 'Current'
+  }
+
+  export enum SmokingType {
+    Cigarettes = 'Cigarettes',
+    Pipe = 'Pipe',
+    Cigars = 'Cigars',
+    Other = 'Other'
+  }
+
+  export enum SmokelessStatus {
+    Never = 'Never',
+    Former = 'Former',
+    Current = 'Current',
+    Unknown = 'Unknown'
+  }
+
+  export enum AlcoholStatus {
+    Yes = 'Yes',
+    No = 'No',
+    NotCurrently = 'Not Currently',
+    Never = 'Never'
+  }
+
+  export enum DrugStatus {
+    Yes = 'Yes',
+    No = 'No',
+    NotCurrently = 'Not Currently',
+    Never = 'Never'
+  }
+
+  export enum DrugType {
+    AnabolicSteroids = 'Anabolic Steroids',
+    Barbiturates = 'Barbiturates',
+    Benzodiazepines = 'Benzodiazepines',
+    Cannabinoids = 'Cannabinoids - Marijuana, Hashish, Synthetics',
+    Hallucinogens = 'Hallucinogens - e.g. LSD, Mushrooms',
+    Inhalants = 'Inhalants - e.g. Nitrous Oxide, Amyl Nitrite',
+    Opioids = 'Opioids',
+    Stimulants = 'Stimulants - e.g. Amphetamines, Crack/Cocaine, Methyphenidate',
+    Other = 'Other'
+  }
+
+  export enum SexualStatus {
+    Yes = 'Yes',
+    NotCurrently = 'Not Currently',
+    Never = 'Never'
+  }
+
+  export enum BirthControlMethod {
+    Abstinence = 'Abstinence',
+    CoitusInterruptus = 'Coitus Interruptus',
+    Condom = 'Condom',
+    Diaphragm = 'Diaphragm',
+    IUD = 'IUD',
+    Implant = 'Implant',
+    Injection = 'Injection',
+    None = 'None',
+    Patch = 'Patch',
+    Pill = 'Pill',
+    ProgesteroneOnlyPill = 'Progesterone only pill (mini-pill)',
+    Rhythm = 'Rhythm',
+    Ring = 'Ring',
+    Spermicide = 'Spermicide',
+    Sponge = 'Sponge',
+    SpousePartnerWithVasectomy = 'Spouse/Partner w/vasectomy',
+    Surgical = 'Surgical'
+  }
+
+  export enum SexualPartner {
+    Female = 'Female',
+    Male = 'Male'
+  }
+
+  export enum VapingStatus {
+    CurrentEveryDayUser = 'Current Every Day User',
+    CurrentSomeDayUser = 'Current Some Day User',
+    FormerUser = 'Former User',
+    NeverAssessed = 'Never Assessed',
+    NeverUser = 'Never User',
+    UserCurrentStatusUnknown = 'User - Current Status Unknown',
+    UnknownIfEverUsed = 'Unknown If Ever Used'
+  }
+
+  export enum DeliveryMethod {
+    Biochemical = 'Biochemical',
+    CSectionLowTransverse = 'C-section, low transverse',
+    CSectionLowVertical = 'C-Section, low vertical',
+    CSectionClassical = 'C-Section, classical',
+    CSectionUnspecified = 'C-section, unspecified',
+    VaginalBreech = 'Vaginal, breech',
+    VBAC = 'VBAC',
+    VaginalForceps = 'Vaginal, forceps',
+    VaginalSpontaneous = 'Vaginal, spontaneous',
+    VaginalVacuum = 'Vaginal, vacuum'
+  }
+
+  export enum FeedingMethod {
+    BreastFed = 'Breast Fed',
+    BottleFedFormula = 'Bottle Fed-Formula',
+    BottleFedBreastMilk = 'Bottle Fed- Breast Milk',
+    BothBreastAndBottleFed = 'Both Breast and Bottle Fed',
+    Unknown = 'Unknown'
+  }
+
+  export enum VapingSubstance {
+    Nicotine = 'Nicotine',
+    THC = 'THC',
+    CBD = 'CBD',
+    Flavoring = 'Flavoring'
+  }
+
+  export enum VapingDevice {
+    Disposable = 'Disposable',
+    PreFilledPod = 'Pre-filled Pod',
+    PreFilledOrRefillableCartridge = 'Pre-filled or Refillable Cartridge',
+    RefillableTank = 'Refillable Tank'
   }
 }

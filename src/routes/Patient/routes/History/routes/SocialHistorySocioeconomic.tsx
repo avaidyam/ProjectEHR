@@ -150,7 +150,7 @@ export function SocialHistorySocioeconomic() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Marital Status:"
-              options={['Divorced', 'Legally Separated', 'Life Partner', 'Married', 'Single', 'Unknown', 'Widow/Widower']}
+              options={Object.values(Database.SocialHistoryItem.MaritalStatus)}
               value={socioeconomicData?.demographics?.maritalStatus}
               onChange={(_e, val) => handleDemographicsChange('maritalStatus', val)}
             />
@@ -193,7 +193,7 @@ export function SocialHistorySocioeconomic() {
               size="small"
               fullWidth
               label="Highest education level:"
-              options={['High School', 'Associate Degree', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']}
+              options={Object.values(Database.SocialHistoryItem.HighestEducationLevel)}
               value={socioeconomicData?.demographics?.highestEducationLevel}
               onInputChange={(_e, val) => handleDemographicsChange('highestEducationLevel', val)}
             />
@@ -204,7 +204,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               fullWidth
               label="Preferred Language:"
-              options={['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean']}
+              options={Object.values(Database.SocialHistoryItem.PreferredLanguage)}
               value={socioeconomicData?.demographics?.preferredLanguage}
               onInputChange={(_e, val) => handleDemographicsChange('preferredLanguage', val)}
             />
@@ -215,7 +215,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               fullWidth
               label="Ethnic Group:"
-              options={['Non-Hispanic', 'Latino', 'Hispanic']}
+              options={Object.values(Database.SocialHistoryItem.EthnicGroup)}
               value={socioeconomicData?.demographics?.ethnicGroup}
               onInputChange={(_e, val) => handleDemographicsChange('ethnicGroup', val)}
             />
@@ -226,7 +226,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               fullWidth
               label="Race:"
-              options={['White', 'Black or African American', 'Asian', 'American Indian', 'Native Hawaiian', 'Other']}
+              options={Object.values(Database.SocialHistoryItem.Race)}
               value={socioeconomicData?.demographics?.race}
               onInputChange={(_e, val) => handleDemographicsChange('race', val)}
             />

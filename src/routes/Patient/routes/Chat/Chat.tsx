@@ -161,7 +161,7 @@ export function Chat() {
         if (gyn.ageAtFirstLiveBirth) text += `- Age at first live birth: ${gyn.ageAtFirstLiveBirth}\n`;
         if (gyn.monthsBreastfeeding) text += `- Months breastfeeding: ${gyn.monthsBreastfeeding}\n`;
         if (gyn.ageAtMenopause) text += `- Age at menopause: ${gyn.ageAtMenopause}\n`;
-        if (gyn.comment) text += `- Comments: ${gyn.comment.replace(/<[^>]+>/g, '').trim()}\n`;
+        if (gyn.comments) text += `- Comments: ${gyn.comments.replace(/<[^>]+>/g, '').trim()}\n`;
       }
 
       if (!ob && !gyn) {
