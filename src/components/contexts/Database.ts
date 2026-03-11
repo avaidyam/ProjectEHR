@@ -289,7 +289,7 @@ export namespace Patient {
   export type ID = Branded<UUID, 'Patient.ID'>
   export type Fragment = Partial<Omit<Patient, 'id'>>
   export namespace ID {
-    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
+    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 6)).toString() as ID
   }
 }
 
@@ -323,7 +323,7 @@ export namespace Encounter {
   export type ID = Branded<UUID, 'Encounter.ID'>
   export type Fragment = Partial<Omit<Encounter, 'id'>>
   export namespace ID {
-    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 7)).toString() as ID
+    export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 6)).toString() as ID
   }
 
   export enum Status {

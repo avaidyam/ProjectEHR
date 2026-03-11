@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { usePatient, useDatabase } from '../../../../components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 import { FlowsheetGrid } from './components/FlowsheetGrid';
 import { LeftRail } from './components/LeftRail';
 import { CollapsiblePane } from 'components/ui/CollapsiblePane';
@@ -61,6 +62,8 @@ export const Flowsheet = () => {
   // Context Data
   const { useEncounter } = usePatient();
   const [flowsheetData, setFlowsheetData] = useEncounter().flowsheets();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
   // Local state for the "Now" column which is not yet saved to DB
   const [nowColumn, setNowColumn] = React.useState<TimeColumn>(createNowColumn());
@@ -75,6 +78,10 @@ export const Flowsheet = () => {
     setActiveTab(newTab);
     setSearchParams({ tab: newTab }, { replace: true });
   };
+
+  const visibleFlowsheetData = React.useMemo(() => {
+    return filterDocuments(flowsheetData || [], conditionals, orders);
+  }, [flowsheetData, conditionals, orders]);
 
   // Prepare tab list from definitions
   const tabs = React.useMemo(() => (flowsheetDefs || []).map((group: any) => {
@@ -97,7 +104,7 @@ export const Flowsheet = () => {
     if (!activeGroup) return [nowColumn];
 
     // Filter data for this flowsheet group
-    const groupData = (flowsheetData || []).filter((d: any) => d.flowsheet === activeGroup.id);
+    const groupData = (visibleFlowsheetData || []).filter((d: any) => d.flowsheet === activeGroup.id);
 
     const sortedData = groupData.sort((a: any, b: any) =>
       Temporal.Instant.from(a.date).epochMilliseconds - Temporal.Instant.from(b.date).epochMilliseconds
@@ -117,15 +124,15 @@ export const Flowsheet = () => {
     }));
 
     return [...persistedColumns, nowColumn];
-  }, [flowsheetData, activeGroup, nowColumn]);
+  }, [visibleFlowsheetData, activeGroup, nowColumn]);
 
   // 2. Entries: Flattened list from flowsheetData
   const entries = React.useMemo(() => {
     if (!activeGroup) return [];
 
-    if (!flowsheetData) return [];
+    if (!visibleFlowsheetData) return [];
 
-    const groupData = flowsheetData.filter((d: any) => d.flowsheet === activeGroup.id);
+    const groupData = visibleFlowsheetData.filter((d: any) => d.flowsheet === activeGroup.id);
     const flattenedEntries: FlowsheetEntry[] = [];
 
     groupData.forEach((d: any) => {
@@ -144,13 +151,13 @@ export const Flowsheet = () => {
     });
 
     return flattenedEntries;
-  }, [flowsheetData, activeGroup]);
+  }, [visibleFlowsheetData, activeGroup]);
 
   // 3. Last Filed Values
   const lastFiledValues = React.useMemo(() => {
-    if (!activeGroup || !flowsheetData) return {};
+    if (!activeGroup || !visibleFlowsheetData) return {};
 
-    const groupData = (flowsheetData || [])
+    const groupData = (visibleFlowsheetData || [])
       .filter((d: any) => d.flowsheet === activeGroup.id)
       .sort((a: any, b: any) => Temporal.Instant.from(a.date).epochMilliseconds - Temporal.Instant.from(b.date).epochMilliseconds);
 

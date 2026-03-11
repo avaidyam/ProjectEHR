@@ -30,8 +30,8 @@ export const CreateEncounter = ({
   const location = useLocation();
   const [, setPatientsDB] = useDatabase().patients();
   const [formData, setFormData] = React.useState<EncounterFormData>({
-    startDate: Temporal.Now.plainDateTimeISO().toZonedDateTime('UTC').toInstant(),
-    endDate: Temporal.Now.plainDateTimeISO().add({ minutes: 30 }).toZonedDateTime('UTC').toInstant(),
+    startDate: Temporal.Now.instant().toString(),
+    endDate: Temporal.Now.instant().add({ minutes: 30 }).toString(),
     department: '',
     type: 'Office Visit',
     provider: '',

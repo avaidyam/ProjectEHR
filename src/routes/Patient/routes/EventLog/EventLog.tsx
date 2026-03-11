@@ -7,7 +7,7 @@ import { EventFilters } from './components/EventFilters';
 import { EventList } from './components/EventList';
 import { VitalsGraph } from './components/VitalsGraph';
 import { CollapsiblePane } from 'components/ui/CollapsiblePane';
-import { getComponentHistory, getFlowsheetHistory } from 'util/helpers';
+import { getComponentHistory, getFlowsheetHistory, filterDocuments } from 'util/helpers';
 
 const CATEGORIES = [
   { id: 'flowsheets', label: 'Flowsheets', icon: 'grid_on', color: '#25584e' },
@@ -38,16 +38,24 @@ export const EventLog = () => {
   const [orders] = useEncounter().orders();
   const [flowsheetDefs] = useDatabase().flowsheets();
   const [providers] = useDatabase().providers();
+  const [conditionals] = useEncounter().conditionals();
+  const [encounterOrders] = useEncounter().orders();
+
+  const visibleNotes = React.useMemo(() => filterDocuments(notes || [], conditionals, encounterOrders), [notes, conditionals, encounterOrders]);
+  const visibleLabs = React.useMemo(() => filterDocuments(labs || [], conditionals, encounterOrders), [labs, conditionals, encounterOrders]);
+  const visibleImaging = React.useMemo(() => filterDocuments(imaging || [], conditionals, encounterOrders), [imaging, conditionals, encounterOrders]);
+  const visibleFlowsheets = React.useMemo(() => filterDocuments(flowsheets || [], conditionals, encounterOrders), [flowsheets, conditionals, encounterOrders]);
+  const visibleOrders = React.useMemo(() => filterDocuments(orders || [], conditionals, encounterOrders), [orders, conditionals, encounterOrders]);
 
   // Generate component history for popover display
   const componentHistory = React.useMemo(() => {
-    return getComponentHistory(labs!);
-  }, [labs]);
+    return getComponentHistory(visibleLabs!);
+  }, [visibleLabs]);
 
   // Generate flowsheet history for popover display
   const flowsheetHistory = React.useMemo(() => {
-    return getFlowsheetHistory(flowsheets!, flowsheetDefs);
-  }, [flowsheets, flowsheetDefs]);
+    return getFlowsheetHistory(visibleFlowsheets!, flowsheetDefs);
+  }, [visibleFlowsheets, flowsheetDefs]);
 
   // Helper to look up provider name by ID
   const getProviderName = (providerId: Database.Provider.ID) => {
@@ -67,7 +75,7 @@ export const EventLog = () => {
     const allEvents: any[] = [];
 
     // Process Labs
-    (labs || []).forEach(item => {
+    (visibleLabs || []).forEach(item => {
       allEvents.push({
         id: item.id || `lab - ${Math.random()} `,
         category: 'results_lab',
@@ -77,12 +85,12 @@ export const EventLog = () => {
         tag: item.abnormal ? 'Abnormal' : undefined,
         author: getProviderName(item.provider!) ?? "Unknown",
         data: item,
-        subItems: (item.components ?? []).map(x => ({ label: x.name, value: x.value }))
+        subItems: (item.components ?? []).map((x: any) => ({ label: x.name, value: x.value }))
       });
     });
 
     // Process Imaging
-    (imaging || []).forEach(item => {
+    (visibleImaging || []).forEach(item => {
       allEvents.push({
         id: item.id || `img - ${Math.random()} `,
         category: 'results_imaging',
@@ -97,7 +105,7 @@ export const EventLog = () => {
     });
 
     // Process Notes
-    (notes || []).forEach(item => {
+    (visibleNotes || []).forEach(item => {
       allEvents.push({
         id: item.id,
         category: 'notes',
@@ -112,7 +120,7 @@ export const EventLog = () => {
 
     // Process Flowsheets (Vitals)
     const flowsheetGroups: Record<string, any> = {};
-    (flowsheets || []).forEach(item => {
+    (visibleFlowsheets || []).forEach(item => {
       const timeKey = item.date as string;
 
       // Look up group definition
@@ -152,7 +160,7 @@ export const EventLog = () => {
     });
 
     // Process Orders
-    (orders || []).forEach((item: any) => {
+    (visibleOrders || []).forEach((item: any) => {
       allEvents.push({
         id: item.id || `order - ${Math.random()}`,
         category: 'orders',
@@ -166,11 +174,11 @@ export const EventLog = () => {
     });
 
     return allEvents.sort((a: any, b: any) => Temporal.Instant.from(b.timestamp).epochMilliseconds - Temporal.Instant.from(a.timestamp).epochMilliseconds);
-  }, [notes, labs, imaging, flowsheets, flowsheetDefs, providers, orders]);
+  }, [visibleNotes, visibleLabs, visibleImaging, visibleFlowsheets, flowsheetDefs, providers, visibleOrders]);
 
   // Transform Flowsheets for VitalsGraph
   const vitalsGraphData = React.useMemo(() => {
-    return (flowsheets || []).map((entry: any) => ({
+    return (visibleFlowsheets || []).map((entry: any) => ({
       time: Temporal.Instant.from(entry.date),
       temp: entry.temp,
       hr: entry.hr,
@@ -179,7 +187,7 @@ export const EventLog = () => {
       rr: entry.rr,
       spo2: entry.spo2,
     })).sort((a, b) => Temporal.Instant.compare(a.time, b.time));
-  }, [flowsheets]);
+  }, [visibleFlowsheets]);
 
   const filteredEvents = events.filter((e: any) => {
     const category = e.category.toLowerCase();
