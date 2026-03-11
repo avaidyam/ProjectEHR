@@ -2,10 +2,7 @@
 import * as React from 'react';
 import {
   Box,
-  Stack,
   Button,
-  IconButton,
-  Label,
   TitledCard,
   Icon,
   Autocomplete,
@@ -15,32 +12,31 @@ import {
 } from 'components/ui/Core';
 import { GridColDef } from '@mui/x-data-grid';
 import {
-  Checkbox,
-  FormControlLabel,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Popover,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { usePatient, Database } from 'components/contexts/PatientContext';
-
-
-const RotatedTextInner = styled(Box)(({ theme }) => ({
-  transform: 'rotate(-60deg)',
-  transformOrigin: 'bottom left',
-  position: 'absolute',
-  bottom: 0,
-  left: '100%',
-  paddingBottom: '25px',
-  width: '150px',
-  zIndex: 10
-}));
 
 const RotatedText: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Tooltip title={children} placement="bottom">
-    <RotatedTextInner>{children}</RotatedTextInner>
+    <Box
+      sx={{
+        transform: 'rotate(-60deg)',
+        transformOrigin: 'bottom left',
+        position: 'absolute',
+        bottom: 0,
+        left: '100%',
+        paddingBottom: '25px',
+        width: '150px',
+        zIndex: 10
+      }}
+      {...props}
+    >
+      {children}
+    </Box>
   </Tooltip>
 )
 

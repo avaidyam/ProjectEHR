@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FormControlLabel, FormGroup, styled, FormControl } from '@mui/material';
+import { FormControlLabel, FormGroup, FormControl } from '@mui/material';
 import { Box, Button, Autocomplete, Label, DatePicker, Checkbox, Grid } from 'components/ui/Core';
 import { useDatabase } from 'components/contexts/PatientContext'
 
@@ -32,18 +32,6 @@ const unitMap: any = units.reduce((acc: any, unit: any) => {
   acc[unit.abbrev] = unit.full;
   return acc;
 }, {});
-
-const StyledLabel = styled(Label)({
-  alignSelf: 'flex-start',
-  paddingTop: 8,
-});
-
-const PrnFormGroup = styled(FormGroup)({
-  display: 'flex',
-  flexDirection: 'column',
-  flexWrap: 'wrap',
-  maxHeight: 150,
-});
 
 export function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
   const [orderables] = useDatabase().orderables()
@@ -100,7 +88,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
     <Box>
       <Grid container spacing={2} alignItems="flex-start">
         <Grid size={{ xs: 3 }}>
-          <StyledLabel>Dose:</StyledLabel>
+          <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>Dose:</Label>
         </Grid>
         <Grid size={{ xs: 6 }}>
           <Autocomplete
@@ -121,7 +109,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
           />
         </Grid>
         <Grid size={{ xs: 3 }}>
-          <StyledLabel>Route:</StyledLabel>
+          <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>Route:</Label>
         </Grid>
         <Grid size={{ xs: 9 }}>
           <Autocomplete
@@ -132,7 +120,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
           />
         </Grid>
         <Grid size={{ xs: 3 }}>
-          <StyledLabel>Frequency:</StyledLabel>
+          <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>Frequency:</Label>
         </Grid>
         <Grid size={{ xs: 9 }}>
           <Autocomplete
@@ -146,7 +134,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
         </Grid>
 
         <Grid size={{ xs: 3 }}>
-          <StyledLabel>Date Range:</StyledLabel>
+          <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>Date Range:</Label>
         </Grid>
         <Grid size={{ xs: 4 }}>
           <DatePicker
@@ -168,11 +156,11 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
         {editedMedication.possiblePrnReasons && editedMedication.possiblePrnReasons.length > 0 && (
           <>
             <Grid size={{ xs: 3 }}>
-              <StyledLabel>PRN Reasons:</StyledLabel>
+              <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>PRN Reasons:</Label>
             </Grid>
             <Grid size={{ xs: 9 }}>
               <FormControl component="fieldset" fullWidth margin="normal">
-                <PrnFormGroup>
+                <FormGroup sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', maxHeight: 150 }}>
                   {editedMedication.possiblePrnReasons.map((reason: any) => (
                     <FormControlLabel
                       key={reason}
@@ -186,7 +174,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
                       label={reason}
                     />
                   ))}
-                </PrnFormGroup>
+                </FormGroup>
               </FormControl>
             </Grid>
           </>
