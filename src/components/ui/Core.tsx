@@ -93,7 +93,9 @@ import {
   DataGridPremium as MUIDataGrid,
   useGridApiRef as MUIuseGridApiRef,
   useKeepGroupedColumnsHidden as MUIuseKeepGroupedColumnsHidden,
-  DataGridPremiumProps
+  DataGridPremiumProps,
+  GridToolbarContainer as MUIGridToolbarContainer,
+  GridRowId,
 } from '@mui/x-data-grid-premium'
 import {
   TreeItem as _MUITreeItem
@@ -750,6 +752,177 @@ export const DataGrid: React.FC<DataGridPremiumProps & { children?: React.ReactN
       {children}
     </MUIDataGrid>
   )
+}
+
+export interface DetailTableProps extends Omit<DataGridPremiumProps, 'rows' | 'onSave'> {
+  rows: any[];
+  onSave: (row: any) => void;
+  onDelete?: (id: any) => void;
+  renderEditPanel: (row: any, setRow: (update: any) => void) => React.ReactNode;
+  onAddNew?: () => any;
+  addNewLabel?: string;
+}
+
+export const DetailTable: React.FC<DetailTableProps> = ({
+  rows: externalRows,
+  onSave,
+  onDelete,
+  renderEditPanel,
+  onAddNew,
+  addNewLabel,
+  slots,
+  columns,
+  ...props
+}) => {
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
+  const [localRows, setLocalRows] = React.useState<any[]>(externalRows);
+  const apiRef = useGridApiRef();
+
+  React.useEffect(() => {
+    setLocalRows(externalRows);
+  }, [externalRows]);
+
+  const handleAddNew = () => {
+    if (onAddNew) {
+      const newRow = onAddNew();
+      if (!newRow.id) newRow.id = `new-${Date.now()}`;
+      newRow.isNew = true;
+      setLocalRows(prev => [...prev, newRow]);
+      setExpandedRowIds(new Set([newRow.id]));
+    }
+  };
+
+  const handleRowDoubleClick = React.useCallback((params: any) => {
+    apiRef.current?.toggleDetailPanel(params.id);
+  }, [apiRef]);
+
+  const CustomToolbar = React.useCallback(() => (
+    <MUIGridToolbarContainer sx={{ p: 1, gap: 1 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        startIcon={<Icon>add</Icon>}
+        onClick={handleAddNew}
+      >
+        {addNewLabel || 'Add New'}
+      </Button>
+    </MUIGridToolbarContainer>
+  ), [addNewLabel]);
+
+  return (
+    <DataGrid
+      apiRef={apiRef}
+      rows={localRows}
+      onRowDoubleClick={handleRowDoubleClick}
+      getDetailPanelHeight={() => 'auto'}
+      hideFooter
+      disableRowSelectionOnClick
+      showToolbar={!!onAddNew}
+      detailPanelExpandedRowIds={expandedRowIds}
+      onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
+      columns={[...columns, { field: '__detail_panel_toggle__', width: 48 }]}
+      {...props}
+      slots={{
+        toolbar: onAddNew ? CustomToolbar : slots?.toolbar,
+        ...slots
+      }}
+      getDetailPanelContent={({ row }) => (
+        <InternalDetailPanel
+          row={row}
+          renderEditPanel={renderEditPanel}
+          onSave={(updatedRow: any) => {
+            onSave(updatedRow);
+            setExpandedRowIds(new Set());
+          }}
+          onCancel={() => {
+            if (row.isNew) {
+              setLocalRows(prev => prev.filter(r => r.id !== row.id));
+            }
+            setExpandedRowIds(new Set());
+          }}
+          onDelete={() => {
+            if (onDelete) {
+              onDelete(row.id);
+              setExpandedRowIds(new Set());
+            }
+          }}
+        />
+      )}
+    />
+  );
+}
+
+function InternalDetailPanel({ row, renderEditPanel, onSave, onCancel, onDelete }: any) {
+  const [formData, setFormData] = React.useState(row);
+
+  const handleUpdate = (update: any) => {
+    setFormData((prev: any) => (typeof update === 'function' ? update(prev) : { ...prev, ...update }));
+  };
+
+  return (
+    <Box paper elevation={5} sx={{ p: 2, mx: 4, my: 1, bgcolor: 'background.paper' }}>
+      <Label variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
+        Details
+      </Label>
+      {renderEditPanel(formData, handleUpdate)}
+      <DetailPanelActions
+        onSave={() => onSave(formData)}
+        onCancel={onCancel}
+        onDelete={onDelete}
+        canDelete={!row.isNew}
+      />
+    </Box>
+  );
+}
+
+export function DetailPanelActions({ onSave, onCancel, onDelete, canDelete = true, disabled = false }: {
+  onSave: () => void;
+  onCancel: () => void;
+  onDelete?: () => void;
+  canDelete?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <Stack direction="row" justifyContent="space-between" mt={4}>
+      <Box>
+        {onDelete && (
+          <Button
+            onClick={onDelete}
+            variant="outlined"
+            color="error"
+            startIcon={<Icon>delete</Icon>}
+            size="small"
+            disabled={!canDelete || disabled}
+          >
+            Delete
+          </Button>
+        )}
+      </Box>
+      <Stack direction="row" spacing={1}>
+        <Button
+          onClick={onSave}
+          variant="outlined"
+          color="success"
+          size="small"
+          startIcon={<Icon>check</Icon>}
+          disabled={disabled}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={onCancel}
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<Icon>close</Icon>}
+          disabled={disabled}
+        >
+          Cancel
+        </Button>
+      </Stack>
+    </Stack>
+  );
 }
 
 /**

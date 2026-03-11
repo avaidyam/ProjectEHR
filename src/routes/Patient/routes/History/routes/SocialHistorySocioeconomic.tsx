@@ -2,17 +2,11 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  IconButton,
   TitledCard,
   Icon,
   Autocomplete,
+  DetailTable,
   MarkReviewed,
   AutocompleteButtons,
   Grid,
@@ -36,15 +30,6 @@ export function SocialHistorySocioeconomic() {
       return next;
     });
   };
-
-  const [editingEntry, setEditingEntry] = React.useState<any>(null);
-  const [isAddingNew, setIsAddingNew] = React.useState(false);
-  const [newEntry, setNewEntry] = React.useState({
-    id: null,
-    occupation: '',
-    employer: '',
-    comment: '',
-  });
 
   const maritalStatusOptions = [
     'Divorced',
@@ -76,63 +61,37 @@ export function SocialHistorySocioeconomic() {
   };
 
   // Occupation history handlers
-  const handleEdit = (entry: any) => {
-    setEditingEntry(entry);
-    setNewEntry(entry);
+  const handleAddNew = () => {
+    const nextId = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return { id: nextId, occupation: '', employer: '', comment: '', isNew: true };
+  };
+
+  const handleUpdateAfterSave = (updatedRow: any) => {
+    setSocioeconomicData((prev: any) => {
+      const history = prev.occupationalHistory || [];
+      const exists = history.find((r: any) => r.id === updatedRow.id);
+      return {
+        ...prev,
+        occupationalHistory: exists
+          ? history.map((r: any) => r.id === updatedRow.id ? { ...updatedRow, isNew: false } : r)
+          : [...history, { ...updatedRow, isNew: false }]
+      };
+    });
   };
 
   const handleDelete = (id: any) => {
-    const updatedHistory = socioeconomicData?.occupationalHistory?.filter((entry: any) => entry.id !== id) || [];
     setSocioeconomicData((prev: any) => ({
       ...prev,
-      occupationalHistory: updatedHistory
+      occupationalHistory: (prev.occupationalHistory || []).filter((entry: any) => entry.id !== id)
     }));
   };
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setNewEntry({ ...newEntry, [name]: value });
-  };
-
-  const handleSave = () => {
-    let updatedHistory = [];
-    const currentHistory = socioeconomicData?.occupationalHistory || [];
-
-    if (editingEntry) {
-      updatedHistory = currentHistory.map((entry: any) =>
-        entry.id === editingEntry.id ? { ...newEntry, id: entry.id } : entry
-      );
-    } else {
-      const newId = currentHistory.length > 0 ? Math.max(...currentHistory.map((e: any) => e.id)) + 1 : 1;
-      updatedHistory = [...currentHistory, { ...newEntry, id: newId }];
-    }
-
-    setSocioeconomicData((prev: any) => ({
-      ...prev,
-      occupationalHistory: updatedHistory
-    }));
-
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      occupation: '',
-      employer: '',
-      comment: '',
+  const rows = React.useMemo(() => {
+    return (socioeconomicData?.occupationalHistory || []).map((row: any, index: number) => {
+      if (row.id) return row;
+      return { ...row, id: `temp-${index}-${row.occupation}` };
     });
-  };
-
-  const handleCancel = () => {
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      occupation: '',
-      employer: '',
-      comment: '',
-    });
-  };
-
+  }, [socioeconomicData?.occupationalHistory]);
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Socioeconomic</>} color="#9F3494">
@@ -169,117 +128,60 @@ export function SocialHistorySocioeconomic() {
 
       {/* Occupation History */}
       <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Label variant="h6">Occupation History</Label>
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<Icon>add</Icon>}
-            onClick={() => setIsAddingNew(true)}
-          >
-            Add New Occupation
-          </Button>
+        <Label variant="h6" sx={{ mb: 1 }}>Occupation History</Label>
+        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
+          <DetailTable
+            rows={rows}
+            columns={[
+              { field: 'occupation', headerName: 'Occupation', flex: 1 },
+              { field: 'employer', headerName: 'Employer', flex: 1 },
+              { field: 'comment', headerName: 'Comment', flex: 1.5 }
+            ]}
+            getRowId={(row: any) => row.id}
+            onAddNew={handleAddNew}
+            addNewLabel="Add New Occupation"
+            onSave={handleUpdateAfterSave}
+            onDelete={handleDelete}
+            renderEditPanel={(formData, setFormData) => (
+              <Grid container spacing={3}>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Occupation"
+                    fullWidth
+                    value={formData.occupation}
+                    onInputChange={(_e, newValue) => setFormData({ occupation: newValue })}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Employer"
+                    fullWidth
+                    value={formData.employer}
+                    onInputChange={(_e, newValue) => setFormData({ employer: newValue })}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Comment"
+                    fullWidth
+                    value={formData.comment}
+                    onInputChange={(_e, newValue) => setFormData({ comment: newValue })}
+                    options={[]}
+                    TextFieldProps={{ multiline: true, rows: 3 }}
+                  />
+                </Grid>
+              </Grid>
+            )}
+          />
         </Box>
-        <Box paper variant="outlined">
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>Occupation</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Employer</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Comment</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(socioeconomicData?.occupationalHistory || []).map((entry: any, index: number) => (
-                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { background: '#f5f5f5' }, '&:hover': { background: '#f0f0f0' } }}>
-                  <TableCell component="th" scope="row" sx={{ color: '#e91e63', fontWeight: 'bold' }}>
-                    {entry.occupation}
-                  </TableCell>
-                  <TableCell>{entry.employer}</TableCell>
-                  <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {entry.comment}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEdit(entry)} color="primary" size="small">
-                      edit
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(entry.id)} color="secondary" size="small">
-                      delete
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-        {(isAddingNew || editingEntry) && (
-          <Box sx={{ p: 3, mt: 3, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f9f9f9' }}>
-            <Label variant="h6" gutterBottom sx={{ mb: 3 }}>
-              Details
-            </Label>
-            <Grid container spacing={3}>
-              <Grid size={12}>
-                <Autocomplete
-                  size="small"
-                  freeSolo
-                  label="Occupation"
-                  fullWidth
-                  value={newEntry.occupation}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, occupation: newValue })}
-                  options={[]}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Autocomplete
-                  size="small"
-                  freeSolo
-                  label="Employer"
-                  fullWidth
-                  value={newEntry.employer}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, employer: newValue })}
-                  options={[]}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Autocomplete
-                  size="small"
-                  freeSolo
-                  label="Comment"
-                  fullWidth
-                  value={newEntry.comment}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, comment: newValue })}
-                  options={[]}
-                  TextFieldProps={{ multiline: true, rows: 3 }}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outlined"
-                    sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-        )}
       </Box>
 
       {/* Demographics */}
