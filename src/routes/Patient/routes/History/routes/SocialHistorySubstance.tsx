@@ -40,20 +40,6 @@ export function SubstanceAndSexualHistory() {
     }));
   };
 
-  const handleDrinksChange = (drinkType: string, value: string) => {
-    const numValue = parseInt(value) || 0;
-    setSubstanceData((prev: any) => ({
-      ...prev,
-      alcohol: {
-        ...prev.alcohol,
-        drinksPerWeek: {
-          ...prev.alcohol?.drinksPerWeek,
-          [drinkType]: numValue
-        }
-      }
-    }));
-  };
-
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Substance & Sexual Activity</>} color="#9F3494">
 
@@ -159,8 +145,8 @@ export function SubstanceAndSexualHistory() {
             <AutocompleteButtons
               label="Alcohol Use?"
               options={['Yes', 'No', 'Not Currently', 'Never']}
-              value={substanceData?.alcohol?.use}
-              onChange={(_e, val) => handleDataChange('alcohol', 'use', val)}
+              value={substanceData?.alcohol?.status}
+              onChange={(_e, val) => handleDataChange('alcohol', 'status', val)}
             />
           </Grid>
           <Grid size={12}>
@@ -174,8 +160,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Glasses of wine"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.wine?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('wine', newValue)}
+              value={substanceData?.alcohol?.wine?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'wine', newValue)}
               options={['0', '1', '2', '3', '7', '14']}
             />
           </Grid>
@@ -185,8 +171,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Cans of beer"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.beer?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('beer', newValue)}
+              value={substanceData?.alcohol?.beer?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'beer', newValue)}
               options={['0', '1', '2', '3', '6', '12']}
             />
           </Grid>
@@ -196,8 +182,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Shots of liquor"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.liquor?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('liquor', newValue)}
+              value={substanceData?.alcohol?.liquor?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'liquor', newValue)}
               options={['0', '1', '2', '3', '5']}
             />
           </Grid>
@@ -207,8 +193,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Drinks containing 1.5 oz of alcohol"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.mixedDrinks?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('mixedDrinks', newValue)}
+              value={substanceData?.alcohol?.mixed?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'mixed', newValue)}
               options={['0', '1', '2', '3']}
             />
           </Grid>
@@ -218,8 +204,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Standard drinks or equivalent"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.standardDrinks?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('standardDrinks', newValue)}
+              value={substanceData?.alcohol?.standard?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'standard', newValue)}
               options={['0', '1', '2', '3', '7', '14', '21']}
             />
           </Grid>
@@ -245,8 +231,8 @@ export function SubstanceAndSexualHistory() {
             <AutocompleteButtons
               label="Drug Use"
               options={['Yes', 'No', 'Not Currently', 'Never']}
-              value={substanceData?.drugs?.use}
-              onChange={(_e, val) => handleDataChange('drugs', 'use', val)}
+              value={substanceData?.drugs?.status}
+              onChange={(_e, val) => handleDataChange('drugs', 'status', val)}
             />
           </Grid>
           <Grid size={12}>
@@ -276,8 +262,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Use/week"
               fullWidth
-              value={substanceData?.drugs?.usePerWeek?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDataChange('drugs', 'usePerWeek', parseInt(newValue) || 0)}
+              value={substanceData?.drugs?.usage || ''}
+              onInputChange={(_e, newValue) => handleDataChange('drugs', 'usage', parseInt(newValue) || 0)}
               options={['0', '1', '2', '3', '4', '5', '6', '7']}
             />
           </Grid>
@@ -303,8 +289,8 @@ export function SubstanceAndSexualHistory() {
             <AutocompleteButtons
               label="Sexually active"
               options={['Yes', 'Not Currently', 'Never']}
-              value={substanceData?.sexualActivity?.active}
-              onChange={(_e, val) => handleDataChange('sexualActivity', 'active', val)}
+              value={substanceData?.sexual?.status}
+              onChange={(_e, val) => handleDataChange('sexual', 'status', val)}
             />
           </Grid>
           <Grid size={12}>
@@ -331,8 +317,8 @@ export function SubstanceAndSexualHistory() {
               ]}
               checkbox
               multiple
-              value={substanceData?.sexualActivity?.birthControl || []}
-              onChange={(_e, val) => handleDataChange('sexualActivity', 'birthControl', val)}
+              value={substanceData?.sexual?.birthControl || []}
+              onChange={(_e, val) => handleDataChange('sexual', 'birthControl', val)}
               sx={{ '& .MuiFormControlLabel-root': { minWidth: '200px' } }}
             />
           </Grid>
@@ -342,8 +328,8 @@ export function SubstanceAndSexualHistory() {
               options={['Female', 'Male']}
               checkbox
               multiple
-              value={substanceData?.sexualActivity?.partners || []}
-              onChange={(_e, val) => handleDataChange('sexualActivity', 'partners', val)}
+              value={substanceData?.sexual?.partners || []}
+              onChange={(_e, val) => handleDataChange('sexual', 'partners', val)}
             />
           </Grid>
           <Grid size={12}>
@@ -352,8 +338,8 @@ export function SubstanceAndSexualHistory() {
               freeSolo
               label="Comments"
               fullWidth
-              value={substanceData?.sexualActivity?.comments || ''}
-              onInputChange={(_e, newValue) => handleDataChange('sexualActivity', 'comments', newValue)}
+              value={substanceData?.sexual?.comments || ''}
+              onInputChange={(_e, newValue) => handleDataChange('sexual', 'comments', newValue)}
               options={[]}
             />
           </Grid>

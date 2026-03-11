@@ -75,7 +75,7 @@ export function Chat() {
   const surgicalHistory = history?.surgical || [];
   const familyHistory = history?.family || [];
   const socialItem = history?.social?.[0] || {};
-  const socialDocumentation = socialItem.SocialDocumentation || null;
+  const socialDocumentation = socialItem.comments || null;
   const obgynHistory = socialItem.OBGynHistory || null;
 
   // 🧠 Compose the full prompt
@@ -191,8 +191,7 @@ export function Chat() {
 
     // Social Documentation
     text += "### Social Documentation\n";
-    text += socialDocumentation?.textbox
-      || (socialDocumentation ? JSON.stringify(socialDocumentation, null, 2) : "No social documentation found.");
+    text += socialDocumentation || "No social documentation found.";
     text += "\n\n";
 
     // Medications

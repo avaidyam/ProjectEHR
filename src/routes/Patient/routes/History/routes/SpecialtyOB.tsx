@@ -77,16 +77,8 @@ export function SpecialtyOB() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> OB/Gyn History</>} color="#9F3494">
       {/* Obstetric History */}
-      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Label bold sx={{ color: '#e91e63', fontSize: '1.1rem' }}>Obstetric History</Label>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: '#2196f3', '&:hover': { backgroundColor: '#1976d2' } }}
-          >
-            Calculate Counts
-          </Button>
-        </Box>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Obstetric History</Label>
 
         <Grid container spacing={2}>
           {/* First row */}
@@ -217,12 +209,6 @@ export function SpecialtyOB() {
           {/* Pregnancy status checkboxes */}
           <Grid size={12}>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 2 }}>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
-              >
-                ➕ Add previous pregnancy
-              </Button>
               <AutocompleteButtons
                 options={[
                   { label: 'Currently pregnant', value: 'currentlyPregnant' },
@@ -248,7 +234,7 @@ export function SpecialtyOB() {
           {/* Obstetric Comments */}
           <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
-              Obstetric Comments
+              Comments
             </Label>
             <RichTextEditor
               initialContent={obgynData?.obstetricHistory?.comments || ''}
@@ -259,8 +245,8 @@ export function SpecialtyOB() {
         </Grid>
       </Box>
       {/* Gynecology History */}
-      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
-        <Label bold sx={{ color: '#e91e63', mb: 2, fontSize: '1.1rem' }}>Gynecology History</Label>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Gynecology History</Label>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 4 }}>
             <DatePicker
@@ -335,7 +321,7 @@ export function SpecialtyOB() {
           {/* Gynecology Comments */}
           <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
-              Comment
+              Comments
             </Label>
             <RichTextEditor
               initialContent={obgynData?.gynecologyHistory?.comment || ''}

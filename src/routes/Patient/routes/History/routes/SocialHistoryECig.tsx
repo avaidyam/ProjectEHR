@@ -16,46 +16,23 @@ export function ECigaretteVapingHistory() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
 
-  const ecigaretteData = socialHistory[0]?.ECigaretteVaping || {};
-  const setEcigaretteData = (update: any) => {
+  const substanceData = socialHistory[0]?.SubstanceSexualHealth || {};
+  const ecigaretteData = substanceData?.vaping || {};
+  const setSubstanceData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];
       if (next.length === 0) {
         next.push({ id: Database.SocialHistoryItem.ID.create() });
       }
-      const currentECig = next[0].ECigaretteVaping || {};
-      const newECig = typeof update === 'function' ? update(currentECig) : update;
-      next[0] = { ...next[0], ECigaretteVaping: newECig };
+      const currentSubstance = next[0].SubstanceSexualHealth || {};
+      const newSubstance = typeof update === 'function' ? update(currentSubstance) : update;
+      next[0] = { ...next[0], SubstanceSexualHealth: newSubstance };
       return next;
     });
   };
 
-  const handleDataChange = (field: string, value: any) => {
-    setEcigaretteData((prev: any) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleNestedChange = (section: string, field: string, value: any) => {
-    setEcigaretteData((prev: any) => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value
-      }
-    }));
-  };
-
-  const handleBooleanToggle = (field: string, value: boolean) => {
-    setEcigaretteData((prev: any) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleNestedBooleanToggle = (section: string, field: string, value: boolean) => {
-    setEcigaretteData((prev: any) => ({
+  const handleDataChange = (section: string, field: string, value: any) => {
+    setSubstanceData((prev: any) => ({
       ...prev,
       [section]: {
         ...prev[section],
@@ -83,8 +60,8 @@ export function ECigaretteVapingHistory() {
                 'User - Current Status Unknown',
                 'Unknown If Ever Used'
               ]}
-              value={ecigaretteData?.use}
-              onChange={(_e, val) => handleDataChange('use', val)}
+              value={ecigaretteData?.status}
+              onChange={(_e, val) => handleDataChange('vaping', 'status', val)}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -94,7 +71,7 @@ export function ECigaretteVapingHistory() {
               fullWidth
               label="Start Date"
               value={ecigaretteData?.startDate || ''}
-              onChange={(date: any) => handleDataChange('startDate', date)}
+              onChange={(date: any) => handleDataChange('vaping', 'startDate', date)}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -104,7 +81,7 @@ export function ECigaretteVapingHistory() {
               fullWidth
               label="Quit Date"
               value={ecigaretteData?.quitDate || ''}
-              onChange={(date: any) => handleDataChange('quitDate', date)}
+              onChange={(date: any) => handleDataChange('vaping', 'quitDate', date)}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -114,7 +91,7 @@ export function ECigaretteVapingHistory() {
               label="Cartridges/Day"
               fullWidth
               value={ecigaretteData?.cartridgesPerDay?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDataChange('cartridgesPerDay', parseInt(newValue) || 0)}
+              onInputChange={(_e, newValue) => handleDataChange('vaping', 'cartridgesPerDay', parseInt(newValue) || 0)}
               options={['1', '2', '3', '4', '5+']}
             />
           </Grid>
@@ -123,7 +100,7 @@ export function ECigaretteVapingHistory() {
               label="Passive Exposure"
               options={[{ label: 'Yes', value: true }, { label: 'No', value: false }]}
               value={ecigaretteData?.passiveExposure}
-              onChange={(_e, val) => handleBooleanToggle('passiveExposure', val)}
+              onChange={(_e, val) => handleDataChange('vaping', 'passiveExposure', val)}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
@@ -131,7 +108,7 @@ export function ECigaretteVapingHistory() {
               label="Counseling Given"
               options={[{ label: 'Yes', value: true }, { label: 'No', value: false }]}
               value={ecigaretteData?.counselingGiven}
-              onChange={(_e, val) => handleBooleanToggle('counselingGiven', val)}
+              onChange={(_e, val) => handleDataChange('vaping', 'counselingGiven', val)}
             />
           </Grid>
           <Grid size={12}>
@@ -141,7 +118,7 @@ export function ECigaretteVapingHistory() {
               label="Comments"
               fullWidth
               value={ecigaretteData?.comments || ''}
-              onInputChange={(_e, newValue) => handleDataChange('comments', newValue)}
+              onInputChange={(_e, newValue) => handleDataChange('vaping', 'comments', newValue)}
               options={[]}
             />
           </Grid>
@@ -162,20 +139,8 @@ export function ECigaretteVapingHistory() {
               ]}
               checkbox
               multiple
-              value={(() => {
-                const vals = [];
-                if (ecigaretteData?.substances?.nicotine) vals.push('nicotine');
-                if (ecigaretteData?.substances?.thc) vals.push('thc');
-                if (ecigaretteData?.substances?.cbd) vals.push('cbd');
-                if (ecigaretteData?.substances?.flavoring) vals.push('flavoring');
-                return vals;
-              })()}
-              onChange={(_e, val) => {
-                handleNestedBooleanToggle('substances', 'nicotine', val.includes('nicotine'));
-                handleNestedBooleanToggle('substances', 'thc', val.includes('thc'));
-                handleNestedBooleanToggle('substances', 'cbd', val.includes('cbd'));
-                handleNestedBooleanToggle('substances', 'flavoring', val.includes('flavoring'));
-              }}
+              value={ecigaretteData?.substances || []}
+              onChange={(_e, val) => handleDataChange('vaping', 'substances', val)}
               sx={{ '& .MuiFormControlLabel-root': { minWidth: '150px' } }}
             />
           </Grid>
@@ -185,8 +150,12 @@ export function ECigaretteVapingHistory() {
               freeSolo
               label="Other"
               fullWidth
-              value={ecigaretteData?.substances?.other || ''}
-              onInputChange={(_e, newValue) => handleNestedChange('substances', 'other', newValue)}
+              value={(ecigaretteData?.substances || []).filter((s: string) => !['nicotine', 'thc', 'cbd', 'flavoring'].includes(s)).join(', ')}
+              onInputChange={(_e, newValue) => {
+                const known = (ecigaretteData?.substances || []).filter((s: string) => ['nicotine', 'thc', 'cbd', 'flavoring'].includes(s));
+                const other = newValue ? [newValue] : [];
+                handleDataChange('vaping', 'substances', [...known, ...other]);
+              }}
               options={[]}
             />
           </Grid>
@@ -206,20 +175,8 @@ export function ECigaretteVapingHistory() {
               ]}
               checkbox
               multiple
-              value={(() => {
-                const vals = [];
-                if (ecigaretteData?.devices?.disposable) vals.push('disposable');
-                if (ecigaretteData?.devices?.preFilledPod) vals.push('preFilledPod');
-                if (ecigaretteData?.devices?.preFilledOrRefillableCartridge) vals.push('preFilledOrRefillableCartridge');
-                if (ecigaretteData?.devices?.refillableTank) vals.push('refillableTank');
-                return vals;
-              })()}
-              onChange={(_e, val) => {
-                handleNestedBooleanToggle('devices', 'disposable', val.includes('disposable'));
-                handleNestedBooleanToggle('devices', 'preFilledPod', val.includes('preFilledPod'));
-                handleNestedBooleanToggle('devices', 'preFilledOrRefillableCartridge', val.includes('preFilledOrRefillableCartridge'));
-                handleNestedBooleanToggle('devices', 'refillableTank', val.includes('refillableTank'));
-              }}
+              value={ecigaretteData?.devices || []}
+              onChange={(_e, val) => handleDataChange('vaping', 'devices', val)}
               sx={{ '& .MuiFormControlLabel-root': { minWidth: '350px' } }}
             />
           </Grid>
@@ -229,8 +186,12 @@ export function ECigaretteVapingHistory() {
               freeSolo
               label="Other"
               fullWidth
-              value={ecigaretteData?.devices?.other || ''}
-              onInputChange={(_e, newValue) => handleNestedChange('devices', 'other', newValue)}
+              value={(ecigaretteData?.devices || []).filter((s: string) => !['disposable', 'preFilledPod', 'preFilledOrRefillableCartridge', 'refillableTank'].includes(s)).join(', ')}
+              onInputChange={(_e, newValue) => {
+                const known = (ecigaretteData?.devices || []).filter((s: string) => ['disposable', 'preFilledPod', 'preFilledOrRefillableCartridge', 'refillableTank'].includes(s));
+                const other = newValue ? [newValue] : [];
+                handleDataChange('vaping', 'devices', [...known, ...other]);
+              }}
               options={[]}
             />
           </Grid>

@@ -153,14 +153,6 @@ export function SocialHistorySocioeconomic() {
             />
           </Grid>
           <Grid size={12}>
-            <AutocompleteButtons
-              label="Religion:"
-              options={['Buddhism', 'Christianity', 'Hinduism', 'Islam', 'Judaism', 'Sikhism', 'Catholicism', 'None', 'Other']}
-              value={socioeconomicData?.demographics?.religion}
-              onChange={(_e, val) => handleDemographicsChange('religion', val)}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
               size="small"
               freeSolo
@@ -171,26 +163,7 @@ export function SocialHistorySocioeconomic() {
               options={[]}
             />
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Autocomplete
-              size="small"
-              freeSolo
-              label="Spouse Occupation:"
-              fullWidth
-              value={socioeconomicData?.demographics?.spouseOccupation || ''}
-              onInputChange={(_e, newValue) => handleDemographicsChange('spouseOccupation', newValue)}
-              options={[]}
-            />
-          </Grid>
           <Grid size={12}>
-            <AutocompleteButtons
-              label="Preferred Language:"
-              options={['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean']}
-              value={socioeconomicData?.demographics?.preferredLanguage}
-              onChange={(_e, val) => handleDemographicsChange('preferredLanguage', val)}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
               size="small"
               freeSolo
@@ -202,14 +175,6 @@ export function SocialHistorySocioeconomic() {
             />
           </Grid>
           <Grid size={12}>
-            <AutocompleteButtons
-              label="Ethnic Group:"
-              options={['Non-Hispanic', 'Latino', 'Hispanic']}
-              value={socioeconomicData?.demographics?.ethnicGroup}
-              onChange={(_e, val) => handleDemographicsChange('ethnicGroup', val)}
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
               size="small"
               freeSolo
@@ -221,19 +186,46 @@ export function SocialHistorySocioeconomic() {
             />
           </Grid>
           <Grid size={12}>
-            <AutocompleteButtons
-              label="Race:"
-              options={['White', 'Black or African American', 'Asian', 'American Indian', 'Native Hawaiian', 'Other']}
-              value={socioeconomicData?.demographics?.race}
-              onChange={(_e, val) => handleDemographicsChange('race', val)}
+            <Autocomplete
+              size="small"
+              fullWidth
+              label="Highest education level:"
+              options={['High School', 'Associate Degree', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']}
+              value={socioeconomicData?.demographics?.highestEducationLevel}
+              onInputChange={(_e, val) => handleDemographicsChange('highestEducationLevel', val)}
             />
           </Grid>
           <Grid size={12}>
-            <AutocompleteButtons
-              label="What is the highest level of school you have completed or the highest degree you have received?"
-              options={['High School', 'Associate Degree', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']}
-              value={socioeconomicData?.demographics?.highestEducationLevel}
-              onChange={(_e, val) => handleDemographicsChange('highestEducationLevel', val)}
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Preferred Language:"
+              options={['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean']}
+              value={socioeconomicData?.demographics?.preferredLanguage}
+              onInputChange={(_e, val) => handleDemographicsChange('preferredLanguage', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Ethnic Group:"
+              options={['Non-Hispanic', 'Latino', 'Hispanic']}
+              value={socioeconomicData?.demographics?.ethnicGroup}
+              onInputChange={(_e, val) => handleDemographicsChange('ethnicGroup', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Race:"
+              options={['White', 'Black or African American', 'Asian', 'American Indian', 'Native Hawaiian', 'Other']}
+              value={socioeconomicData?.demographics?.race}
+              onInputChange={(_e, val) => handleDemographicsChange('race', val)}
             />
           </Grid>
         </Grid>
