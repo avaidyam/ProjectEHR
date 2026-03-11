@@ -2,7 +2,6 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
   TitledCard,
   Icon,
@@ -59,7 +58,6 @@ export function SocialHistoryADL() {
     }));
   };
 
-
   const renderItem = (item: { key: string; label: string }) => (
     <Grid key={item.key} size={12}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -71,7 +69,7 @@ export function SocialHistoryADL() {
             { label: 'Yes', value: true },
             { label: 'No', value: false }
           ]}
-          value={socialHistoryData?.[item.key]}
+          value={(socialHistoryData as any)?.[item.key]}
           onChange={(_e, val) => handleBooleanChange(item.key, val)}
           sx={{ mb: 0 }}
         />

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
   TitledCard,
   Icon,
@@ -30,16 +29,6 @@ export function ECigaretteVapingHistory() {
       return next;
     });
   };
-
-  const useOptions = [
-    'Current Every Day User',
-    'Current Some Day User',
-    'Former User',
-    'Never Assessed',
-    'Never User',
-    'User - Current Status Unknown',
-    'Unknown If Ever Used'
-  ];
 
   const handleDataChange = (field: string, value: any) => {
     setEcigaretteData((prev: any) => ({
@@ -85,7 +74,15 @@ export function ECigaretteVapingHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="E-cigarette/Vaping Use"
-              options={useOptions}
+              options={[
+                'Current Every Day User',
+                'Current Some Day User',
+                'Former User',
+                'Never Assessed',
+                'Never User',
+                'User - Current Status Unknown',
+                'Unknown If Ever Used'
+              ]}
               value={ecigaretteData?.use}
               onChange={(_e, val) => handleDataChange('use', val)}
             />

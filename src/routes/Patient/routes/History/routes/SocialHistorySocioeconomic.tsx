@@ -31,16 +31,6 @@ export function SocialHistorySocioeconomic() {
     });
   };
 
-  const maritalStatusOptions = [
-    'Divorced',
-    'Legally Separated',
-    'Life Partner',
-    'Married',
-    'Single',
-    'Unknown',
-    'Widow/Widower'
-  ];
-
   // Current occupation handlers
   const handleCurrentOccupationChange = (field: string, value: any) => {
     setSocioeconomicData((prev: any) => ({
@@ -59,39 +49,6 @@ export function SocialHistorySocioeconomic() {
       }
     }));
   };
-
-  // Occupation history handlers
-  const handleAddNew = () => {
-    const nextId = `id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    return { id: nextId, occupation: '', employer: '', comment: '', isNew: true };
-  };
-
-  const handleUpdateAfterSave = (updatedRow: any) => {
-    setSocioeconomicData((prev: any) => {
-      const history = prev.occupationalHistory || [];
-      const exists = history.find((r: any) => r.id === updatedRow.id);
-      return {
-        ...prev,
-        occupationalHistory: exists
-          ? history.map((r: any) => r.id === updatedRow.id ? { ...updatedRow, isNew: false } : r)
-          : [...history, { ...updatedRow, isNew: false }]
-      };
-    });
-  };
-
-  const handleDelete = (id: any) => {
-    setSocioeconomicData((prev: any) => ({
-      ...prev,
-      occupationalHistory: (prev.occupationalHistory || []).filter((entry: any) => entry.id !== id)
-    }));
-  };
-
-  const rows = React.useMemo(() => {
-    return (socioeconomicData?.occupationalHistory || []).map((row: any, index: number) => {
-      if (row.id) return row;
-      return { ...row, id: `temp-${index}-${row.occupation}` };
-    });
-  }, [socioeconomicData?.occupationalHistory]);
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Socioeconomic</>} color="#9F3494">
@@ -131,17 +88,16 @@ export function SocialHistorySocioeconomic() {
         <Label variant="h6" sx={{ mb: 1 }}>Occupation History</Label>
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
           <DetailTable
-            rows={rows}
+            value={socioeconomicData?.occupationalHistory || []}
+            onChange={(val) => setSocioeconomicData((prev: any) => ({ ...prev, occupationalHistory: val }))}
+            template={{ occupation: '', employer: '', comment: '' }}
             columns={[
               { field: 'occupation', headerName: 'Occupation', flex: 1 },
               { field: 'employer', headerName: 'Employer', flex: 1 },
               { field: 'comment', headerName: 'Comment', flex: 1.5 }
             ]}
             getRowId={(row: any) => row.id}
-            onAddNew={handleAddNew}
             addNewLabel="Add New Occupation"
-            onSave={handleUpdateAfterSave}
-            onDelete={handleDelete}
             renderEditPanel={(formData, setFormData) => (
               <Grid container spacing={3}>
                 <Grid size={12}>
@@ -191,7 +147,7 @@ export function SocialHistorySocioeconomic() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Marital Status:"
-              options={maritalStatusOptions}
+              options={['Divorced', 'Legally Separated', 'Life Partner', 'Married', 'Single', 'Unknown', 'Widow/Widower']}
               value={socioeconomicData?.demographics?.maritalStatus}
               onChange={(_e, val) => handleDemographicsChange('maritalStatus', val)}
             />

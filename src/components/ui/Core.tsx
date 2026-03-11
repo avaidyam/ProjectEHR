@@ -754,42 +754,90 @@ export const DataGrid: React.FC<DataGridPremiumProps & { children?: React.ReactN
   )
 }
 
-export interface DetailTableProps extends Omit<DataGridPremiumProps, 'rows' | 'onSave'> {
-  rows: any[];
-  onSave: (row: any) => void;
+export interface DetailTableProps extends Omit<DataGridPremiumProps, 'rows' | 'onSave' | 'onDelete'> {
+  // Manual Mode
+  rows?: any[];
+  onSave?: (row: any) => void;
   onDelete?: (id: any) => void;
-  renderEditPanel: (row: any, setRow: (update: any) => void) => React.ReactNode;
   onAddNew?: () => any;
+
+  // Managed Mode (Simplified)
+  value?: any[];
+  onChange?: (list: any[]) => void;
+  template?: any;
+
   addNewLabel?: string;
+  renderEditPanel: (row: any, setRow: (update: any) => void) => React.ReactNode;
 }
 
 export const DetailTable: React.FC<DetailTableProps> = ({
   rows: externalRows,
-  onSave,
-  onDelete,
+  onSave: externalOnSave,
+  onDelete: externalOnDelete,
+  onAddNew: externalOnAddNew,
+  value,
+  onChange,
+  template,
   renderEditPanel,
-  onAddNew,
   addNewLabel,
   slots,
   columns,
   ...props
 }) => {
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
-  const [localRows, setLocalRows] = React.useState<any[]>(externalRows);
   const apiRef = useGridApiRef();
 
+  // Sanitize rows to ensure they have IDs
+  const displayRows = React.useMemo(() => {
+    const list = value !== undefined ? value : (externalRows || []);
+    return list.map((row: any, index: number) => {
+      if (row.id) return row;
+      return { ...row, id: `gen-${index}-${Date.now()}` };
+    });
+  }, [value, externalRows]);
+
+  const [localRows, setLocalRows] = React.useState<any[]>(displayRows);
+
   React.useEffect(() => {
-    setLocalRows(externalRows);
-  }, [externalRows]);
+    setLocalRows(displayRows);
+  }, [displayRows]);
 
   const handleAddNew = () => {
-    if (onAddNew) {
-      const newRow = onAddNew();
+    let newRow: any;
+    if (template !== undefined) {
+      newRow = { ...template, id: `new-${Date.now()}`, isNew: true };
+    } else if (externalOnAddNew) {
+      newRow = externalOnAddNew();
       if (!newRow.id) newRow.id = `new-${Date.now()}`;
       newRow.isNew = true;
+    }
+
+    if (newRow) {
       setLocalRows(prev => [...prev, newRow]);
       setExpandedRowIds(new Set([newRow.id]));
     }
+  };
+
+  const handleSaveInternal = (updatedRow: any) => {
+    if (onChange && value !== undefined) {
+      const exists = value.find((r: any) => r.id === updatedRow.id);
+      const next = exists
+        ? value.map((r: any) => r.id === updatedRow.id ? { ...updatedRow, isNew: false } : r)
+        : [...value, { ...updatedRow, isNew: false }];
+      onChange(next);
+    } else if (externalOnSave) {
+      externalOnSave(updatedRow);
+    }
+    setExpandedRowIds(new Set());
+  };
+
+  const handleDeleteInternal = (id: any) => {
+    if (onChange && value !== undefined) {
+      onChange(value.filter((r: any) => r.id !== id));
+    } else if (externalOnDelete) {
+      externalOnDelete(id);
+    }
+    setExpandedRowIds(new Set());
   };
 
   const handleRowDoubleClick = React.useCallback((params: any) => {
@@ -818,35 +866,27 @@ export const DetailTable: React.FC<DetailTableProps> = ({
       getDetailPanelHeight={() => 'auto'}
       hideFooter
       disableRowSelectionOnClick
-      showToolbar={!!onAddNew}
+      showToolbar={!!(externalOnAddNew || template)}
       detailPanelExpandedRowIds={expandedRowIds}
       onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
       columns={[...columns, { field: '__detail_panel_toggle__', width: 48 }]}
       {...props}
       slots={{
-        toolbar: onAddNew ? CustomToolbar : slots?.toolbar,
+        toolbar: (externalOnAddNew || template) ? CustomToolbar : slots?.toolbar,
         ...slots
       }}
       getDetailPanelContent={({ row }) => (
         <InternalDetailPanel
           row={row}
           renderEditPanel={renderEditPanel}
-          onSave={(updatedRow: any) => {
-            onSave(updatedRow);
-            setExpandedRowIds(new Set());
-          }}
+          onSave={handleSaveInternal}
           onCancel={() => {
             if (row.isNew) {
               setLocalRows(prev => prev.filter(r => r.id !== row.id));
             }
             setExpandedRowIds(new Set());
           }}
-          onDelete={() => {
-            if (onDelete) {
-              onDelete(row.id);
-              setExpandedRowIds(new Set());
-            }
-          }}
+          onDelete={() => handleDeleteInternal(row.id)}
         />
       )}
     />

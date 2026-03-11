@@ -4,9 +4,9 @@ import {
   TitledCard,
   Icon,
   MarkReviewed,
+  RichTextEditor
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
-import { RichTextEditor } from 'components/ui/Core';
 
 export function SocialHistoryDocumentation() {
   const { useEncounter } = usePatient();

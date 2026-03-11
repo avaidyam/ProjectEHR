@@ -743,128 +743,6 @@ export interface History {
   social: SocialHistoryItem[]
 }
 
-export interface SocialHistoryItem {
-  id: SocialHistoryItem.ID
-  SubstanceSexualHealth?: {
-    alcohol?: {
-      alcoholStatus?: string
-      comments?: string
-      drinksPerWeek: {
-        beer?: number
-        beerCans?: number
-        drinksContainingAlcohol?: number
-        liquor?: number
-        liquorShots?: number
-        mixedDrinks?: number
-        standardDrinks: number
-        wine?: number
-        wineGlasses?: number
-      }
-      use?: string
-    }
-    drugs?: {
-      comments: string
-      drugStatus?: string
-      drugTypes?: string[] | any[]
-      types?: any[]
-      use?: string
-      usePerWeek: number | string
-    }
-    gynecologicalHistory?: {
-      comments: string
-      lastMenstrualPeriod: string
-      menarche: string
-      menstrualCycleDuration: string
-      menstrualCycleFrequency: string
-      menstrualFlow: string
-      regularity: string
-    }
-    sexual?: {
-      comments: string
-      sexuallyActive: string
-    }
-    sexualActivity?: {
-      active: string
-      birthControl: any[]
-      comments: string
-      partners: any[]
-    }
-    tobacco?: {
-      comments?: string
-      packYears: any
-      packsPerDay: any
-      passiveExposure?: string
-      smokeless?: string
-      smokelessStatus?: {
-        comments: string
-        smokelessStatus: string
-      }
-      smokingStatus?: string
-      counselingGiven?: boolean
-      startDate: JSONDate
-      quitDate?: JSONDate
-      status?: string
-      types?: any[] | string[]
-    }
-  }
-  Socioeconomic?: {
-    demographics?: {
-      religion?: string
-      ethnicGroup: string
-      highestEducationLevel: any
-      maritalStatus: string
-      numberOfChildren: any
-      preferredLanguage: string
-      race: string
-      spouseName: any
-      spouseOccupation?: string
-      yearsOfEducation: any
-    }
-    employer?: string
-    occupation?: string
-    occupationalHistory?: {
-      employer: string
-      occupation: string
-    }[]
-  }
-  SocialHistoryADL?: any
-  ECigaretteVaping?: any
-  SocialDocumentation?: {
-    textbox: string
-  }
-  OBGynHistory?: any
-  BirthHistory?: {
-    birthComplications?: string
-    birthLength?: string
-    birthWeight?: string
-    deliveryMethod?: string
-    gestationalAge?: string
-    hospitalStay?: string
-    gestationWeeks?: string
-    gestationDays?: string
-    apgar1?: string
-    apgar5?: string
-    apgar10?: string
-    birthTime?: string
-    birthHeadCirc?: string
-    dischargeWeight?: string
-    durationOfLabor?: string
-    feedingMethod?: string
-    dateInHospital?: string
-    hospitalName?: string
-    hospitalLocation?: string
-    comments?: string
-  }
-}
-
-export namespace SocialHistoryItem {
-  export type ID = Branded<UUID, 'SocialHistoryItem.ID'>
-  export type Fragment = Partial<Omit<SocialHistoryItem, 'id'>>
-  export namespace ID {
-    export const create = (): ID => crypto.randomUUID() as ID
-  }
-}
-
 export interface MedicalHistoryItem {
   id: MedicalHistoryItem.ID
   date?: JSONDate
@@ -965,6 +843,198 @@ export interface FamilyHistoryItem {
 export namespace FamilyHistoryItem {
   export type ID = Branded<UUID, 'FamilyHistoryItem.ID'>
   export type Fragment = Partial<Omit<FamilyHistoryItem, 'id'>>
+  export namespace ID {
+    export const create = (): ID => crypto.randomUUID() as ID
+  }
+}
+
+export interface SocialHistoryItem {
+  id: SocialHistoryItem.ID
+  SubstanceSexualHealth?: {
+    alcohol?: {
+      alcoholStatus?: string
+      comments?: string
+      drinksPerWeek: {
+        beer?: number
+        beerCans?: number
+        drinksContainingAlcohol?: number
+        liquor?: number
+        liquorShots?: number
+        mixedDrinks?: number
+        standardDrinks: number
+        wine?: number
+        wineGlasses?: number
+      }
+      use?: string
+    }
+    drugs?: {
+      comments: string
+      drugStatus?: string
+      drugTypes?: string[] | any[]
+      types?: any[]
+      use?: string
+      usePerWeek: number | string
+    }
+    gynecologicalHistory?: {
+      comments: string
+      lastMenstrualPeriod: string
+      menarche: string
+      menstrualCycleDuration: string
+      menstrualCycleFrequency: string
+      menstrualFlow: string
+      regularity: string
+    }
+    sexual?: {
+      comments: string
+      sexuallyActive: string
+    }
+    sexualActivity?: {
+      active: string
+      birthControl: any[]
+      comments: string
+      partners: any[]
+    }
+    tobacco?: {
+      comments?: string
+      packYears: any
+      packsPerDay: any
+      passiveExposure?: string
+      smokeless?: string
+      smokelessStatus?: {
+        comments: string
+        smokelessStatus: string
+      }
+      smokingStatus?: string
+      counselingGiven?: boolean
+      startDate: JSONDate
+      quitDate?: JSONDate
+      status?: string
+      types?: any[] | string[]
+    }
+  }
+  Socioeconomic?: {
+    demographics?: {
+      religion?: string
+      ethnicGroup?: string
+      highestEducationLevel?: string
+      maritalStatus?: string
+      numberOfChildren?: number
+      preferredLanguage?: string
+      race?: string
+      spouseName?: string
+      spouseOccupation?: string
+      yearsOfEducation?: number
+    }
+    employer?: string
+    occupation?: string
+    occupationalHistory?: {
+      employer?: string
+      occupation?: string
+      comment?: string
+    }[]
+  }
+  SocialHistoryADL?: {
+    backCare?: boolean
+    bloodTransfusions?: boolean
+    exercise?: boolean
+    homebound?: boolean
+    militaryService?: boolean
+    seatBelt?: boolean
+    sleepConcern?: boolean
+    stressConcern?: boolean
+    bikeHelmet?: boolean
+    caffeineConcern?: boolean
+    hobbyHazards?: boolean
+    homeless?: boolean
+    occupationalExposure?: boolean
+    selfExams?: boolean
+    specialDiet?: boolean
+    weightConcern?: boolean
+  }
+  ECigaretteVaping?: {
+    use?: string
+    packsPerDay?: number
+    yearsUsed?: number
+    startDate?: JSONDate
+    quitDate?: JSONDate
+    lastUsedDate?: JSONDate
+    cartridgesPerDay?: number
+    passiveExposure?: boolean
+    counselingGiven?: boolean
+    comment?: string
+    comments?: string
+    substances?: {
+      nicotine?: boolean
+      thc?: boolean
+      cbd?: boolean
+      flavoring?: boolean
+      other?: string
+    }
+    devices?: {
+      disposable?: boolean
+      preFilledPod?: boolean
+      preFilledOrRefillableCartridge?: boolean
+      refillableTank?: boolean
+      other?: string
+    }
+  }
+  SocialDocumentation?: {
+    textbox: string
+  }
+  OBGynHistory?: {
+    obstetricHistory?: {
+      gravida?: number
+      para?: number
+      term?: number
+      preterm?: number
+      ab?: number
+      living?: number
+      sab?: number
+      iab?: number
+      ectopic?: number
+      multiple?: number
+      liveBirths?: number
+      currentlyPregnant?: boolean
+      neverPregnant?: boolean
+      comments?: string
+    }
+    gynecologyHistory?: {
+      lastMenstrualPeriod?: JSONDate
+      ageAtMenarche?: number
+      ageAtFirstPregnancy?: number
+      ageAtFirstLiveBirth?: number
+      monthsBreastfeeding?: number
+      ageAtMenopause?: number
+      comment?: string
+    }
+  }
+  BirthHistory?: {
+    birthComplications?: string
+    birthLength?: string
+    birthWeight?: string
+    deliveryMethod?: string
+    gestationalAge?: string
+    hospitalStay?: string
+    gestationWeeks?: string
+    gestationDays?: string
+    apgar1?: string
+    apgar5?: string
+    apgar10?: string
+    birthTime?: string
+    birthHeadCirc?: string
+    dischargeWeight?: string
+    durationOfLabor?: string
+    feedingMethod?: string
+    dateInHospital?: JSONDate
+    hospitalName?: string
+    hospitalLocation?: string
+    comments?: string
+  }
+}
+
+export namespace SocialHistoryItem {
+  export type ID = Branded<UUID, 'SocialHistoryItem.ID'>
+  export type Fragment = Partial<Omit<SocialHistoryItem, 'id'>>
   export namespace ID {
     export const create = (): ID => crypto.randomUUID() as ID
   }

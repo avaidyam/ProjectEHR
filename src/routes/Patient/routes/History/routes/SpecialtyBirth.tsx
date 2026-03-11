@@ -10,9 +10,9 @@ import {
   MarkReviewed,
   AutocompleteButtons,
   Grid,
+  RichTextEditor
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
-import { Editor } from 'components/ui/Editor';
 
 export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
@@ -32,39 +32,6 @@ export function BirthHistory() {
       return next;
     });
   };
-
-  const deliveryMethodOptions = [
-    'Biochemical',
-    'C-section, low transverse',
-    'C-Section, low vertical',
-    'C-Section, classical',
-    'C-section, unspecified',
-    'Vaginal, breech',
-    'VBAC',
-    'Vaginal, forceps',
-    'Vaginal, spontaneous',
-    'Vaginal, vacuum'
-  ];
-
-  const feedingMethodOptions = [
-    'Breast Fed',
-    'Bottle Fed-Formula',
-    'Bottle Fed- Breast Milk',
-    'Both Breast and Bottle Fed',
-    'Unknown'
-  ];
-
-  // Calculate age from chart birthdate
-  const patientAge = React.useMemo(() => {
-    if (!birthdate) return '';
-
-    try {
-      const age = Temporal.Now.plainDateISO().since(birthdate, { largestUnit: 'year' }).years;
-      return `${age} years old`;
-    } catch (error) {
-      return '';
-    }
-  }, [birthdate]);
 
   const handleFieldChange = (field: string, value: any) => {
     setBirthHistoryData((prev: any) => ({
@@ -170,7 +137,7 @@ export function BirthHistory() {
                   freeSolo
                   label="Age"
                   fullWidth
-                  value={patientAge}
+                  value={Database.JSONDate.toAge(birthdate)}
                   options={[]}
                   TextFieldProps={{
                     disabled: true,
@@ -270,7 +237,18 @@ export function BirthHistory() {
               <Grid size={12}>
                 <AutocompleteButtons
                   label="Delivery method"
-                  options={deliveryMethodOptions}
+                  options={[
+                    'Biochemical',
+                    'C-section, low transverse',
+                    'C-Section, low vertical',
+                    'C-Section, classical',
+                    'C-section, unspecified',
+                    'Vaginal, breech',
+                    'VBAC',
+                    'Vaginal, forceps',
+                    'Vaginal, spontaneous',
+                    'Vaginal, vacuum'
+                  ]}
                   value={birthHistoryData?.deliveryMethod}
                   onChange={(_e, val) => handleFieldChange('deliveryMethod', val)}
                 />
@@ -291,7 +269,13 @@ export function BirthHistory() {
               <Grid size={12}>
                 <AutocompleteButtons
                   label="Feeding method"
-                  options={feedingMethodOptions}
+                  options={[
+                    'Breast Fed',
+                    'Bottle Fed-Formula',
+                    'Bottle Fed- Breast Milk',
+                    'Both Breast and Bottle Fed',
+                    'Unknown'
+                  ]}
                   value={birthHistoryData?.feedingMethod}
                   onChange={(_e, val) => handleFieldChange('feedingMethod', val)}
                 />
@@ -346,7 +330,7 @@ export function BirthHistory() {
       {/* Comments */}
       <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
         <Label variant="h6">Comments:</Label>
-        <Editor
+        <RichTextEditor
           initialContent={birthHistoryData?.comments || ''}
           onSave={handleCommentsChange}
           disableStickyMenuBar={true}

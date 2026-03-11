@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
   TitledCard,
   Icon,
@@ -31,44 +30,6 @@ export function SubstanceAndSexualHistory() {
     });
   };
 
-  const tobaccoOptions = ['Never', 'Former', 'Every Day', 'Some Days', 'Unknown'];
-  const smokelessOptions = ['Never', 'Former', 'Current', 'Unknown'];
-  const exposureOptions = ['Never', 'Past', 'Current'];
-  const useOptions = ['Yes', 'No', 'Not Currently', 'Never'];
-  const sexualActivityOptions = ['Yes', 'Not Currently', 'Never'];
-
-  const drugTypes = [
-    'Anabolic Steroids',
-    'Barbiturates',
-    'Benzodiazepines',
-    'Cannabinoids - Marijuana, Hashish, Synthetics',
-    'Hallucinogens - e.g. LSD, Mushrooms',
-    'Inhalants - e.g. Nitrous Oxide, Amyl Nitrite',
-    'Opioids',
-    'Stimulants - e.g. Amphetamines, Crack/Cocaine, Methyphenidate',
-    'Other'
-  ];
-
-  const birthControlMethods = [
-    'Abstinence',
-    'Coitus Interruptus',
-    'Condom',
-    'Diaphragm',
-    'IUD',
-    'Implant',
-    'Injection',
-    'None',
-    'Patch',
-    'Pill',
-    'Progesterone only pill (mini-pill)',
-    'Rhythm',
-    'Ring',
-    'Spermicide',
-    'Sponge',
-    'Spouse/Partner w/vasectomy',
-    'Surgical'
-  ];
-
   const handleDataChange = (section: string, field: string, value: any) => {
     setSubstanceData((prev: any) => ({
       ...prev,
@@ -77,23 +38,6 @@ export function SubstanceAndSexualHistory() {
         [field]: value
       }
     }));
-  };
-
-  const handleArrayToggle = (section: string, field: string, value: any) => {
-    setSubstanceData((prev: any) => {
-      const currentArray = prev[section]?.[field] || [];
-      const newArray = currentArray.includes(value)
-        ? currentArray.filter((item: any) => item !== value)
-        : [...currentArray, value];
-
-      return {
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: newArray
-        }
-      };
-    });
   };
 
   const handleDrinksChange = (drinkType: string, value: string) => {
@@ -120,7 +64,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Smoking"
-              options={tobaccoOptions}
+              options={['Never', 'Former', 'Every Day', 'Some Days', 'Unknown']}
               value={substanceData?.tobacco?.status}
               onChange={(_e, val) => handleDataChange('tobacco', 'status', val)}
             />
@@ -128,7 +72,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Passive Exposure"
-              options={exposureOptions}
+              options={['Never', 'Past', 'Current']}
               value={substanceData?.tobacco?.passiveExposure}
               onChange={(_e, val) => handleDataChange('tobacco', 'passiveExposure', val)}
             />
@@ -188,7 +132,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Smokeless"
-              options={smokelessOptions}
+              options={['Never', 'Former', 'Current', 'Unknown']}
               value={substanceData?.tobacco?.smokeless}
               onChange={(_e, val) => handleDataChange('tobacco', 'smokeless', val)}
             />
@@ -214,7 +158,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Alcohol Use?"
-              options={useOptions}
+              options={['Yes', 'No', 'Not Currently', 'Never']}
               value={substanceData?.alcohol?.use}
               onChange={(_e, val) => handleDataChange('alcohol', 'use', val)}
             />
@@ -300,7 +244,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Drug Use"
-              options={useOptions}
+              options={['Yes', 'No', 'Not Currently', 'Never']}
               value={substanceData?.drugs?.use}
               onChange={(_e, val) => handleDataChange('drugs', 'use', val)}
             />
@@ -308,7 +252,17 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Types"
-              options={drugTypes}
+              options={[
+                'Anabolic Steroids',
+                'Barbiturates',
+                'Benzodiazepines',
+                'Cannabinoids - Marijuana, Hashish, Synthetics',
+                'Hallucinogens - e.g. LSD, Mushrooms',
+                'Inhalants - e.g. Nitrous Oxide, Amyl Nitrite',
+                'Opioids',
+                'Stimulants - e.g. Amphetamines, Crack/Cocaine, Methyphenidate',
+                'Other'
+              ]}
               checkbox
               multiple
               value={substanceData?.drugs?.types || []}
@@ -348,7 +302,7 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Sexually active"
-              options={sexualActivityOptions}
+              options={['Yes', 'Not Currently', 'Never']}
               value={substanceData?.sexualActivity?.active}
               onChange={(_e, val) => handleDataChange('sexualActivity', 'active', val)}
             />
@@ -356,7 +310,25 @@ export function SubstanceAndSexualHistory() {
           <Grid size={12}>
             <AutocompleteButtons
               label="Birth Control Methods"
-              options={birthControlMethods}
+              options={[
+                'Abstinence',
+                'Coitus Interruptus',
+                'Condom',
+                'Diaphragm',
+                'IUD',
+                'Implant',
+                'Injection',
+                'None',
+                'Patch',
+                'Pill',
+                'Progesterone only pill (mini-pill)',
+                'Rhythm',
+                'Ring',
+                'Spermicide',
+                'Sponge',
+                'Spouse/Partner w/vasectomy',
+                'Surgical'
+              ]}
               checkbox
               multiple
               value={substanceData?.sexualActivity?.birthControl || []}
