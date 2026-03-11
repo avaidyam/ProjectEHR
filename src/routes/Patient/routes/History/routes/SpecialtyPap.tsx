@@ -8,15 +8,22 @@ import {
   MarkReviewed,
 } from 'components/ui/Core';
 import { usePatient } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function PapTracking() {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
   const papTests = React.useMemo(() => {
     const labs = (encounter?.labs || []);
     if (labs.length === 0) return [];
-    return labs.filter((doc: any) => {
+
+    // Filter by conditionals/orders first
+    const visibleLabs = filterDocuments(labs, conditionals, orders);
+
+    return visibleLabs.filter((doc: any) => {
       if (doc.Test) {
         return doc.Test.toLowerCase().includes('pap');
       }

@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { Database, usePatient } from 'components/contexts/PatientContext';
 import { GridColDef, GridRowId } from '@mui/x-data-grid';
-import { getICD10CodeDescription } from 'util/helpers';
+import { getICD10CodeDescription, filterDocuments } from 'util/helpers';
 import { DiagnosisPicker } from '../../ProblemList/components/DiagnosisPicker';
 
 function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete, onOpenModal, problems }: {
@@ -201,12 +201,18 @@ export function MedicalHistory() {
   const { useEncounter, useChart } = usePatient();
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([]);
   const [problems, setProblems] = useEncounter().problems([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [patientData] = useChart()();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [idToUpdate, setIdToUpdate] = React.useState<any>(null);
   const apiRef = useGridApiRef();
+
+  const visibleMedicalHx = React.useMemo(() => {
+    return filterDocuments(medicalHx || [], conditionals, orders);
+  }, [medicalHx, conditionals, orders]);
 
   const handleOpenModal = (id: any, term = "") => {
     setIdToUpdate(id);
@@ -373,7 +379,7 @@ export function MedicalHistory() {
       <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
         <DataGrid
           apiRef={apiRef}
-          rows={medicalHx ?? []}
+          rows={visibleMedicalHx ?? []}
           columns={columns}
           getRowId={(row: any) => row.id}
           hideFooter

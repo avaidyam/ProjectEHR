@@ -19,6 +19,7 @@ import {
   Popover,
 } from '@mui/material';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 const RotatedText: React.FC<React.PropsWithChildren> = ({ children, ...props }) => (
   <Tooltip title={children} placement="bottom">
@@ -137,6 +138,8 @@ export function FamilyHistory() {
   const { useEncounter } = usePatient();
   const [familyHx, setFamilyHx] = useEncounter().history.family([]);
   const [familyStatus, setFamilyStatus] = useEncounter().history.familyStatus([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
   const [isAddProblemOpen, setIsAddProblemOpen] = React.useState(false);
   const [commentAnchorEl, setCommentAnchorEl] = React.useState<HTMLDivElement | null>(null);
@@ -144,6 +147,10 @@ export function FamilyHistory() {
   const [selectedProblem, setSelectedProblem] = React.useState<any>(null);
   const [commentText, setCommentText] = React.useState('');
   const [newRelationship, setNewRelationship] = React.useState<Database.FamilyStatusItem.Relationship | null>(null);
+
+  const visibleFamilyStatus = React.useMemo(() => {
+    return filterDocuments(familyStatus || [], conditionals, orders);
+  }, [familyStatus, conditionals, orders]);
 
   const uniqueProblems = React.useMemo(() => getUniqueProblems(familyHx), [familyHx]);
 
@@ -370,7 +377,7 @@ export function FamilyHistory() {
 
       <Box sx={{ height: 400, width: '100%' }}>
         <DataGrid
-          rows={familyStatus}
+          rows={visibleFamilyStatus}
           columns={columns}
           columnHeaderHeight={100}
           hideFooter

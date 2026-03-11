@@ -18,12 +18,19 @@ import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { Database, usePatient } from 'components/contexts/PatientContext';
 import { OrderPicker } from '../OrderCart/components/OrderPicker';
 import { GridColDef } from '@mui/x-data-grid';
+import { filterDocuments } from 'util/helpers';
 
 export function Medications() {
   const { useEncounter } = usePatient();
   const [medications, setMedications] = useEncounter().medications();
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<Database.Medication.ID>>(new Set());
   const apiRef = useGridApiRef();
+
+  const visibleMedications = React.useMemo(() => {
+    return filterDocuments(medications || [], conditionals, orders);
+  }, [medications, conditionals, orders]);
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [openOrderPicker, setOpenOrderPicker] = React.useState(false);
@@ -210,7 +217,7 @@ export function Medications() {
         <Box sx={{ height: 600, width: '100%' }}>
           <DataGrid
             apiRef={apiRef}
-            rows={medications ?? []}
+            rows={visibleMedications ?? []}
             columns={columns}
             getRowId={(row: any) => row.id || `medication-${row.name}-${row.dose}`}
             rowHeight={70}

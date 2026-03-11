@@ -12,12 +12,19 @@ import {
   Grid,
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const socioeconomicData = socialHistory[0] || {};
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const socioeconomicData = visibleSocialHistory[0] || {};
   const setSocioeconomicData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];

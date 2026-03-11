@@ -13,13 +13,20 @@ import {
   RichTextEditor
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
   const [{ birthdate }] = useChart()();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const birthHistoryData = socialHistory[0]?.birth || {};
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const birthHistoryData = visibleSocialHistory[0]?.birth || {};
   const setBirthHistoryData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];

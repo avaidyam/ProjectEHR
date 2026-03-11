@@ -7,12 +7,19 @@ import {
   RichTextEditor
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SocialHistoryDocumentation() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const socialDocData = socialHistory[0]?.comments || '';
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const socialDocData = visibleSocialHistory[0]?.comments || '';
   const setSocialDocData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];

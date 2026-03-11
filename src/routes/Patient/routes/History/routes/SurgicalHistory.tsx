@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
 import { GridColDef } from '@mui/x-data-grid';
+import { filterDocuments } from 'util/helpers';
 
 const procedures = [
   "Appendectomy", "Cholecystectomy", "Hernia Repair - Inguinal", "Hernia Repair - Umbilical",
@@ -181,9 +182,15 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
 export function SurgicalHistory() {
   const { useEncounter, useChart } = usePatient();
   const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [patientData] = useChart()();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
   const apiRef = useGridApiRef();
+
+  const visibleSurgicalHx = React.useMemo(() => {
+    return filterDocuments(surgicalHx || [], conditionals, orders);
+  }, [surgicalHx, conditionals, orders]);
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
@@ -293,7 +300,7 @@ export function SurgicalHistory() {
       <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
         <DataGrid
           apiRef={apiRef}
-          rows={surgicalHx ?? []}
+          rows={visibleSurgicalHx ?? []}
           columns={columns}
           getRowId={(row: any) => row.id}
           hideFooter

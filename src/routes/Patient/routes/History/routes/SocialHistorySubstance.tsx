@@ -11,12 +11,19 @@ import {
   MarkReviewed,
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const substanceData = socialHistory[0] || {};
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const substanceData = visibleSocialHistory[0] || {};
   const setSubstanceData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];

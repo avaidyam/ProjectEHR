@@ -10,12 +10,19 @@ import {
   Grid,
 } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const socialHistoryData = socialHistory[0]?.adl || [];
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const socialHistoryData = visibleSocialHistory[0]?.adl || [];
   const setSocialHistoryData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];
