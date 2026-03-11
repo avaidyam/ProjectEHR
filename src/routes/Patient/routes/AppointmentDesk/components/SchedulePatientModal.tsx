@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Window, TreeView, TreeItem, Icon, Label, Grid, Autocomplete, DateTimePicker, TimePicker } from 'components/ui/Core';
+import { Autocomplete, Box, Button, Window, TreeView, TreeItem, Icon, Label, Grid, usePrompts, DateTimePicker, TimePicker } from 'components/ui/Core';
 import { DepartmentSelectField, ProviderSelectField, LocationSelectField } from 'components/ui/DataUI';
 import * as Database from 'components/contexts/Database';
 
@@ -37,6 +37,7 @@ const VISIT_STATUSES = [
 ];
 
 export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, departments, providers, locations, appointment, currentPatientId }: any) => {
+  const { alert } = usePrompts()
   const [selectedPatientId, setSelectedPatientId] = React.useState(appointment?.patient?.mrn || currentPatientId || null);
   const [selectedEncounterId, setSelectedEncounterId] = React.useState(appointment?.patient?.enc || null);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
@@ -99,7 +100,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (formData.department && formData.provider && formData.location && formData.date && selectedEncounterId) {
       onSubmit({
         patientId: selectedPatientId,
@@ -118,7 +119,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
       });
       onClose();
     } else {
-      alert("Please select an encounter, department, and date.");
+      await alert("Please select an encounter, department, and date.", "Incomplete Information");
     }
   };
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, MarkReviewed } from 'components/ui/Core';
+import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, MarkReviewed, usePrompts } from 'components/ui/Core';
 import { usePatient, Database } from 'components/contexts/PatientContext';
 
 /*
@@ -15,6 +15,7 @@ import { usePatient, Database } from 'components/contexts/PatientContext';
 
 export const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
+  const { alert } = usePrompts();
   const [{
     id,
     firstName,
@@ -324,19 +325,19 @@ export const Demographics = () => {
     }))
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
       // Basic validation for required fields
       if (!formData.firstName.trim()) {
-        alert('First name is required')
+        await alert('First name is required', 'Validation Error')
         return
       }
       if (!formData.lastName.trim()) {
-        alert('Last name is required')
+        await alert('Last name is required', 'Validation Error')
         return
       }
       if (!formData.birthdate) {
-        alert('Date of birth is required')
+        await alert('Date of birth is required', 'Validation Error')
         return
       }
 
@@ -403,23 +404,23 @@ export const Demographics = () => {
       setEditingCard(null)
     } catch (error) {
       console.error('Error saving demographics data:', error)
-      alert('Error saving data. Please try again.')
+      await alert('Error saving data. Please try again.', 'System Error')
     }
   }
 
   // Contact management functions
-  const handleAddContact = () => {
+  const handleAddContact = async () => {
     // Validate required fields
     if (!newContact.name.trim()) {
-      alert('Contact name is required')
+      await alert('Contact name is required', 'Validation Error')
       return
     }
     if (!newContact.relationship.trim()) {
-      alert('Contact relationship is required')
+      await alert('Contact relationship is required', 'Validation Error')
       return
     }
     if (!newContact.primaryPhone.trim()) {
-      alert('Primary phone number is required')
+      await alert('Primary phone number is required', 'Validation Error')
       return
     }
 
@@ -847,7 +848,7 @@ export const Demographics = () => {
               <Grid size={6}>
                 <Label variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>Employer Information</Label>
                 <Grid container spacing={2}>
-                  <Grid size={6}><TitledCardItem label="Employment Status" value={socioeconomicData?.occupation ? 'Employed' : 'Unknown'} /></Grid>
+                  <Grid size={6}><TitledCardItem label="Employment Status" value={socioeconomicData?.occupational?.occupation ? 'Employed' : 'Unknown'} /></Grid>
                   <Grid size={6}><TitledCardItem label="Address" value={'—'} /></Grid>
                   <Grid size={6}><TitledCardItem label="Employer" value='' /></Grid>
                   <Grid size={6}><TitledCardItem label="Phone" value={'—'} /></Grid>

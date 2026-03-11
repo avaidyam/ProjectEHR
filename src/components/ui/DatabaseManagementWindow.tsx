@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem, Popover, Autocomplete, JSONTree } from './Core'
+import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem, Popover, Autocomplete, JSONTree, usePrompts } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
 
@@ -13,6 +13,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
   const [urlImportAnchor, setUrlImportAnchor] = React.useState<HTMLElement | null>(null)
   const [importUrl, setImportUrl] = React.useState('')
   const [isFetchingUrl, setIsFetchingUrl] = React.useState(false)
+  const { alert, confirm } = usePrompts()
 
   const handleExport = () => {
     // Filter out encounters with undefined IDs from all patients
@@ -54,13 +55,13 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       setUrlImportAnchor(null)
     } catch (error) {
       console.error("Failed to fetch JSON from URL", error)
-      window.alert(`Failed to import from URL: ${error instanceof Error ? error.message : String(error)}`)
+      await alert(`Failed to import from URL: ${error instanceof Error ? error.message : String(error)}`, "Import Failed")
     } finally {
       setIsFetchingUrl(false)
     }
   }
 
-  const handleExportSelected = () => {
+  const handleExportSelected = async () => {
     if (!selectedPath) return
 
     const patientMatch = selectedPath.match(/^root\.patients\.([^.]+)$/)
@@ -111,7 +112,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       const eId = encounterMatch[2] as Database.Encounter.ID
 
       if (eId === 'undefined') {
-        window.alert("Cannot export an encounter with an undefined ID.")
+        await alert("Cannot export an encounter with an undefined ID.", "Export Error")
         return
       }
 
@@ -145,7 +146,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       }
       filename = `encounter_${eId}_export.json`
     } else {
-      window.alert("Please select a Patient or an Encounter from the tree to export individually.")
+      await alert("Please select a Patient or an Encounter from the tree to export individually.", "Export Selection Required")
       return
     }
 
@@ -159,7 +160,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     URL.revokeObjectURL(url)
   }
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (!selectedPath) return
 
     const patientMatch = selectedPath.match(/^root\.patients\.([^.]+)$/)
@@ -170,7 +171,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       const patient = db.patients[pId]
       if (!patient) return
 
-      if (window.confirm(`Are you SURE you want to delete patient ${patient.lastName}, ${patient.firstName} and all their encounters?`)) {
+      if (await confirm(`Are you SURE you want to delete patient ${patient.lastName}, ${patient.firstName} and all their encounters?`, "Confirm Deletion")) {
         setDb(prev => {
           const newPatients = { ...prev.patients }
           delete newPatients[pId]
@@ -186,7 +187,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       const encounter = patient?.encounters[eId]
       if (!patient || !encounter) return
 
-      if (window.confirm(`Are you SURE you want to delete encounter ${eId} from patient ${patient.lastName}?`)) {
+      if (await confirm(`Are you SURE you want to delete encounter ${eId} from patient ${patient.lastName}?`, "Confirm Deletion")) {
         setDb(prev => {
           const newPatients = { ...prev.patients }
           const newEncounters = { ...newPatients[pId].encounters }
@@ -200,18 +201,16 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     }
   }
 
-
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         mergeDatabase(JSON.parse(e.target!.result as string))
       } catch (error) {
         console.error("Failed to parse JSON", error)
-        window.alert("Failed to parse the selected JSON file.")
+        await alert("Failed to parse the selected JSON file.", "Import Error")
       }
     }
     reader.readAsText(file)
@@ -290,11 +289,11 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
       })
       return newDb as any // FIXME
     })
-    window.alert(`Import Complete!\nPatients Added: ${stats.patientsAdded}\nEncounters Added: ${stats.encountersAdded}\nDepartments Added: ${stats.departmentsAdded}\nOther Records Added: ${stats.otherRecordsAdded}`)
+    alert(`Import Complete!\nPatients Added: ${stats.patientsAdded}\nEncounters Added: ${stats.encountersAdded}\nDepartments Added: ${stats.departmentsAdded}\nOther Records Added: ${stats.otherRecordsAdded}`, "Import Complete")
   }
 
-  const handleDelete = () => {
-    if (window.confirm("Are you SURE you want to delete the entire database? This cannot be undone and will erase EVERYTHING.")) {
+  const handleDelete = async () => {
+    if (await confirm("Are you SURE you want to delete the entire database? This cannot be undone and will erase EVERYTHING.", "Erase Database")) {
       // Reset to empty state matching Database.Root structure
       setDb({
         departments: [],
@@ -306,7 +305,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         orderables: {} as Database.Root['orderables'],
         flowsheets: []
       })
-      window.alert("Database has been erased.")
+      await alert("Database has been erased.", "Database Erased")
     }
   }
 
