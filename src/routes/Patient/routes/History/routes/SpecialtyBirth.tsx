@@ -8,29 +8,11 @@ import {
   Autocomplete,
   DatePicker,
   MarkReviewed,
-} from 'components/ui/Core';
-import {
+  AutocompleteButtons,
   Grid,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 import { Editor } from 'components/ui/Editor';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: '#e91e63',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1.1rem',
-}));
 
 export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
@@ -98,16 +80,16 @@ export function BirthHistory() {
     }));
   };
 
-
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Birth History</>} color="#9F3494">
-      <SectionPaper>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
         <Grid container spacing={3}>
           {/* Left Column */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
               <Grid size={12}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Birth length"
                   fullWidth
@@ -120,6 +102,7 @@ export function BirthHistory() {
 
               <Grid size={12}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Birth weight"
                   fullWidth
@@ -132,6 +115,7 @@ export function BirthHistory() {
 
               <Grid size={12}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Birth head circ"
                   fullWidth
@@ -144,6 +128,7 @@ export function BirthHistory() {
 
               <Grid size={12}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Discharge weight"
                   fullWidth
@@ -161,6 +146,7 @@ export function BirthHistory() {
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Birth Date"
                   fullWidth
@@ -180,6 +166,7 @@ export function BirthHistory() {
 
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Age"
                   fullWidth
@@ -199,6 +186,7 @@ export function BirthHistory() {
 
               <Grid size={12}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Birth Time"
                   fullWidth
@@ -211,6 +199,7 @@ export function BirthHistory() {
 
               <Grid size={6}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Gestation age (Weeks)"
                   fullWidth
@@ -223,6 +212,7 @@ export function BirthHistory() {
 
               <Grid size={6}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Gestation age (Days)"
                   fullWidth
@@ -235,6 +225,7 @@ export function BirthHistory() {
 
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="APGAR 1"
                   fullWidth
@@ -247,6 +238,7 @@ export function BirthHistory() {
 
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="APGAR 5"
                   fullWidth
@@ -259,6 +251,7 @@ export function BirthHistory() {
 
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="APGAR 10"
                   fullWidth
@@ -274,17 +267,18 @@ export function BirthHistory() {
           {/* Full Width Fields */}
           <Grid size={12}>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Autocomplete
+              <Grid size={12}>
+                <AutocompleteButtons
                   label="Delivery method"
                   options={deliveryMethodOptions}
-                  value={birthHistoryData?.deliveryMethod || ''}
-                  onChange={(_e, newValue) => handleFieldChange('deliveryMethod', newValue)}
+                  value={birthHistoryData?.deliveryMethod}
+                  onChange={(_e, val) => handleFieldChange('deliveryMethod', val)}
                 />
               </Grid>
 
               <Grid size={{ xs: 12, md: 6 }}>
                 <Autocomplete
+                  size="small"
                   freeSolo
                   label="Duration of labor"
                   fullWidth
@@ -294,25 +288,29 @@ export function BirthHistory() {
                 />
               </Grid>
 
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Autocomplete
+              <Grid size={12}>
+                <AutocompleteButtons
                   label="Feeding method"
                   options={feedingMethodOptions}
-                  value={birthHistoryData?.feedingMethod || ''}
-                  onChange={(_e, newValue) => handleFieldChange('feedingMethod', newValue)}
+                  value={birthHistoryData?.feedingMethod}
+                  onChange={(_e, val) => handleFieldChange('feedingMethod', val)}
                 />
               </Grid>
             </Grid>
           </Grid>
+
         </Grid>
-      </SectionPaper>
+      </Box>
+
       {/* Hospital Information */}
-      <SectionPaper>
-        <SectionHeader>Hospital information</SectionHeader>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Hospital information</Label>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 4 }}>
             <DatePicker
+              size="small"
               convertString
+              fullWidth
               label="Date in hospital"
               value={birthHistoryData?.dateInHospital || ''}
               onChange={(date: any) => handleFieldChange('dateInHospital', date)}
@@ -321,6 +319,7 @@ export function BirthHistory() {
 
           <Grid size={{ xs: 12, md: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Hospital name"
               fullWidth
@@ -332,6 +331,7 @@ export function BirthHistory() {
 
           <Grid size={{ xs: 12, md: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Hospital location"
               fullWidth
@@ -341,16 +341,18 @@ export function BirthHistory() {
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+
       {/* Comments */}
-      <SectionPaper>
-        <SectionHeader>Comments:</SectionHeader>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Comments:</Label>
         <Editor
           initialContent={birthHistoryData?.comments || ''}
           onSave={handleCommentsChange}
           disableStickyMenuBar={true}
+          disableStickyFooter={true}
         />
-      </SectionPaper>
+      </Box>
       <MarkReviewed />
     </TitledCard>
   );

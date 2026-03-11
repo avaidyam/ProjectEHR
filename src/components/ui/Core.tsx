@@ -64,6 +64,7 @@ import {
   TextFieldVariants,
   Tooltip as MUITooltip,
   TooltipProps,
+  FormControlLabel as MUIFormControlLabel,
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -167,25 +168,36 @@ export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 
     options={options}
     value={value}
     onChange={onChange}
-    renderInput={(params) => (
-      <MUITextField
-        {...params}
-        {...TextFieldProps}
-        variant={variant ?? "outlined"}
-        label={label}
-        placeholder={placeholder}
-        InputProps={{
-          ...params.InputProps,
-          ...TextFieldProps?.InputProps,
-          startAdornment: TextFieldProps?.InputProps?.startAdornment ?
-            <MUIInputAdornment position="start">{params.InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
-            params.InputProps.startAdornment,
-          endAdornment: TextFieldProps?.InputProps?.endAdornment ?
-            <MUIInputAdornment position="end">{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
-            params.InputProps.endAdornment
-        }}
-      />
-    )}
+    renderInput={(params) => {
+      const { InputProps, inputProps, InputLabelProps, ...otherParams } = params;
+      return (
+        <MUITextField
+          {...otherParams}
+          {...TextFieldProps}
+          variant={variant ?? "outlined"}
+          label={label}
+          placeholder={placeholder}
+          InputLabelProps={{
+            ...InputLabelProps,
+            ...TextFieldProps?.InputLabelProps
+          }}
+          inputProps={{
+            ...inputProps,
+            ...TextFieldProps?.inputProps
+          }}
+          InputProps={{
+            ...InputProps,
+            ...TextFieldProps?.InputProps,
+            startAdornment: TextFieldProps?.InputProps?.startAdornment ?
+              <MUIInputAdornment position="start">{InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
+              InputProps.startAdornment,
+            endAdornment: TextFieldProps?.InputProps?.endAdornment ?
+              <MUIInputAdornment position="end">{InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
+              InputProps.endAdornment
+          }}
+        />
+      );
+    }}
     {...props}
   />
 )
@@ -317,6 +329,86 @@ export const AutocompleteList: React.FC<AutocompleteListProps> = ({
           />
         ))}
       </Stack>
+    </Box>
+  );
+};
+
+export interface AutocompleteButtonsProps {
+  label?: string;
+  options: any[];
+  value?: any;
+  onChange?: (event: any, value: any) => void;
+  multiple?: boolean;
+  sx?: any;
+  checkbox?: boolean;
+}
+
+export const AutocompleteButtons: React.FC<AutocompleteButtonsProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+  multiple = false,
+  sx,
+  checkbox = false
+}) => {
+  const values = React.useMemo(() => {
+    if (multiple) return Array.isArray(value) ? value : (value ? [value] : []);
+    return value;
+  }, [value, multiple]);
+
+  const handleToggle = (option: any) => {
+    const optionValue = typeof option === 'string' ? option : (option.value ?? option.label ?? option);
+    if (multiple) {
+      const currentValues = Array.isArray(values) ? values : [];
+      const newValues = currentValues.includes(optionValue)
+        ? currentValues.filter((v: any) => v !== optionValue)
+        : [...currentValues, optionValue];
+      onChange?.(null, newValues);
+    } else {
+      onChange?.(null, optionValue === values ? null : optionValue);
+    }
+  };
+
+  return (
+    <Box sx={{ ...sx }}>
+      {label && <Label variant="caption" sx={{ mb: 1 }}>{label}</Label>}
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        {options.map((option) => {
+          const optionLabel = typeof option === 'string' ? option : (option.label ?? option);
+          const optionValue = typeof option === 'string' ? option : (option.value ?? option.label ?? option);
+          const isSelected = multiple
+            ? (Array.isArray(values) && values.includes(optionValue))
+            : values === optionValue;
+
+          if (checkbox) {
+            return (
+              <MUIFormControlLabel
+                key={optionValue}
+                control={
+                  <MUICheckbox
+                    checked={isSelected}
+                    onChange={() => handleToggle(option)}
+                    sx={{ py: 0 }}
+                  />
+                }
+                label={optionLabel}
+              />
+            );
+          }
+
+          return (
+            <Button
+              key={optionValue}
+              variant={isSelected ? "contained" : "outlined"}
+              onClick={() => handleToggle(option)}
+              size="small"
+            >
+              {optionLabel}
+            </Button>
+          );
+        })}
+      </Box>
     </Box>
   );
 };
@@ -575,7 +667,7 @@ export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boole
         value={!!value && value.length > 0 && convertString ? Temporal.PlainTime.from(value) : ((value?.length ?? 0) > 0 ? value : undefined)}
         onChange={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
         onAccept={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth, helperText } }}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
         {...props}
       />
     </TemporalPlainTimeProvider>
@@ -589,8 +681,9 @@ export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boole
         value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : (value || undefined)}
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth, helperText } }}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
         minDate={Temporal.PlainDate.from("1890-01-01")}
+        {...props}
       />
     </TemporalPlainDateProvider>
   </ErrorBoundary>
@@ -604,7 +697,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString
         value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : (value || undefined)}
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={{ textField: { size, fullWidth, helperText } }}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
         minDate={Temporal.PlainDateTime.from("1890-01-01T00:00:00.000")}
         {...props}
       />

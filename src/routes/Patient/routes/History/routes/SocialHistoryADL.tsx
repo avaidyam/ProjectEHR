@@ -7,21 +7,10 @@ import {
   TitledCard,
   Icon,
   MarkReviewed,
-} from 'components/ui/Core';
-import {
+  AutocompleteButtons,
   Grid,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 
 export function SocialHistoryADL() {
   const { useEncounter } = usePatient();
@@ -73,51 +62,26 @@ export function SocialHistoryADL() {
 
   const renderItem = (item: { key: string; label: string }) => (
     <Grid key={item.key} size={12}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Label variant="body2" sx={{ flex: 1, textAlign: 'right', mr: 2 }}>
           {item.label}
         </Label>
-        <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-          <Button
-            variant={socialHistoryData?.[item.key] === true ? 'contained' : 'outlined'}
-            onClick={() => handleBooleanChange(item.key, true)}
-            size="small"
-            sx={{
-              backgroundColor: socialHistoryData?.[item.key] === true ? '#1976d2' : 'transparent',
-              color: socialHistoryData?.[item.key] === true ? 'white' : '#1976d2',
-              borderColor: '#1976d2',
-              minWidth: '50px',
-              '&:hover': {
-                backgroundColor: socialHistoryData?.[item.key] === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-              }
-            }}
-          >
-            Yes
-          </Button>
-          <Button
-            variant={socialHistoryData?.[item.key] === false ? 'contained' : 'outlined'}
-            onClick={() => handleBooleanChange(item.key, false)}
-            size="small"
-            sx={{
-              backgroundColor: socialHistoryData?.[item.key] === false ? '#1976d2' : 'transparent',
-              color: socialHistoryData?.[item.key] === false ? 'white' : '#1976d2',
-              borderColor: '#1976d2',
-              minWidth: '50px',
-              '&:hover': {
-                backgroundColor: socialHistoryData?.[item.key] === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-              }
-            }}
-          >
-            No
-          </Button>
-        </Box>
+        <AutocompleteButtons
+          options={[
+            { label: 'Yes', value: true },
+            { label: 'No', value: false }
+          ]}
+          value={socialHistoryData?.[item.key]}
+          onChange={(_e, val) => handleBooleanChange(item.key, val)}
+          sx={{ mb: 0 }}
+        />
       </Box>
     </Grid>
   );
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Social History - ADL</>} color="#9F3494">
-      <SectionPaper>
+      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
         <Grid container spacing={2}>
           {/* Left Column */}
           <Grid size={{ xs: 12, md: 6 }}>
@@ -133,7 +97,7 @@ export function SocialHistoryADL() {
             </Grid>
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       <MarkReviewed />
     </TitledCard>
   );

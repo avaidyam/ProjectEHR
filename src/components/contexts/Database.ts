@@ -802,6 +802,7 @@ export interface SocialHistoryItem {
       smokingStatus?: string
       counselingGiven?: boolean
       startDate: JSONDate
+      quitDate?: JSONDate
       status?: string
       types?: any[] | string[]
     }

@@ -7,33 +7,11 @@ import {
   Icon,
   Autocomplete,
   DatePicker,
-} from 'components/ui/Core';
-import {
+  AutocompleteButtons,
   Grid,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: 'black',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1rem',
-}));
-
-const SubSectionHeader = styled(Label)(({ theme }) => ({
-  color: 'black',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '0.9rem',
-}));
+  MarkReviewed,
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 
 export function ECigaretteVapingHistory() {
   const { useEncounter } = usePatient();
@@ -99,54 +77,42 @@ export function ECigaretteVapingHistory() {
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> E-cigarette/Vaping</>} color="#9F3494">
-      {/* Main E-cigarette/Vaping Section */}
-      <SectionPaper>
-        <SectionHeader>E-cigarette/Vaping</SectionHeader>
-        <Grid container spacing={3}>
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>E-cigarette/Vaping Use</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {useOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={ecigaretteData?.use === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('use', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.use === option ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.use === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
 
+      {/* Main E-cigarette/Vaping Section */}
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">E-cigarette/Vaping</Label>
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="E-cigarette/Vaping Use"
+              options={useOptions}
+              value={ecigaretteData?.use}
+              onChange={(_e, val) => handleDataChange('use', val)}
+            />
+          </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <DatePicker
+              size="small"
               convertString
+              fullWidth
               label="Start Date"
               value={ecigaretteData?.startDate || ''}
               onChange={(date: any) => handleDataChange('startDate', date)}
             />
           </Grid>
-
           <Grid size={{ xs: 12, md: 6 }}>
             <DatePicker
+              size="small"
               convertString
+              fullWidth
               label="Quit Date"
               value={ecigaretteData?.quitDate || ''}
               onChange={(date: any) => handleDataChange('quitDate', date)}
             />
           </Grid>
-
           <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Cartridges/Day"
               fullWidth
@@ -155,258 +121,70 @@ export function ECigaretteVapingHistory() {
               options={['1', '2', '3', '4', '5+']}
             />
           </Grid>
-
           <Grid size={{ xs: 12, md: 3 }}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Passive Exposure</Label>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button
-                variant={ecigaretteData?.passiveExposure === true ? 'contained' : 'outlined'}
-                onClick={() => handleBooleanToggle('passiveExposure', true)}
-                size="small"
-                sx={{
-                  backgroundColor: ecigaretteData?.passiveExposure === true ? '#1976d2' : 'transparent',
-                  color: ecigaretteData?.passiveExposure === true ? 'white' : '#1976d2',
-                  borderColor: '#1976d2',
-                  '&:hover': {
-                    backgroundColor: ecigaretteData?.passiveExposure === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                  }
-                }}
-              >
-                Yes
-              </Button>
-              <Button
-                variant={ecigaretteData?.passiveExposure === false ? 'contained' : 'outlined'}
-                onClick={() => handleBooleanToggle('passiveExposure', false)}
-                size="small"
-                sx={{
-                  backgroundColor: ecigaretteData?.passiveExposure === false ? '#1976d2' : 'transparent',
-                  color: ecigaretteData?.passiveExposure === false ? 'white' : '#1976d2',
-                  borderColor: '#1976d2',
-                  '&:hover': {
-                    backgroundColor: ecigaretteData?.passiveExposure === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                  }
-                }}
-              >
-                No
-              </Button>
-            </Box>
+            <AutocompleteButtons
+              label="Passive Exposure"
+              options={[{ label: 'Yes', value: true }, { label: 'No', value: false }]}
+              value={ecigaretteData?.passiveExposure}
+              onChange={(_e, val) => handleBooleanToggle('passiveExposure', val)}
+            />
           </Grid>
-
           <Grid size={{ xs: 12, md: 3 }}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Counseling Given</Label>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button
-                variant={ecigaretteData?.counselingGiven === true ? 'contained' : 'outlined'}
-                onClick={() => handleBooleanToggle('counselingGiven', true)}
-                size="small"
-                sx={{
-                  backgroundColor: ecigaretteData?.counselingGiven === true ? '#1976d2' : 'transparent',
-                  color: ecigaretteData?.counselingGiven === true ? 'white' : '#1976d2',
-                  borderColor: '#1976d2',
-                  '&:hover': {
-                    backgroundColor: ecigaretteData?.counselingGiven === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                  }
-                }}
-              >
-                Yes
-              </Button>
-              <Button
-                variant={ecigaretteData?.counselingGiven === false ? 'contained' : 'outlined'}
-                onClick={() => handleBooleanToggle('counselingGiven', false)}
-                size="small"
-                sx={{
-                  backgroundColor: ecigaretteData?.counselingGiven === false ? '#1976d2' : 'transparent',
-                  color: ecigaretteData?.counselingGiven === false ? 'white' : '#1976d2',
-                  borderColor: '#1976d2',
-                  '&:hover': {
-                    backgroundColor: ecigaretteData?.counselingGiven === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                  }
-                }}
-              >
-                No
-              </Button>
-            </Box>
+            <AutocompleteButtons
+              label="Counseling Given"
+              options={[{ label: 'Yes', value: true }, { label: 'No', value: false }]}
+              value={ecigaretteData?.counselingGiven}
+              onChange={(_e, val) => handleBooleanToggle('counselingGiven', val)}
+            />
           </Grid>
-
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Comments"
               fullWidth
               value={ecigaretteData?.comments || ''}
               onInputChange={(_e, newValue) => handleDataChange('comments', newValue)}
               options={[]}
-              TextFieldProps={{ multiline: true, rows: 3 }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+
       {/* E-cigarette/Vaping Substances */}
-      <SectionPaper>
-        <SubSectionHeader>E-cigarette/Vaping Substances</SubSectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">E-cigarette/Vaping Substances</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>Nicotine</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.substances?.nicotine === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'nicotine', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.nicotine === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.nicotine === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.nicotine === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.substances?.nicotine === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'nicotine', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.nicotine === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.nicotine === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.nicotine === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
+            <AutocompleteButtons
+              options={[
+                { label: 'Nicotine', value: 'nicotine' },
+                { label: 'THC', value: 'thc' },
+                { label: 'CBD', value: 'cbd' },
+                { label: 'Flavoring', value: 'flavoring' }
+              ]}
+              checkbox
+              multiple
+              value={(() => {
+                const vals = [];
+                if (ecigaretteData?.substances?.nicotine) vals.push('nicotine');
+                if (ecigaretteData?.substances?.thc) vals.push('thc');
+                if (ecigaretteData?.substances?.cbd) vals.push('cbd');
+                if (ecigaretteData?.substances?.flavoring) vals.push('flavoring');
+                return vals;
+              })()}
+              onChange={(_e, val) => {
+                handleNestedBooleanToggle('substances', 'nicotine', val.includes('nicotine'));
+                handleNestedBooleanToggle('substances', 'thc', val.includes('thc'));
+                handleNestedBooleanToggle('substances', 'cbd', val.includes('cbd'));
+                handleNestedBooleanToggle('substances', 'flavoring', val.includes('flavoring'));
+              }}
+              sx={{ '& .MuiFormControlLabel-root': { minWidth: '150px' } }}
+            />
           </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>THC</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.substances?.thc === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'thc', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.thc === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.thc === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.thc === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.substances?.thc === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'thc', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.thc === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.thc === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.thc === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>CBD</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.substances?.cbd === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'cbd', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.cbd === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.cbd === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.cbd === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.substances?.cbd === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'cbd', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.cbd === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.cbd === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.cbd === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '80px', flex: 1 }}>Flavoring</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.substances?.flavoring === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'flavoring', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.flavoring === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.flavoring === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.flavoring === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.substances?.flavoring === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('substances', 'flavoring', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.substances?.flavoring === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.substances?.flavoring === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.substances?.flavoring === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Other"
               fullWidth
@@ -416,173 +194,41 @@ export function ECigaretteVapingHistory() {
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       {/* E-cigarette/Vaping Devices */}
-      <SectionPaper>
-        <SubSectionHeader>E-cigarette/Vaping Devices</SubSectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">E-cigarette/Vaping Devices</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Disposable</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.devices?.disposable === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'disposable', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.disposable === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.disposable === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.disposable === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.devices?.disposable === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'disposable', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.disposable === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.disposable === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.disposable === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
+            <AutocompleteButtons
+              options={[
+                { label: 'Disposable', value: 'disposable' },
+                { label: 'Pre-filled Pod', value: 'preFilledPod' },
+                { label: 'Pre-filled or Refillable Cartridge', value: 'preFilledOrRefillableCartridge' },
+                { label: 'Refillable Tank', value: 'refillableTank' }
+              ]}
+              checkbox
+              multiple
+              value={(() => {
+                const vals = [];
+                if (ecigaretteData?.devices?.disposable) vals.push('disposable');
+                if (ecigaretteData?.devices?.preFilledPod) vals.push('preFilledPod');
+                if (ecigaretteData?.devices?.preFilledOrRefillableCartridge) vals.push('preFilledOrRefillableCartridge');
+                if (ecigaretteData?.devices?.refillableTank) vals.push('refillableTank');
+                return vals;
+              })()}
+              onChange={(_e, val) => {
+                handleNestedBooleanToggle('devices', 'disposable', val.includes('disposable'));
+                handleNestedBooleanToggle('devices', 'preFilledPod', val.includes('preFilledPod'));
+                handleNestedBooleanToggle('devices', 'preFilledOrRefillableCartridge', val.includes('preFilledOrRefillableCartridge'));
+                handleNestedBooleanToggle('devices', 'refillableTank', val.includes('refillableTank'));
+              }}
+              sx={{ '& .MuiFormControlLabel-root': { minWidth: '350px' } }}
+            />
           </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Pre-filled Pod</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.devices?.preFilledPod === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'preFilledPod', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.preFilledPod === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.preFilledPod === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.preFilledPod === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.devices?.preFilledPod === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'preFilledPod', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.preFilledPod === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.preFilledPod === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.preFilledPod === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '200px', flex: 1 }}>Pre-filled or Refillable Cartridge</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.devices?.preFilledOrRefillableCartridge === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'preFilledOrRefillableCartridge', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.preFilledOrRefillableCartridge === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.preFilledOrRefillableCartridge === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.preFilledOrRefillableCartridge === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.devices?.preFilledOrRefillableCartridge === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'preFilledOrRefillableCartridge', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.preFilledOrRefillableCartridge === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.preFilledOrRefillableCartridge === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.preFilledOrRefillableCartridge === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Label variant="body2" sx={{ minWidth: '120px', flex: 1 }}>Refillable Tank</Label>
-              <Box sx={{ display: 'flex', gap: 1, minWidth: '120px' }}>
-                <Button
-                  variant={ecigaretteData?.devices?.refillableTank === true ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'refillableTank', true)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.refillableTank === true ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.refillableTank === true ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.refillableTank === true ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={ecigaretteData?.devices?.refillableTank === false ? 'contained' : 'outlined'}
-                  onClick={() => handleNestedBooleanToggle('devices', 'refillableTank', false)}
-                  size="small"
-                  sx={{
-                    backgroundColor: ecigaretteData?.devices?.refillableTank === false ? '#1976d2' : 'transparent',
-                    color: ecigaretteData?.devices?.refillableTank === false ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    minWidth: '50px',
-                    '&:hover': {
-                      backgroundColor: ecigaretteData?.devices?.refillableTank === false ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  No
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Other"
               fullWidth
@@ -592,7 +238,8 @@ export function ECigaretteVapingHistory() {
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

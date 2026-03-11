@@ -8,29 +8,11 @@ import {
   Autocomplete,
   MarkReviewed,
   DatePicker,
-} from 'components/ui/Core';
-import {
+  AutocompleteButtons,
   Grid,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient, Database } from '../../../../../components/contexts/PatientContext';
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
 import { Editor } from 'components/ui/Editor';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: '#e91e63',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1.1rem',
-}));
 
 export function SpecialtyOB() {
   const { useEncounter } = usePatient();
@@ -102,9 +84,9 @@ export function SpecialtyOB() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> OB/Gyn History</>} color="#9F3494">
       {/* Obstetric History */}
-      <SectionPaper>
+      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <SectionHeader>Obstetric History</SectionHeader>
+          <Label bold sx={{ color: '#e91e63', fontSize: '1.1rem' }}>Obstetric History</Label>
           <Button
             variant="contained"
             onClick={handleCalculateCounts}
@@ -119,6 +101,7 @@ export function SpecialtyOB() {
           {['Gravida', 'Para', 'Term', 'Preterm', 'AB', 'Living'].map((label) => (
             <Grid key={label} size={{ xs: 12, sm: 2 }}>
               <Autocomplete
+                size="small"
                 freeSolo
                 label={label}
                 fullWidth
@@ -133,6 +116,7 @@ export function SpecialtyOB() {
           {['SAB', 'IAB', 'Ectopic', 'Multiple'].map((label) => (
             <Grid key={label} size={{ xs: 12, sm: 2 }}>
               <Autocomplete
+                size="small"
                 freeSolo
                 label={label}
                 fullWidth
@@ -144,6 +128,7 @@ export function SpecialtyOB() {
           ))}
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Live Births"
               fullWidth
@@ -162,25 +147,24 @@ export function SpecialtyOB() {
               >
                 ➕ Add previous pregnancy
               </Button>
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={obgynData?.obstetricHistory?.currentlyPregnant || false}
-                    onChange={(e) => handleObstetricChange('currentlyPregnant', e.target.checked)}
-                  />
-                }
-                label="Currently pregnant"
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={obgynData?.obstetricHistory?.neverPregnant || false}
-                    onChange={(e) => handleObstetricChange('neverPregnant', e.target.checked)}
-                  />
-                }
-                label="Never pregnant"
+              <AutocompleteButtons
+                options={[
+                  { label: 'Currently pregnant', value: 'currentlyPregnant' },
+                  { label: 'Never pregnant', value: 'neverPregnant' }
+                ]}
+                checkbox
+                multiple
+                value={(() => {
+                  const vals = [];
+                  if (obgynData?.obstetricHistory?.currentlyPregnant) vals.push('currentlyPregnant');
+                  if (obgynData?.obstetricHistory?.neverPregnant) vals.push('neverPregnant');
+                  return vals;
+                })()}
+                onChange={(_e, val) => {
+                  handleObstetricChange('currentlyPregnant', val.includes('currentlyPregnant'));
+                  handleObstetricChange('neverPregnant', val.includes('neverPregnant'));
+                }}
+                sx={{ mb: 0 }}
               />
             </Box>
           </Grid>
@@ -197,10 +181,10 @@ export function SpecialtyOB() {
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       {/* Gynecology History */}
-      <SectionPaper>
-        <SectionHeader>Gynecology History</SectionHeader>
+      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
+        <Label bold sx={{ color: '#e91e63', mb: 2, fontSize: '1.1rem' }}>Gynecology History</Label>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 4 }}>
             <DatePicker
@@ -214,6 +198,7 @@ export function SpecialtyOB() {
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at menarche"
               fullWidth
@@ -225,6 +210,7 @@ export function SpecialtyOB() {
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at first pregnancy"
               fullWidth
@@ -236,6 +222,7 @@ export function SpecialtyOB() {
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at first live birth"
               fullWidth
@@ -247,6 +234,7 @@ export function SpecialtyOB() {
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Months breastfeeding"
               fullWidth
@@ -258,6 +246,7 @@ export function SpecialtyOB() {
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at menopause"
               fullWidth
@@ -279,7 +268,7 @@ export function SpecialtyOB() {
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       <MarkReviewed />
     </TitledCard>
   );

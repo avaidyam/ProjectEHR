@@ -7,27 +7,7 @@ import {
   Icon,
   MarkReviewed,
 } from 'components/ui/Core';
-import {
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const ResultItem = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  borderRadius: '4px',
-  backgroundColor: '#fafafa',
-}));
+import { usePatient } from 'components/contexts/PatientContext';
 
 export function PapTracking() {
   const { useEncounter } = usePatient();
@@ -67,11 +47,11 @@ export function PapTracking() {
     return (
       <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Pap Tracking</>} color="#9F3494">
 
-        <SectionPaper>
+        <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
           <Box sx={{ textAlign: 'center', py: 4, color: 'text.secondary' }}>
             <Label variant="body1">No Pap test results found in results.</Label>
           </Box>
-        </SectionPaper>
+        </Box>
 
         <MarkReviewed />
       </TitledCard>
@@ -81,7 +61,7 @@ export function PapTracking() {
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Pap Tracking</>} color="#9F3494">
 
-      <SectionPaper>
+      <Box paper sx={{ p: 3, mb: 2, border: '1px solid #e0e0e0', boxShadow: 'none' }}>
         <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, color: '#1976d2' }}>
           Cervical Cancer Screening History - Results and Follow-ups
         </Label>
@@ -91,7 +71,7 @@ export function PapTracking() {
           const testData = papTest;
 
           return (
-            <ResultItem key={index}>
+            <Box key={index} paper sx={{ p: 2, mb: 2, border: '1px solid #e0e0e0', borderRadius: '4px', backgroundColor: '#fafafa' }}>
               {/* Exam Date and All Results */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Box>
@@ -179,10 +159,10 @@ export function PapTracking() {
                   Audit Trail Report
                 </Label>
               </Box>
-            </ResultItem>
+            </Box>
           );
         })}
-      </SectionPaper>
+      </Box>
 
       <MarkReviewed />
     </TitledCard>
