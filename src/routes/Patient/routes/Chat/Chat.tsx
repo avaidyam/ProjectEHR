@@ -76,7 +76,6 @@ export function Chat() {
   const familyHistory = history?.family || [];
   const socialItem = history?.social?.[0] || {};
   const socialDocumentation = socialItem.comments || null;
-  const obgynHistory = socialItem.OBGynHistory || null;
 
   // 🧠 Compose the full prompt
   const fullPrompt = React.useMemo(() => {
@@ -126,11 +125,10 @@ export function Chat() {
       : "No surgical history found.";
     text += "\n\n";
 
-    // ObGyn History (only if patient is NOT male)
     if (gender !== 'Male') {
       text += "### ObGyn History\n";
-      const ob = obgynHistory?.obstetricHistory;
-      const gyn = obgynHistory?.gynecologyHistory;
+      const ob = socialItem?.obstetrics;
+      const gyn = socialItem?.gynecology;
 
       if (ob) {
         text += "#### Obstetric History\n";
@@ -252,7 +250,7 @@ export function Chat() {
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
     hpiNote, rosNote, physicalExamNote, medicalHistory, surgicalHistory, familyHistory,
-    socialDocumentation, medications, immunizations, allergies, obgynHistory,
+    socialItem, socialDocumentation, medications, immunizations, allergies,
     smartData
   ]);
 

@@ -27,7 +27,7 @@ export const Demographics = () => {
   }, setChart] = useChart()();
 
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
-  const socioeconomicData: any = socialHistory[0]?.Socioeconomic || {};
+  const socioeconomicData: any = socialHistory[0] || {};
   const demographics: any = socioeconomicData.demographics || {};
 
   const setSocioeconomicData = (update: any) => {
@@ -36,9 +36,9 @@ export const Demographics = () => {
       if (next.length === 0) {
         next.push({ id: Database.SocialHistoryItem.ID.create() });
       }
-      const currentSocio = next[0].Socioeconomic || {};
+      const currentSocio = next[0] || {};
       const newSocio = typeof update === 'function' ? update(currentSocio) : update;
-      next[0] = { ...next[0], Socioeconomic: newSocio };
+      next[0] = { ...next[0], ...newSocio };
       return next;
     });
   };
@@ -75,9 +75,9 @@ export const Demographics = () => {
     permanentComments: '',
 
     // Employer & Identification section
-    employmentStatus: socioeconomicData?.occupation ? 'Employed' : 'Unknown',
+    employmentStatus: socioeconomicData?.occupational?.occupation ? 'Employed' : 'Unknown',
     employerAddress: '',
-    employer: socioeconomicData?.employer || '',
+    employer: socioeconomicData?.occupational?.employer || '',
     employerPhone: '',
     employerFax: '',
     patientStatus: 'Alive',
@@ -362,8 +362,11 @@ export const Demographics = () => {
       // Update socioeconomic data
       setSocioeconomicData((prev: any) => ({
         ...prev,
-        occupation: formData.employmentStatus === 'Employed' ? formData.employer : '',
-        employer: formData.employer,
+        occupational: {
+          ...prev.occupational,
+          occupation: formData.employmentStatus === 'Employed' ? formData.employer : '',
+          employer: formData.employer,
+        }
         // Add other employer fields that aren't in the data structure yet
         // employerAddress: formData.employerAddress,
         // employerPhone: formData.employerPhone,

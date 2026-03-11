@@ -16,16 +16,16 @@ export function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
 
-  const substanceData = socialHistory[0]?.SubstanceSexualHealth || {};
+  const substanceData = socialHistory[0] || {};
   const setSubstanceData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];
       if (next.length === 0) {
         next.push({ id: Database.SocialHistoryItem.ID.create() });
       }
-      const currentSubstance = next[0].SubstanceSexualHealth || {};
+      const currentSubstance = next[0] || {};
       const newSubstance = typeof update === 'function' ? update(currentSubstance) : update;
-      next[0] = { ...next[0], SubstanceSexualHealth: newSubstance };
+      next[0] = { ...next[0], ...newSubstance };
       return next;
     });
   };

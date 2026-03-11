@@ -850,73 +850,69 @@ export namespace FamilyHistoryItem {
 
 export interface SocialHistoryItem {
   id: SocialHistoryItem.ID
-  SubstanceSexualHealth?: {
-    tobacco?: {
-      status?: string
-      types?: string[]
-      passiveExposure?: string
-      packsPerDay?: number
-      packYears?: number
-      startDate?: JSONDate
-      quitDate?: JSONDate
-      smokeless?: string
-      comments?: string
-    }
-    alcohol?: {
-      status?: string
-      wine?: number
-      beer?: number
-      liquor?: number
-      mixed?: number
-      standard?: number
-      comments?: string
-    }
-    drugs?: {
-      status?: string
-      types?: string[]
-      usage?: number
-      comments?: string
-    }
-    sexual?: {
-      status?: string
-      birthControl?: string[]
-      partners?: string[]
-      comments?: string
-    }
-    vaping?: {
-      status?: string
-      startDate?: JSONDate
-      quitDate?: JSONDate
-      cartridgesPerDay?: number
-      passiveExposure?: boolean
-      counselingGiven?: boolean
-      comments?: string
-      substances?: string[]
-      devices?: string[]
-    }
+  tobacco?: {
+    status?: string
+    types?: string[]
+    passiveExposure?: string
+    packsPerDay?: number
+    packYears?: number
+    startDate?: JSONDate
+    quitDate?: JSONDate
+    smokeless?: string
+    comments?: string
   }
-  Socioeconomic?: {
+  alcohol?: {
+    status?: string
+    wine?: number
+    beer?: number
+    liquor?: number
+    mixed?: number
+    standard?: number
+    comments?: string
+  }
+  drugs?: {
+    status?: string
+    types?: string[]
+    usage?: number
+    comments?: string
+  }
+  sexual?: {
+    status?: string
+    birthControl?: string[]
+    partners?: string[]
+    comments?: string
+  }
+  vaping?: {
+    status?: string
+    startDate?: JSONDate
+    quitDate?: JSONDate
+    cartridgesPerDay?: number
+    passiveExposure?: boolean
+    counselingGiven?: boolean
+    comments?: string
+    substances?: string[]
+    devices?: string[]
+  }
+  occupational?: {
     employer?: string
     occupation?: string
-    occupationalHistory?: {
+    history?: {
       employer?: string
       occupation?: string
       comment?: string
     }[]
-    demographics?: {
-      maritalStatus?: string
-      spouseName?: string
-      numberOfChildren?: number
-      yearsOfEducation?: number
-      highestEducationLevel?: string
-      preferredLanguage?: string
-      ethnicGroup?: string
-      race?: string
-    }
   }
-  adl?: string[]
-  comments?: string
-  BirthHistory?: {
+  demographics?: {
+    maritalStatus?: string
+    spouseName?: string
+    numberOfChildren?: number
+    yearsOfEducation?: number
+    highestEducationLevel?: string
+    preferredLanguage?: string
+    ethnicGroup?: string
+    race?: string
+  }
+  birth?: {
     birthLength?: string
     birthWeight?: string
     birthHeadCirc?: string
@@ -935,33 +931,33 @@ export interface SocialHistoryItem {
     hospitalLocation?: string
     comments?: string
   }
-  OBGynHistory?: {
-    obstetricHistory?: {
-      gravida?: number
-      para?: number
-      term?: number
-      preterm?: number
-      ab?: number
-      living?: number
-      sab?: number
-      iab?: number
-      ectopic?: number
-      multiple?: number
-      liveBirths?: number
-      currentlyPregnant?: boolean
-      neverPregnant?: boolean
-      comments?: string
-    }
-    gynecologyHistory?: {
-      lastMenstrualPeriod?: JSONDate
-      ageAtMenarche?: number
-      ageAtFirstPregnancy?: number
-      ageAtFirstLiveBirth?: number
-      monthsBreastfeeding?: number
-      ageAtMenopause?: number
-      comment?: string
-    }
+  obstetrics?: {
+    gravida?: number
+    para?: number
+    term?: number
+    preterm?: number
+    ab?: number
+    living?: number
+    sab?: number
+    iab?: number
+    ectopic?: number
+    multiple?: number
+    liveBirths?: number
+    currentlyPregnant?: boolean
+    neverPregnant?: boolean
+    comments?: string
   }
+  gynecology?: {
+    lastMenstrualPeriod?: JSONDate
+    ageAtMenarche?: number
+    ageAtFirstPregnancy?: number
+    ageAtFirstLiveBirth?: number
+    monthsBreastfeeding?: number
+    ageAtMenopause?: number
+    comment?: string
+  }
+  adl?: string[]
+  comments?: string
 }
 
 export namespace SocialHistoryItem {

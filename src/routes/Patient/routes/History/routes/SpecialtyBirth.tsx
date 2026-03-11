@@ -19,16 +19,16 @@ export function BirthHistory() {
   const [{ birthdate }] = useChart()();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
 
-  const birthHistoryData = socialHistory[0]?.BirthHistory || {};
+  const birthHistoryData = socialHistory[0]?.birth || {};
   const setBirthHistoryData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];
       if (next.length === 0) {
         next.push({ id: Database.SocialHistoryItem.ID.create() });
       }
-      const currentBirth = next[0].BirthHistory || {};
+      const currentBirth = next[0].birth || {};
       const newBirth = typeof update === 'function' ? update(currentBirth) : update;
-      next[0] = { ...next[0], BirthHistory: newBirth };
+      next[0] = { ...next[0], birth: newBirth };
       return next;
     });
   };

@@ -17,16 +17,16 @@ export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
 
-  const socioeconomicData = socialHistory[0]?.Socioeconomic || {};
+  const socioeconomicData = socialHistory[0] || {};
   const setSocioeconomicData = (update: any) => {
     setSocialHistory((prev: any[]) => {
       const next = [...prev];
       if (next.length === 0) {
         next.push({ id: Database.SocialHistoryItem.ID.create() });
       }
-      const currentSocio = next[0].Socioeconomic || {};
+      const currentSocio = next[0] || {};
       const newSocio = typeof update === 'function' ? update(currentSocio) : update;
-      next[0] = { ...next[0], Socioeconomic: newSocio };
+      next[0] = { ...next[0], ...newSocio };
       return next;
     });
   };
@@ -35,7 +35,10 @@ export function SocialHistorySocioeconomic() {
   const handleCurrentOccupationChange = (field: string, value: any) => {
     setSocioeconomicData((prev: any) => ({
       ...prev,
-      [field]: value
+      occupational: {
+        ...prev.occupational,
+        [field]: value
+      }
     }));
   };
 
@@ -63,7 +66,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               label="Occupation"
               fullWidth
-              value={socioeconomicData?.occupation || ''}
+              value={socioeconomicData?.occupational?.occupation || ''}
               onInputChange={(_e, newValue) => handleCurrentOccupationChange('occupation', newValue)}
               options={[]}
             />
@@ -74,7 +77,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               label="Employer"
               fullWidth
-              value={socioeconomicData?.employer || ''}
+              value={socioeconomicData?.occupational?.employer || ''}
               onInputChange={(_e, newValue) => handleCurrentOccupationChange('employer', newValue)}
               options={[]}
               TextFieldProps={{ placeholder: "NOT EMPLOYED" }}
@@ -88,8 +91,8 @@ export function SocialHistorySocioeconomic() {
         <Label variant="h6" sx={{ mb: 1 }}>Occupation History</Label>
         <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
           <DetailTable
-            value={socioeconomicData?.occupationalHistory || []}
-            onChange={(val) => setSocioeconomicData((prev: any) => ({ ...prev, occupationalHistory: val }))}
+            value={socioeconomicData?.occupational?.history || []}
+            onChange={(val) => setSocioeconomicData((prev: any) => ({ ...prev, occupational: { ...prev.occupational, history: val } }))}
             template={{ occupation: '', employer: '', comment: '' }}
             columns={[
               { field: 'occupation', headerName: 'Occupation', flex: 1 },
