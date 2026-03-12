@@ -34,6 +34,7 @@ import {
   Tab as MUITab,
   Menu as MUIMenu,
   MenuItem as MUIMenuItem,
+  Popover as MUIPopover,
   BoxProps,
   StackProps,
   GridProps,
@@ -57,9 +58,16 @@ import {
   TabProps,
   MenuProps,
   MenuItemProps,
+  PopoverProps,
   ToggleButtonGroupProps,
   InputAdornment as MUIInputAdornment,
-  TextFieldVariants
+  TextFieldVariants,
+  Tooltip as MUITooltip,
+  TooltipProps,
+  FormControlLabel as MUIFormControlLabel,
+  Snackbar as MUISnackbar,
+  Alert as MUIAlert,
+  AlertColor,
 } from '@mui/material'
 import {
   Masonry as MUIMasonry,
@@ -73,19 +81,24 @@ import {
 import {
   DatePicker as MUIDatePicker,
   DateTimePicker as MUIDateTimePicker,
+  TimePicker as MUITimePicker,
   DatePickerProps,
-  DateTimePickerProps
+  DateTimePickerProps,
+  TimePickerProps
 } from '@mui/x-date-pickers-pro'
 import {
   TemporalPlainDateProvider,
   TemporalPlainDateTimeProvider,
+  TemporalPlainTimeProvider,
   TemporalZonedDateTimeProvider
 } from 'mui-temporal-pickers'
 import {
   DataGridPremium as MUIDataGrid,
   useGridApiRef as MUIuseGridApiRef,
   useKeepGroupedColumnsHidden as MUIuseKeepGroupedColumnsHidden,
-  DataGridPremiumProps
+  DataGridPremiumProps,
+  GridToolbarContainer as MUIGridToolbarContainer,
+  GridRowId,
 } from '@mui/x-data-grid-premium'
 import {
   TreeItem as _MUITreeItem
@@ -152,7 +165,7 @@ export const RichText: React.FC<{ children?: any } & any> = ({ children, ...prop
 )
 
 export const RichTextEditor: React.FC<any> = ({ ...props }) => (
-  <MUIEditor {...props} />
+  <MUIEditor disableStickyMenuBar disableStickyFooter {...props} />
 )
 
 export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 'renderInput'> & { label?: string, placeholder?: string, variant?: TextFieldVariants, TextFieldProps?: TextFieldProps, renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode, renderOption?: any }> = ({ label, placeholder, variant, options, value, onChange, TextFieldProps, ...props }) => (
@@ -160,25 +173,36 @@ export const Autocomplete: React.FC<Omit<AutocompleteProps<any, any, any, any>, 
     options={options}
     value={value}
     onChange={onChange}
-    renderInput={(params) => (
-      <MUITextField
-        {...params}
-        {...TextFieldProps}
-        variant={variant ?? "outlined"}
-        label={label}
-        placeholder={placeholder}
-        InputProps={{
-          ...params.InputProps,
-          ...TextFieldProps?.InputProps,
-          startAdornment: TextFieldProps?.InputProps?.startAdornment ?
-            <MUIInputAdornment position="start">{params.InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
-            params.InputProps.startAdornment,
-          endAdornment: TextFieldProps?.InputProps?.endAdornment ?
-            <MUIInputAdornment position="end">{params.InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
-            params.InputProps.endAdornment
-        }}
-      />
-    )}
+    renderInput={(params) => {
+      const { InputProps, inputProps, InputLabelProps, ...otherParams } = params;
+      return (
+        <MUITextField
+          {...otherParams}
+          {...TextFieldProps}
+          variant={variant ?? "outlined"}
+          label={label}
+          placeholder={placeholder}
+          InputLabelProps={{
+            ...InputLabelProps,
+            ...TextFieldProps?.InputLabelProps
+          }}
+          inputProps={{
+            ...inputProps,
+            ...TextFieldProps?.inputProps
+          }}
+          InputProps={{
+            ...InputProps,
+            ...TextFieldProps?.InputProps,
+            startAdornment: TextFieldProps?.InputProps?.startAdornment ?
+              <MUIInputAdornment position="start">{InputProps.startAdornment}{TextFieldProps.InputProps.startAdornment}</MUIInputAdornment> :
+              InputProps.startAdornment,
+            endAdornment: TextFieldProps?.InputProps?.endAdornment ?
+              <MUIInputAdornment position="end">{InputProps.endAdornment}{TextFieldProps.InputProps.endAdornment}</MUIInputAdornment> :
+              InputProps.endAdornment
+          }}
+        />
+      );
+    }}
     {...props}
   />
 )
@@ -310,6 +334,86 @@ export const AutocompleteList: React.FC<AutocompleteListProps> = ({
           />
         ))}
       </Stack>
+    </Box>
+  );
+};
+
+export interface AutocompleteButtonsProps {
+  label?: string;
+  options: any[];
+  value?: any;
+  onChange?: (event: any, value: any) => void;
+  multiple?: boolean;
+  sx?: any;
+  checkbox?: boolean;
+}
+
+export const AutocompleteButtons: React.FC<AutocompleteButtonsProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+  multiple = false,
+  sx,
+  checkbox = false
+}) => {
+  const values = React.useMemo(() => {
+    if (multiple) return Array.isArray(value) ? value : (value ? [value] : []);
+    return value;
+  }, [value, multiple]);
+
+  const handleToggle = (option: any) => {
+    const optionValue = typeof option === 'string' ? option : (option.value ?? option.label ?? option);
+    if (multiple) {
+      const currentValues = Array.isArray(values) ? values : [];
+      const newValues = currentValues.includes(optionValue)
+        ? currentValues.filter((v: any) => v !== optionValue)
+        : [...currentValues, optionValue];
+      onChange?.(null, newValues);
+    } else {
+      onChange?.(null, optionValue === values ? null : optionValue);
+    }
+  };
+
+  return (
+    <Box sx={{ ...sx }}>
+      {label && <Label variant="caption" sx={{ mb: 1 }}>{label}</Label>}
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        {options.map((option) => {
+          const optionLabel = typeof option === 'string' ? option : (option.label ?? option);
+          const optionValue = typeof option === 'string' ? option : (option.value ?? option.label ?? option);
+          const isSelected = multiple
+            ? (Array.isArray(values) && values.includes(optionValue))
+            : values === optionValue;
+
+          if (checkbox) {
+            return (
+              <MUIFormControlLabel
+                key={optionValue}
+                control={
+                  <MUICheckbox
+                    checked={isSelected}
+                    onChange={() => handleToggle(option)}
+                    sx={{ py: 0 }}
+                  />
+                }
+                label={optionLabel}
+              />
+            );
+          }
+
+          return (
+            <Button
+              key={optionValue}
+              variant={isSelected ? "contained" : "outlined"}
+              onClick={() => handleToggle(option)}
+              size="small"
+            >
+              {optionLabel}
+            </Button>
+          );
+        })}
+      </Box>
     </Box>
   );
 };
@@ -479,14 +583,111 @@ export const TreeItem: React.FC<TreeItemProps> = ({ children, ...props }) => (
   </MUITreeItem>
 )
 
-export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+export const JSONTreeItem = ({ label, value, path, ...props }: { label: string; value: any; path: string } & Partial<TreeItemProps>) => {
+  const { itemId: _itemId, ...rest } = props;
+  const isObject = value !== null && typeof value === 'object'
+  const isArray = Array.isArray(value)
+
+  if (isObject) {
+    const keys = Object.keys(value)
+    if (keys.length === 0) {
+      return (
+        <TreeItem
+          {...rest}
+          itemId={path}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Label inline bold variant="body2">{label}:</Label>
+              <Label inline color="textSecondary" variant="body2">{isArray ? '[]' : '{}'}</Label>
+            </Box>
+          }
+        />
+      )
+    }
+
+    return (
+      <TreeItem
+        {...rest}
+        itemId={path}
+        label={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Label inline bold variant="body2">{label}</Label>
+            <Label inline color="primary" variant="caption" sx={{ opacity: 0.7 }}>
+              {isArray ? `[${value.length}]` : `{${keys.length}}`}
+            </Label>
+          </Box>
+        }
+      >
+        {keys.map((key) => (
+          <JSONTreeItem
+            key={key}
+            label={key}
+            value={value[key]}
+            path={`${path}.${key}`}
+          />
+        ))}
+      </TreeItem>
+    )
+  }
+
+  return (
+    <TreeItem
+      {...rest}
+      itemId={path}
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.25 }}>
+          <Label inline bold variant="body2" sx={{ minWidth: 100 }}>{label}:</Label>
+          <Label
+            inline
+            variant="body2"
+            sx={{
+              color: typeof value === 'string' ? 'success.main' : (typeof value === 'number' ? 'info.main' : (typeof value === 'boolean' ? 'warning.main' : 'textSecondary')),
+              fontFamily: 'monospace',
+              wordBreak: 'break-all'
+            }}
+          >
+            {typeof value === 'string' ? `"${value}"` : String(value)}
+          </Label>
+        </Box>
+      }
+    />
+  )
+}
+
+export const JSONTree = ({ data, label = "Root", path = "root", ...props }: { data: any, label?: string, path?: string } & SimpleTreeViewProps<any>) => {
+  return (
+    <TreeView
+      defaultExpandedItems={[path]}
+      {...props}
+    >
+      <JSONTreeItem label={label} value={data} path={path} />
+    </TreeView>
+  )
+}
+
+export const TimePicker: React.FC<TimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
+  <ErrorBoundary>
+    <TemporalPlainTimeProvider>
+      <MUITimePicker
+        value={!!value && value.length > 0 && convertString ? Temporal.PlainTime.from(value) : ((value?.length ?? 0) > 0 ? value : undefined)}
+        onChange={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
+        onAccept={(value: Temporal.PlainTime, context) => onChange?.(!!value && convertString ? value.toString() : value, context)}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
+        {...props}
+      />
+    </TemporalPlainTimeProvider>
+  </ErrorBoundary>
+)
+
+export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainDateProvider>
       <MUIDatePicker
-        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : (value || undefined)}
         onChange={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDate, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={!!size ? { textField: { size } } : undefined}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
+        minDate={Temporal.PlainDate.from("1890-01-01")}
         {...props}
       />
     </TemporalPlainDateProvider>
@@ -494,14 +695,15 @@ export const DatePicker: React.FC<DatePickerProps<any> & { convertString?: boole
 )
 
 // wraps the Temporal conversion to JSONDate for you
-export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium' }> = ({ convertString, fullWidth, size, value, onChange, ...props }) => (
+export const DateTimePicker: React.FC<DateTimePickerProps<any> & { convertString?: boolean, fullWidth?: boolean, size?: 'small' | 'medium', helperText?: string }> = ({ convertString, fullWidth, size, value, helperText, onChange, ...props }) => (
   <ErrorBoundary>
     <TemporalPlainDateTimeProvider>
       <MUIDateTimePicker
-        value={!!value && value.length > 0 && convertString ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDate() : ((value?.length ?? 0) > 0 ? value : undefined)}
+        value={!!value && convertString && typeof value === 'string' ? Temporal.Instant.from(value).toZonedDateTimeISO('UTC').toPlainDateTime() : (value || undefined)}
         onChange={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
         onAccept={(value: Temporal.PlainDateTime, context) => onChange?.(!!value && convertString ? value.toZonedDateTime('UTC').toInstant().toString() : value, context)}
-        slotProps={!!size ? { textField: { size } } : undefined}
+        slotProps={{ textField: { size, fullWidth, helperText, ...props.slotProps?.textField } }}
+        minDate={Temporal.PlainDateTime.from("1890-01-01T00:00:00.000")}
         {...props}
       />
     </TemporalPlainDateTimeProvider>
@@ -553,6 +755,217 @@ export const DataGrid: React.FC<DataGridPremiumProps & { children?: React.ReactN
       {children}
     </MUIDataGrid>
   )
+}
+
+export interface DetailTableProps extends Omit<DataGridPremiumProps, 'rows' | 'onSave' | 'onDelete'> {
+  // Manual Mode
+  rows?: any[];
+  onSave?: (row: any) => void;
+  onDelete?: (id: any) => void;
+  onAddNew?: () => any;
+
+  // Managed Mode (Simplified)
+  value?: any[];
+  onChange?: (list: any[]) => void;
+  template?: any;
+
+  addNewLabel?: string;
+  renderEditPanel: (row: any, setRow: (update: any) => void) => React.ReactNode;
+}
+
+export const DetailTable: React.FC<DetailTableProps> = ({
+  rows: externalRows,
+  onSave: externalOnSave,
+  onDelete: externalOnDelete,
+  onAddNew: externalOnAddNew,
+  value,
+  onChange,
+  template,
+  renderEditPanel,
+  addNewLabel,
+  slots,
+  columns,
+  ...props
+}) => {
+  const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
+  const apiRef = useGridApiRef();
+
+  // Sanitize rows to ensure they have IDs
+  const displayRows = React.useMemo(() => {
+    const list = value !== undefined ? value : (externalRows || []);
+    return list.map((row: any, index: number) => {
+      if (row.id) return row;
+      return { ...row, id: `gen-${index}-${Date.now()}` };
+    });
+  }, [value, externalRows]);
+
+  const [localRows, setLocalRows] = React.useState<any[]>(displayRows);
+
+  React.useEffect(() => {
+    setLocalRows(displayRows);
+  }, [displayRows]);
+
+  const handleAddNew = () => {
+    let newRow: any;
+    if (template !== undefined) {
+      newRow = { ...template, id: `new-${Date.now()}`, isNew: true };
+    } else if (externalOnAddNew) {
+      newRow = externalOnAddNew();
+      if (!newRow.id) newRow.id = `new-${Date.now()}`;
+      newRow.isNew = true;
+    }
+
+    if (newRow) {
+      setLocalRows(prev => [...prev, newRow]);
+      setExpandedRowIds(new Set([newRow.id]));
+    }
+  };
+
+  const handleSaveInternal = (updatedRow: any) => {
+    if (onChange && value !== undefined) {
+      const exists = value.find((r: any) => r.id === updatedRow.id);
+      const next = exists
+        ? value.map((r: any) => r.id === updatedRow.id ? { ...updatedRow, isNew: false } : r)
+        : [...value, { ...updatedRow, isNew: false }];
+      onChange(next);
+    } else if (externalOnSave) {
+      externalOnSave(updatedRow);
+    }
+    setExpandedRowIds(new Set());
+  };
+
+  const handleDeleteInternal = (id: any) => {
+    if (onChange && value !== undefined) {
+      onChange(value.filter((r: any) => r.id !== id));
+    } else if (externalOnDelete) {
+      externalOnDelete(id);
+    }
+    setExpandedRowIds(new Set());
+  };
+
+  const handleRowDoubleClick = React.useCallback((params: any) => {
+    apiRef.current?.toggleDetailPanel(params.id);
+  }, [apiRef]);
+
+  const CustomToolbar = React.useCallback(() => (
+    <MUIGridToolbarContainer sx={{ p: 1, gap: 1 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        startIcon={<Icon>add</Icon>}
+        onClick={handleAddNew}
+      >
+        {addNewLabel || 'Add New'}
+      </Button>
+    </MUIGridToolbarContainer>
+  ), [addNewLabel]);
+
+  return (
+    <DataGrid
+      apiRef={apiRef}
+      rows={localRows}
+      onRowDoubleClick={handleRowDoubleClick}
+      getDetailPanelHeight={() => 'auto'}
+      hideFooter
+      disableRowSelectionOnClick
+      showToolbar={!!(externalOnAddNew || template)}
+      detailPanelExpandedRowIds={expandedRowIds}
+      onDetailPanelExpandedRowIdsChange={(newIds) => setExpandedRowIds(new Set(newIds))}
+      columns={[...columns, { field: '__detail_panel_toggle__', width: 48 }]}
+      {...props}
+      slots={{
+        toolbar: (externalOnAddNew || template) ? CustomToolbar : slots?.toolbar,
+        ...slots
+      }}
+      getDetailPanelContent={({ row }) => (
+        <InternalDetailPanel
+          row={row}
+          renderEditPanel={renderEditPanel}
+          onSave={handleSaveInternal}
+          onCancel={() => {
+            if (row.isNew) {
+              setLocalRows(prev => prev.filter(r => r.id !== row.id));
+            }
+            setExpandedRowIds(new Set());
+          }}
+          onDelete={() => handleDeleteInternal(row.id)}
+        />
+      )}
+    />
+  );
+}
+
+function InternalDetailPanel({ row, renderEditPanel, onSave, onCancel, onDelete }: any) {
+  const [formData, setFormData] = React.useState(row);
+
+  const handleUpdate = (update: any) => {
+    setFormData((prev: any) => (typeof update === 'function' ? update(prev) : { ...prev, ...update }));
+  };
+
+  return (
+    <Box paper elevation={5} sx={{ p: 2, mx: 4, my: 1, bgcolor: 'background.paper' }}>
+      <Label variant="subtitle2" sx={{ mb: 2, fontWeight: 'bold' }}>
+        Details
+      </Label>
+      {renderEditPanel(formData, handleUpdate)}
+      <DetailPanelActions
+        onSave={() => onSave(formData)}
+        onCancel={onCancel}
+        onDelete={onDelete}
+        canDelete={!row.isNew}
+      />
+    </Box>
+  );
+}
+
+export function DetailPanelActions({ onSave, onCancel, onDelete, canDelete = true, disabled = false }: {
+  onSave: () => void;
+  onCancel: () => void;
+  onDelete?: () => void;
+  canDelete?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <Stack direction="row" justifyContent="space-between" mt={4}>
+      <Box>
+        {onDelete && (
+          <Button
+            onClick={onDelete}
+            variant="outlined"
+            color="error"
+            startIcon={<Icon>delete</Icon>}
+            size="small"
+            disabled={!canDelete || disabled}
+          >
+            Delete
+          </Button>
+        )}
+      </Box>
+      <Stack direction="row" spacing={1}>
+        <Button
+          onClick={onSave}
+          variant="outlined"
+          color="success"
+          size="small"
+          startIcon={<Icon>check</Icon>}
+          disabled={disabled}
+        >
+          Accept
+        </Button>
+        <Button
+          onClick={onCancel}
+          variant="outlined"
+          color="error"
+          size="small"
+          startIcon={<Icon>close</Icon>}
+          disabled={disabled}
+        >
+          Cancel
+        </Button>
+      </Stack>
+    </Stack>
+  );
 }
 
 /**
@@ -617,7 +1030,7 @@ function _MUIDraggablePaperComponent(props: PaperProps) {
   );
 }
 
-export const Window: React.FC<DialogProps & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, children, ...props }) => {
+export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, HeaderProps, ContentProps, FooterProps, children, ...props }) => {
   return (
     <MUIDialog
       open={open}
@@ -625,7 +1038,7 @@ export const Window: React.FC<DialogProps & { title?: React.ReactNode, header?: 
       PaperComponent={_MUIDraggablePaperComponent}
       {...props}
     >
-      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...props.HeaderProps}>
+      <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...HeaderProps}>
         {title}
         <MUIIconButton
           onClick={onClose as any}
@@ -640,17 +1053,226 @@ export const Window: React.FC<DialogProps & { title?: React.ReactNode, header?: 
         </MUIIconButton>
         {header}
       </MUIDialogTitle>
-      <MUIDialogContent dividers {...props.ContentProps}>
+      <MUIDialogContent dividers {...ContentProps}>
         {children}
       </MUIDialogContent>
       {!!footer &&
-        <MUIDialogActions {...props.FooterProps}>
+        <MUIDialogActions {...FooterProps}>
           {footer}
         </MUIDialogActions>
       }
     </MUIDialog>
   );
 }
+
+export const Prompt: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  onAccept: (value: string) => void;
+  title: React.ReactNode;
+  label: string;
+  defaultValue?: string;
+  type?: string;
+}> = ({ open, onClose, onAccept, title, label, defaultValue = '', type = 'text' }) => {
+  const [value, setValue] = React.useState(defaultValue);
+
+  React.useEffect(() => {
+    if (open) setValue(defaultValue);
+    else setValue(''); // Reset when closed
+  }, [open, defaultValue]);
+
+  const handleAccept = () => {
+    onAccept(value);
+    onClose();
+  };
+
+  return (
+    <Window
+      open={open}
+      onClose={onClose}
+      title={title}
+      maxWidth="xs"
+      fullWidth
+      footer={
+        <>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleAccept}>OK</Button>
+        </>
+      }
+    >
+      <Autocomplete
+        freeSolo
+        autoFocus
+        fullWidth
+        label={label}
+        value={value}
+        onInputChange={(_e, newValue) => setValue(newValue)}
+        options={[]}
+        TextFieldProps={{
+          type: type as any,
+          variant: 'standard',
+          onKeyDown: (e) => {
+            if (e.key === 'Enter') {
+              handleAccept();
+            }
+          }
+        }}
+        sx={{ mt: 1 }}
+      />
+    </Window>
+  );
+};
+
+export const AlertDialog: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  title: React.ReactNode;
+  message: React.ReactNode;
+}> = ({ open, onClose, title, message }) => (
+  <Window
+    open={open}
+    onClose={onClose}
+    title={title}
+    maxWidth="xs"
+    fullWidth
+    footer={
+      <Button variant="contained" onClick={onClose}>OK</Button>
+    }
+  >
+    <Label>{message}</Label>
+  </Window>
+);
+
+export const Confirm: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: React.ReactNode;
+  message: React.ReactNode;
+  confirmLabel?: string;
+  confirmColor?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+}> = ({ open, onClose, onConfirm, title, message, confirmLabel = 'Confirm', confirmColor = 'primary' }) => (
+  <Window
+    open={open}
+    onClose={onClose}
+    title={title}
+    maxWidth="xs"
+    fullWidth
+    footer={
+      <>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" color={confirmColor} onClick={() => { onConfirm(); onClose(); }}>{confirmLabel}</Button>
+      </>
+    }
+  >
+    <Label>{message}</Label>
+  </Window>
+);
+
+export const PromptContext = React.createContext<{
+  alert: (message: string, title?: string) => Promise<void>;
+  confirm: (message: string, title?: string) => Promise<boolean>;
+  prompt: (message: string, defaultValue?: string, title?: string) => Promise<string | null>;
+  notify: (message: string, severity?: AlertColor) => void;
+} | null>(null);
+
+export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, setState] = React.useState<{
+    type: 'alert' | 'confirm' | 'prompt' | null;
+    message: string;
+    title: string;
+    defaultValue: string;
+    resolve: (value: any) => void;
+  }>({
+    type: null,
+    message: '',
+    title: '',
+    defaultValue: '',
+    resolve: () => { },
+  });
+
+  const [notification, setNotification] = React.useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+  }>({
+    open: false,
+    message: '',
+    severity: 'info',
+  });
+
+  const alert = (message: string, title = 'Alert') =>
+    new Promise<void>((resolve) => {
+      setState({ type: 'alert', message, title, defaultValue: '', resolve });
+    });
+
+  const confirm = (message: string, title = 'Confirm') =>
+    new Promise<boolean>((resolve) => {
+      setState({ type: 'confirm', message, title, defaultValue: '', resolve });
+    });
+
+  const prompt = (message: string, defaultValue = '', title = 'Prompt') =>
+    new Promise<string | null>((resolve) => {
+      setState({ type: 'prompt', message, title, defaultValue, resolve });
+    });
+
+  const notify = (message: string, severity: AlertColor = 'info') => {
+    setNotification({ open: true, message, severity });
+  };
+
+  const handleClose = (value: any) => {
+    state.resolve(value);
+    setState((prev) => ({ ...prev, type: null }));
+  };
+
+  return (
+    <PromptContext.Provider value={{ alert, confirm, prompt, notify }}>
+      {children}
+      <AlertDialog
+        open={state.type === 'alert'}
+        onClose={() => handleClose(undefined)}
+        title={state.title}
+        message={state.message}
+      />
+      <Confirm
+        open={state.type === 'confirm'}
+        onClose={() => handleClose(false)}
+        onConfirm={() => handleClose(true)}
+        title={state.title}
+        message={state.message}
+      />
+      <Prompt
+        open={state.type === 'prompt'}
+        onClose={() => handleClose(null)}
+        onAccept={(val) => handleClose(val)}
+        title={state.title}
+        label={state.message}
+        defaultValue={state.defaultValue}
+      />
+      <MUISnackbar
+        open={notification.open}
+        autoHideDuration={3000}
+        onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <MUIAlert
+          onClose={() => setNotification((prev) => ({ ...prev, open: false }))}
+          severity={notification.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
+        </MUIAlert>
+      </MUISnackbar>
+    </PromptContext.Provider>
+  );
+};
+
+export const usePrompts = () => {
+  const context = React.useContext(PromptContext);
+  if (!context) throw new Error('usePrompts must be used within a PromptProvider');
+  return context;
+};
 
 export const Scrollable: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -663,6 +1285,8 @@ export const Scrollable: React.FC<{ children: React.ReactNode }> = ({ children }
     </>
   )
 }
+
+export const Tooltip: React.FC<TooltipProps> = (props) => <MUITooltip {...props} />;
 
 export function useLazyEffect(effect: () => void | (() => void), deps: any[] = [], wait = 250) {
   const cleanUp = React.useRef<void | (() => void)>(undefined)
@@ -695,6 +1319,12 @@ export const MenuItem: React.FC<MenuItemProps> = ({ children, ...props }) => (
   <MUIMenuItem {...props}>
     {children}
   </MUIMenuItem>
+)
+
+export const Popover: React.FC<PopoverProps> = ({ children, ...props }) => (
+  <MUIPopover {...props}>
+    {children}
+  </MUIPopover>
 )
 
 export { MarkReviewed }

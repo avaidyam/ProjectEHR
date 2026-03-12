@@ -3,9 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from 'components/contexts/AuthContext';
 import { Avatar, Badge, Checkbox, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import { GridToolbarContainer, GridToolbarFilterButton } from '@mui/x-data-grid-premium';
-import { DataGrid, DatePicker, Box, Icon, Autocomplete } from 'components/ui/Core';
+import { DataGrid, DatePicker, Box, Icon, Autocomplete, usePrompts } from 'components/ui/Core';
 import { useRouter } from 'util/helpers';
-import { Notification } from '../Login/components/Notification';
 import { useDatabase, Database } from 'components/contexts/PatientContext'
 
 function customFilterBar({
@@ -14,7 +13,7 @@ function customFilterBar({
   setSelectedDate,
   selectedDept,
   setSelectedDept,
-  schedulesDB,
+  appointmentsDB,
   departments,
   open,
   setOpen,
@@ -28,7 +27,7 @@ function customFilterBar({
   setSelectedDate: (date: Temporal.PlainDate | null) => void,
   selectedDept: string,
   setSelectedDept: (dept: string) => void,
-  schedulesDB: Database.Schedule[],
+  appointmentsDB: Database.Appointment[],
   departments: Database.Department[],
   open: boolean,
   setOpen: (open: boolean) => void,
@@ -47,7 +46,7 @@ function customFilterBar({
       />
       <Autocomplete
         disableClearable
-        options={schedulesDB.map(s => ({ id: s.department, label: departments.find(d => d.id === s.department)?.name || `Dept ${s.department}` }))}
+        options={Array.from(new Set(appointmentsDB.map(a => a.department))).map(deptId => ({ id: deptId, label: departments.find(d => d.id === deptId)?.name || `Dept ${deptId}` }))}
         value={selectedDept}
         onChange={(_e, newValue: any) => setSelectedDept(newValue?.id)}
         getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : option.label}
@@ -160,10 +159,11 @@ function changeTextByStatus(officeStatus: Database.Appointment.Status, checkinTi
 // takes rows from json file and set columns to make table
 export function Schedule() {
   const [patientsDB] = useDatabase().patients()
-  const [schedulesDB, setSchedulesDB] = useDatabase().schedules()
+  const [appointmentsDB, setAppointmentsDB] = useDatabase().appointments()
   const [departments] = useDatabase().departments()
   const [locations] = useDatabase().locations()
   const [providers] = useDatabase().providers()
+  const { prompt, alert, notify } = usePrompts();
 
   const onHandleClickRoute = useRouter();
   const [open, setOpen] = React.useState(false); // preview checkbox on and off
@@ -178,7 +178,7 @@ export function Schedule() {
 
   const [selPatient, setPatient] = React.useState<Database.Appointment | null>(null);
 
-  const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDept = department ?? (appointmentsDB[0]?.department || (departments[0]?.id));
   const initialDate = date ?? Temporal.Now.instant().toString()//"2026-01-01"
 
   const [selectedDept, setSelectedDept] = React.useState(initialDept);
@@ -212,19 +212,15 @@ export function Schedule() {
   }, [department, date]);
 
   const scheduleDB = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find((s) => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt) => {
-      const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
-      const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
-      return apptDate.equals(selectedPlainDate);
-    });
-  }, [schedulesDB, selectedDept, selectedDate]);
+    return appointmentsDB
+      .filter((appt) => appt.department === selectedDept)
+      .filter((appt) => {
+        const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
+        const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
+        return apptDate.equals(selectedPlainDate);
+      });
+  }, [appointmentsDB, selectedDept, selectedDate]);
 
-  const [notification, setNotification] = React.useState<{ open: boolean, message: string, severity: 'info' | 'warning' | 'error' | 'success' }>({ open: false, message: '', severity: 'info' });
-
-  const showNotification = (message: string, severity: 'info' | 'warning' | 'error' | 'success' = 'info') => {
-    setNotification({ open: true, message, severity });
-  };
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -232,12 +228,6 @@ export function Schedule() {
         <Typography variant="h5" gutterBottom>Schedule</Typography>
       </Box>
 
-      <Notification
-        open={notification.open}
-        onClose={() => setNotification({ ...notification, open: false })}
-        message={notification.message}
-        severity={notification.severity}
-      />
       <div style={{ display: 'inline-block', width: `${preview}%` }}>
 
         <div>
@@ -406,13 +396,13 @@ export function Schedule() {
             onRowClick={(params) => {
               setPatient(params.row);
             }}
-            onRowDoubleClick={({
+            onRowDoubleClick={async ({
               row: {
                 patient: { mrn: selectedMRN, enc: selectedEnc },
               },
             }) => {
               if (!!enabledEncounters && Object.keys(enabledEncounters).length > 0 && (enabledEncounters)[selectedMRN] == null) {
-                showNotification(
+                notify(
                   'You cannot view this chart because no encounter is associated with this MRN.',
                   'warning'
                 );
@@ -427,8 +417,9 @@ export function Schedule() {
                   .encounters)).map((x: any) => x.id)
                   .includes(selectedEnc)
               ) {
-                alert(
-                  'You cannot view this chart because this encounter DOES NOT EXIST [system error].'
+                await alert(
+                  'You cannot view this chart because this encounter DOES NOT EXIST [system error].',
+                  'System Error'
                 );
                 return; // Prevent routing
               }
@@ -447,7 +438,7 @@ export function Schedule() {
                 setSelectedDate: handleSetSelectedDate,
                 selectedDept,
                 setSelectedDept: handleSetSelectedDept,
-                schedulesDB,
+                appointmentsDB,
                 departments,
                 open,
                 setOpen,

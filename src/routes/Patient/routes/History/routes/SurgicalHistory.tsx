@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { Database, usePatient } from '../../../../../components/contexts/PatientContext';
 import { GridColDef } from '@mui/x-data-grid';
+import { filterDocuments } from 'util/helpers';
 
 const procedures = [
   "Appendectomy", "Cholecystectomy", "Hernia Repair - Inguinal", "Hernia Repair - Umbilical",
@@ -80,7 +81,7 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
               <Autocomplete
                 freeSolo
                 fullWidth
-                label="Procedure *"
+                label="Procedure"
                 size="small"
                 options={procedures}
                 value={formData.procedure}
@@ -101,23 +102,19 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
               onChange={(_e, newValue) => setFormData((prev: any) => ({ ...prev, laterality: newValue }))}
             />
 
-            <Stack direction="row" spacing={2} alignItems="center">
-              <DatePicker
-                convertString
-                label="Date"
-                size="small"
-                fullWidth
-                value={formData.date}
-                onChange={(date: any) => setFormData((prev: any) => ({ ...prev, date }))}
-              />
-              <Label variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-                {(() => {
-                  if (!patientData?.birthdate || !formData.date) return 'Age: —';
-                  const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
-                  return `Age: ${age} years old`;
-                })()}
-              </Label>
-            </Stack>
+            <DatePicker
+              convertString
+              label="Date"
+              size="small"
+              helperText={(() => {
+                if (!patientData?.birthdate || !formData.date) return 'Age: —';
+                const age = Database.JSONDate.toAge(patientData.birthdate, formData.date);
+                return `Age: ${age} years old`;
+              })()}
+              fullWidth
+              value={formData.date}
+              onChange={(date: any) => setFormData((prev: any) => ({ ...prev, date }))}
+            />
 
             <Autocomplete
               freeSolo
@@ -185,9 +182,15 @@ function SurgicalHistoryDetailPanel({ row, onSave, onCancel, onDelete }: { row: 
 export function SurgicalHistory() {
   const { useEncounter, useChart } = usePatient();
   const [surgicalHx, setSurgicalHx] = useEncounter().history.surgical([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [patientData] = useChart()();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
   const apiRef = useGridApiRef();
+
+  const visibleSurgicalHx = React.useMemo(() => {
+    return filterDocuments(surgicalHx || [], conditionals, orders);
+  }, [surgicalHx, conditionals, orders]);
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
@@ -297,7 +300,7 @@ export function SurgicalHistory() {
       <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
         <DataGrid
           apiRef={apiRef}
-          rows={surgicalHx ?? []}
+          rows={visibleSurgicalHx ?? []}
           columns={columns}
           getRowId={(row: any) => row.id}
           hideFooter

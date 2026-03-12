@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, IconButton, Icon, Window } from "components/ui/Core";
+import { Box, IconButton, Icon, Window, usePrompts } from "components/ui/Core";
 import { GeminiAPIProvider, GeminiAPIProviderProps, LiveClientOptions } from "./utils/GeminiAPI";
 import { VoicePanel } from "./components/VoicePanel";
 import { ModelConfig } from "./components/ModelConfig";
@@ -11,7 +11,8 @@ const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u00
 let _PWD: string | null = null;
 
 export function Chat() {
-  const [apiKey, setApiKey] = React.useState(_API_KEY);
+  const { prompt, alert } = usePrompts();
+  const [apiKey, setApiKey] = React.useState(XORcrypt(_API_KEY, _PWD ?? ""));
   // Default to "voice" now that LLM chat is disabled
   const [tab, setTab] = React.useState("voice");
   const [configUnlocked, setConfigUnlocked] = React.useState(false);
@@ -29,15 +30,19 @@ export function Chat() {
   const gender = chart?.gender ?? '';
 
   // Encounter object for concerns (like in your SnapshotTabContent)
-  const [currentEncounter] = useEncounter()();
+  const [currentEncounter, setCurrentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
-  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
-  const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
-  const concernsArr = Array.isArray(nextEncounter?.concerns) ? nextEncounter.concerns : [];
-  console.log("🩺 allSortedEncounters:", allSortedEncounters);
-  console.log("currentEncounter", currentEncounter)
-  console.log("nextEncounter", nextEncounter)
+  //const allSortedEncounters = Object.entries(chart.encounters)
+  //  .filter(([id]) => id !== undefined)
+  //  .map(([_, enc]) => enc)
+  //  .sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
+  //const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
+  //const [nextEnc, setNextEnc] = usePatient().useChart().encounters[nextEncounter.id]();
+
+  // We no longer want to look at the n+1 encounter, just our current one!
+  const [nextEnc, setNextEnc] = [currentEncounter, setCurrentEncounter]
+  const concernsArr = Array.isArray(nextEnc?.concerns) ? nextEnc.concerns : [];
 
   // Other encounter-sourced data
   const {
@@ -47,7 +52,7 @@ export function Chat() {
     allergies,
     immunizations,
     smartData
-  } = nextEncounter
+  } = nextEnc
 
   // get voice
   const smartVoice = smartData?.chat?.voice;
@@ -63,20 +68,21 @@ export function Chat() {
 
   // Notes
   const hpiNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'History of Present Illness'
+    (doc: any) => doc?.summary === "HPI" || doc?.summary === 'History of Present Illness'
   );
   const rosNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'Review of Systems'
+    (doc: any) => doc?.summary === "ROS" || doc?.summary === 'Review of Systems'
   );
   const physicalExamNote = (notes || []).find(
-    (doc: any) => doc?.summary === 'Physical Exam' || doc?.summary === 'Physical Examination'
+    (doc: any) => doc?.summary === "PE" || doc?.summary === 'Physical Exam' || doc?.summary === 'Physical Examination'
   );
 
   // Histories
   const medicalHistory = history?.medical || [];
   const surgicalHistory = history?.surgical || [];
   const familyHistory = history?.family || [];
-  const socialDocumentation = history?.SocialDocumentation || null;
+  const socialItem = history?.social?.[0] || {};
+  const socialDocumentation = socialItem.comments || null;
 
   // 🧠 Compose the full prompt
   const fullPrompt = React.useMemo(() => {
@@ -95,17 +101,11 @@ export function Chat() {
     text += hpiNote?.content?.replace(/<[^>]+>/g, '')?.trim() || "No HPI note found.";
     text += "\n\n";
 
-    // Add patient perspective + custom prompt (from smartData)
-    const patientPerspective = smartData?.chat?.patient_perspective;
+    // Add custom prompt (from smartData)
     const customPrompt = smartData?.chat?.custom_prompt;
-    if (patientPerspective || customPrompt) {
+    if (customPrompt) {
       text += "### Patient Context\n";
-      if (patientPerspective) {
-        text += `Patient Perspective: ${patientPerspective}\n`;
-      }
-      if (customPrompt) {
-        text += `\nCustom Prompt: ${customPrompt}\n`;
-      }
+      text += `Custom Prompt: ${customPrompt}\n`;
       text += "\n";
     }
 
@@ -128,17 +128,64 @@ export function Chat() {
     // Surgical History
     text += "### Surgical History (Procedure & Age)\n";
     text += surgicalHistory.length
-      ? surgicalHistory.map((s: any) => `- ${s.displayAs} (Age: ${Database.JSONDate.toAge(birthdate, s.date)})`).join('\n')
+      ? surgicalHistory.map((s: any) => `- ${s.displayAs ?? s.procedure} (Age: ${Database.JSONDate.toAge(birthdate, s.date)})`).join('\n')
       : "No surgical history found.";
     text += "\n\n";
 
+    if (gender !== 'Male') {
+      text += "### ObGyn History\n";
+      const ob = socialItem?.obstetrics;
+      const gyn = socialItem?.gynecology;
+
+      if (ob) {
+        text += "#### Obstetric History\n";
+        const obFields = [];
+        if (ob.gravida !== undefined) obFields.push(`Gravida: ${ob.gravida}`);
+        if (ob.para !== undefined) obFields.push(`Para: ${ob.para}`);
+        if (ob.term !== undefined) obFields.push(`Term: ${ob.term}`);
+        if (ob.preterm !== undefined) obFields.push(`Preterm: ${ob.preterm}`);
+        if (ob.ab !== undefined) obFields.push(`AB: ${ob.ab}`);
+        if (ob.living !== undefined) obFields.push(`Living: ${ob.living}`);
+        if (obFields.length) text += `- ${obFields.join(', ')}\n`;
+
+        const secondaryFields = [];
+        if (ob.sab !== undefined) secondaryFields.push(`SAB: ${ob.sab}`);
+        if (ob.iab !== undefined) secondaryFields.push(`IAB: ${ob.iab}`);
+        if (ob.ectopic !== undefined) secondaryFields.push(`Ectopic: ${ob.ectopic}`);
+        if (ob.multiple !== undefined) secondaryFields.push(`Multiple: ${ob.multiple}`);
+        if (secondaryFields.length) text += `- ${secondaryFields.join(', ')}\n`;
+
+        if (ob.currentlyPregnant) text += "- Currently pregnant\n";
+        if (ob.neverPregnant) text += "- Never pregnant\n";
+        if (ob.comments) text += `- Comments: ${ob.comments.replace(/<[^>]+>/g, '').trim()}\n`;
+      }
+
+      if (gyn) {
+        text += "#### Gynecology History\n";
+        if (gyn.lastMenstrualPeriod) text += `- LMP: ${gyn.lastMenstrualPeriod}\n`;
+        if (gyn.ageAtMenarche) text += `- Age at menarche: ${gyn.ageAtMenarche}\n`;
+        if (gyn.ageAtFirstPregnancy) text += `- Age at first pregnancy: ${gyn.ageAtFirstPregnancy}\n`;
+        if (gyn.ageAtFirstLiveBirth) text += `- Age at first live birth: ${gyn.ageAtFirstLiveBirth}\n`;
+        if (gyn.monthsBreastfeeding) text += `- Months breastfeeding: ${gyn.monthsBreastfeeding}\n`;
+        if (gyn.ageAtMenopause) text += `- Age at menopause: ${gyn.ageAtMenopause}\n`;
+        if (gyn.comments) text += `- Comments: ${gyn.comments.replace(/<[^>]+>/g, '').trim()}\n`;
+      }
+
+      if (!ob && !gyn) {
+        text += "No ObGyn history found.\n";
+      }
+      text += "\n";
+    }
+
     // Family History
     text += "### Family History\n";
-    if (familyHistory.length) {
-      familyHistory.forEach((member: any) => {
-        text += `- ${member.relationship} (${member.status || 'Unknown'}, Age: ${member.age || 'N/A'})`;
-        if (member.problems?.length) {
-          text += `: ${member.problems.map((p: any) => `${p.description} (Onset: ${p.ageOfOnset})`).join(', ')}`;
+    const familyStatus = history?.familyStatus || [];
+    if (familyStatus.length) {
+      familyStatus.forEach((relative: any) => {
+        const conditions = (history?.family || []).filter((fh: any) => fh.person === relative.id);
+        text += `- ${relative.relationship} (${relative.status || 'Unknown'}, Age: ${relative.age || 'N/A'})`;
+        if (conditions.length) {
+          text += `: ${conditions.map((p: any) => `${p.description} (Onset: ${p.age || 'Unknown'})`).join(', ')}`;
         }
         text += "\n";
       });
@@ -149,8 +196,7 @@ export function Chat() {
 
     // Social Documentation
     text += "### Social Documentation\n";
-    text += socialDocumentation?.textbox
-      || (socialDocumentation ? JSON.stringify(socialDocumentation, null, 2) : "No social documentation found.");
+    text += socialDocumentation || "No social documentation found.";
     text += "\n\n";
 
     // Medications
@@ -211,7 +257,8 @@ export function Chat() {
   }, [
     firstName, lastName, birthdate, gender, concernsArr,
     hpiNote, rosNote, physicalExamNote, medicalHistory, surgicalHistory, familyHistory,
-    socialDocumentation, medications, immunizations, allergies
+    socialItem, socialDocumentation, medications, immunizations, allergies,
+    smartData
   ]);
 
   const [systemPrompt, setSystemPrompt] = React.useState(`
@@ -234,10 +281,15 @@ Here is the standardized patient's chart information:`);
 
   React.useEffect(() => {
     if (!_PWD) {
-      _PWD = window.prompt("Please enter your authorization code:");
-      setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
+      (async () => {
+        const code = await prompt("Authorization Code", "", "Authorization Required");
+        if (code) {
+          _PWD = code;
+          setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
+        }
+      })();
     }
-  }, []);
+  }, [prompt]);
 
   const geminiOptions: LiveClientOptions = React.useMemo(() => ({
     httpOptions: { apiVersion: "v1alpha" },
@@ -269,22 +321,21 @@ Here is the standardized patient's chart information:`);
     },
   }), [apiKey, voiceName, fullPrompt, systemPrompt]);
 
-  if (!_PWD) return <></>;
-
-  const handleTabChange = (event: any, newValue: string) => {
+  const handleTabChange = async (event: any, newValue: string) => {
     if (newValue === "modelConfig" && !configUnlocked) {
-      const pass = window.prompt("Enter password to unlock Model Config:");
+      const pass = await prompt("Password", "", "Unlock Configuration");
       if (pass === "config") {
         setConfigUnlocked(true);
         setSettingsOpen(true);
-      } else {
-        alert("Incorrect password.");
-        return;
+      } else if (pass !== null) {
+        await alert("The password you entered is incorrect. Please try again.", "Access Denied");
       }
     } else {
       setSettingsOpen(true);
     }
   };
+
+  if (!_PWD) return <></>;
 
   return (
     <GeminiAPIProvider
@@ -313,6 +364,17 @@ Here is the standardized patient's chart information:`);
           setVoiceName={setVoiceName}
           systemPrompt={systemPrompt}
           onChangePrompt={setSystemPrompt}
+          customPrompt={nextEnc?.smartData?.chat?.custom_prompt ?? ""}
+          onChangeCustomPrompt={(val: string) => setNextEnc((prev: any) => ({
+            ...prev,
+            smartData: {
+              ...prev?.smartData,
+              chat: {
+                ...prev?.smartData?.chat,
+                custom_prompt: val
+              }
+            }
+          }))}
           fullPrompt={fullPrompt}
         />
       </Window>

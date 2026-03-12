@@ -11,7 +11,7 @@ interface LocationState {
 }
 
 export function Snapboard() {
-  const [schedulesDB] = useDatabase().schedules();
+  const [appointmentsDB] = useDatabase().appointments();
   const [patientsDB] = useDatabase().patients();
   const [departments] = useDatabase().departments();
   const [locations] = useDatabase().locations();
@@ -21,7 +21,7 @@ export function Snapboard() {
   const navigate = useNavigate();
 
   // Initialize state from URL or defaults
-  const initialDept = department ?? (schedulesDB[0]?.department || (departments[0]?.id));
+  const initialDept = department ?? (appointmentsDB[0]?.department || (departments[0]?.id));
   const initialDate = date ?? Temporal.Instant.from('2026-01-01T00:00:00.000Z').toString();
 
   const [selectedDate, setSelectedDate] = React.useState<Database.JSONDate>(initialDate as Database.JSONDate);
@@ -61,13 +61,14 @@ export function Snapboard() {
 
   // 2. Get appointments for the date and department
   const deptAppointments = React.useMemo(() => {
-    const deptSchedule = schedulesDB.find(s => s.department === selectedDept)?.appointments || [];
-    return deptSchedule.filter((appt: any) => {
-      const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
-      const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
-      return apptDate.equals(selectedPlainDate);
-    });
-  }, [schedulesDB, selectedDept, selectedDate]);
+    return appointmentsDB
+      .filter((appt) => appt.department === selectedDept)
+      .filter((appt: any) => {
+        const apptDate = Temporal.Instant.from(appt.apptTime).toZonedDateTimeISO('UTC').toPlainDate();
+        const selectedPlainDate = Temporal.Instant.from(selectedDate).toZonedDateTimeISO('UTC').toPlainDate()
+        return apptDate.equals(selectedPlainDate);
+      });
+  }, [appointmentsDB, selectedDept, selectedDate]);
 
   // 3. Map patients to locations
   const locationState = React.useMemo<LocationState[]>(() => {
@@ -88,10 +89,13 @@ export function Snapboard() {
     return Object.values(state).sort((a, b) => a.location.name.localeCompare(b.location.name));
   }, [deptLocations, deptAppointments, patientsDB]);
 
-  const deptOptions = React.useMemo(() => schedulesDB.map((s) => ({
-    id: s.department,
-    label: departments.find((d) => d.id === s.department)?.name || `Dept ${s.department}`
-  })), [schedulesDB, departments]);
+  const deptOptions = React.useMemo(() => {
+    const deptIds = Array.from(new Set(appointmentsDB.map(a => a.department)));
+    return deptIds.map((deptId) => ({
+      id: deptId,
+      label: departments.find((d) => d.id === deptId)?.name || `Dept ${deptId}`
+    }));
+  }, [appointmentsDB, departments]);
 
   return (
     <Box sx={{ p: 3, height: '100vh', overflow: 'auto' }}>

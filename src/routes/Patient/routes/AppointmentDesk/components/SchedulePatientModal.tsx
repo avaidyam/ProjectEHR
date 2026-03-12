@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Box, Button, Window, TreeView, TreeItem, Icon, Label, Grid, Autocomplete, DateTimePicker } from 'components/ui/Core';
+import { Autocomplete, Box, Button, Window, TreeView, TreeItem, Icon, Label, Grid, usePrompts, DateTimePicker, TimePicker } from 'components/ui/Core';
+import { DepartmentSelectField, ProviderSelectField, LocationSelectField } from 'components/ui/DataUI';
+import * as Database from 'components/contexts/Database';
 
 const VISIT_TYPES = [
   "Admission",
@@ -35,6 +37,7 @@ const VISIT_STATUSES = [
 ];
 
 export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, departments, providers, locations, appointment, currentPatientId }: any) => {
+  const { alert } = usePrompts()
   const [selectedPatientId, setSelectedPatientId] = React.useState(appointment?.patient?.mrn || currentPatientId || null);
   const [selectedEncounterId, setSelectedEncounterId] = React.useState(appointment?.patient?.enc || null);
   const [showAdvanced, setShowAdvanced] = React.useState(false);
@@ -97,8 +100,8 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
     }
   };
 
-  const handleSubmit = () => {
-    if (formData.department && formData.date && selectedEncounterId) {
+  const handleSubmit = async () => {
+    if (formData.department && formData.provider && formData.location && formData.date && selectedEncounterId) {
       onSubmit({
         patientId: selectedPatientId,
         encounterId: selectedEncounterId,
@@ -116,7 +119,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
       });
       onClose();
     } else {
-      alert("Please select an encounter, department, and date.");
+      await alert("Please select an encounter, department, and date.", "Incomplete Information");
     }
   };
 
@@ -129,7 +132,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
       <Button
         variant="contained"
         onClick={handleSubmit}
-        disabled={!selectedEncounterId}
+        disabled={!selectedEncounterId || !formData.department || !formData.provider || !formData.location || !formData.date}
       >
         {appointment ? "Save Changes" : "Schedule"}
       </Button>
@@ -184,15 +187,15 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
           <Grid container spacing={2}>
             {/* Department - Autocomplete (Strict) */}
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Autocomplete
-                label="Department"
+              <DepartmentSelectField
                 fullWidth
-                options={departments || []}
-                getOptionLabel={(option) => option.name || ''}
-                value={departments?.find((d: any) => d.id === formData.department) || null}
-                onChange={(event, newValue) => {
-                  setFormData((prev: any) => ({ ...prev, department: newValue ? newValue.id : null }));
-                }}
+                value={formData.department}
+                onChange={(id) => setFormData((prev: any) => ({
+                  ...prev,
+                  department: id,
+                  provider: null,
+                  location: null
+                }))}
               />
             </Grid>
 
@@ -211,29 +214,21 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
             {/* Provider - Autocomplete (Strict) */}
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Autocomplete
-                label="Provider"
+              <ProviderSelectField
                 fullWidth
-                options={providers || []}
-                getOptionLabel={(option) => option.name || ''}
-                value={providers?.find((p: any) => p.id === formData.provider) || null}
-                onChange={(event, newValue) => {
-                  setFormData((prev: any) => ({ ...prev, provider: newValue ? newValue.id : null }));
-                }}
+                departmentIds={formData.department ? [formData.department as Database.Department.ID] : []}
+                value={formData.provider}
+                onChange={(id) => setFormData((prev: any) => ({ ...prev, provider: id }))}
               />
             </Grid>
 
             {/* Location - Autocomplete (Strict) */}
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Autocomplete
-                label="Location"
+              <LocationSelectField
                 fullWidth
-                options={locations || []}
-                getOptionLabel={(option) => option.name || ''}
-                value={locations?.find((l: any) => l.id === formData.location) || null}
-                onChange={(event, newValue) => {
-                  setFormData((prev: any) => ({ ...prev, location: newValue ? newValue.id : null }));
-                }}
+                departmentIds={formData.department ? [formData.department as Database.Department.ID] : []}
+                value={formData.location}
+                onChange={(id) => setFormData((prev: any) => ({ ...prev, location: id }))}
               />
             </Grid>
 
@@ -252,6 +247,7 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
 
             <Grid size={{ xs: 12, sm: 6 }}>
               <DateTimePicker
+                fullWidth
                 convertString
                 label="Appointment Time"
                 value={formData.date}
@@ -295,7 +291,8 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
             {showAdvanced && (
               <>
                 <Grid size={{ xs: 12, sm: 6 }}>
-                  <DateTimePicker
+                  <TimePicker
+                    fullWidth
                     convertString
                     label="Check-in Time"
                     value={formData.checkinTime}
@@ -303,7 +300,8 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
-                  <DateTimePicker
+                  <TimePicker
+                    fullWidth
                     convertString
                     label="Check-out Time"
                     value={formData.checkoutTime}

@@ -7,133 +7,176 @@ import {
   Icon,
   Autocomplete,
   MarkReviewed,
-} from 'components/ui/Core';
-import {
+  DatePicker,
+  AutocompleteButtons,
   Grid,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
-import { Editor } from 'components/ui/Editor';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: '#e91e63',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1.1rem',
-}));
+  RichTextEditor
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SpecialtyOB() {
   const { useEncounter } = usePatient();
-  const [obgynData, setObgynData] = useEncounter().history.OBGynHistory({});
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  // Obstetric History handlers
-  const handleObstetricChange = (field: string, value: any) => {
-    setObgynData((prev: any) => ({
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
+
+  const socialData = visibleSocialHistory[0] || {};
+  const setSocialData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const current = next[0] || {};
+      const newSocial = typeof update === 'function' ? update(current) : update;
+      next[0] = { ...current, ...newSocial };
+      return next;
+    });
+  };
+
+  const handleDataChange = (section: string, field: string, value: any) => {
+    setSocialData((prev: any) => ({
       ...prev,
-      obstetricHistory: {
-        ...prev.obstetricHistory,
+      [section]: {
+        ...prev[section as keyof typeof prev],
         [field]: value
       }
     }));
   };
-
-  const handleObstetricCommentsChange = (content: any) => {
-    setObgynData((prev: any) => ({
-      ...prev,
-      obstetricHistory: {
-        ...prev.obstetricHistory,
-        comments: content
-      }
-    }));
-  };
-
-  // Gynecology History handlers
-  const handleGynecologyChange = (field: string, value: any) => {
-    setObgynData((prev: any) => ({
-      ...prev,
-      gynecologyHistory: {
-        ...prev.gynecologyHistory,
-        [field]: value
-      }
-    }));
-  };
-
-  const handleGynecologyCommentsChange = (content: any) => {
-    setObgynData((prev: any) => ({
-      ...prev,
-      gynecologyHistory: {
-        ...prev.gynecologyHistory,
-        comment: content
-      }
-    }));
-  };
-
-  // Calculate Counts function (placeholder for now)
-  const handleCalculateCounts = () => {
-    // This would implement the calculation logic based on the form values
-    console.log('Calculate Counts clicked');
-  };
-
 
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> OB/Gyn History</>} color="#9F3494">
       {/* Obstetric History */}
-      <SectionPaper>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <SectionHeader>Obstetric History</SectionHeader>
-          <Button
-            variant="contained"
-            onClick={handleCalculateCounts}
-            sx={{ backgroundColor: '#2196f3', '&:hover': { backgroundColor: '#1976d2' } }}
-          >
-            📊 Calculate Counts
-          </Button>
-        </Box>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Obstetric History</Label>
 
         <Grid container spacing={2}>
           {/* First row */}
-          {['Gravida', 'Para', 'Term', 'Preterm', 'AB', 'Living'].map((label) => (
-            <Grid key={label} size={{ xs: 12, sm: 2 }}>
-              <Autocomplete
-                freeSolo
-                label={label}
-                fullWidth
-                value={obgynData?.obstetricHistory?.[label.toLowerCase()]?.toString() || ''}
-                onInputChange={(_e, newValue) => handleObstetricChange(label.toLowerCase(), parseInt(newValue) || 0)}
-                options={['0', '1', '2', '3', '4', '5']}
-              />
-            </Grid>
-          ))}
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Gravida"
+              fullWidth
+              value={socialData?.obstetrics?.gravida?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'gravida', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Para"
+              fullWidth
+              value={socialData?.obstetrics?.para?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'para', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Term"
+              fullWidth
+              value={socialData?.obstetrics?.term?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'term', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Preterm"
+              fullWidth
+              value={socialData?.obstetrics?.preterm?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'preterm', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="AB"
+              fullWidth
+              value={socialData?.obstetrics?.ab?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'ab', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Living"
+              fullWidth
+              value={socialData?.obstetrics?.living?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'living', parseInt(newValue) || 0)}
+              options={['0', '1', '2', '3', '4', '5']}
+            />
+          </Grid>
 
           {/* Second row */}
-          {['SAB', 'IAB', 'Ectopic', 'Multiple'].map((label) => (
-            <Grid key={label} size={{ xs: 12, sm: 2 }}>
-              <Autocomplete
-                freeSolo
-                label={label}
-                fullWidth
-                value={obgynData?.obstetricHistory?.[label.toLowerCase()]?.toString() || ''}
-                onInputChange={(_e, newValue) => handleObstetricChange(label.toLowerCase(), parseInt(newValue) || 0)}
-                options={['0', '1', '2']}
-              />
-            </Grid>
-          ))}
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="SAB"
+              fullWidth
+              value={socialData?.obstetrics?.sab?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'sab', parseInt(newValue) || 0)}
+              options={['0', '1', '2']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="IAB"
+              fullWidth
+              value={socialData?.obstetrics?.iab?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'iab', parseInt(newValue) || 0)}
+              options={['0', '1', '2']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Ectopic"
+              fullWidth
+              value={socialData?.obstetrics?.ectopic?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'ectopic', parseInt(newValue) || 0)}
+              options={['0', '1', '2']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 2 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Multiple"
+              fullWidth
+              value={socialData?.obstetrics?.multiple?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'multiple', parseInt(newValue) || 0)}
+              options={['0', '1', '2']}
+            />
+          </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Live Births"
               fullWidth
-              value={obgynData?.obstetricHistory?.liveBirths?.toString() || ''}
-              onInputChange={(_e, newValue) => handleObstetricChange('liveBirths', parseInt(newValue) || 0)}
+              value={socialData?.obstetrics?.liveBirths?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('obstetrics', 'liveBirths', parseInt(newValue) || 0)}
               options={['0', '1', '2', '3', '4', '5']}
             />
           </Grid>
@@ -141,31 +184,24 @@ export function SpecialtyOB() {
           {/* Pregnancy status checkboxes */}
           <Grid size={12}>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mt: 2 }}>
-              <Button
-                variant="contained"
-                sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
-              >
-                ➕ Add previous pregnancy
-              </Button>
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={obgynData?.obstetricHistory?.currentlyPregnant || false}
-                    onChange={(e) => handleObstetricChange('currentlyPregnant', e.target.checked)}
-                  />
-                }
-                label="Currently pregnant"
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={obgynData?.obstetricHistory?.neverPregnant || false}
-                    onChange={(e) => handleObstetricChange('neverPregnant', e.target.checked)}
-                  />
-                }
-                label="Never pregnant"
+              <AutocompleteButtons
+                options={[
+                  { label: 'Currently pregnant', value: 'currentlyPregnant' },
+                  { label: 'Never pregnant', value: 'neverPregnant' }
+                ]}
+                checkbox
+                multiple
+                value={(() => {
+                  const vals = [];
+                  if (socialData?.obstetrics?.currentlyPregnant) vals.push('currentlyPregnant');
+                  if (socialData?.obstetrics?.neverPregnant) vals.push('neverPregnant');
+                  return vals;
+                })()}
+                onChange={(_e, val) => {
+                  handleDataChange('obstetrics', 'currentlyPregnant', val.includes('currentlyPregnant'));
+                  handleDataChange('obstetrics', 'neverPregnant', val.includes('neverPregnant'));
+                }}
+                sx={{ mb: 0 }}
               />
             </Box>
           </Grid>
@@ -173,71 +209,86 @@ export function SpecialtyOB() {
           {/* Obstetric Comments */}
           <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
-              Obstetric Comments
+              Comments
             </Label>
-            <Editor
-              initialContent={obgynData?.obstetricHistory?.comments || ''}
-              onSave={handleObstetricCommentsChange}
+            <RichTextEditor
+              initialContent={socialData?.obstetrics?.comments || ''}
+              onUpdate={(content: any) => handleDataChange('obstetrics', 'comments', content)}
               disableStickyMenuBar={true}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       {/* Gynecology History */}
-      <SectionPaper>
-        <SectionHeader>Gynecology History</SectionHeader>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Gynecology History</Label>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, sm: 4 }}>
+            <DatePicker
+              label="LMP"
+              fullWidth
+              size="small"
+              value={socialData?.gynecology?.lastMenstrualPeriod || ''}
+              onChange={(newValue: any) => handleDataChange('gynecology', 'lastMenstrualPeriod', newValue)}
+              convertString
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at menarche"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtMenarche?.toString() || ''}
-              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtMenarche', parseInt(newValue) || 0)}
+              value={socialData?.gynecology?.ageAtMenarche?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('gynecology', 'ageAtMenarche', parseInt(newValue) || 0)}
               options={['10', '11', '12', '13', '14', '15']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at first pregnancy"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtFirstPregnancy?.toString() || ''}
-              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtFirstPregnancy', parseInt(newValue) || 0)}
+              value={socialData?.gynecology?.ageAtFirstPregnancy?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('gynecology', 'ageAtFirstPregnancy', parseInt(newValue) || 0)}
               options={['18', '20', '25', '30', '35']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at first live birth"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtFirstLiveBirth?.toString() || ''}
-              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtFirstLiveBirth', parseInt(newValue) || 0)}
+              value={socialData?.gynecology?.ageAtFirstLiveBirth?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('gynecology', 'ageAtFirstLiveBirth', parseInt(newValue) || 0)}
               options={['18', '20', '25', '30', '35']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Months breastfeeding"
               fullWidth
-              value={obgynData?.gynecologyHistory?.monthsBreastfeeding?.toString() || ''}
-              onInputChange={(_e, newValue) => handleGynecologyChange('monthsBreastfeeding', parseInt(newValue) || 0)}
+              value={socialData?.gynecology?.monthsBreastfeeding?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('gynecology', 'monthsBreastfeeding', parseInt(newValue) || 0)}
               options={['0', '3', '6', '12', '24']}
             />
           </Grid>
 
           <Grid size={{ xs: 12, sm: 4 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Age at menopause"
               fullWidth
-              value={obgynData?.gynecologyHistory?.ageAtMenopause?.toString() || ''}
-              onInputChange={(_e, newValue) => handleGynecologyChange('ageAtMenopause', parseInt(newValue) || 0)}
+              value={socialData?.gynecology?.ageAtMenopause?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('gynecology', 'ageAtMenopause', parseInt(newValue) || 0)}
               options={['45', '50', '52', '55']}
             />
           </Grid>
@@ -245,16 +296,16 @@ export function SpecialtyOB() {
           {/* Gynecology Comments */}
           <Grid size={12}>
             <Label variant="subtitle2" sx={{ mb: 1, display: 'block' }}>
-              Comment
+              Comments
             </Label>
-            <Editor
-              initialContent={obgynData?.gynecologyHistory?.comment || ''}
-              onSave={handleGynecologyCommentsChange}
+            <RichTextEditor
+              initialContent={socialData?.gynecology?.comments || ''}
+              onUpdate={(content: any) => handleDataChange('gynecology', 'comment', content)}
               disableStickyMenuBar={true}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       <MarkReviewed />
     </TitledCard>
   );

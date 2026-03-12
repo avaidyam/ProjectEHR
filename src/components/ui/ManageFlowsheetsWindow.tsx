@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Menu } from '@mui/material';
-import { Box, Button, Window, TreeView, TreeItem, Icon, IconButton, Divider, Autocomplete, MenuItem } from './Core';
+import { Box, Button, Window, TreeView, TreeItem, Icon, IconButton, Divider, Autocomplete, MenuItem, usePrompts } from './Core';
 import { useDatabase } from '../contexts/PatientContext';
 import * as Database from '../contexts/Database';
 
@@ -45,6 +45,7 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     type: "number",
     targetGroupId: ""
   });
+  const { alert, confirm } = usePrompts();
 
   const handleContextMenu = (event: React.MouseEvent, type: 'group' | 'row', id: string, parentId?: string) => {
     event.preventDefault();
@@ -86,8 +87,8 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     setIsEditingGroup(false);
   };
 
-  const handleDeleteGroup = (groupId: string) => {
-    if (window.confirm("Are you sure you want to delete this group and all its rows?")) {
+  const handleDeleteGroup = async (groupId: string) => {
+    if (await confirm("Are you sure you want to delete this group and all its rows?", "Confirm Deletion")) {
       setFlowsheets((prev: Database.Flowsheet.Definition[]) => prev.filter((g: Database.Flowsheet.Definition) => g.id !== groupId));
     }
     handleCloseContextMenu();
@@ -109,14 +110,14 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
 
   // --- ROW ACTIONS ---
 
-  const handleAddRow = () => {
+  const handleAddRow = async () => {
     if (!rowData.name || !rowData.label || !rowData.targetGroupId) return;
 
     setFlowsheets((prev) => prev.map((g) => {
       if (g.id === rowData.targetGroupId) {
         // Check name uniqueness in group
         if (g.rows?.some((r) => r.name === rowData.name)) {
-          window.alert("Row Name must be unique within the group.");
+          alert("Row Name must be unique within the group.", "Validation Error");
           return g; // TODO: prevent proper return?
         }
         const newRow: Database.Flowsheet.Definition.Row = {
@@ -155,8 +156,8 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
     setIsEditingRow(false);
   };
 
-  const handleDeleteRow = (rowName: string, groupId: string) => {
-    if (window.confirm("Are you sure you want to delete this row?")) {
+  const handleDeleteRow = async (rowName: string, groupId: string) => {
+    if (await confirm("Are you sure you want to delete this row?", "Confirm Deletion")) {
       setFlowsheets((prev) => prev.map((g) => {
         if (g.id === groupId) {
           return { ...g, rows: g.rows?.filter((r) => r.name !== rowName) };

@@ -3,7 +3,7 @@ import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
 import { DataGrid, useGridApiRef, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton, TitledCard, MarkReviewed } from 'components/ui/Core';
 import { Database, usePatient } from 'components/contexts/PatientContext';
-import { getICD10CodeDescription } from 'util/helpers';
+import { getICD10CodeDescription, filterDocuments } from 'util/helpers';
 import { ProblemListEditor } from './components/ProblemListEditor';
 import { DiagnosisPicker } from './components/DiagnosisPicker';
 
@@ -26,12 +26,18 @@ export const ProblemListTabContent: React.FC = () => {
   const { useEncounter } = usePatient()
   const [problems, setProblems] = useEncounter().problems([])
   const [medicalHx, setMedicalHx] = useEncounter().history.medical([])
+  const [conditionals] = useEncounter().conditionals()
+  const [orders] = useEncounter().orders([])
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<GridRowId>>(new Set());
   const [idToUpdate, setIdToUpdate] = React.useState<Database.Problem.ID | null>(null);
   const apiRef = useGridApiRef();
+
+  const visibleProblems = React.useMemo(() => {
+    return filterDocuments(problems || [], conditionals, orders);
+  }, [problems, conditionals, orders]);
 
   // Ensure all items have an ID
   React.useEffect(() => {
@@ -305,7 +311,7 @@ export const ProblemListTabContent: React.FC = () => {
                 columnVisibilityModel,
               },
             }}
-            rows={problems ?? []}
+            rows={visibleProblems ?? []}
             getRowId={(row: any) => row.id}
             columns={columns}
             onRowDoubleClick={handleRowDoubleClick}

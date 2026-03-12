@@ -8,6 +8,7 @@ export const EditNote = () => {
   const { useEncounter } = usePatient();
   const [_, setNotes] = useEncounter().notes([]);
   const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
+  const [providerId] = useEncounter().provider();
   const [activeNote, setActiveNote] = useEncounter().smartData.activeNote();
   const [departments] = useDatabase().departments();
   const { closeTab } = useSplitView();
@@ -37,7 +38,7 @@ export const EditNote = () => {
       serviceDate: activeNote.date!.toString() as Database.JSONDate,
       date: activeNote.date!.toString() as Database.JSONDate,
       summary: activeNote.summary!,
-      author: "12" as Database.Provider.ID,
+      author: providerId,
       status: "Signed",
       type: activeNote.type!,
       content: activeNote.editorState!
@@ -135,6 +136,7 @@ export const EditNote = () => {
         flexDirection: 'column',
       }}>
         <RichTextEditor
+          disableStickyMenuBar={false}
           disableStickyFooter
           initialContent={activeNote?.editorState ?? ""}
           onSave={(val: string) => setActiveNote(prev => ({ ...prev!, editorState: val }))}

@@ -43,7 +43,6 @@ const COLUMN_DEFS: Record<string, GridColDef[]> = {
     { field: 'type', headerName: 'Type', width: 140 },
     { field: 'encClosed', headerName: 'Enc Closed', width: 100 },
     { field: 'with', headerName: 'With', width: 200 },
-    { field: 'visitType', headerName: 'Visit Type', width: 140 },
     { field: 'description', headerName: 'Description', flex: 1 },
     { field: 'endDate', headerName: 'Disch Date', width: 140, ...DATE_FORMATTER }
   ],
@@ -243,7 +242,6 @@ const SORT_KEYS: Record<string, string> = {
 export const ChartReview = ({ ...props }: any) => {
   const navigate = useNavigate();
   const { useChart, useEncounter } = usePatient()
-  const [schedules] = useDatabase().schedules()
   const [chart, setChart] = useChart()()
   const [encounter, setEncounter] = useEncounter()()
   const [conditionals] = useEncounter().conditionals()
@@ -263,7 +261,7 @@ export const ChartReview = ({ ...props }: any) => {
       authorSpecialty: authorProv?.specialty,
       provider: d.provider ? providers.find((p: any) => p.id === d.provider)?.name || d.provider : d.provider,
       performedBy: d.performedBy ? providers.find((p: any) => p.id === d.performedBy)?.name || d.performedBy : d.performedBy,
-      encDate: enc?.startDate?.split(" ")[0], // Assuming StartDate is "YYYY-MM-DD HH:MM"
+      encDate: enc?.startDate,
       encDept: departments.find((dep: any) => dep.id === enc?.department)?.name,
       encType: enc?.type,
       encounterProvider: providers.find((p: any) => p.id === enc?.provider)?.name
@@ -271,11 +269,11 @@ export const ChartReview = ({ ...props }: any) => {
   })
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
-  const currentEncDate = encounter.startDate
+  const currentEncDate = encounter.startDate ?? "1970-01-01T00:00:00Z"
   const documents2 = Object.values(chart.encounters)
-    .toSorted((a: any, b: any) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate), Temporal.Instant.from(a.startDate)))
-    .filter((x: any) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncDate)) <= 0)
-    .flatMap((x: any) => [
+    .toSorted((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")))
+    .filter((x) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(currentEncDate)) <= 0)
+    .flatMap((x) => [
       ...enrichDocs(x.notes, 'Notes', x),
       ...enrichDocs(x.labs, 'Lab', x),
       ...enrichDocs(x.imaging, 'Imaging', x),
@@ -286,7 +284,6 @@ export const ChartReview = ({ ...props }: any) => {
   const encountersData = Object.values(chart.encounters).map((x: any) => {
     const dept = departments.find((d: any) => d.id === x.department)
     const prov = providers.find((p: any) => p.id === x.provider)
-    const appt = schedules.flatMap((s: any) => s.appointments).find((a: any) => a.patient?.enc == x.id && a.patient?.mrn == chart.id);
     return {
       kind: 'Encounters',
       id: x.id,
@@ -294,7 +291,6 @@ export const ChartReview = ({ ...props }: any) => {
       type: x.type,
       encClosed: x.status === "Signed" ? "Yes" : "No",
       with: `${dept ? dept.name : x.department} - ${prov ? prov.name : x.provider}`,
-      visitType: appt ? appt.type : (x.type || ""),
       description: (x.problems || []).filter((p: any) => p.encounterDx).map((p: any) => p.displayAs || getICD10CodeDescription(p.diagnosis) || p.diagnosis).join(", "),
       endDate: x.endDate,
       department: dept ? dept.name : x.department,

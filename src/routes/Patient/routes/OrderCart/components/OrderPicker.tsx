@@ -141,83 +141,93 @@ const OrderQueue = ({ orders, onRemove }: { orders: any[]; onRemove: (id: any) =
   )
 }
 
-const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrders, setQueuedOrders, tab, setTab, ...props }: { data: any[]; selection: any; setSelection: any; onSelect: any; queuedOrders: any[]; setQueuedOrders: any; tab: string; setTab: any;[key: string]: any }) => {
+const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrders, setQueuedOrders, tab, setTab, categories, ...props }: { data: any[]; selection: any; setSelection: any; onSelect: any; queuedOrders: any[]; setQueuedOrders: any; tab: string; setTab: any; categories?: string[];[key: string]: any }) => {
+  const showOrderSets = !categories || categories.includes('orderset');
+  const showMedications = !categories || categories.includes('medication');
+  const showProcedures = !categories || categories.includes('procedure');
+
   return (
     <Stack direction="column" sx={{ flex: 1, minWidth: 0 }} {...props}>
-      <TitledCard
-        emphasized
-        color="#74c9cc"
-        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Order Sets</>}
-        sx={{ minHeight: 48 }}
-        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
-      >
-      </TitledCard>
-      <TitledCard
-        emphasized
-        color="#9F3494"
-        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>}
-        sx={{ minHeight: 48 }}
-        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
-      >
-        <DataGrid
-          rows={data.filter((x: any) => x.type === 'medication')}
-          columns={COLUMN_DEFS.MEDICATION}
-          hideFooter
-          disableColumnMenu
-          density="compact"
-          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
-          onRowSelectionModelChange={(newModel: any) => {
-            const ids = Array.from(newModel.ids as Set<any>);
-            if (ids.length > 0) setSelection(ids[0])
-            else if (data.filter((x: any) => x.type === 'medication').some((x: any) => x.id === selection)) setSelection(null)
-          }}
-          onRowDoubleClick={(params: any) => {
-            if (queuedOrders.length > 0) {
-              if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                setQueuedOrders((prev: any[]) => [...prev, params.row])
+      {showOrderSets && (
+        <TitledCard
+          emphasized
+          color="#74c9cc"
+          title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Order Sets</>}
+          sx={{ minHeight: 48 }}
+          boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+        >
+        </TitledCard>
+      )}
+      {showMedications && (
+        <TitledCard
+          emphasized
+          color="#9F3494"
+          title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>}
+          sx={{ minHeight: 48 }}
+          boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+        >
+          <DataGrid
+            rows={data.filter((x: any) => x.type === 'medication')}
+            columns={COLUMN_DEFS.MEDICATION}
+            hideFooter
+            disableColumnMenu
+            density="compact"
+            rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
+            onRowSelectionModelChange={(newModel: any) => {
+              const ids = Array.from(newModel.ids as Set<any>);
+              if (ids.length > 0) setSelection(ids[0])
+              else if (data.filter((x: any) => x.type === 'medication').some((x: any) => x.id === selection)) setSelection(null)
+            }}
+            onRowDoubleClick={(params: any) => {
+              if (queuedOrders.length > 0) {
+                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
+                  setQueuedOrders((prev: any[]) => [...prev, params.row])
+                }
+              } else {
+                onSelect(params.row)
               }
-            } else {
-              onSelect(params.row)
-            }
-          }}
-          disableMultipleRowSelection
-          autoHeight={data.filter((x: any) => x.type === 'medication').length > 0}
-          sx={{ border: 'none', pb: "28px" }}
-        />
-      </TitledCard>
-      <TitledCard
-        emphasized
-        color="#5EA1F8"
-        title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Procedures</>}
-        sx={{ minHeight: 48 }}
-        boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
-      >
-        <DataGrid
-          rows={data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type))}
-          columns={COLUMN_DEFS.PROCEDURE}
-          hideFooter
-          disableColumnMenu
-          density="compact"
-          rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
-          onRowSelectionModelChange={(newModel: any) => {
-            const ids = Array.from(newModel.ids as Set<any>);
-            if (ids.length > 0) setSelection(ids[0])
-            else if (data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type)).some((x: any) => x.id === selection)) setSelection(null)
-          }}
-          onRowDoubleClick={(params: any) => {
-            if (queuedOrders.length > 0) {
-              if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                setQueuedOrders((prev: any[]) => [...prev, params.row])
+            }}
+            disableMultipleRowSelection
+            autoHeight={data.filter((x: any) => x.type === 'medication').length > 0}
+            sx={{ border: 'none', pb: "28px" }}
+          />
+        </TitledCard>
+      )}
+      {showProcedures && (
+        <TitledCard
+          emphasized
+          color="#5EA1F8"
+          title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Procedures</>}
+          sx={{ minHeight: 48 }}
+          boxProps={{ sx: { height: "100%", maxHeight: "30vh", overflowY: "auto" } }}
+        >
+          <DataGrid
+            rows={data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type))}
+            columns={COLUMN_DEFS.PROCEDURE}
+            hideFooter
+            disableColumnMenu
+            density="compact"
+            rowSelectionModel={{ type: 'include', ids: selection ? new Set([selection]) : new Set() }}
+            onRowSelectionModelChange={(newModel: any) => {
+              const ids = Array.from(newModel.ids as Set<any>);
+              if (ids.length > 0) setSelection(ids[0])
+              else if (data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type)).some((x: any) => x.id === selection)) setSelection(null)
+            }}
+            onRowDoubleClick={(params: any) => {
+              if (queuedOrders.length > 0) {
+                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
+                  setQueuedOrders((prev: any[]) => [...prev, params.row])
+                }
+              } else {
+                onSelect(params.row)
               }
-            } else {
-              onSelect(params.row)
-            }
-          }}
-          disableMultipleRowSelection
-          autoHeight={data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type)).length > 0}
-          sx={{ border: 'none', pb: "28px" }}
-        />
-      </TitledCard>
+            }}
+            disableMultipleRowSelection
+            autoHeight={data.filter((x: any) => ['procedure', 'Imaging', 'Lab'].includes(x.type)).length > 0}
+            sx={{ border: 'none', pb: "28px" }}
+          />
+        </TitledCard>
+      )}
       {tab === "preference" && (
         <Button variant="outlined" onClick={() => setTab("facility")}>Broaden my search</Button>
       )}
@@ -225,7 +235,18 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
   )
 }
 
-export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrders, ...props }: { orderables: any; onSelect: any; queuedOrders: any[]; setQueuedOrders: any;[key: string]: any }) => {
+export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrders, categories, ...props }: { orderables: any; onSelect: any; queuedOrders: any[]; setQueuedOrders: any; categories?: string[];[key: string]: any }) => {
+  const filteredCategories = React.useMemo(() => {
+    if (!categories) return BROWSE_CATEGORIES;
+    const result: any = {};
+    if (categories.includes('medication')) result['Medications'] = BROWSE_CATEGORIES['Medications'];
+    if (categories.includes('procedure')) {
+      Object.keys(BROWSE_CATEGORIES).forEach(k => {
+        if (k !== 'Medications') result[k] = (BROWSE_CATEGORIES as any)[k];
+      });
+    }
+    return result;
+  }, [categories]);
   const [category, setCategory] = React.useState<any>(null)
   const categoryRefs = React.useRef<Record<string, any>>({})
 
@@ -247,10 +268,10 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
           }
         }
       }
-      return { ...med, type: 'medication', name }
+      return { ...med, type: 'medication', name, originalName: med.name, doseDescription: med.route ? (Object.values(med.route)[0] as any)[code] : '' }
     }
     if (orderables.procedures && orderables.procedures[code]) {
-      return { name: orderables.procedures[code], type: 'procedure', code }
+      return { name: orderables.procedures[code], type: 'procedure', code, originalName: orderables.procedures[code] }
     }
     return null
   }
@@ -264,7 +285,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
           setCategory(ids)
           scrollToCategory(ids)
         }}>
-          {Object.keys(BROWSE_CATEGORIES).map((cat: string) => (
+          {Object.keys(filteredCategories).map((cat: string) => (
             <TreeItem key={cat} itemId={cat} label={cat} />
           ))}
         </TreeView>
@@ -272,7 +293,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
 
       {/* Content */}
       <Stack direction="column" spacing={2} sx={{ flex: 1, minWidth: 0, overflowY: 'auto', p: 1 }} {...props}>
-        {Object.entries(BROWSE_CATEGORIES).map(([cat, codes]: [string, string[]]) => (
+        {Object.entries(filteredCategories).map(([cat, codes]: [string, any]) => (
           <Box
             key={cat}
             ref={(el: any) => categoryRefs.current[cat] = el}
@@ -301,6 +322,8 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                           code: code,
                           name: item.name,
                           type: item.type,
+                          originalName: item.originalName,
+                          dose: item.doseDescription,
                           ...(item.type === 'medication' ? { frequency: 'ONE TIME', route: 'Oral' } : {})
                         }
                         if (!queuedOrders.some((x: any) => x.code === code)) {
@@ -322,7 +345,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
   )
 }
 
-export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTerm: string; open: any; onSelect: (selection: any) => void;[key: string]: any }) => {
+export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }: { searchTerm: string; open: any; onSelect: (selection: any) => void; categories?: string[];[key: string]: any }) => {
   const [orderables] = useDatabase().orderables()
   const [value, setValue] = React.useState(searchTerm)
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -335,8 +358,13 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTe
   const selectedItem = React.useMemo(() => data.find((x: any) => x.id === selection), [data, selection])
 
   useLazyEffect(() => {
-    setData(search_orders(orderables, value, 100, null))
-  }, [value, category])
+    let searchCategory = null;
+    if (categories?.length === 1) {
+      if (categories.includes('medication')) searchCategory = 'medications';
+      if (categories.includes('procedure')) searchCategory = 'procedures';
+    }
+    setData(search_orders(orderables, value, 100, searchCategory))
+  }, [value, category, categories])
 
   return (
     <Window
@@ -402,6 +430,7 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTe
             onSelect={onSelect}
             queuedOrders={queuedOrders}
             setQueuedOrders={setQueuedOrders}
+            categories={categories}
           />
         ) : (
           <OrderSearchResults
@@ -413,6 +442,7 @@ export const OrderPicker = ({ searchTerm, open, onSelect, ...props }: { searchTe
             setQueuedOrders={setQueuedOrders}
             tab={tab}
             setTab={setTab}
+            categories={categories}
             {...props}
           />
         )}

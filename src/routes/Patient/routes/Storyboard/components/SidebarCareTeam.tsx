@@ -26,7 +26,7 @@ const CareTeamDialog = ({ open, onClose, careTeam, setCareTeam, allProviders }: 
   const handleAddMember = () => {
     if (newProviderId && newProviderRole) {
       if (localCareTeam.some((m) => m.provider === newProviderId)) {
-        alert("Provider already in care team!");
+        //alert("Provider already in care team!");
         return;
       }
       setLocalCareTeam([...localCareTeam, { provider: newProviderId, role: newProviderRole }]);

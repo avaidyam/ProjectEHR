@@ -1,79 +1,41 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
   TitledCard,
   Icon,
   Autocomplete,
-} from 'components/ui/Core';
-import {
-  Checkbox,
-  FormControlLabel,
+  DatePicker,
+  AutocompleteButtons,
   Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(2),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: 'black',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1.1rem',
-}));
+  MarkReviewed,
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SubstanceAndSexualHistory() {
   const { useEncounter } = usePatient();
-  const [substanceData, setSubstanceData] = useEncounter().history.SubstanceSexualHealth({});
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const tobaccoOptions = ['Never', 'Former', 'Every Day', 'Some Days', 'Unknown'];
-  const smokelessOptions = ['Never', 'Former', 'Current', 'Unknown'];
-  const exposureOptions = ['Never', 'Past', 'Current'];
-  const useOptions = ['Yes', 'No', 'Not Currently', 'Never'];
-  const sexualActivityOptions = ['Yes', 'Not Currently', 'Never'];
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
 
-  const drugTypes = [
-    'Anabolic Steroids',
-    'Barbiturates',
-    'Benzodiazepines',
-    'Cannabinoids - Marijuana, Hashish, Synthetics',
-    'Hallucinogens - e.g. LSD, Mushrooms',
-    'Inhalants - e.g. Nitrous Oxide, Amyl Nitrite',
-    'Opioids',
-    'Stimulants - e.g. Amphetamines, Crack/Cocaine, Methyphenidate',
-    'Other'
-  ];
-
-  const birthControlMethods = [
-    'Abstinence',
-    'Coitus Interruptus',
-    'Condom',
-    'Diaphragm',
-    'IUD',
-    'Implant',
-    'Injection',
-    'None',
-    'Patch',
-    'Pill',
-    'Progesterone only pill (mini-pill)',
-    'Rhythm',
-    'Ring',
-    'Spermicide',
-    'Sponge',
-    'Spouse/Partner w/vasectomy',
-    'Surgical'
-  ];
+  const substanceData = visibleSocialHistory[0] || {};
+  const setSubstanceData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentSubstance = next[0] || {};
+      const newSubstance = typeof update === 'function' ? update(currentSubstance) : update;
+      next[0] = { ...next[0], ...newSubstance };
+      return next;
+    });
+  };
 
   const handleDataChange = (section: string, field: string, value: any) => {
     setSubstanceData((prev: any) => ({
@@ -85,397 +47,284 @@ export function SubstanceAndSexualHistory() {
     }));
   };
 
-  const handleArrayToggle = (section: string, field: string, value: any) => {
-    setSubstanceData((prev: any) => {
-      const currentArray = prev[section]?.[field] || [];
-      const newArray = currentArray.includes(value)
-        ? currentArray.filter((item: any) => item !== value)
-        : [...currentArray, value];
-
-      return {
-        ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: newArray
-        }
-      };
-    });
-  };
-
-  const handleDrinksChange = (drinkType: string, value: string) => {
-    const numValue = parseInt(value) || 0;
-    setSubstanceData((prev: any) => ({
-      ...prev,
-      alcohol: {
-        ...prev.alcohol,
-        drinksPerWeek: {
-          ...prev.alcohol?.drinksPerWeek,
-          [drinkType]: numValue
-        }
-      }
-    }));
-  };
-
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Substance & Sexual Activity</>} color="#9F3494">
+
       {/* Tobacco Section */}
-      <SectionPaper>
-        <SectionHeader>Tobacco</SectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Tobacco</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Smoking</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {tobaccoOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.tobacco?.status === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('tobacco', 'status', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.tobacco?.status === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.tobacco?.status === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.tobacco?.status === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Smokeless</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {smokelessOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.tobacco?.smokeless === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('tobacco', 'smokeless', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.tobacco?.smokeless === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.tobacco?.smokeless === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.tobacco?.smokeless === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Cessation</Label>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={substanceData?.tobacco?.counselingGiven || false}
-                  onChange={(e) => handleDataChange('tobacco', 'counselingGiven', e.target.checked)}
-                />
-              }
-              label="Counseling given"
+            <AutocompleteButtons
+              label="Smoking"
+              options={Object.values(Database.SocialHistoryItem.SmokingStatus)}
+              value={substanceData?.tobacco?.status}
+              onChange={(_e, val) => handleDataChange('tobacco', 'status', val)}
             />
           </Grid>
-
           <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Passive Exposure</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {exposureOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.tobacco?.passiveExposure === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('tobacco', 'passiveExposure', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.tobacco?.passiveExposure === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.tobacco?.passiveExposure === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.tobacco?.passiveExposure === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
+            <AutocompleteButtons
+              label="Passive Exposure"
+              options={Object.values(Database.SocialHistoryItem.PassiveExposure)}
+              value={substanceData?.tobacco?.passiveExposure}
+              onChange={(_e, val) => handleDataChange('tobacco', 'passiveExposure', val)}
+            />
           </Grid>
-
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Smoking Types"
+              options={Object.values(Database.SocialHistoryItem.SmokingType)}
+              checkbox
+              multiple
+              value={substanceData?.tobacco?.types || []}
+              onChange={(_e, val) => handleDataChange('tobacco', 'types', val)}
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Packs per day"
+              fullWidth
+              value={substanceData?.tobacco?.packsPerDay?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('tobacco', 'packsPerDay', newValue)}
+              options={['0.25', '0.5', '1', '1.5', '2']}
+            />
+          </Grid>
+          <Grid size={{ xs: 6, md: 3 }}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              label="Pack years"
+              fullWidth
+              value={substanceData?.tobacco?.packYears?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('tobacco', 'packYears', newValue)}
+              options={['5', '10', '20', '30', '40', '50']}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <DatePicker
+              size="small"
+              label="Start Date"
+              fullWidth
+              value={substanceData?.tobacco?.startDate || ''}
+              onChange={(newValue: any) => handleDataChange('tobacco', 'startDate', newValue)}
+              convertString
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 3 }}>
+            <DatePicker
+              size="small"
+              label="Quit Date"
+              fullWidth
+              value={substanceData?.tobacco?.quitDate || ''}
+              onChange={(newValue: any) => handleDataChange('tobacco', 'quitDate', newValue)}
+              convertString
+            />
+          </Grid>
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Smokeless"
+              options={Object.values(Database.SocialHistoryItem.SmokelessStatus)}
+              value={substanceData?.tobacco?.smokeless}
+              onChange={(_e, val) => handleDataChange('tobacco', 'smokeless', val)}
+            />
+          </Grid>
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Comments"
               fullWidth
               value={substanceData?.tobacco?.comments || ''}
               onInputChange={(_e, newValue) => handleDataChange('tobacco', 'comments', newValue)}
               options={[]}
-              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
-      {/* Alcohol Section */}
-      <SectionPaper>
-        <SectionHeader>Alcohol</SectionHeader>
-        <Grid container spacing={3}>
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Alcohol Use?</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {useOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.alcohol?.use === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('alcohol', 'use', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.alcohol?.use === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.alcohol?.use === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.alcohol?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
+      </Box>
 
+      {/* Alcohol Section */}
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Alcohol</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 2, color: '#1976d2' }}>
+            <AutocompleteButtons
+              label="Alcohol Use?"
+              options={Object.values(Database.SocialHistoryItem.AlcoholStatus)}
+              value={substanceData?.alcohol?.status}
+              onChange={(_e, val) => handleDataChange('alcohol', 'status', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Label variant="subtitle2">
               Drinks per Week
             </Label>
           </Grid>
-
-          <Grid size={{ xs: 6, md: 2 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Glasses of wine"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.wine?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('wine', newValue)}
+              value={substanceData?.alcohol?.wine?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'wine', newValue)}
               options={['0', '1', '2', '3', '7', '14']}
             />
           </Grid>
-
-          <Grid size={{ xs: 6, md: 2 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Cans of beer"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.beer?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('beer', newValue)}
+              value={substanceData?.alcohol?.beer?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'beer', newValue)}
               options={['0', '1', '2', '3', '6', '12']}
             />
           </Grid>
-
-          <Grid size={{ xs: 6, md: 2 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Shots of liquor"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.liquor?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('liquor', newValue)}
+              value={substanceData?.alcohol?.liquor?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'liquor', newValue)}
               options={['0', '1', '2', '3', '5']}
             />
           </Grid>
-
-          <Grid size={{ xs: 6, md: 3 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Drinks containing 1.5 oz of alcohol"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.mixedDrinks?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('mixedDrinks', newValue)}
+              value={substanceData?.alcohol?.mixed?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'mixed', newValue)}
               options={['0', '1', '2', '3']}
             />
           </Grid>
-
-          <Grid size={{ xs: 6, md: 3 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Standard drinks or equivalent"
               fullWidth
-              value={substanceData?.alcohol?.drinksPerWeek?.standardDrinks?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDrinksChange('standardDrinks', newValue)}
+              value={substanceData?.alcohol?.standard?.toString() || ''}
+              onInputChange={(_e, newValue) => handleDataChange('alcohol', 'standard', newValue)}
               options={['0', '1', '2', '3', '7', '14', '21']}
             />
           </Grid>
-
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Comments"
               fullWidth
               value={substanceData?.alcohol?.comments || ''}
               onInputChange={(_e, newValue) => handleDataChange('alcohol', 'comments', newValue)}
               options={[]}
-              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
-      {/* Drug Section */}
-      <SectionPaper>
-        <SectionHeader>Drug</SectionHeader>
-        <Grid container spacing={3}>
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Drug Use</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {useOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.drugs?.use === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('drugs', 'use', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.drugs?.use === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.drugs?.use === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.drugs?.use === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
+      </Box>
 
+      {/* Drug Section */}
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Drug</Label>
+        <Grid container spacing={2}>
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Drug Use"
+              options={Object.values(Database.SocialHistoryItem.DrugStatus)}
+              value={substanceData?.drugs?.status}
+              onChange={(_e, val) => handleDataChange('drugs', 'status', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Types"
+              options={Object.values(Database.SocialHistoryItem.DrugType)}
+              checkbox
+              multiple
+              value={substanceData?.drugs?.types || []}
+              onChange={(_e, val) => handleDataChange('drugs', 'types', val)}
+              sx={{ '& .MuiFormControlLabel-root': { minWidth: '300px' } }}
+            />
+          </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Use/week"
               fullWidth
-              value={substanceData?.drugs?.usePerWeek?.toString() || ''}
-              onInputChange={(_e, newValue) => handleDataChange('drugs', 'usePerWeek', parseInt(newValue) || 0)}
+              value={substanceData?.drugs?.usage || ''}
+              onInputChange={(_e, newValue) => handleDataChange('drugs', 'usage', parseInt(newValue) || 0)}
               options={['0', '1', '2', '3', '4', '5', '6', '7']}
             />
           </Grid>
-
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Types</Label>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {drugTypes.map(type => (
-                <FormControlLabel
-                  key={type}
-                  control={
-                    <Checkbox
-                      checked={(substanceData?.drugs?.types || []).includes(type)}
-                      onChange={() => handleArrayToggle('drugs', 'types', type)}
-                    />
-                  }
-                  label={type}
-                  sx={{ mb: 1, mr: 2, minWidth: '300px' }}
-                />
-              ))}
-            </Box>
-          </Grid>
-
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Comments"
               fullWidth
               value={substanceData?.drugs?.comments || ''}
               onInputChange={(_e, newValue) => handleDataChange('drugs', 'comments', newValue)}
               options={[]}
-              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+
       {/* Sexual Activity Section */}
-      <SectionPaper>
-        <SectionHeader>Sexual Activity</SectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Sexual Activity</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Sexually active</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {sexualActivityOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={substanceData?.sexualActivity?.active === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDataChange('sexualActivity', 'active', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: substanceData?.sexualActivity?.active === option ? '#1976d2' : 'transparent',
-                    color: substanceData?.sexualActivity?.active === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: substanceData?.sexualActivity?.active === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Birth Control Methods</Label>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {birthControlMethods.map(method => (
-                <FormControlLabel
-                  key={method}
-                  control={
-                    <Checkbox
-                      checked={(substanceData?.sexualActivity?.birthControl || []).includes(method)}
-                      onChange={() => handleArrayToggle('sexualActivity', 'birthControl', method)}
-                    />
-                  }
-                  label={method}
-                  sx={{ mb: 1, mr: 2, minWidth: '200px' }}
-                />
-              ))}
-            </Box>
-          </Grid>
-
-          <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Partners</Label>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={(substanceData?.sexualActivity?.partners || []).includes('Female')}
-                  onChange={() => handleArrayToggle('sexualActivity', 'partners', 'Female')}
-                />
-              }
-              label="Female"
-              sx={{ mr: 3 }}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={(substanceData?.sexualActivity?.partners || []).includes('Male')}
-                  onChange={() => handleArrayToggle('sexualActivity', 'partners', 'Male')}
-                />
-              }
-              label="Male"
+            <AutocompleteButtons
+              label="Sexually active"
+              options={Object.values(Database.SocialHistoryItem.SexualStatus)}
+              value={substanceData?.sexual?.status}
+              onChange={(_e, val) => handleDataChange('sexual', 'status', val)}
             />
           </Grid>
-
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Birth Control Methods"
+              options={Object.values(Database.SocialHistoryItem.BirthControlMethod)}
+              checkbox
+              multiple
+              value={substanceData?.sexual?.birthControl || []}
+              onChange={(_e, val) => handleDataChange('sexual', 'birthControl', val)}
+              sx={{ '& .MuiFormControlLabel-root': { minWidth: '200px' } }}
+            />
+          </Grid>
+          <Grid size={12}>
+            <AutocompleteButtons
+              label="Partners"
+              options={Object.values(Database.SocialHistoryItem.SexualPartner)}
+              checkbox
+              multiple
+              value={substanceData?.sexual?.partners || []}
+              onChange={(_e, val) => handleDataChange('sexual', 'partners', val)}
+            />
+          </Grid>
           <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Comments"
               fullWidth
-              value={substanceData?.sexualActivity?.comments || ''}
-              onInputChange={(_e, newValue) => handleDataChange('sexualActivity', 'comments', newValue)}
+              value={substanceData?.sexual?.comments || ''}
+              onInputChange={(_e, newValue) => handleDataChange('sexual', 'comments', newValue)}
               options={[]}
-              TextFieldProps={{ multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+      <MarkReviewed />
     </TitledCard>
   );
 }

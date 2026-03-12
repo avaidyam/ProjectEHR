@@ -17,6 +17,7 @@ import {
 import { FormControlLabel } from '@mui/material';
 
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 // Format dose for display
 const formatDose = (dose: any) => {
@@ -346,8 +347,14 @@ function ImmunizationsDetailPanel({ row, onSave, onCancel, onDelete }: { row: an
 export const Immunizations = () => {
   const { useEncounter } = usePatient();
   const [immunizations, setImmunizations] = useEncounter().immunizations([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
   const apiRef = useGridApiRef();
+
+  const visibleImmunizations = React.useMemo(() => {
+    return filterDocuments(immunizations || [], conditionals, orders);
+  }, [immunizations, conditionals, orders]);
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
@@ -425,7 +432,7 @@ export const Immunizations = () => {
 
       <DataGrid
         apiRef={apiRef}
-        rows={immunizations || []}
+        rows={visibleImmunizations || []}
         columns={columns}
         getRowId={(row: any) => row.id || `${row.vaccine}-${row.received}`}
         hideFooter

@@ -2,7 +2,7 @@ import * as React from 'react';
 // @ts-ignore
 import { Box, Grid, Button, Icon, TitledCard } from 'components/ui/Core';
 import { Database, usePatient } from 'components/contexts/PatientContext';
-import { groupBy, getICD10CodeDescription } from 'util/helpers';
+import { groupBy, getICD10CodeDescription, filterDocuments } from 'util/helpers';
 
 // FIXME: TitledCard
 // At some point I will need to use a URLBuilder to link the title to corresponding pages
@@ -20,9 +20,21 @@ export const SnapshotTabContent: React.FC = () => {
   const [immunizationHx] = useEncounter().immunizations()
   const [medicalHx] = useEncounter().history.medical()
   const [surgicalHx] = useEncounter().history.surgical()
-  const [familyHx] = useEncounter().history.family()
+  const [familyHx] = useEncounter().history.family([])
+  const [familyStatus] = useEncounter().history.familyStatus([])
   const [medicationHx] = useEncounter().medications()
   const [problems] = useEncounter().problems()
+  const [conditionals] = useEncounter().conditionals()
+  const [orders] = useEncounter().orders()
+
+  const visibleAllergies = React.useMemo(() => filterDocuments(allergiesHx || [], conditionals, orders), [allergiesHx, conditionals, orders]);
+  const visibleImmunizations = React.useMemo(() => filterDocuments(immunizationHx || [], conditionals, orders), [immunizationHx, conditionals, orders]);
+  const visibleMedicalHx = React.useMemo(() => filterDocuments(medicalHx || [], conditionals, orders), [medicalHx, conditionals, orders]);
+  const visibleSurgicalHx = React.useMemo(() => filterDocuments(surgicalHx || [], conditionals, orders), [surgicalHx, conditionals, orders]);
+  const visibleFamilyStatus = React.useMemo(() => filterDocuments(familyStatus || [], conditionals, orders), [familyStatus, conditionals, orders]);
+  const visibleFamilyHx = React.useMemo(() => filterDocuments(familyHx || [], conditionals, orders), [familyHx, conditionals, orders]);
+  const visibleMedications = React.useMemo(() => filterDocuments(medicationHx || [], conditionals, orders), [medicationHx, conditionals, orders]);
+  const visibleProblems = React.useMemo(() => filterDocuments(problems || [], conditionals, orders), [problems, conditionals, orders]);
 
   const isSectionEmpty = (section: any[] | null | undefined) => {
     return !section || section.length === 0;
@@ -39,10 +51,10 @@ export const SnapshotTabContent: React.FC = () => {
           <b>Address:</b> {address}<br />
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Allergies</>} color='#9F3494'>
-          {isSectionEmpty(allergiesHx) ? (
+          {isSectionEmpty(visibleAllergies) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            allergiesHx?.map((allergy) => (
+            visibleAllergies?.map((allergy) => (
               <div key={`${allergy.allergen}-${allergy.reaction}`}>
                 <span style={{ color: '#9F3494' }}>{allergy.allergen}</span> {allergy.reaction}
               </div>
@@ -50,10 +62,10 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Problem List</>} color='#9F3494'>
-          {isSectionEmpty(problems) ? (
+          {isSectionEmpty(visibleProblems) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>No active problems</div>
           ) : (
-            (problems ?? []).map((p: any) => (
+            (visibleProblems ?? []).map((p: any) => (
               <div key={p.id || JSON.stringify(p)}>
                 {p.displayAs ?? `${getICD10CodeDescription(p.diagnosis) || p.diagnosis || 'Unknown'} (${p.diagnosis})`}
               </div>
@@ -61,11 +73,11 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Immunizations</>} color="#74c9cc">
-          {isSectionEmpty(immunizationHx) ? (
+          {isSectionEmpty(visibleImmunizations) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
             Object.entries(
-              groupBy(immunizationHx, 'vaccine')
+              groupBy(visibleImmunizations, 'vaccine')
             ).map(([vaccine, records]) => (
               <div key={vaccine}>
                 <strong>{vaccine}</strong>{' '}
@@ -77,10 +89,10 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medical History</>} color='#9F3494'>
-          {isSectionEmpty(medicalHx) ? (
+          {isSectionEmpty(visibleMedicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            medicalHx?.map((condition) => (
+            visibleMedicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.diagnosis}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {!!condition.date ? Database.JSONDate.toDateString(condition.date) : 'N/A'}
@@ -93,9 +105,9 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Medications</>} color='#9E49E2'>
-          {isSectionEmpty(medicationHx) ? (
+          {isSectionEmpty(visibleMedications) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
-          ) : medicationHx?.map((medication) => (
+          ) : visibleMedications?.map((medication) => (
             <React.Fragment key={`${medication.name}-${medication.dose}`}>
               <span style={{ color: '#9E49E2' }}>
                 {medication.name}{" "}
@@ -108,10 +120,10 @@ export const SnapshotTabContent: React.FC = () => {
           ))}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Surgical History</>} color='#9F3494'>
-          {isSectionEmpty(surgicalHx) ? (
+          {isSectionEmpty(visibleSurgicalHx) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            surgicalHx?.map((condition) => (
+            visibleSurgicalHx?.map((condition) => (
               <div key={`${condition.date}-${condition.procedure}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: condition.date === "Date Unknown" ? '#bbbbbb' : 'inherit', textAlign: 'right', minWidth: '110px' }}>
                   {Database.JSONDate.toDateString(condition.date!)}
@@ -122,15 +134,18 @@ export const SnapshotTabContent: React.FC = () => {
           )}
         </TitledCard>
         <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Family History</>} color='#9F3494'>
-          {isSectionEmpty(familyHx) ? (
+          {isSectionEmpty(visibleFamilyStatus) ? (
             <div style={{ fontStyle: 'italic', color: '#666' }}>Not on file</div>
           ) : (
-            familyHx?.map((relative) => (
-              <div key={`${relative.relationship}-${relative.problems.length}`}>
-                <span style={{ color: '#bbbbbb' }}>{relative.relationship}</span>
-                <span style={{ marginLeft: '35px' }}>{relative.problems?.map(x => x.description).join(', ')}</span>
-              </div>
-            ))
+            visibleFamilyStatus?.map((relative) => {
+              const conditions = (visibleFamilyHx ?? []).filter((fh: any) => fh.person === relative.id).map((fh: any) => fh.description);
+              return (
+                <div key={relative.id}>
+                  <span style={{ color: '#bbbbbb' }}>{relative.relationship}</span>
+                  <span style={{ marginLeft: '35px' }}>{conditions.length > 0 ? conditions.join(', ') : 'No pertinent history'}</span>
+                </div>
+              )
+            })
           )}
         </TitledCard>
       </Grid>

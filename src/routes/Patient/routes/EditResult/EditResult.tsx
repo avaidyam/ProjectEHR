@@ -11,24 +11,20 @@ import {
   DateTimePicker,
   Grid
 } from 'components/ui/Core';
+import { ProviderSelectField, OrderSelectField, ComponentSelectField } from 'components/ui/DataUI';
 import { createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
-import { usePatient, useDatabase } from 'components/contexts/PatientContext';
+import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
-const filterOptions = createFilterOptions({ limit: 50 });
 
-const ComponentEditCell = ({ componentList, id, value, field, api }: { componentList: any[]; id: any; value: any; field: string; api: any }) => {
-  const handleChange = (event: any, newValue: any) => {
-    api.setEditCellValue({ id, field, value: newValue ? newValue.id : null });
-    api.stopCellEditMode({ id, field });
-  };
+const ComponentEditCell = ({ id, value, field, api }: { id: any; value: any; field: string; api: any }) => {
   return (
-    <Autocomplete
-      options={componentList}
-      filterOptions={filterOptions}
-      getOptionLabel={(option: any) => option.label}
-      value={componentList.find((c: any) => c.id === value) ?? null}
-      onChange={handleChange}
+    <ComponentSelectField
+      value={value}
+      onChange={(newValue) => {
+        api.setEditCellValue({ id, field, value: newValue });
+        api.stopCellEditMode({ id, field });
+      }}
       fullWidth
       disableClearable
     />
@@ -38,29 +34,69 @@ const ComponentEditCell = ({ componentList, id, value, field, api }: { component
 export const EditResult = ({ ...props }) => {
   const { closeTab } = useSplitView();
   const [orderables] = useDatabase().orderables()
-  const [providers] = useDatabase().providers()
   const { useEncounter } = usePatient();
   const [labs, setLabs] = useEncounter().labs();
-  const [imaging, setImaging] = useEncounter().labs();
-  const procedures = Object.entries(orderables!.procedures).map(([key, value]) => ({ label: value, id: key }));
+  const [imaging, setImaging] = useEncounter().imaging();
   const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
-  const [testDate, setTestDate] = React.useState(Temporal.Now.plainDateTimeISO());
+  const [testDate, setTestDate] = React.useState<string>(Temporal.Now.instant().toString());
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
   const [results, setResults] = React.useState<any[]>([]);
 
   // Imaging specific state
   const [status, setStatus] = React.useState('Final Result');
-  const [provider, setProvider] = React.useState('');
+  const [provider, setProvider] = React.useState<Database.Provider.ID | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [imageBase64, setImageBase64] = React.useState('');
 
   const handleAddRow = () => {
-    setResults([...results, { id: Temporal.Now.instant().epochMilliseconds, component: null, value: '', units: '', low: '', high: '', comment: '' }]);
+    setResults(prev => [...prev, { id: crypto.randomUUID(), component: null, value: '', units: '', low: '', high: '', comment: '' }]);
   };
 
+  React.useEffect(() => {
+    if (!selectedTest?.id || !orderables?.result_map) return;
+
+    const targetIds = (orderables.result_map as any)[selectedTest.id] || [];
+    if (targetIds.length === 0) return;
+
+    setResults(prev => {
+      // 1. Identify rows that have data we must preserve
+      const hasData = (r: any) => r.value !== '' || r.units !== '' || r.low !== '' || r.high !== '' || r.comment !== '';
+      const preservedRows = prev.filter(hasData);
+
+      // 2. Construct new results list based on targetIds order
+      const newResults: any[] = [];
+      const seenComponentIds = new Set<string>();
+
+      targetIds.forEach((compId: string) => {
+        // Find existing match (prefer one with data if multiple exist)
+        const existing = prev.find(r => r.component === compId && hasData(r)) || prev.find(r => r.component === compId);
+
+        if (existing) {
+          newResults.push(existing);
+        } else {
+          newResults.push({
+            id: crypto.randomUUID(),
+            component: compId,
+            value: '', units: '', low: '', high: '', comment: ''
+          });
+        }
+        seenComponentIds.add(compId);
+      });
+
+      // 3. Keep preserved rows that were NOT in the target list
+      preservedRows.forEach(r => {
+        if (r.component && !seenComponentIds.has(r.component)) {
+          newResults.push(r);
+        }
+      });
+
+      return newResults;
+    });
+  }, [selectedTest?.id, orderables]);
+
   const handleRemoveRow = (id: any) => {
-    setResults(results.filter((r: any) => r.id !== id));
+    setResults(prev => prev.filter((r: any) => r.id !== id));
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,8 +118,8 @@ export const EditResult = ({ ...props }) => {
   const handleSave = () => {
     if (!selectedTest && !imageBase64) return;
     if (imageBase64) { // Imaging
-      setImaging((prev: any) => [...prev, {
-        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
+      setImaging((prev: any) => [...(prev || []), {
+        "date": testDate,
         "status": status,
         "statusDate": Temporal.Now.instant().toString(),
         "test": selectedTest ? selectedTest.label : "Unknown Exam",
@@ -93,8 +129,8 @@ export const EditResult = ({ ...props }) => {
         "image": imageBase64
       }])
     } else { // Labs
-      setLabs((prev: any) => [...[prev, {
-        "date": testDate.toZonedDateTime('UTC').toInstant().toString(),
+      setLabs((prev: any) => [...(prev || []), {
+        "date": testDate,
         "test": selectedTest ? selectedTest.label : "Unknown Test",
         "status": "Completed",
         "abnormal": false,
@@ -114,8 +150,9 @@ export const EditResult = ({ ...props }) => {
         "collected": null,
         "resulted": null,
         "comment": null,
+        "provider": provider,
         "resultingAgency": null
-      }]])
+      }])
     }
     closeTab("Edit Result", "main");
   };
@@ -136,14 +173,12 @@ export const EditResult = ({ ...props }) => {
             />
           </Grid>
           <Grid size={6}>
-            <Autocomplete
+            <OrderSelectField
               label="Test / Exam Name"
               fullWidth
-              options={procedures}
-              filterOptions={filterOptions}
-              getOptionLabel={(option: any) => option.label}
-              value={selectedTest}
-              onChange={(event: any, newValue: any) => setSelectedTest(newValue)}
+              value={selectedTest?.id || null}
+              onChange={(val) => { if (!val) setSelectedTest(null); }}
+              onSelect={(val) => setSelectedTest(val ? { id: val.id, label: val.name } : null)}
             />
           </Grid>
           <Grid size={6}>
@@ -156,13 +191,11 @@ export const EditResult = ({ ...props }) => {
             />
           </Grid>
           <Grid size={6}>
-            <Autocomplete
+            <ProviderSelectField
               label="Provider"
               fullWidth
-              options={providers}
-              getOptionLabel={(option: any) => option.name}
-              value={providers.find((p: any) => p.name === provider) || null}
-              onChange={(event: any, newValue: any) => setProvider(newValue ? newValue.name : '')}
+              value={provider as any}
+              onChange={(val) => setProvider(val)}
             />
           </Grid>
         </Grid>
@@ -206,7 +239,7 @@ export const EditResult = ({ ...props }) => {
                   const comp = componentList.find((c: any) => c.id === params.value);
                   return comp ? comp.label : params.value;
                 },
-                renderEditCell: (params: any) => <ComponentEditCell {...params} componentList={componentList} />
+                renderEditCell: (params: any) => <ComponentEditCell {...params} />
               },
               { field: 'value', headerName: 'Value', width: 120, editable: true },
               { field: 'units', headerName: 'Units', width: 100, editable: true },
@@ -225,7 +258,7 @@ export const EditResult = ({ ...props }) => {
               }
             ]}
             processRowUpdate={(newRow: any) => {
-              setResults(results.map((r: any) => r.id === newRow.id ? newRow : r));
+              setResults(prev => prev.map((r: any) => r.id === newRow.id ? newRow : r));
               return newRow;
             }}
           />

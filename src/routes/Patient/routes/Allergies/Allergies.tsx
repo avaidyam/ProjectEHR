@@ -17,6 +17,7 @@ import {
 import { Checkbox, FormControlLabel, colors } from '@mui/material';
 
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 const dummyAgents = [
   { allergen: 'Penicillin', type: Database.Allergy.Type.Drug },
@@ -205,8 +206,14 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
 export const Allergies = () => {
   const { useEncounter } = usePatient();
   const [allergies, setAllergies] = useEncounter().allergies([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
   const [expandedRowIds, setExpandedRowIds] = React.useState<Set<any>>(new Set());
   const apiRef = useGridApiRef();
+
+  const visibleAllergies = React.useMemo(() => {
+    return filterDocuments(allergies || [], conditionals, orders);
+  }, [allergies, conditionals, orders]);
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
@@ -383,7 +390,7 @@ export const Allergies = () => {
       </Stack>
       <DataGrid
         apiRef={apiRef}
-        rows={allergies || []}
+        rows={visibleAllergies || []}
         columns={columns}
         getRowId={(row: any) => row.id || `${row.allergen}-${row.type}-${row.recorded}`}
         onRowDoubleClick={handleRowDoubleClick}

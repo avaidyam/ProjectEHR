@@ -2,81 +2,50 @@
 import * as React from 'react';
 import {
   Box,
-  Button,
   Label,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  IconButton,
   TitledCard,
   Icon,
   Autocomplete,
+  DetailTable,
   MarkReviewed,
-} from 'components/ui/Core';
-import {
+  AutocompleteButtons,
   Grid,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { usePatient } from '../../../../../components/contexts/PatientContext';
-
-const SectionPaper = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
-  marginBottom: theme.spacing(2),
-  border: '1px solid #e0e0e0',
-  boxShadow: 'none',
-}));
-
-const SectionHeader = styled(Label)(({ theme }) => ({
-  color: '#e91e63',
-  fontWeight: 'bold',
-  marginBottom: theme.spacing(2),
-  fontSize: '1.1rem',
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.action.selected,
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
+} from 'components/ui/Core';
+import { usePatient, Database } from 'components/contexts/PatientContext';
+import { filterDocuments } from 'util/helpers';
 
 export function SocialHistorySocioeconomic() {
   const { useEncounter } = usePatient();
-  const [socioeconomicData, setSocioeconomicData] = useEncounter().history.Socioeconomic();
+  const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
+  const [conditionals] = useEncounter().conditionals();
+  const [orders] = useEncounter().orders();
 
-  const [editingEntry, setEditingEntry] = React.useState<any>(null);
-  const [isAddingNew, setIsAddingNew] = React.useState(false);
-  const [newEntry, setNewEntry] = React.useState({
-    id: null,
-    occupation: '',
-    employer: '',
-    comment: '',
-  });
+  const visibleSocialHistory = React.useMemo(() => {
+    return filterDocuments(socialHistory || [], conditionals, orders);
+  }, [socialHistory, conditionals, orders]);
 
-  const maritalStatusOptions = [
-    'Divorced',
-    'Legally Separated',
-    'Life Partner',
-    'Married',
-    'Single',
-    'Unknown',
-    'Widow/Widower'
-  ];
+  const socioeconomicData = visibleSocialHistory[0] || {};
+  const setSocioeconomicData = (update: any) => {
+    setSocialHistory((prev: any[]) => {
+      const next = [...prev];
+      if (next.length === 0) {
+        next.push({ id: Database.SocialHistoryItem.ID.create() });
+      }
+      const currentSocio = next[0] || {};
+      const newSocio = typeof update === 'function' ? update(currentSocio) : update;
+      next[0] = { ...next[0], ...newSocio };
+      return next;
+    });
+  };
 
   // Current occupation handlers
   const handleCurrentOccupationChange = (field: string, value: any) => {
     setSocioeconomicData((prev: any) => ({
       ...prev,
-      [field]: value
+      occupational: {
+        ...prev.occupational,
+        [field]: value
+      }
     }));
   };
 
@@ -91,237 +60,111 @@ export function SocialHistorySocioeconomic() {
     }));
   };
 
-  // Occupation history handlers
-  const handleEdit = (entry: any) => {
-    setEditingEntry(entry);
-    setNewEntry(entry);
-  };
-
-  const handleDelete = (id: any) => {
-    const updatedHistory = socioeconomicData?.occupationalHistory?.filter((entry: any) => entry.id !== id) || [];
-    setSocioeconomicData((prev: any) => ({
-      ...prev,
-      occupationalHistory: updatedHistory
-    }));
-  };
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setNewEntry({ ...newEntry, [name]: value });
-  };
-
-  const handleSave = () => {
-    let updatedHistory = [];
-    const currentHistory = socioeconomicData?.occupationalHistory || [];
-
-    if (editingEntry) {
-      updatedHistory = currentHistory.map((entry: any) =>
-        entry.id === editingEntry.id ? { ...newEntry, id: entry.id } : entry
-      );
-    } else {
-      const newId = currentHistory.length > 0 ? Math.max(...currentHistory.map((e: any) => e.id)) + 1 : 1;
-      updatedHistory = [...currentHistory, { ...newEntry, id: newId }];
-    }
-
-    setSocioeconomicData((prev: any) => ({
-      ...prev,
-      occupationalHistory: updatedHistory
-    }));
-
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      occupation: '',
-      employer: '',
-      comment: '',
-    });
-  };
-
-  const handleCancel = () => {
-    setEditingEntry(null);
-    setIsAddingNew(false);
-    setNewEntry({
-      id: null,
-      occupation: '',
-      employer: '',
-      comment: '',
-    });
-  };
-
-
   return (
     <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>token</Icon> Socioeconomic</>} color="#9F3494">
+
       {/* Current Occupation */}
-      <SectionPaper>
-        <SectionHeader>Current Occupation</SectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6" sx={{ mb: 1 }}>Current Occupation</Label>
+        <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Occupation"
               fullWidth
-              value={socioeconomicData?.occupation || ''}
+              value={socioeconomicData?.occupational?.occupation || ''}
               onInputChange={(_e, newValue) => handleCurrentOccupationChange('occupation', newValue)}
               options={[]}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Employer"
               fullWidth
-              value={socioeconomicData?.employer || ''}
+              value={socioeconomicData?.occupational?.employer || ''}
               onInputChange={(_e, newValue) => handleCurrentOccupationChange('employer', newValue)}
               options={[]}
               TextFieldProps={{ placeholder: "NOT EMPLOYED" }}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
+
       {/* Occupation History */}
-      <SectionPaper>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <SectionHeader>Occupation History</SectionHeader>
-          <Button
-            variant="contained"
-            startIcon={<Icon>add</Icon>}
-            onClick={() => setIsAddingNew(true)}
-            sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
-          >
-            Add New Occupation
-          </Button>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6" sx={{ mb: 1 }}>Occupation History</Label>
+        <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0, maxHeight: 'calc(100vh - 300px)' }}>
+          <DetailTable
+            value={socioeconomicData?.occupational?.history || []}
+            onChange={(val) => setSocioeconomicData((prev: any) => ({ ...prev, occupational: { ...prev.occupational, history: val } }))}
+            template={{ occupation: '', employer: '', comment: '' }}
+            columns={[
+              { field: 'occupation', headerName: 'Occupation', flex: 1 },
+              { field: 'employer', headerName: 'Employer', flex: 1 },
+              { field: 'comment', headerName: 'Comment', flex: 1.5 }
+            ]}
+            getRowId={(row: any) => row.id}
+            addNewLabel="Add New Occupation"
+            renderEditPanel={(formData, setFormData) => (
+              <Grid container spacing={3}>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Occupation"
+                    fullWidth
+                    value={formData.occupation}
+                    onInputChange={(_e, newValue) => setFormData({ occupation: newValue })}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Employer"
+                    fullWidth
+                    value={formData.employer}
+                    onInputChange={(_e, newValue) => setFormData({ employer: newValue })}
+                    options={[]}
+                  />
+                </Grid>
+                <Grid size={12}>
+                  <Autocomplete
+                    size="small"
+                    freeSolo
+                    label="Comment"
+                    fullWidth
+                    value={formData.comment}
+                    onInputChange={(_e, newValue) => setFormData({ comment: newValue })}
+                    options={[]}
+                    TextFieldProps={{ multiline: true, rows: 3 }}
+                  />
+                </Grid>
+              </Grid>
+            )}
+          />
         </Box>
+      </Box>
 
-        <Box sx={{ boxShadow: 'none', border: '1px solid #e0e0e0' }}>
-          <Table sx={{ minWidth: 650 }} aria-label="occupation history table">
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold' }}>Occupation</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Employer</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Comment</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(socioeconomicData?.occupationalHistory || []).map((entry: any, index: number) => (
-                <StyledTableRow key={index}>
-                  <TableCell component="th" scope="row" sx={{ color: '#e91e63', fontWeight: 'bold' }}>
-                    {entry.occupation}
-                  </TableCell>
-                  <TableCell>{entry.employer}</TableCell>
-                  <TableCell sx={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {entry.comment}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEdit(entry)} color="primary" size="small">
-                      edit
-                    </IconButton>
-                    <IconButton onClick={() => handleDelete(entry.id)} color="secondary" size="small">
-                      delete
-                    </IconButton>
-                  </TableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Box>
-
-        {(isAddingNew || editingEntry) && (
-          <Box sx={{ p: 3, mt: 3, border: '1px solid #e0e0e0', borderRadius: 1, backgroundColor: '#f9f9f9' }}>
-            <Label variant="h6" gutterBottom sx={{ mb: 3 }}>
-              Details
-            </Label>
-            <Grid container spacing={3}>
-              <Grid size={12}>
-                <Autocomplete
-                  freeSolo
-                  label="Occupation"
-                  fullWidth
-                  value={newEntry.occupation}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, occupation: newValue })}
-                  options={[]}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Autocomplete
-                  freeSolo
-                  label="Employer"
-                  fullWidth
-                  value={newEntry.employer}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, employer: newValue })}
-                  options={[]}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Autocomplete
-                  freeSolo
-                  label="Comment"
-                  fullWidth
-                  value={newEntry.comment}
-                  onInputChange={(_e, newValue) => setNewEntry({ ...newEntry, comment: newValue })}
-                  options={[]}
-                  TextFieldProps={{ multiline: true, rows: 3 }}
-                />
-              </Grid>
-              <Grid size={12}>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    sx={{ backgroundColor: '#4caf50', '&:hover': { backgroundColor: '#45a049' } }}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outlined"
-                    sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ color: '#f44336', borderColor: '#f44336', '&:hover': { backgroundColor: '#ffebee' } }}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-        )}
-      </SectionPaper>
       {/* Demographics */}
-      <SectionPaper>
-        <SectionHeader>Demographics</SectionHeader>
-        <Grid container spacing={3}>
+      <Box paper variant="outlined" sx={{ p: 1, mb: 1 }}>
+        <Label variant="h6">Demographics</Label>
+        <Grid container spacing={2}>
           <Grid size={12}>
-            <Label variant="subtitle2" sx={{ mb: 1 }}>Marital Status:</Label>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-              {maritalStatusOptions.map(option => (
-                <Button
-                  key={option}
-                  variant={socioeconomicData?.demographics?.maritalStatus === option ? 'contained' : 'outlined'}
-                  onClick={() => handleDemographicsChange('maritalStatus', option)}
-                  size="small"
-                  sx={{
-                    backgroundColor: socioeconomicData?.demographics?.maritalStatus === option ? '#1976d2' : 'transparent',
-                    color: socioeconomicData?.demographics?.maritalStatus === option ? 'white' : '#1976d2',
-                    borderColor: '#1976d2',
-                    '&:hover': {
-                      backgroundColor: socioeconomicData?.demographics?.maritalStatus === option ? '#1565c0' : 'rgba(25, 118, 210, 0.04)'
-                    }
-                  }}
-                >
-                  {option}
-                </Button>
-              ))}
-            </Box>
+            <AutocompleteButtons
+              label="Marital Status:"
+              options={Object.values(Database.SocialHistoryItem.MaritalStatus)}
+              value={socioeconomicData?.demographics?.maritalStatus}
+              onChange={(_e, val) => handleDemographicsChange('maritalStatus', val)}
+            />
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={12}>
             <Autocomplete
+              size="small"
               freeSolo
               label="Spouse Name:"
               fullWidth
@@ -330,20 +173,9 @@ export function SocialHistorySocioeconomic() {
               options={[]}
             />
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={12}>
             <Autocomplete
-              freeSolo
-              label="Preferred Language:"
-              fullWidth
-              value={socioeconomicData?.demographics?.preferredLanguage || ''}
-              onInputChange={(_e, newValue) => handleDemographicsChange('preferredLanguage', newValue)}
-              options={['English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Korean']}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Autocomplete
+              size="small"
               freeSolo
               label="Number of Children:"
               fullWidth
@@ -352,20 +184,9 @@ export function SocialHistorySocioeconomic() {
               options={['0', '1', '2', '3', '4', '5', '6+']}
             />
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={12}>
             <Autocomplete
-              freeSolo
-              label="Ethnic Group:"
-              fullWidth
-              value={socioeconomicData?.demographics?.ethnicGroup || ''}
-              onInputChange={(_e, newValue) => handleDemographicsChange('ethnicGroup', newValue)}
-              options={['Non-Hispanic', 'Latino', 'Hispanic']}
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Autocomplete
+              size="small"
               freeSolo
               label="Years of Education:"
               fullWidth
@@ -374,30 +195,51 @@ export function SocialHistorySocioeconomic() {
               options={['12', '14', '16', '18', '20+']}
             />
           </Grid>
-
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Autocomplete
-              freeSolo
-              label="Race:"
-              fullWidth
-              value={socioeconomicData?.demographics?.race || ''}
-              onInputChange={(_e, newValue) => handleDemographicsChange('race', newValue)}
-              options={['White', 'Black or African American', 'Asian', 'American Indian', 'Native Hawaiian', 'Other']}
-            />
-          </Grid>
-
           <Grid size={12}>
             <Autocomplete
-              freeSolo
-              label="What is the highest level of school you have completed or the highest degree you have received?"
+              size="small"
               fullWidth
-              value={socioeconomicData?.demographics?.highestEducationLevel || ''}
-              onInputChange={(_e, newValue) => handleDemographicsChange('highestEducationLevel', newValue)}
-              options={['High School', 'Associate Degree', 'Bachelor Degree', 'Master Degree', 'Doctoral Degree']}
+              label="Highest education level:"
+              options={Object.values(Database.SocialHistoryItem.HighestEducationLevel)}
+              value={socioeconomicData?.demographics?.highestEducationLevel}
+              onInputChange={(_e, val) => handleDemographicsChange('highestEducationLevel', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Preferred Language:"
+              options={Object.values(Database.SocialHistoryItem.PreferredLanguage)}
+              value={socioeconomicData?.demographics?.preferredLanguage}
+              onInputChange={(_e, val) => handleDemographicsChange('preferredLanguage', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Ethnic Group:"
+              options={Object.values(Database.SocialHistoryItem.EthnicGroup)}
+              value={socioeconomicData?.demographics?.ethnicGroup}
+              onInputChange={(_e, val) => handleDemographicsChange('ethnicGroup', val)}
+            />
+          </Grid>
+          <Grid size={12}>
+            <Autocomplete
+              size="small"
+              freeSolo
+              fullWidth
+              label="Race:"
+              options={Object.values(Database.SocialHistoryItem.Race)}
+              value={socioeconomicData?.demographics?.race}
+              onInputChange={(_e, val) => handleDemographicsChange('race', val)}
             />
           </Grid>
         </Grid>
-      </SectionPaper>
+      </Box>
       <MarkReviewed />
     </TitledCard>
   );

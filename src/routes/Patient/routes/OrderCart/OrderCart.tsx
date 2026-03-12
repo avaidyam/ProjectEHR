@@ -2,8 +2,7 @@ import * as React from 'react'
 import { Card, Stack } from '@mui/material'
 import { alpha, Box, Button, ButtonGroup, TitledCard, Autocomplete, Icon, Label } from 'components/ui/Core'
 import { usePatient } from 'components/contexts/PatientContext'
-import { OrderComposer } from './components/OrderComposer'
-import { OrderPicker } from './components/OrderPicker'
+import { OrderSearch } from './components/OrderSearch'
 
 const categories = {
   "New": {
@@ -59,13 +58,12 @@ export const OrderCart = () => {
 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [searchTerm, setSearchTerm] = React.useState('')
-  const [openSearchList, setOpenSearchList] = React.useState<any>(null)
-  const [openOrder, setOpenOrder] = React.useState<any>(null)
+  const [openOrderSearch, setOpenOrderSearch] = React.useState<any>(null)
 
   const startSearch = () => {
     setSearchTerm(inputRef.current?.value ?? '')
     if (inputRef.current) inputRef.current.value = ''
-    setOpenSearchList(true)
+    setOpenOrderSearch(true)
   }
 
   return (
@@ -185,28 +183,19 @@ export const OrderCart = () => {
           )}
         </Box>
       </Box>
-      {!!openSearchList &&
-        <OrderPicker open={openSearchList} searchTerm={searchTerm} onSelect={(item: any) => {
-          setOpenSearchList(null)
+      {!!openOrderSearch &&
+        <OrderSearch open={openOrderSearch} searchTerm={searchTerm} onSelect={(item: any) => {
+          setOpenOrderSearch(null)
           if (item !== null) {
             if (Array.isArray(item)) {
               const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: Temporal.Now.instant().toString(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
               setOrderCart((prev: any) => prev.upsert(newItems, "id"))
             } else {
-              setOpenOrder(item)
+              if (!item.id) {
+                item.id = crypto.randomUUID()
+              }
+              setOrderCart((prev: any) => prev.upsert(item, "id"))
             }
-          }
-        }} />
-      }
-      {!!openOrder &&
-        <OrderComposer open={openOrder} medication={openOrder} onSelect={(item: any) => {
-          setOpenSearchList(null)
-          setOpenOrder(null)
-          if (item !== null) {
-            if (!item.id) {
-              item.id = crypto.randomUUID() // every order needs a UUID! 
-            }
-            setOrderCart((prev: any) => prev.upsert(item, "id"))
           }
         }} />
       }

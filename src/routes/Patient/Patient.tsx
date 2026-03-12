@@ -34,7 +34,9 @@ import { EditNote } from './routes/EditNote/EditNote';
 import { AppointmentDesk } from './routes/AppointmentDesk/AppointmentDesk';
 import { EditResult } from './routes/EditResult/EditResult';
 import { EventLog } from './routes/EventLog/EventLog';
+import { CreateEncounterTab } from './routes/CreateEncounter/CreateEncounterTab';
 import { MAR } from './routes/MAR/MAR';
+import { VisitInfo } from './routes/VisitInfo/VisitInfo';
 
 const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "SnapShot": (props) => <SnapshotTabContent {...props} />,
@@ -63,10 +65,12 @@ const ALL_TABS: Record<string, (props: any) => React.ReactNode> = {
   "Edit Result": (props) => <EditResult {...props} />,
   "Event Log": (props) => <EventLog {...props} />,
   "MAR": (props) => <MAR {...props} />,
+  "Create Encounter": (props) => <CreateEncounterTab />,
+  "Visit Info": (props) => <VisitInfo {...props} />,
 }
 
 const DEFAULT_MAIN_TABS = [
-  { "SnapShot": {} }, { "Chart Review": {} }, { "Problem List": {} },
+  { "SnapShot": {} }, { "Chart Review": {} }, { "Visit Info": {} }, { "Problem List": {} },
   { "History": {} }, { "Medications": {} }, { "Orders Mgmt": {} },
   { "Results Review": {} },
 ]
@@ -74,7 +78,7 @@ const DEFAULT_MAIN_TABS = [
 const OVERFLOW_MENU_TABS = [
   { "Immunizations": {} }, { "Allergies": {} }, { "Demographics": {} },
   { "PDMP": {} }, { "Flowsheet": {} }, { "Appointment Desk": {} },
-  { "Event Log": {} }, { "MAR": {} }, { "Notes": {} }
+  { "Event Log": {} }, { "MAR": {} }, { "Notes": {} }, { "Create Encounter": {} }
 ]
 
 const DEFAULT_SIDE_TABS = [
@@ -92,7 +96,7 @@ export const Patient = ({ ...props }: any) => {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
 
   return (
-    <PatientProvider patient={patientMRN} encounter={enc}>
+    <PatientProvider patient={patientMRN} encounter={enc} key={`${patientMRN}-${enc}`}>
       <Box display="flex" direction="row" sx={{ overflowY: 'hidden', height: 'calc(100vh - 48px)', ...props.sx }} {...props}>
         <Drawer
           variant={isMobile ? "temporary" : "persistent"}

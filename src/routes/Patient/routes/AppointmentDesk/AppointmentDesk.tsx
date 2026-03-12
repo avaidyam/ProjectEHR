@@ -7,7 +7,7 @@ export const AppointmentDesk = () => {
   const { useChart } = usePatient();
   const [chart] = useChart()(); // This is the patient object
 
-  const [schedules, setSchedulesDB] = useDatabase().schedules();
+  const [appointmentsDB, setAppointmentsDB] = useDatabase().appointments();
   const [departments] = useDatabase().departments();
   const [providers] = useDatabase().providers();
   const [locations] = useDatabase().locations();
@@ -20,38 +20,34 @@ export const AppointmentDesk = () => {
   // 1. Flatten all appointments from all schedules
   // 2. Filter for the current patient
   const patientAppointments = React.useMemo(() => {
-    if (!chart || !schedules) return [];
+    if (!chart || !appointmentsDB) return [];
 
-    return schedules.flatMap((schedule: any) => {
-      const deptDetails = departments.find((d: any) => d.id === schedule.department);
+    return appointmentsDB
+      .filter((appt: any) => appt.patient?.mrn === chart.id) // Filter by MRN
+      .map((appt: any) => {
+        // Resolve related entities
+        const deptDetails = departments.find((d: any) => d.id === appt.department);
+        const encounter = chart.encounters?.[appt.patient.enc];
+        const providerId = encounter?.provider;
+        const provider = providers.find((p: any) => p.id === providerId);
+        const location = locations.find((l: any) => l.id === appt.location);
 
-      return (schedule.appointments || [])
-        .filter((appt: any) => appt.patient?.mrn === chart.id) // Filter by MRN
-        .map((appt: any) => {
-          // Resolve related entities
-          const encounter = chart.encounters?.[appt.patient.enc];
-          const providerId = encounter?.provider;
-          const provider = providers.find((p: any) => p.id === providerId);
-          const location = locations.find((l: any) => l.id === appt.location);
-
-          return {
-            id: appt.id,
-            date: appt.apptTime,
-            status: appt.officeStatus || appt.status,
-            type: appt.type,
-            department: schedule.department,
-            provider: providerId || '',
-            location: appt.location || '',
-            notes: appt.notes,
-            patient: appt.patient, // Needed for modal
-            cc: appt.cc, // Needed for modal
-            departmentName: deptDetails?.name || `Dept ${schedule.department}`, // Provide fallback/name if needed for sorting or other
-            // Original raw data if needed
-            ...appt
-          };
-        });
-    });
-  }, [schedules, chart, departments, providers, locations]);
+        return {
+          id: appt.id,
+          date: appt.apptTime,
+          status: appt.officeStatus || appt.status,
+          type: appt.type,
+          department: appt.department,
+          provider: providerId || '',
+          location: appt.location || '',
+          notes: appt.notes,
+          patient: appt.patient, // Needed for modal
+          cc: appt.cc, // Needed for modal
+          departmentName: deptDetails?.name || `Dept ${appt.department}`,
+          ...appt
+        };
+      });
+  }, [appointmentsDB, chart, departments, providers, locations]);
 
   const handleEditAppointment = (appointment: any) => {
     // Reconstruct the appointment object for the modal
@@ -71,56 +67,38 @@ export const AppointmentDesk = () => {
 
   const handleConfirmDelete = () => {
     if (deleteConfirmation) {
-      const targetDeptId = deleteConfirmation.department;
-      setSchedulesDB((prev: any) => prev.map((s: any) => {
-        if (s.department === targetDeptId) {
-          return {
-            ...s,
-            appointments: s.appointments.filter((appt: any) => appt.id !== deleteConfirmation.id)
-          };
-        }
-        return s;
-      }));
+      setAppointmentsDB((prev: any) => prev.filter((appt: any) => appt.id !== deleteConfirmation.id));
       setDeleteConfirmation(null);
     }
   };
 
   const handleSchedulePatient = ({ patientId, encounterId, department, date, type, cc, notes, id, provider, location, status, checkinTime, checkoutTime }: any) => {
-    const targetDeptId = department
-
     if (id) {
       // Edit existing
-      setSchedulesDB((prev: any) => prev.map((s: any) => {
-        if (s.department === targetDeptId) {
+      setAppointmentsDB((prev: any) => prev.map((appt: any) => {
+        if (appt.id === id) {
           return {
-            ...s,
-            appointments: s.appointments.map((appt: any) => {
-              if (appt.id === id) {
-                return {
-                  ...appt,
-                  apptTime: date,
-                  type: type || appt.type,
-                  notes: notes,
-                  cc: cc,
-                  // Update new fields if provided, otherwise keep existing
-                  provider: provider !== undefined ? provider : appt.provider, // provider might be null/empty string
-                  location: location !== undefined ? location : appt.location,
-                  officeStatus: status || appt.officeStatus || 'Scheduled', // Map status to officeStatus as per existing schema usage
-                  status: status || appt.status || 'Scheduled',
-                  checkinTime: checkinTime !== undefined ? checkinTime : appt.checkinTime,
-                  checkoutTime: checkoutTime !== undefined ? checkoutTime : appt.checkoutTime
-                };
-              }
-              return appt;
-            })
+            ...appt,
+            department: department || appt.department,
+            apptTime: date,
+            type: type || appt.type,
+            notes: notes,
+            cc: cc,
+            provider: provider !== undefined ? provider : appt.provider,
+            location: location !== undefined ? location : appt.location,
+            officeStatus: status || appt.officeStatus || 'Scheduled',
+            status: status || appt.status || 'Scheduled',
+            checkinTime: checkinTime !== undefined ? checkinTime : appt.checkinTime,
+            checkoutTime: checkoutTime !== undefined ? checkoutTime : appt.checkoutTime
           };
         }
-        return s;
+        return appt;
       }));
     } else {
       // Create new
       const newAppointment = {
         id: Math.floor(Math.random() * 100000),
+        department: department,
         apptTime: date,
         status: status || "Scheduled",
         patient: { mrn: patientId, enc: encounterId },
@@ -131,22 +109,10 @@ export const AppointmentDesk = () => {
         type: type || "Office Visit",
         notes: notes || "",
         cc: cc || "",
-        provider: provider || null // Add provider
+        provider: provider || null
       };
 
-      setSchedulesDB((prev: any) => {
-        const index = prev.findIndex((s: any) => s.department === targetDeptId);
-        if (index >= 0) {
-          const newSchedules = [...prev];
-          newSchedules[index] = {
-            ...newSchedules[index],
-            appointments: [...newSchedules[index].appointments, newAppointment]
-          };
-          return newSchedules;
-        } else {
-          return [...prev, { department: targetDeptId, appointments: [newAppointment] }];
-        }
-      });
+      setAppointmentsDB((prev: any) => [...prev, newAppointment]);
     }
     setEditingAppointment(null);
   };
