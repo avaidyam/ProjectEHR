@@ -30,12 +30,18 @@ export function Chat() {
   const gender = chart?.gender ?? '';
 
   // Encounter object for concerns (like in your SnapshotTabContent)
-  const [currentEncounter] = useEncounter()();
+  const [currentEncounter, setCurrentEncounter] = useEncounter()();
 
   // Sort encounters chronologically and grab the next encounter (or remain in current encounter if it's the last one).
-  const allSortedEncounters = Object.values(chart.encounters).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
-  const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
-  const [nextEnc, setNextEnc] = usePatient().useChart().encounters[nextEncounter.id]();
+  //const allSortedEncounters = Object.entries(chart.encounters)
+  //  .filter(([id]) => id !== undefined)
+  //  .map(([_, enc]) => enc)
+  //  .sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(a.startDate), Temporal.Instant.from(b.startDate)))
+  //const nextEncounter = allSortedEncounters.find((x) => Temporal.Instant.compare(Temporal.Instant.from(x.startDate), Temporal.Instant.from(currentEncounter.startDate)) > 0) ?? currentEncounter
+  //const [nextEnc, setNextEnc] = usePatient().useChart().encounters[nextEncounter.id]();
+
+  // We no longer want to look at the n+1 encounter, just our current one!
+  const [nextEnc, setNextEnc] = [currentEncounter, setCurrentEncounter]
   const concernsArr = Array.isArray(nextEnc?.concerns) ? nextEnc.concerns : [];
 
   // Other encounter-sourced data
