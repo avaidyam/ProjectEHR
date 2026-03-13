@@ -5,10 +5,10 @@ import {
   Label,
   TitledCard,
   Icon,
-  MarkReviewed,
   AutocompleteButtons,
   Grid,
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
 

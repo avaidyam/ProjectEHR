@@ -6,12 +6,12 @@ import {
   TitledCard,
   Icon,
   Autocomplete,
-  MarkReviewed,
   DatePicker,
   AutocompleteButtons,
   Grid,
   RichTextEditor
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
 

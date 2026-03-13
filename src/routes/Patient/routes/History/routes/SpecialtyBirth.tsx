@@ -7,11 +7,11 @@ import {
   Icon,
   Autocomplete,
   DatePicker,
-  MarkReviewed,
   AutocompleteButtons,
   Grid,
   RichTextEditor
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
 

@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel, GridRowId } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
-import { DataGrid, useGridApiRef, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton, TitledCard, MarkReviewed } from 'components/ui/Core';
+import { DataGrid, useGridApiRef, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton, TitledCard } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { Database, usePatient } from 'components/contexts/PatientContext';
 import { getICD10CodeDescription, filterDocuments } from 'util/helpers';
 import { ProblemListEditor } from './components/ProblemListEditor';

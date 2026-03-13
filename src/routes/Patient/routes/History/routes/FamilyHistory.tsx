@@ -6,10 +6,10 @@ import {
   TitledCard,
   Icon,
   Autocomplete,
-  MarkReviewed,
   DataGrid,
   Tooltip,
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { GridColDef } from '@mui/x-data-grid';
 import {
   Dialog,

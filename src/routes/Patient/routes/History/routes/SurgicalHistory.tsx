@@ -12,8 +12,8 @@ import {
   TitledCard,
   Autocomplete,
   DatePicker,
-  MarkReviewed,
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import {
   Checkbox,
   FormControlLabel,
