@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, TreeView, TreeItem, Popover, Autocomplete, JSONTree, usePrompts } from './Core'
-import { useDatabase } from '../contexts/PatientContext'
+import { useDatabase, initialStore } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
 
 export const DatabaseManagementWindow = ({ open, onClose }: {
@@ -309,6 +309,13 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     }
   }
 
+  const handleLoadSample = async () => {
+    if (await confirm("Are you SURE you want to reset to the sample database? All your current changes will be LOST.", "Reset to Sample")) {
+      setDb(initialStore as any)
+      await alert("Sample database has been loaded.", "Database Reset")
+    }
+  }
+
   const isSelectedExportable = selectedPath && (selectedPath.match(/^root\.patients\.([^.]+)$/) || (selectedPath.match(/^root\.patients\.([^.]+)\.encounters\.([^.]+)$/) && !selectedPath.endsWith('.undefined')))
 
   return (
@@ -462,6 +469,9 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
                   fullWidth
                 >
                   Delete Selected
+                </Button>
+                <Button variant="outlined" color="primary" onClick={handleLoadSample} startIcon={<Icon>restore</Icon>} fullWidth>
+                  Load Sample Database
                 </Button>
                 <Button variant="outlined" color="error" onClick={handleDelete} startIcon={<Icon>delete_forever</Icon>} fullWidth>
                   Erase Entire Database

@@ -9,14 +9,43 @@ export * as Database from './Database'
 import patient_sample from 'util/data/patient_sample.json'
 import orderables from 'util/data/orderables.json'
 
+//
+// Persistence Engine
+//
+const STORAGE = {
+  key: 'ehr-database',
+  async db() {
+    return new Promise<IDBDatabase>((res, rej) => {
+      const req = indexedDB.open('ProjectEHR', 1);
+      req.onupgradeneeded = () => req.result.objectStoreNames.contains('store') || req.result.createObjectStore('store');
+      req.onsuccess = () => res(req.result);
+      req.onerror = () => rej(req.error);
+    });
+  },
+  async save(data: any) {
+    const db = await this.db();
+    db.transaction('store', 'readwrite').objectStore('store').put(JSON.parse(JSON.stringify(data)), this.key);
+    console.debug('[Storage] Checkpoint saved.');
+  },
+  async load() {
+    const db = await this.db();
+    if (!db.objectStoreNames.contains('store')) return null;
+    return new Promise<Database.Root | null>(res => {
+      const req = db.transaction('store', 'readonly').objectStore('store').get(this.key);
+      req.onsuccess = () => res(req.result || null);
+      req.onerror = () => res(null);
+    });
+  }
+};
+
 // 
 // 
 // 
 // Contexts moved below types for proper initialization
 //
 
-// 
-const initialStore: Database.Root = {
+//
+export const initialStore: Database.Root = {
   departments: (patient_sample as unknown as Database.Root).departments,
   patients: (patient_sample as unknown as Database.Root).patients,
   appointments: (patient_sample as unknown as Database.Root).appointments,
@@ -26,8 +55,12 @@ const initialStore: Database.Root = {
   orderables: orderables,
   flowsheets: (patient_sample as unknown as Database.Root).flowsheets
 }
-const { useStore } = createStore(initialStore, ({ store, prevStore }) => {
-  // TODO: ...
+
+let isRestoring = false, saveTimeout: any;
+const { useStore, setStore: setGlobalStore } = createStore(initialStore, ({ store }) => {
+  if (isRestoring) return;
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => STORAGE.save(store), 1000);
 })
 
 export type DatabaseContextValue = typeof useStore;
@@ -44,11 +77,24 @@ export const PatientContext = React.createContext<PatientContextValue | undefine
 export const DatabaseProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  return (
+  const [isReady, setIsReady] = React.useState(false);
+  React.useEffect(() => {
+    STORAGE.load().then(data => {
+      if (data) {
+        isRestoring = true;
+        setGlobalStore(data as any);
+        isRestoring = false;
+        console.log("[Storage] Database initialized from disk.");
+      }
+      setIsReady(true);
+    });
+  }, []);
+
+  return isReady ? (
     <DatabaseContext.Provider value={useStore}>
       {children}
     </DatabaseContext.Provider>
-  )
+  ) : null;
 }
 
 // FIXME: PatientProvider.updateData does not actually persist outside of the Provider's context! 
