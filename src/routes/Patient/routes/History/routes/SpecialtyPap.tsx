@@ -5,8 +5,8 @@ import {
   Label,
   TitledCard,
   Icon,
-  MarkReviewed,
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient } from 'components/contexts/PatientContext';
 import { filterDocuments } from 'util/helpers';
 

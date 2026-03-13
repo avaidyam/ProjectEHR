@@ -12,8 +12,8 @@ import {
   Grid,
   DatePicker,
   Checkbox,
-  MarkReviewed,
 } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { FormControlLabel } from '@mui/material';
 
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';

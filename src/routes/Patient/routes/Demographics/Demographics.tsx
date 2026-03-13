@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, MarkReviewed, usePrompts } from 'components/ui/Core';
+import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, usePrompts } from 'components/ui/Core';
+import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
 
 /*

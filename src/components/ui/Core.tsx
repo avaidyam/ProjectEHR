@@ -122,7 +122,6 @@ import {
 import {
   ErrorBoundary as ReactErrorBoundary
 } from 'react-error-boundary'
-import { MarkReviewed } from "./MarkReviewed"
 
 LicenseInfo.setLicenseKey("")
 
@@ -1326,5 +1325,3 @@ export const Popover: React.FC<PopoverProps> = ({ children, ...props }) => (
     {children}
   </MUIPopover>
 )
-
-export { MarkReviewed }

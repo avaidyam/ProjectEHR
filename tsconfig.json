@@ -8,11 +8,6 @@
   ],
   "compilerOptions": {
     "baseUrl": "src",
-    "paths": {
-      "teaful": [
-        "../node_modules/teaful/dist/index.d.ts"
-      ]
-    },
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "bundler",
