@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { App, WindowLevel, Scalar3D } from 'dwv';
+import * as cornerstone from '@cornerstonejs/core';
+import * as cornerstoneTools from '@cornerstonejs/tools';
+import cornerstoneDICOMImageLoader from '@cornerstonejs/dicom-image-loader';
+import { init as initNiftiLoader } from '@cornerstonejs/nifti-volume-loader';
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
 import dcmjs from "dcmjs";
-const { DicomDict, DicomMetaDictionary, datasetToDict } = dcmjs.data
+const { datasetToDict } = dcmjs.data
 
 // ONLY WORKS IN NODEJS ENVIRONMENT!
 // channels = 4 = RGBA, 3 = RGB, 1 = MONOCHROME
@@ -39,11 +42,16 @@ async function image2DICOM(input: any, monochrome = true, compression = false) {
   } else {
     buffer = convertImageBuffer(image.bitmap.data, image.width, image.height, 4, 1)
   }
+  const pixelBuffer = buffer.buffer ? new Uint8Array(buffer.buffer) : new Uint8Array(buffer)
   const dataset = {
     _meta: {
       TransferSyntaxUID: {
         Value: [compression ? "1.2.840.10008.1.2.4.50" : "1.2.840.10008.1.2.1"],
+        vr: "UI"
       },
+    },
+    _vrMap: {
+      PixelData: "OB",
     },
     Rows: image.height,
     Columns: image.width,
@@ -54,20 +62,12 @@ async function image2DICOM(input: any, monochrome = true, compression = false) {
     PixelRepresentation: 0,
     PlanarConfiguration: 0,
     PhotometricInterpretation: monochrome ? "MONOCHROME2" : "RGB",
-    PixelData: buffer,
+    PixelData: pixelBuffer.buffer,
   }
   return new Blob([datasetToDict(dataset).write()], { type: 'application/dicom' })
 }
 
-function blob2b64(blob: Blob): Promise<string | ArrayBuffer | null> {
-  return new Promise((resolve, _) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
-}
-
-export function b64ToFile(str: string) {
+function b64ToFile(str: string) {
   const parts = str.split(';base64,');
   const byteChars = window.atob(parts[1]);
   const buf = new ArrayBuffer(byteChars.length);
@@ -79,10 +79,45 @@ export function b64ToFile(str: string) {
   return new File([new Blob([buf])], type.replace('/', '.'), { type })
 }
 
+let cornerstoneInitialized = false;
+
+const TOOL_LIST = [
+  cornerstoneTools.StackScrollTool,
+  cornerstoneTools.ZoomTool,
+  cornerstoneTools.PanTool,
+  cornerstoneTools.WindowLevelTool,
+  cornerstoneTools.LengthTool,
+];
+
+function registerTools() {
+  TOOL_LIST.forEach((ToolClass) => {
+    try {
+      cornerstoneTools.addTool(ToolClass);
+    } catch (_) {
+      // Tool already registered — safe to ignore
+    }
+  });
+}
+
+async function initCornerstone() {
+  if (!cornerstoneInitialized) {
+    cornerstoneInitialized = true;
+    await cornerstone.init();
+    await cornerstoneTools.init();
+
+    const maxWebWorkers = navigator.hardwareConcurrency ? Math.min(navigator.hardwareConcurrency, 7) : 1;
+    cornerstoneDICOMImageLoader.init({
+      maxWebWorkers,
+    });
+    initNiftiLoader();
+  }
+  // Always re-register tools (HMR can clear the internal registry)
+  registerTools();
+}
+
 export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }: { images: any[]; convertMonochrome?: boolean; viewerId: string; tool: string; initialSettings?: any; onUpdate?: (settings: any) => void }) => {
-  const [dwvApp, setDwvApp] = React.useState<any>(null);
   const [loadProgress, setLoadProgress] = React.useState(0);
-  const [dataLoaded, setDataLoaded] = React.useState(false);
+  const [isReady, setIsReady] = React.useState(false);
   const viewerRef = React.useRef<HTMLDivElement>(null);
   const onUpdateRef = React.useRef(onUpdate);
 
@@ -91,126 +126,190 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
   }, [onUpdate]);
 
   React.useEffect(() => {
-    console.log(`DICOMViewer(${viewerId}): Component mounted or viewerId/images changed. Initializing DWV app...`);
-
-    const app = new App();
-    setDwvApp(app);
-
-    app.init({
-      dataViewConfigs: { '*': [{ divId: viewerId }] },
-      tools: {
-        Scroll: {},
-        ZoomAndPan: {},
-        WindowLevel: {},
-        Draw: {
-          options: ['Ruler']
-        }
-      }
-    } as any);
-
-    const handleUpdate = () => {
-      if (onUpdateRef.current) {
-        const layer = app.getViewLayers()[0];
-        if (layer) {
-          const vc = layer.getViewController();
-          const wl = vc.getWindowLevel();
-          const zoom = layer.getScale();
-          onUpdateRef.current({ ww: wl.width, wl: wl.center, zoom: zoom.x });
-        }
-      }
+    const setup = async () => {
+      await initCornerstone();
+      setIsReady(true);
     };
-
-    const listeners = {
-      'loadstart': () => {
-        console.log(`DICOMViewer(${viewerId}): Load start event triggered.`);
-        setLoadProgress(0);
-        setDataLoaded(false);
-      },
-      'loadprogress': (event: any) => {
-        console.log(`DICOMViewer(${viewerId}): Load progress: ${event.loaded}%`);
-        setLoadProgress(event.loaded);
-      },
-      'load': (event: any) => {
-        console.log(`DICOMViewer(${viewerId}): Load finished successfully.`);
-        // get a handle on the data, not strictly needed but good practice
-        // const data = app.getData(event.dataId);
-        setDataLoaded(true);
-        app.fitToContainer();
-
-        if (initialSettings) {
-          const layer = app.getViewLayers()[0];
-          const vc = layer ? layer.getViewController() : null;
-          if (vc && layer) {
-            if (initialSettings.ww !== undefined && initialSettings.wl !== undefined) {
-              vc.setWindowLevel(new WindowLevel(initialSettings.wl, initialSettings.ww));
-            }
-            if (initialSettings.zoom !== undefined) {
-              (layer as any).setScale(new (Scalar3D as any)(initialSettings.zoom, initialSettings.zoom, 1));
-            }
-            // Trigger update to sync parent
-            handleUpdate();
-          }
-        }
-      },
-      'error': (event: any) => {
-        console.error(`DICOMViewer(${viewerId}): An error occurred during loading.`, event);
-      },
-      'abort': () => {
-        console.log(`DICOMViewer(${viewerId}): Load aborted.`);
-      },
-      'renderend': () => {
-        console.log(`DICOMViewer(${viewerId}): Render finished.`);
-      },
-      'zoomchange': handleUpdate,
-      'wlchange': handleUpdate,
-    };
-
-    for (const [key, value] of Object.entries(listeners) as [string, any][]) {
-      app.addEventListener(key, value);
-    }
-
-    // For auto-resizing the view when parent bounds change
-    const observer = new ResizeObserver((entries: any) => app.onResize())
-    if (viewerRef.current) {
-      observer.observe(viewerRef.current)
-    }
-
-    // Load images
-    if (images && images.length > 0) {
-      console.log(`DICOMViewer(${viewerId}): Attempting to load ${images.length} images.`);
-      if (images[0]?.startsWith?.("data:image/")) {
-        // FIXME: RGB mode doesn't work if compression=false for some reason?
-        image2DICOM(images[0], convertMonochrome ?? true, !(convertMonochrome ?? true)).then(image => {
-          app.loadFiles([new File([image], "file.dcm", { type: "application/dicom" })])
-        })
-        //app.loadFiles([b64ToFile(images[0])])
-      } else {
-        app.loadURLs(images);
-      }
-    }
-
-    app.setTool(tool || 'Scroll');
-
-    return () => {
-      console.log(`DICOMViewer(${viewerId}): Component unmounting. Cleaning up...`);
-      app?.abortAllLoads();
-      app?.removeDataViewConfig("*", viewerId);
-      app?.reset();
-      for (const [key, value] of Object.entries(listeners) as [string, any][]) {
-        app?.removeEventListener(key, value);
-      }
-      observer.disconnect()
-    };
-  }, [viewerRef, viewerId, images]);
+    setup();
+  }, []);
 
   React.useEffect(() => {
-    if (dwvApp && tool) {
-      dwvApp.setTool(tool);
-      if (tool === 'Draw') {
-        dwvApp.setToolFeatures({ shapeName: 'Ruler' });
+    if (!isReady || !viewerRef.current) return;
+
+    const element = viewerRef.current;
+
+    const renderingEngineId = `myRenderingEngine_${viewerId}`;
+    const viewportId = `CT_VIEWPORT_${viewerId}`;
+
+    // Note: getRenderingEngine returns an engine if it already exists, otherwise create it.
+    let renderingEngine = cornerstone.getRenderingEngine(renderingEngineId);
+    if (!renderingEngine) {
+        renderingEngine = new cornerstone.RenderingEngine(renderingEngineId);
+    }
+
+    const viewportInput = {
+      viewportId,
+      type: cornerstone.Enums.ViewportType.STACK,
+      element,
+      defaultOptions: {
+        background: [0, 0, 0] as cornerstone.Types.Point3,
+      },
+    };
+
+    renderingEngine.enableElement(viewportInput);
+    const viewport = renderingEngine.getViewport(viewportId) as cornerstone.Types.IStackViewport;
+
+    const toolGroupId = `myToolGroup_${viewerId}`;
+    let toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+    if (!toolGroup) {
+      toolGroup = cornerstoneTools.ToolGroupManager.createToolGroup(toolGroupId);
+      if (toolGroup) {
+        [
+          cornerstoneTools.StackScrollTool.toolName,
+          cornerstoneTools.ZoomTool.toolName,
+          cornerstoneTools.PanTool.toolName,
+          cornerstoneTools.WindowLevelTool.toolName,
+          cornerstoneTools.LengthTool.toolName,
+        ].forEach((toolName) => {
+          try {
+            toolGroup?.addTool(toolName);
+          } catch (e) {
+            console.warn(`Error adding tool ${toolName} to group:`, e);
+          }
+        });
       }
     }
-  }, [dwvApp, tool]);
+    
+    if (toolGroup) {
+      toolGroup.addViewport(viewportId, renderingEngineId);
+    }
+
+    let imageIds: string[] = [];
+    let isMounted = true;
+
+    const loadImages = async () => {
+      setLoadProgress(10);
+      if (images && images.length > 0) {
+        if (images[0]?.startsWith?.("data:image/")) {
+           const image = await image2DICOM(images[0], convertMonochrome ?? true, !(convertMonochrome ?? true));
+           const file = new File([image], "file.dcm", { type: "application/dicom" });
+           const imageId = cornerstoneDICOMImageLoader.wadouri.fileManager.add(file);
+           imageIds.push(imageId);
+        } else {
+           imageIds = images.map(url => `wadouri:${url}`);
+        }
+      }
+
+      if (!isMounted) return;
+      setLoadProgress(50);
+
+      if (imageIds.length === 0) {
+        return;
+      }
+
+      try {
+        await viewport.setStack(imageIds, 0);
+        viewport.render();
+        if (!isMounted) return;
+        setLoadProgress(100);
+
+        if (initialSettings) {
+           const properties: any = {};
+           if (initialSettings.ww !== undefined && initialSettings.wl !== undefined) {
+             properties.voiRange = { lower: initialSettings.wl - initialSettings.ww / 2, upper: initialSettings.wl + initialSettings.ww / 2 };
+           }
+           if (initialSettings.zoom !== undefined) {
+             viewport.setZoom(initialSettings.zoom);
+           }
+           if (Object.keys(properties).length > 0) {
+             viewport.setProperties(properties);
+             viewport.render();
+           }
+        }
+      } catch (e) {
+        console.error(`DICOMViewer(${viewerId}): Error loading images:`, e);
+        setLoadProgress(0);
+      }
+    };
+
+    loadImages();
+
+    const handleCameraModified = (evt: any) => {
+      const { viewportId: evtViewportId } = evt.detail;
+      if (evtViewportId === viewportId && onUpdateRef.current) {
+         const vp = renderingEngine?.getViewport(viewportId) as cornerstone.Types.IStackViewport | undefined;
+         if (!vp) return;
+         const props = vp.getProperties();
+         const zoom = vp.getZoom();
+         let ww;
+         let wl;
+         if (props.voiRange) {
+           ww = props.voiRange.upper - props.voiRange.lower;
+           wl = props.voiRange.lower + ww / 2;
+         }
+         onUpdateRef.current({ ww, wl, zoom });
+      }
+    };
+    
+    element.addEventListener(cornerstone.Enums.Events.CAMERA_MODIFIED, handleCameraModified);
+    element.addEventListener(cornerstone.Enums.Events.VOI_MODIFIED, handleCameraModified);
+
+    const observer = new ResizeObserver(() => {
+      renderingEngine?.resize(true);
+    });
+    observer.observe(element);
+
+    return () => {
+      isMounted = false;
+      observer.disconnect();
+      element.removeEventListener(cornerstone.Enums.Events.CAMERA_MODIFIED, handleCameraModified);
+      element.removeEventListener(cornerstone.Enums.Events.VOI_MODIFIED, handleCameraModified);
+      
+      if (toolGroup) {
+         cornerstoneTools.ToolGroupManager.destroyToolGroup(toolGroupId);
+      }
+      renderingEngine?.disableElement(viewportId);
+    };
+  }, [isReady, viewerId, images]);
+
+  React.useEffect(() => {
+    if (!isReady) return;
+    const toolGroupId = `myToolGroup_${viewerId}`;
+    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+    if (!toolGroup) return;
+
+    const mappedToolName = (() => {
+      switch(tool) {
+        case 'Scroll': return cornerstoneTools.StackScrollTool.toolName;
+        case 'Zoom': return cornerstoneTools.ZoomTool.toolName;
+        case 'Pan': return cornerstoneTools.PanTool.toolName;
+        case 'WindowLevel': return cornerstoneTools.WindowLevelTool.toolName;
+        case 'Draw': return cornerstoneTools.LengthTool.toolName;
+        default: return cornerstoneTools.StackScrollTool.toolName;
+      }
+    })();
+
+    toolGroup.setToolPassive(cornerstoneTools.StackScrollTool.toolName);
+    toolGroup.setToolPassive(cornerstoneTools.ZoomTool.toolName);
+    toolGroup.setToolPassive(cornerstoneTools.PanTool.toolName);
+    toolGroup.setToolPassive(cornerstoneTools.WindowLevelTool.toolName);
+    toolGroup.setToolPassive(cornerstoneTools.LengthTool.toolName);
+
+    toolGroup.setToolActive(mappedToolName, {
+      bindings: [{ mouseButton: cornerstoneTools.Enums.MouseBindings.Primary }],
+    });
+
+    if (mappedToolName !== cornerstoneTools.PanTool.toolName) {
+      toolGroup.setToolActive(cornerstoneTools.PanTool.toolName, {
+        bindings: [{ mouseButton: cornerstoneTools.Enums.MouseBindings.Auxiliary }],
+      });
+    }
+    if (mappedToolName !== cornerstoneTools.ZoomTool.toolName) {
+      toolGroup.setToolActive(cornerstoneTools.ZoomTool.toolName, {
+        bindings: [{ mouseButton: cornerstoneTools.Enums.MouseBindings.Secondary }],
+      });
+    }
+  }, [isReady, tool, viewerId]);
 
   return (
     <div
@@ -224,7 +323,7 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
         alignItems: 'center',
       }}
     >
-      {loadProgress < 100 &&
+      {loadProgress > 0 && loadProgress < 100 &&
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -233,7 +332,8 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
           height: '4px',
           backgroundColor: '#333',
           borderRadius: '2px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          zIndex: 10
         }}>
           <div style={{
             width: `${loadProgress}%`,
@@ -246,16 +346,12 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
       <div
         id={viewerId}
         ref={viewerRef}
+        onContextMenu={(e) => e.preventDefault()}
+        role="presentation"
         style={{
           width: '100%',
           height: '100%',
-          "& .viewLayer": {
-            position: 'absolute',
-          },
-          "& .drawLayer": {
-            position: 'absolute',
-          }
-        } as any}
+        }}
       />
     </div>
   );

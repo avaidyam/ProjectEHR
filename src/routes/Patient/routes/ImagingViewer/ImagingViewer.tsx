@@ -364,8 +364,8 @@ const ToolSelectMenu = ({ anchorEl, onToolChange }: { anchorEl: any; onToolChang
   >
     <Grid sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1 }}>
       <IconButton onClick={() => onToolChange('WindowLevel')}><Icon>brightness_6</Icon></IconButton>
-      <IconButton onClick={() => onToolChange('ZoomAndPan')}><Icon>search</Icon></IconButton>
-      <IconButton onClick={() => onToolChange('ZoomAndPan')}><Icon>open_with</Icon></IconButton>
+      <IconButton onClick={() => onToolChange('Zoom')}><Icon>search</Icon></IconButton>
+      <IconButton onClick={() => onToolChange('Pan')}><Icon>open_with</Icon></IconButton>
       <IconButton onClick={() => onToolChange('Draw')}><Icon>straighten</Icon></IconButton>
       <IconButton onClick={() => onToolChange(null)}><Icon>architecture</Icon></IconButton>
       <IconButton onClick={() => onToolChange(null)}><Icon>collections</Icon></IconButton>

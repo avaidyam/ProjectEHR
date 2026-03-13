@@ -14,6 +14,10 @@
     "lint:staged": "biome check --error-on-warnings --no-errors-on-unmatched --staged"
   },
   "dependencies": {
+    "@cornerstonejs/core": "^4.19.2",
+    "@cornerstonejs/dicom-image-loader": "^4.19.2",
+    "@cornerstonejs/nifti-volume-loader": "^4.19.2",
+    "@cornerstonejs/tools": "^4.19.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@google/genai": "^1.17.0",
@@ -65,7 +69,6 @@
     "@tiptap/react": "^3.20.1",
     "@tiptap/starter-kit": "^3.20.1",
     "dcmjs": "^0.45.0",
-    "dwv": "^0.35.1",
     "eventemitter3": "^5.0.4",
     "jimp": "^1.6.0",
     "mui-temporal-pickers": "^1.1.1",
@@ -81,6 +84,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.6",
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@types/node": "^24.3.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
