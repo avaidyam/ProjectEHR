@@ -56,8 +56,9 @@ export const initialStore: Database.Root = {
   flowsheets: (patient_sample as unknown as Database.Root).flowsheets
 }
 
-let isRestoring = false, saveTimeout: any;
-const { useStore, setStore: setGlobalStore } = createStore(initialStore, ({ store }) => {
+let isRestoring = false
+let saveTimeout: any
+const { useStore, setStore: setGlobalStore } = createStore(initialStore, ({ store, prevStore }) => {
   if (isRestoring) return;
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => STORAGE.save(store), 1000);
