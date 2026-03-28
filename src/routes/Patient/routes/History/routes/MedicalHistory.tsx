@@ -28,7 +28,7 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete, onOpenModa
   onSave: (row: any, addToProblemList?: boolean) => void;
   onCancel: (row: any) => void;
   onDelete: (id: any) => void;
-  onOpenModal: (index: string | number) => void;
+  onOpenModal: (index: string | number, term?: string) => void;
   problems: any[];
 }) {
   const [formData, setFormData] = React.useState({
@@ -42,10 +42,12 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete, onOpenModa
     ...row
   });
   const [shouldAddToProblemList, setShouldAddToProblemList] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState('');
 
   React.useEffect(() => {
     setFormData({ ...row });
     setShouldAddToProblemList(false);
+    setSearchTerm('');
   }, [row]);
 
   const { useChart } = usePatient();
@@ -76,25 +78,26 @@ function MedicalHistoryDetailPanel({ row, onSave, onCancel, onDelete, onOpenModa
                 fullWidth
                 label="Diagnosis"
                 size="small"
-                disabled={!formData.isNew}
-                value={formData.diagnosis ? `${getICD10CodeDescription(formData.diagnosis) || formData.diagnosis} (${formData.diagnosis})` : ''}
+                disabled={!formData.isNew || (!!formData.diagnosis && formData.diagnosis.length > 0)}
+                value={formData.diagnosis ? `${getICD10CodeDescription(formData.diagnosis) || formData.diagnosis} (${formData.diagnosis})` : searchTerm}
                 onInputChange={(_e, newVal) => {
-                  const match = newVal.match(/\(([^)]+)\)$/);
-                  const code = (match ? match[1] : newVal) as Database.DiagnosisCode;
-                  setFormData((prev: any) => ({
-                    ...prev,
-                    diagnosis: code,
-                    displayAs: prev.displayAs || getICD10CodeDescription(code) || ''
-                  }));
+                  if (formData.isNew && !formData.diagnosis) {
+                    setSearchTerm(newVal);
+                  }
                 }}
                 options={[]}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    onOpenModal(formData.id);
+                  if (e.key === 'Enter' && formData.isNew && !formData.diagnosis) {
+                    onOpenModal(formData.id, searchTerm);
                   }
                 }}
               />
-              <Button outlined sx={{ minWidth: 40, p: 0, height: 40 }} onClick={() => onOpenModal(formData.id)}>
+              <Button
+                outlined
+                sx={{ minWidth: 40, p: 0, height: 40 }}
+                onClick={() => onOpenModal(formData.id, searchTerm)}
+                disabled={!formData.isNew || (!!formData.diagnosis && formData.diagnosis.length > 0)}
+              >
                 <Icon>search</Icon>
               </Button>
             </Stack>
@@ -276,10 +279,6 @@ export function MedicalHistory() {
       }
     }
   }, [expandedRowIds, medicalHx, setMedicalHx]);
-
-  const handleEdit = (id: any) => {
-    setExpandedRowIds(new Set([id]));
-  };
 
   const handleDelete = (id: any) => {
     setMedicalHx((prev: any) => prev.filter((row: any) => row.id !== id));
