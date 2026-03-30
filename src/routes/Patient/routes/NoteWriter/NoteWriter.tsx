@@ -1,319 +1,30 @@
 import * as React from 'react';
-import { Box, Button, MenuItem, Tab, TabList, TabPanel, TabView, Autocomplete } from 'components/ui/Core';
+import { Box, Button, Tab, TabList, TabPanel, TabView, Autocomplete } from 'components/ui/Core';
 import { IconButton, Grid, Checkbox, Typography, Icon, Popover } from '@mui/material';
 import { usePatient } from 'components/contexts/PatientContext';
+import * as NoteWriterConfig from 'util/data/notewriter_config.json'
 
-const systemsTemplate = {
-  "Review of Systems": [
-    {
-      title: 'Constitutional',
-      symptoms: ['Fever', 'Chills', 'Weight loss', 'Malaise/Fatigue', 'Diaphoresis'],
-    },
-    {
-      title: 'Skin',
-      symptoms: ['Rash', 'Itching'],
-    },
-    {
-      title: 'HENT',
-      symptoms: [
-        'Hearing loss',
-        'Tinnitus',
-        'Ear pain',
-        'Ear discharge',
-        'Nosebleeds',
-        'Congestion',
-        'Sinus pain',
-        'Stridor',
-        'Sore throat',
-      ],
-    },
-    {
-      title: 'Eyes',
-      symptoms: [
-        'Blurred vision',
-        'Double vision',
-        'Photophobia',
-        'Eye pain',
-        'Eye discharge',
-        'Eye redness',
-      ],
-    },
-    {
-      title: 'Cardiovascular',
-      symptoms: [
-        'Chest pain',
-        'Palpitations',
-        'Orthopnea',
-        'Claudication',
-        'Leg swelling',
-        'PND',
-      ],
-    },
-    {
-      title: 'Respiratory',
-      symptoms: [
-        'Cough',
-        'Hemoptysis',
-        'Sputum production',
-        'Shortness of breath',
-        'Wheezing',
-      ],
-    },
-    {
-      title: 'GI',
-      symptoms: [
-        'Heartburn',
-        'Nausea',
-        'Vomiting',
-        'Abdominal pain',
-        'Diarrhea',
-        'Constipation',
-        'Blood in stool',
-        'Melena',
-      ],
-    },
-    {
-      title: 'GU',
-      symptoms: [
-        'Dysuria',
-        'Urgency',
-        'Frequency',
-        'Hematuria',
-        'Flank pain',
-      ],
-    },
-    {
-      title: 'Musculoskeletal',
-      symptoms: [
-        'Myalgias',
-        'Neck pain',
-        'Back pain',
-        'Joint pain',
-        'Falls',
-      ],
-    },
-    {
-      title: 'Endo/Heme/Allergy',
-      symptoms: [
-        'Easy bruising/bleeding',
-        'Environmental allergies',
-        'Polydipsia',
-      ],
-    },
-    {
-      title: 'Neurological',
-      symptoms: [
-        'Dizziness',
-        'Headaches',
-        'Tingling',
-        'Tremor',
-        'Sensory change',
-        'Speech change',
-        'Focal weakness',
-        'Weakness',
-        'Seizures',
-        'LOC',
-      ],
-    },
-    {
-      title: 'Psychiatric',
-      symptoms: [
-        'Depression',
-        'Suicidal ideas',
-        'Substance abuse',
-        'Hallucinations',
-        'Nervous/Anxious',
-        'Insomnia',
-        'Memory loss',
-      ],
-    },
-  ],
-  "Physical Exam": [
-    {
-      title: 'Constitutional',
-      subsections: [
-        {
-          // subsectionTitle: 'General', 
-          checkboxes: ['Alert', 'Normal Weight', 'Normal Appearance', 'Obese'],
-          symptoms: ['Acute Distress', 'Ill-Appearing', 'Toxic Appearing', 'Diaphoretic'],
-        },
-      ],
-    },
-    {
-      title: 'Neck',
-      subsections: [
-        {
-          checkboxes: ['ROM Normal', 'Supple'],
-          symptoms: ['Neck Rigidity', 'Tenderness', 'Cervical Adenopathy', 'Carotid Bruit'],
-        },
-      ],
-    },
-    {
-      title: 'Skin',
-      subsections: [
-        {
-          checkboxes: ['Warm', 'Dry', 'Normal Color'],
-          symptoms: ['Rash', 'Erythema', 'Pallor', 'Cyanosis'],
-        },
-      ],
-    },
-    {
-      title: 'Respiratory',
-      subsections: [
-        {
-          subsectionTitle: 'Breath Sounds',
-          checkboxes: ['Clear to Auscultation Bilaterally'],
-          symptoms: ['Wheezes', 'Rales', 'Rhonchi'],
-        },
-        {
-          subsectionTitle: 'Respiratory Effort',
-          checkboxes: ['Normal Effort', 'No Accessory Muscle Use'],
-          symptoms: ['Labored Breathing', 'Retractions'],
-        },
-      ],
-    },
-    {
-      title: 'Genitourinary / Anorectal',
-      subsections: [
-        {
-          subsectionTitle: 'General',
-          checkboxes: ['Normal External Appearance'],
-          symptoms: ['Lesions', 'Discharge'],
-        },
-        {
-          subsectionTitle: 'Anorectal',
-          checkboxes: ['Normal Tone'],
-          symptoms: ['Hemorrhoids', 'Fissures'],
-        },
-      ],
-    },
-    {
-      title: 'Musculoskeletal',
-      subsections: [
-        {
-          subsectionTitle: 'General',
-          checkboxes: ['Full Range of Motion', 'No Deformity'],
-          symptoms: ['Tenderness', 'Swelling', 'Limited ROM'],
-        },
-        {
-          subsectionTitle: 'Spine',
-          checkboxes: ['Normal Curvature'],
-          symptoms: ['Tenderness', 'Kyphosis', 'Scoliosis'],
-        },
-      ],
-    },
-    {
-      title: 'Neurological',
-      subsections: [
-        {
-          subsectionTitle: 'Mental Status',
-          checkboxes: ['Alert', 'Oriented x3'],
-          symptoms: ['Confusion', 'Lethargy'],
-        },
-        {
-          subsectionTitle: 'Motor Function',
-          checkboxes: ['Normal Strength'],
-          symptoms: ['Weakness', 'Tremor', 'Involuntary Movements'],
-        },
-        {
-          subsectionTitle: 'Reflexes',
-          checkboxes: ['Normal Reflexes'],
-          symptoms: ['Hyperreflexia', 'Hyporeflexia'],
-        },
-      ],
-    },
-    {
-      title: 'Psychiatric',
-      subsections: [
-        {
-          subsectionTitle: 'Affect',
-          checkboxes: ['Normal Affect'],
-          symptoms: ['Flat', 'Anxious', 'Depressed'],
-        },
-        {
-          subsectionTitle: 'Behavior',
-          checkboxes: ['Cooperative'],
-          symptoms: ['Agitated', 'Withdrawn'],
-        },
-      ],
-    },
-    {
-      title: 'Gastrointestinal',
-      subsections: [
-        {
-          subsectionTitle: 'Inspection',
-          checkboxes: ['Non-Distended'],
-          symptoms: ['Scars', 'Striae'],
-        },
-        {
-          subsectionTitle: 'Palpation',
-          checkboxes: ['Soft', 'Non-Tender'],
-          symptoms: ['Tenderness', 'Guarding', 'Rebound'],
-        },
-        {
-          subsectionTitle: 'Bowel Sounds',
-          checkboxes: ['Normal Bowel Sounds'],
-          symptoms: ['Hyperactive', 'Hypoactive', 'Absent'],
-        },
-      ],
-    },
-    {
-      title: 'HEENT',
-      subsections: [
-        {
-          subsectionTitle: 'Head',
-          checkboxes: ['Normocephalic', 'Atraumatic'],
-          symptoms: [],
-        },
-        {
-          subsectionTitle: 'Eyes',
-          checkboxes: ['PERRL', 'EOM Intact'],
-          symptoms: ['Conjunctivae Normal', 'Scleral Icterus'],
-        },
-        {
-          subsectionTitle: 'Ears (Right)',
-          checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'],
-          symptoms: ['Impacted Cerumen'],
-        },
-        {
-          subsectionTitle: 'Ears (Left)',
-          checkboxes: ['TM Normal', 'Canal Normal', 'External Ear Normal'],
-          symptoms: ['Impacted Cerumen'],
-        },
-        {
-          subsectionTitle: 'Nose',
-          checkboxes: ['Nose Normal'],
-          symptoms: ['Congestion', 'Rhinorrhea'],
-        },
-        {
-          subsectionTitle: 'Mouth/Throat',
-          checkboxes: ['Moist'],
-          symptoms: ['Clear', 'Exudate', 'Erythema'],
-        },
-      ],
-    },
-    {
-      title: 'Cardiovascular',
-      subsections: [
-        {
-          subsectionTitle: 'Rate',
-          checkboxes: ['Normal Rate', 'Tachycardia', 'Bradycardia'],
-          symptoms: []
-        },
-        {
-          subsectionTitle: 'Rhythm',
-          checkboxes: ['Regular Rhythm', 'Irregular Rhythm'],
-          symptoms: []
-        },
-        {
-          subsectionTitle: 'Pulses and Heart Sounds',
-          checkboxes: ['Pulses Normal', 'Heart Sounds Normal'],
-          symptoms: ['Murmur', 'Friction Rub', 'Gallop']
-        },
-      ],
-    },
-  ],
-};
+// Handle both namespace and default imports for JSON
+const rawConfig = (NoteWriterConfig as any).default || (NoteWriterConfig as any);
+const systemsTemplate: Record<string, any> = {};
+
+// We specifically look for our expected top-level sections
+const KNOWN_SECTIONS = ['Review of Systems', 'Physical Exam'];
+KNOWN_SECTIONS.forEach(key => {
+    const section = rawConfig[key] || (rawConfig.default && rawConfig.default[key]);
+    if (section && typeof section === 'object') {
+        systemsTemplate[key] = section;
+    }
+});
+
+// If nothing was found, attempt to find any object that has 'sub_tabs'
+if (Object.keys(systemsTemplate).length === 0) {
+    Object.keys(rawConfig).forEach(key => {
+        if (key !== 'default' && rawConfig[key] && rawConfig[key].sub_tabs) {
+            systemsTemplate[key] = rawConfig[key];
+        }
+    });
+}
 
 const generateHTML = (systemsState: Record<string, any>, sectionToGenerate: string | null = null) => {
   let html = '';
@@ -321,100 +32,90 @@ const generateHTML = (systemsState: Record<string, any>, sectionToGenerate: stri
 
   sections.forEach((section: string) => {
     const sectionData = systemsState?.[section];
-    if (!sectionData) return;
+    const sectionConfig = systemsTemplate?.[section];
+    if (!sectionData || !sectionConfig) return;
 
     let sectionHtml = "";
+    
+    // We traverse the config to build the summary based on state
+    const processItems = (items: any[], subTitle: string, state: any) => {
+      const positives: string[] = [];
+      const negatives: string[] = [];
+      const findings: string[] = [];
 
-    // Iterate over systems (e.g. Constitutional, Eyes)
-    Object.entries(sectionData).forEach(([systemName, systemData]: [string, any]) => {
-      if (!systemData) return;
+      items.forEach(item => {
+        const val = state?.[item.label];
+        const info = state?.[`${item.label}_info`];
+        const displayLabel = info ? `${item.label} (${info})` : item.label;
 
-      const customNote = systemData.custom;
-      const flatPositives: string[] = [];
-      const flatNegatives: string[] = [];
-      const flatFindings: string[] = []; // From top-level checkboxes
-      const subsectionsParts: string[] = [];
-
-      // Helper to process a bundle of symptoms/checkboxes
-      const processBundle = (symptomsObj: any, checkboxesObj: any) => {
-        const p: string[] = [], n: string[] = [], f: string[] = [];
-        if (symptomsObj) {
-          Object.entries(symptomsObj).forEach(([k, v]: [string, any]) => {
-            if (v === true) p.push(k);
-            if (v === false) n.push(k);
-          });
-        }
-        if (checkboxesObj) {
-          Object.entries(checkboxesObj).forEach(([k, v]: [string, any]) => {
-            if (v === true) f.push(k);
-          });
-        }
-        return { p, n, f };
-      };
-
-      // 1. Check for specific known container keys (symptoms, checkboxes) at top level
-      const topBundle = processBundle(systemData.symptoms, systemData.checkboxes);
-
-      // 2. Iterate keys to find:
-      //    a) Direct boolean values (Flat style where symptoms are direct properties)
-      //    b) Subsections (Objects that are not 'symptoms' or 'checkboxes')
-      Object.entries(systemData).forEach(([key, val]: [string, any]) => {
-        if (key === 'custom' || key === 'symptoms' || key === 'checkboxes') return;
-
-        if (typeof val === 'boolean') {
-          if (val === true) flatPositives.push(key);
-          if (val === false) flatNegatives.push(key);
-        } else if (typeof val === 'object' && val !== null) {
-          // It's a subsection
-          const { p, n, f } = processBundle(val.symptoms, val.checkboxes);
-
-          if (p.length || n.length || f.length) {
-            let subStr = "";
-            // Subsection title
-            subStr += `<strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> `;
-            const parts: string[] = [];
-            if (p.length) parts.push(`Positive for ${p.join(", ")}`);
-            if (n.length) parts.push(`Negative for ${n.join(", ")}`);
-            if (f.length) parts.push(`Findings: ${f.join(", ")}`);
-            subStr += parts.join(". ");
-            subsectionsParts.push(subStr);
-          }
+        if (val === true) {
+          if (item.type === 'checkbox' || item.type === 'selectable') findings.push(displayLabel);
+          else positives.push(displayLabel);
+        } else if (val === false) {
+          negatives.push(displayLabel);
         }
       });
 
-      // Merge top-level structured data into flat arrays
-      flatPositives.push(...topBundle.p);
-      flatNegatives.push(...topBundle.n);
-      flatFindings.push(...topBundle.f);
+      if (positives.length || negatives.length || findings.length || state?.custom || state?.negative) {
+        let res = `<strong>${subTitle}:</strong> `;
+        const parts: string[] = [];
+        
+        if (state?.negative) {
+          parts.push("Negative");
+        } else {
+          if (positives.length) parts.push(`Positive for ${positives.join(", ")}`);
+          if (negatives.length) parts.push(`Negative for ${negatives.join(", ")}`);
+          if (findings.length) parts.push(`Findings: ${findings.join(", ")}`);
+        }
 
-      // Construct the text for this system
-      const systemParts: string[] = [];
+        if (state?.custom) parts.push(state.custom);
+        res += parts.join(". ");
+        return res;
+      }
+      return null;
+    };
 
-      // Add Subsection texts
-      if (subsectionsParts.length) {
-        systemParts.push(...subsectionsParts);
+    const processSubTab = (subTab: any, state: any) => {
+      const subParts: string[] = [];
+      
+      // Handle groups
+      if (subTab.groups) {
+        subTab.groups.forEach((group: any) => {
+          const res = processItems(group.items || [], group.name, state?.[group.name.toLowerCase()]);
+          if (res) subParts.push(`<li>${res}</li>`);
+        });
       }
 
-      // Add Flat texts
-      const flatParts: string[] = [];
-      if (flatPositives.length) flatParts.push(`Positive for ${flatPositives.join(", ")}`);
-      if (flatNegatives.length) flatParts.push(`Negative for ${flatNegatives.join(", ")}`);
-      if (flatFindings.length) flatParts.push(`Findings: ${flatFindings.join(", ")}`);
-
-      if (flatParts.length) {
-        systemParts.push(flatParts.join(". "));
+      // Handle items directly in subTab
+      if (subTab.items) {
+        const res = processItems(subTab.items, "General", state);
+        if (res) subParts.push(`<li>${res}</li>`);
       }
 
-      if (customNote) {
-        systemParts.push(customNote);
+      // Handle sub_sub_tabs
+      if (subTab.sub_sub_tabs) {
+        subTab.sub_sub_tabs.forEach((sst: any) => {
+          const sstRes = processSubTab(sst, state?.[sst.name.toLowerCase()]);
+          if (sstRes) subParts.push(`<li><strong>${sst.name}:</strong><ul>${sstRes}</ul></li>`);
+        });
       }
 
-      if (systemParts.length > 0) {
-        // Start header for the section (e.g. Review of Systems) if not started
+      return subParts.join("");
+    };
+
+    const subTabs = (sectionConfig.sub_tabs || []);
+    subTabs.forEach((subTab: any) => {
+      const subState = sectionData[subTab.name.toLowerCase()];
+      if (!subState) return;
+
+      const res = processSubTab(subTab, subState);
+      if (res) {
         if (sectionHtml === '') sectionHtml += `<h3>${section}:</h3><ul>`;
-
-        const systemLabel = systemName.charAt(0).toUpperCase() + systemName.slice(1);
-        sectionHtml += `<li><strong>${systemLabel}:</strong> ${systemParts.join(". ")}.</li>`;
+        if (subTabs.length === 1) {
+          sectionHtml += res;
+        } else {
+          sectionHtml += `<li><strong>${subTab.name}:</strong><ul>${res}</ul></li>`;
+        }
       }
     });
 
@@ -427,7 +128,101 @@ const generateHTML = (systemsState: Record<string, any>, sectionToGenerate: stri
   return html;
 };
 
-const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUpdate }: { title: string; subsections: any[]; state: any; onUpdate: (subTitle: string | null, type: string, key: string | null, val: any) => void }) => {
+const RenderItems = ({ items, state, onUpdate }: { items: any[], state: any, onUpdate: (key: string, val: any) => void }) => {
+  const [anchorEl, setAnchorEl] = React.useState<{ el: HTMLElement; label: string } | null>(null);
+  const [commentValue, setCommentValue] = React.useState('');
+
+  const handleDoubleClick = (event: React.MouseEvent<HTMLElement>, label: string) => {
+    event.preventDefault();
+    setCommentValue(state?.[`${label}_info`] || '');
+    setAnchorEl({ el: event.currentTarget, label });
+  };
+
+  const handleCommentClose = () => {
+    if (anchorEl) {
+      onUpdate(`${anchorEl.label}_info`, commentValue);
+    }
+    setAnchorEl(null);
+  };
+
+  return (
+    <Grid container spacing={1}>
+      {items.map((item: any) => {
+        const val = state?.[item.label];
+        const info = state?.[`${item.label}_info`];
+        const isCheckbox = item.type === 'checkbox' || item.type === 'selectable';
+
+        if (isCheckbox) {
+          return (
+            <Grid key={item.label} size={6}>
+              <Box
+                onClick={(e) => { if (e.detail === 1) onUpdate(item.label, !val); }}
+                onDoubleClick={(e) => handleDoubleClick(e, item.label)}
+                sx={{
+                  display: 'flex', alignItems: 'center', p: 0.25, borderRadius: 1,
+                  cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }
+                }}>
+                <Checkbox size="small" checked={!!val} sx={{ p: 0.25, mr: 0.25 }} />
+                <Typography variant="caption" sx={{ lineHeight: 1.2, flexGrow: 1 }}>{item.label}</Typography>
+                {info && <Icon sx={{ fontSize: 12, color: 'primary.main', ml: 0.5 }}>chat_bubble</Icon>}
+              </Box>
+            </Grid>
+          );
+        }
+
+        return (
+          <Grid key={item.label} size={6}>
+            <Box
+              onClick={(e) => { if (e.detail === 1) onUpdate(item.label, val === true ? null : true); }}
+              onDoubleClick={(e) => handleDoubleClick(e, item.label)}
+              sx={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                p: 0.5, px: 0.5, borderRadius: 1,
+                bgcolor: val === true ? 'error.light' : val === false ? 'success.light' : 'action.selected',
+                color: val != null ? 'white' : 'text.primary',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                position: 'relative'
+              }}>
+              <Icon
+                onClick={(e) => { e.stopPropagation(); onUpdate(item.label, val === true ? null : true); }}
+                sx={{ fontSize: 16, opacity: val === true ? 1 : 0.5, '&:hover': { opacity: 1 }, mr: 1 }}>add</Icon>
+              <Typography variant="caption" sx={{ fontWeight: val != null ? 'bold' : 'normal', flex: 1, display: 'flex', alignItems: 'center', textAlign: 'left', px: 0.5 }}>
+                {item.label}
+                {info && <Icon sx={{ fontSize: 12, ml: 0.5, color: val != null ? 'inherit' : 'primary.main', opacity: 0.8 }}>notes</Icon>}
+              </Typography>
+              <Icon
+                onClick={(e) => { e.stopPropagation(); onUpdate(item.label, val === false ? null : false); }}
+                sx={{ fontSize: 16, opacity: val === false ? 1 : 0.5, '&:hover': { opacity: 1 }, ml: 1 }}>remove</Icon>
+            </Box>
+          </Grid>
+        );
+      })}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl?.el}
+        onClose={handleCommentClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Box sx={{ p: 1, width: 220 }}>
+          <Autocomplete
+            freeSolo autoFocus fullWidth
+            options={[]}
+            value={commentValue}
+            onInputChange={(_e, newValue) => setCommentValue(newValue)}
+            TextFieldProps={{
+              multiline: true, minRows: 2, maxRows: 4,
+              placeholder: `Notes for ${anchorEl?.label}...`,
+              variant: "outlined", size: "small"
+            }}
+          />
+        </Box>
+      </Popover>
+    </Grid>
+  );
+};
+
+const GenericBodySystemComponent = React.memo(({ title, config, state, onUpdate }: { title: string; config: any; state: any; onUpdate: (path: string[], val: any) => void }) => {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [tempNote, setTempNote] = React.useState('');
 
@@ -437,7 +232,7 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
   };
 
   const handleClose = () => {
-    onUpdate(null, 'custom', null, tempNote);
+    onUpdate(['custom'], tempNote);
     setAnchorEl(null);
   };
 
@@ -445,7 +240,7 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
   const id = open ? `simple-popover-${title}` : undefined;
 
   return (
-    <Box sx={{ border: '1px solid #ddd', padding: 1, marginBottom: 1, width: '100%', borderRadius: 1, bgcolor: 'background.paper' }}>
+    <Box sx={{ border: '1px solid #ddd', padding: 1, width: '100%', borderRadius: 1, bgcolor: 'background.paper' }}>
       <Grid container spacing={0.5} alignItems="center" justifyContent="space-between" sx={{ borderBottom: '1px solid #eee', pb: 0.5, mb: 1 }}>
         <Grid>
           <IconButton aria-describedby={id} onClick={handleCustomNoteClick} size="small">
@@ -455,105 +250,41 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
         <Grid size="grow">
           <Typography variant="subtitle2" sx={{ marginLeft: 1, fontWeight: 'bold' }}>{title}</Typography>
         </Grid>
-      </Grid>
-      {subsections.map((sub, idx) => {
-        const subTitle = sub.subsectionTitle || sub.title || '';
-        const subKey = subTitle.toLowerCase();
-        // If we have a subTitle, we expect nested state. Otherwise, we use the root state of this system.
-        const subState = subTitle ? (state[subKey] || {}) : state;
-
-        const getVal = (type: string, key: string) => {
-          if (type === 'checkbox') return subState.checkboxes?.[key] || false;
-          if (type === 'symptom') return subState.symptoms?.[key] ?? subState[key];
-        };
-
-        const triggerUpdate = (type: string, key: string, val: any) => {
-          onUpdate(subTitle, type, key, val);
-        };
-
-        return (
-          <Box key={idx} sx={{ mb: 1 }}>
-            {!!subTitle && <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', display: 'block', mb: 0.5 }}>{subTitle}</Typography>}
-            {/* Checkboxes */}
-            {sub.checkboxes?.length > 0 && (
-              <Grid container spacing={1} sx={{ mb: 1 }}>
-                {sub.checkboxes.map((cb: string) => (
-                  <Grid key={cb} size={6}>
-                    <Box
-                      onClick={() => triggerUpdate('checkbox', cb, !getVal('checkbox', cb))}
-                      sx={{
-                        display: 'flex', alignItems: 'center', p: 0.5, borderRadius: 1,
-                        cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }
-                      }}>
-                      <Checkbox size="small" checked={!!getVal('checkbox', cb)} sx={{ p: 0.5, mr: 0.5 }} />
-                      <Typography variant="caption" sx={{ lineHeight: 1.2 }}>{cb}</Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-            {/* Symptoms */}
-            {sub.symptoms?.length > 0 && (
-              <Grid container spacing={1}>
-                {sub.symptoms.map((sym: string) => {
-                  const val = getVal('symptom', sym);
-                  return (
-                    <Grid key={sym} size={6}>
-                      <Box sx={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        p: 0.5, px: 1, borderRadius: 1,
-                        bgcolor: val === true ? 'error.light' : val === false ? 'success.light' : 'action.selected',
-                        color: val != null ? 'white' : 'text.primary',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}>
-                        <Typography variant="caption" sx={{ fontWeight: val != null ? 'bold' : 'normal', flex: 1 }}>{sym}</Typography>
-                        <Box sx={{ display: 'flex' }}>
-                          <Icon
-                            onClick={(e) => { e.stopPropagation(); triggerUpdate('symptom', sym, true); }}
-                            sx={{ fontSize: 16, opacity: val === true ? 1 : 0.5, '&:hover': { opacity: 1 }, mr: 1 }}>add</Icon>
-                          <Icon
-                            onClick={(e) => { e.stopPropagation(); triggerUpdate('symptom', sym, false); }}
-                            sx={{ fontSize: 16, opacity: val === false ? 1 : 0.5, '&:hover': { opacity: 1 } }}>remove</Icon>
-                        </Box>
-                      </Box>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            )}
+        <Grid>
+          <Box
+            onClick={() => onUpdate(['negative'], !state?.negative)}
+            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, px: 0.5 }}
+          >
+            <Checkbox
+              size="small"
+              checked={!!state?.negative}
+              sx={{ p: 0 }}
+            />
+            <Typography variant="caption" sx={{ fontWeight: 'bold', mr: 0.25, fontSize: '0.65rem' }}>neg</Typography>
           </Box>
-        );
-      })}
+        </Grid>
+      </Grid>
+      
+      <RecursiveSystemRenderer config={config} state={state} onUpdate={onUpdate} />
+
       <Popover
         id={id}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
         <Box sx={{ p: 2, width: 300 }}>
           <Autocomplete
-            freeSolo
-            autoFocus
-            fullWidth
+            freeSolo autoFocus fullWidth
             options={[]}
             value={tempNote}
             onInputChange={(_e, newValue) => setTempNote(newValue)}
             TextFieldProps={{
-              multiline: true,
-              minRows: 3,
-              maxRows: 6,
+              multiline: true, minRows: 3, maxRows: 6,
               placeholder: `Add note for ${title}...`,
-              variant: "outlined",
-              size: "small"
+              variant: "outlined", size: "small"
             }}
           />
         </Box>
@@ -562,82 +293,148 @@ const GenericBodySystemComponent = React.memo(({ title, subsections, state, onUp
   );
 });
 
-const GenericNoteWriterTab = ({ data, state, updateState }: { data: any[]; state: any; updateState: (fn: (prev: any) => any) => void }) => {
+function RecursiveSystemRenderer({ config, state, onUpdate }: { config: any, state: any, onUpdate: (path: string[], val: any) => void }) {
   return (
-    <Box sx={{ p: 2, height: '100%', overflow: 'auto' }}>
-      <Grid container spacing={2}>
-        {data.map((system: any, idx: number) => (
-          <Grid key={idx} size={{ xs: 12, md: 6, lg: 4 }}>
-            <GenericBodySystemComponent
-              title={system.title}
-              subsections={system.subsections || [{ title: '', symptoms: system.symptoms, checkboxes: [] }]}
-              state={state[system.title.toLowerCase()] || {}}
-              onUpdate={(subTitle: string | null, type: string, key: string | null, val: any) => {
-                updateState((prev: any) => {
-                  const sysKey = system.title.toLowerCase();
-                  const sysState = prev[sysKey] ? { ...prev[sysKey] } : {};
+    <Box sx={{ mb: 1 }}>
+      {config.groups && (
+        <Grid container spacing={1}>
+          {config.groups.map((group: any) => (
+            <Grid key={group.name} size={{ xs: 12, md: 6, lg: 4 }}>
+              <GenericBodySystemComponent
+                title={group.name}
+                config={group}
+                state={state?.[group.name.toLowerCase()] || {}}
+                onUpdate={(path, val) => onUpdate([group.name.toLowerCase(), ...path], val)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
+      
+      {config.items && (
+        <Box sx={{ mt: 1 }}>
+          <RenderItems 
+            items={config.items} 
+            state={state} 
+            onUpdate={(key, val) => onUpdate([key], val)} 
+          />
+        </Box>
+      )}
 
-                  if (type === 'custom') {
-                    sysState.custom = val;
-                  } else {
-                    let targetState = sysState;
-                    if (subTitle) {
-                      const subKeyLower = subTitle.toLowerCase();
-                      sysState[subKeyLower] = { ...sysState[subKeyLower] };
-                      targetState = sysState[subKeyLower];
-                    }
+      {config.sub_sub_tabs?.map((sst: any) => (
+        <Box key={sst.name} sx={{ mt: 1, borderTop: '1px dashed #eee', pt: 1 }}>
+          <Typography variant="subtitle2" sx={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'primary.main', mb: 0.5 }}>
+            {sst.name}
+          </Typography>
+          <RecursiveSystemRenderer 
+            config={sst} 
+            state={state?.[sst.name.toLowerCase()]} 
+            onUpdate={(path, val) => onUpdate([sst.name.toLowerCase(), ...path], val)} 
+          />
+        </Box>
+      ))}
 
-                    if (key != null) {
-                      if (type === 'checkbox') {
-                        targetState.checkboxes = { ...targetState.checkboxes, [key]: val };
-                      } else if (type === 'symptom') {
-                        // Handle both structured symptoms object and flat symptom keys
-                        if (typeof targetState.symptoms === 'object' || subTitle) {
-                          // If we are in a subsection, or if we already have a symptoms object
-                          // Ensure symptoms object exists
-                          targetState.symptoms = { ...targetState.symptoms };
-                          const current = targetState.symptoms[key];
-                          targetState.symptoms[key] = current === val ? null : val;
-                        } else {
-                          // Fallback for simple ROS-style flat structure
-                          const current = targetState[key];
-                          targetState[key] = current === val ? null : val;
-                        }
-                      }
-                    }
-                  }
-
-                  return { ...prev, [sysKey]: sysState };
-                });
-              }}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {config.sides && (
+        <Grid container spacing={2}>
+          {Object.entries(config.sides).map(([side, sideItems]: [string, any]) => (
+             <Grid key={side} size={6}>
+                <Typography variant="caption" sx={{ fontWeight: 'bold', display: 'block' }}>{side}</Typography>
+                <RenderItems 
+                  items={Array.isArray(sideItems) ? sideItems : []} 
+                  state={state?.[side.toLowerCase()] || {}} 
+                  onUpdate={(key, val) => onUpdate([side.toLowerCase(), key], val)} 
+                />
+             </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
+  );
+}
+
+const GenericNoteWriterTab = ({ subTabs, state, updateState }: { subTabs: any[]; state: any; updateState: (fn: (prev: any) => any) => void }) => {
+  const [activeSubTab, setActiveSubTab] = React.useState(subTabs[0]?.name || '');
+
+  React.useEffect(() => {
+    if (subTabs.length > 0 && !subTabs.find(t => t.name === activeSubTab)) {
+      setActiveSubTab(subTabs[0].name);
+    }
+  }, [subTabs, activeSubTab]);
+
+  const onUpdateHandler = (subTab: any) => (path: string[], val: any) => {
+    updateState((prev: any) => {
+      const sysKey = subTab.name.toLowerCase();
+      const newSectionState = { ...prev };
+      let currentLevel = newSectionState[sysKey] ? { ...newSectionState[sysKey] } : {};
+      newSectionState[sysKey] = currentLevel;
+
+      for (let i = 0; i < path.length - 1; i++) {
+        const key = path[i];
+        currentLevel[key] = currentLevel[key] ? { ...currentLevel[key] } : {};
+        currentLevel = currentLevel[key];
+      }
+
+      const lastKey = path[path.length - 1];
+      currentLevel[lastKey] = val;
+
+      return newSectionState;
+    });
+  };
+
+  return (
+    <TabView value={activeSubTab}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        {subTabs.length > 1 && (
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'action.hover', minHeight: 40 }}>
+            <TabList
+              onChange={(_e: any, v: any) => setActiveSubTab(v)}
+              variant="scrollable"
+              scrollButtons="auto"
+            >
+              {subTabs.map((subTab: any) => (
+                <Tab key={subTab.name} label={subTab.name} value={subTab.name} />
+              ))}
+            </TabList>
+          </Box>
+        )}
+        <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2, bgcolor: 'background.default' }}>
+          {subTabs.map((subTab: any) => (
+            <TabPanel key={subTab.name} value={subTab.name} sx={{ p: 0 }}>
+              <RecursiveSystemRenderer
+                config={subTab}
+                state={state[subTab.name.toLowerCase()] || {}}
+                onUpdate={onUpdateHandler(subTab)}
+              />
+            </TabPanel>
+          ))}
+        </Box>
+      </Box>
+    </TabView>
   );
 };
 
 export const NoteWriter = () => {
   const { useEncounter } = usePatient()
-  const [] = useEncounter().smartData({} as any) // FIXME: force-init smartData object if null
+  const [] = useEncounter().smartData({} as any)
   const [activeSystems, setActiveSystems] = useEncounter().smartData.activeSystems({})
   const [selectedTabLabel, setSelectedTabLabel] = React.useState(Object.keys(systemsTemplate)[0] ?? '')
 
-  const setSystemState = (systemName: string, newStateOrFn: any) => {
-    setActiveSystems((prev: any) => {
-      if (!prev) return prev;
-      const currentSystems = prev.systems || {};
-      const currentSystemState = currentSystems[systemName] || {};
+  // Ensure we switch to a valid tab if the initial one was empty or becomes invalid
+  React.useEffect(() => {
+    const keys = Object.keys(systemsTemplate);
+    if (keys.length > 0 && (!selectedTabLabel || !keys.includes(selectedTabLabel))) {
+      setSelectedTabLabel(keys[0]);
+    }
+  }, [selectedTabLabel]);
 
-      const newValue = typeof newStateOrFn === 'function' ? newStateOrFn(currentSystemState) : newStateOrFn;
+  const setSystemState = (sectionName: string, newStateOrFn: any) => {
+    setActiveSystems((prev: any) => {
+      const currentSectionState = (prev || {})[sectionName] || {};
+      const newValue = typeof newStateOrFn === 'function' ? newStateOrFn(currentSectionState) : newStateOrFn;
 
       return {
-        ...prev,
-        systems: {
-          ...currentSystems,
-          [systemName]: newValue
-        }
+        ...(prev || {}),
+        [sectionName]: newValue
       };
     });
   };
@@ -645,7 +442,7 @@ export const NoteWriter = () => {
   const TABS_CONFIG = Object.keys(systemsTemplate).map(key => ({
     id: key,
     label: key,
-    data: systemsTemplate[key as keyof typeof systemsTemplate],
+    config: systemsTemplate[key],
     state: activeSystems[key] || {},
     setter: (val: any) => setSystemState(key, val)
   }));
@@ -655,7 +452,6 @@ export const NoteWriter = () => {
     if (!html) return;
 
     try {
-      // Create a plain text version that attempts to preserve some structure
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html.replace(/<\/li>/g, '\n').replace(/<br\s*\/?>/g, '\n').replace(/<\/p>/g, '\n\n');
       const plainText = tempDiv.textContent || tempDiv.innerText || "";
@@ -671,40 +467,43 @@ export const NoteWriter = () => {
       ]);
     } catch (err) {
       console.error('Failed to copy rich text:', err);
-      // Fallback for browsers that might not support ClipboardItem fully or restricted contexts
-      navigator.clipboard.writeText(html); // Fallback to storing raw HTML as text if rich copy fails
+      navigator.clipboard.writeText(html);
     }
   };
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <TabView value={selectedTabLabel}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}>
-          <TabList onChange={(event: any, newTab: any) => setSelectedTabLabel(newTab)}>
-            {TABS_CONFIG.map((tab) => (
-              <Tab key={tab.id} label={tab.label} value={tab.id} />
+      {TABS_CONFIG.length === 0 ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4 }}>
+          <Typography variant="h6" color="text.secondary">No configuration tabs found.</Typography>
+          <Typography variant="caption" color="text.disabled" sx={{ mt: 2, maxWidth: 600, wordBreak: 'break-all' }}>
+            Found keys: {Object.keys(rawConfig).join(', ') || 'none'}
+          </Typography>
+        </Box>
+      ) : (
+        <TabView value={selectedTabLabel}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}>
+            <TabList onChange={(event: any, newTab: any) => setSelectedTabLabel(newTab)}>
+              {TABS_CONFIG.map((tab) => (
+                <Tab key={tab.id} label={tab.label} value={tab.id} />
+              ))}
+            </TabList>
+            <Button size="small" variant="outlined" onClick={handleCopy}>Copy Text</Button>
+          </Box>
+          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            {TABS_CONFIG.map(tab => (
+              <TabPanel key={tab.id} value={tab.id} sx={{ p: 0, height: '100%' }}>
+                <GenericNoteWriterTab
+                  subTabs={tab.config.sub_tabs || []}
+                  state={tab.state}
+                  updateState={tab.setter}
+                />
+              </TabPanel>
             ))}
-          </TabList>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={handleCopy}
-          >
-            Copy Text
-          </Button>
-        </Box>
-        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {TABS_CONFIG.map(tab => (
-            <TabPanel key={tab.id} value={tab.id} sx={{ p: 0, height: '100%' }}>
-              <GenericNoteWriterTab
-                data={tab.data}
-                state={tab.state}
-                updateState={tab.setter}
-              />
-            </TabPanel>
-          ))}
-        </Box>
-      </TabView>
+          </Box>
+        </TabView>
+      )}
     </div>
   );
 };
+
