@@ -684,6 +684,7 @@ export interface Medication {
   status?: string
   statusNote?: string
   unit?: string
+  lastDose?: JSONDate
 }
 
 export namespace Medication {

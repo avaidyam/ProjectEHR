@@ -33,19 +33,12 @@ const unitMap: any = units.reduce((acc: any, unit: any) => {
   return acc;
 }, {});
 
-export function MedicationItemEditor({ medication, onSave, onCancel }: { medication: any, onSave: (med: any) => void, onCancel: () => void }) {
-  const [orderables] = useDatabase().orderables()
+export function MedicationItemEditor({ medication, onSave, onCancel, onDelete }: { medication: any, onSave: (med: any) => void, onCancel: () => void, onDelete?: (id: any) => void }) {
   const [editedMedication, setEditedMedication] = React.useState({
     ...medication,
     unit: unitMap[medication.unit] || medication.unit,
+    possiblePrnReasons: medication.possiblePrnReasons || []
   });
-
-  React.useEffect(() => {
-    setEditedMedication((prevState: any) => ({
-      ...prevState,
-      possiblePrnReasons: prevState.possiblePrnReasons || []
-    }));
-  }, [editedMedication.name]);
 
   const handleEditorChange = (name: string, value: any) => {
     setEditedMedication({
@@ -136,16 +129,18 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
         <Grid size={{ xs: 3 }}>
           <Label sx={{ alignSelf: 'flex-start', paddingTop: '8px' }}>Date Range:</Label>
         </Grid>
-        <Grid size={{ xs: 4 }}>
+        <Grid size={{ xs: 4.5 }}>
           <DatePicker
+            fullWidth
             convertString
             label="Start Date"
             value={editedMedication.startDate}
             onChange={(date: any) => handleEditorChange('startDate', date)}
           />
         </Grid>
-        <Grid size={{ xs: 5 }}>
+        <Grid size={{ xs: 4.5 }}>
           <DatePicker
+            fullWidth
             convertString
             label="End Date"
             value={editedMedication.endDate}
@@ -187,6 +182,11 @@ export function MedicationItemEditor({ medication, onSave, onCancel }: { medicat
         <Button variant="outlined" color="secondary" onClick={onCancel}>
           Cancel
         </Button>
+        {onDelete && (
+          <Button variant="outlined" color="error" onClick={() => onDelete(medication.id)} sx={{ ml: 'auto' }}>
+            Delete
+          </Button>
+        )}
       </Box>
     </Box>
   );
