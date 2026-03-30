@@ -229,6 +229,7 @@ export namespace PatientList {
 export interface Appointment {
   id: Appointment.ID
   department: Department.ID
+  provider: Provider.ID
   patient: {
     mrn: Patient.ID,
     enc: Encounter.ID

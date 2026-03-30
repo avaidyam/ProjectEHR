@@ -43,8 +43,7 @@ export const AppointmentDesk = () => {
           notes: appt.notes,
           patient: appt.patient, // Needed for modal
           cc: appt.cc, // Needed for modal
-          departmentName: deptDetails?.name || `Dept ${appt.department}`,
-          ...appt
+          departmentName: deptDetails?.name || `Dept ${appt.department}`
         };
       });
   }, [appointmentsDB, chart, departments, providers, locations]);
