@@ -59,6 +59,7 @@ export namespace Units {
 }
 
 export interface Root {
+  version?: number
   departments: Department[]
   locations: Location[]
   providers: Provider[]

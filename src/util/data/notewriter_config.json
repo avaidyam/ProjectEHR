@@ -1,0 +1,6334 @@
+{
+  "Review of Systems": {
+    "tab": "Review of Systems",
+    "sub_tabs": [
+      {
+        "name": "All",
+        "groups": [
+          {
+            "name": "Constitutional",
+            "items": [
+              {
+                "type": "button",
+                "label": "Fever"
+              },
+              {
+                "type": "button",
+                "label": "Chills"
+              },
+              {
+                "type": "button",
+                "label": "Weight loss"
+              },
+              {
+                "type": "button",
+                "label": "Malaise/Fatigue"
+              },
+              {
+                "type": "button",
+                "label": "Diaphoresis"
+              }
+            ]
+          },
+          {
+            "name": "Skin",
+            "items": [
+              {
+                "type": "button",
+                "label": "Rash"
+              },
+              {
+                "type": "button",
+                "label": "Itching"
+              }
+            ]
+          },
+          {
+            "name": "HENT",
+            "items": [
+              {
+                "type": "button",
+                "label": "Hearing loss"
+              },
+              {
+                "type": "button",
+                "label": "Tinnitus"
+              },
+              {
+                "type": "button",
+                "label": "Ear pain"
+              },
+              {
+                "type": "button",
+                "label": "Ear discharge"
+              },
+              {
+                "type": "button",
+                "label": "Nosebleeds"
+              },
+              {
+                "type": "button",
+                "label": "Congestion"
+              },
+              {
+                "type": "button",
+                "label": "Sinus pain"
+              },
+              {
+                "type": "button",
+                "label": "Stridor"
+              },
+              {
+                "type": "button",
+                "label": "Sore throat"
+              }
+            ]
+          },
+          {
+            "name": "Eyes",
+            "items": [
+              {
+                "type": "button",
+                "label": "Blurred vision"
+              },
+              {
+                "type": "button",
+                "label": "Double vision"
+              },
+              {
+                "type": "button",
+                "label": "Photophobia"
+              },
+              {
+                "type": "button",
+                "label": "Eye pain"
+              },
+              {
+                "type": "button",
+                "label": "Eye discharge"
+              },
+              {
+                "type": "button",
+                "label": "Eye redness"
+              }
+            ]
+          },
+          {
+            "name": "Cardiovascular",
+            "items": [
+              {
+                "type": "button",
+                "label": "Chest pain"
+              },
+              {
+                "type": "button",
+                "label": "Palpitations"
+              },
+              {
+                "type": "button",
+                "label": "Orthopnea"
+              },
+              {
+                "type": "button",
+                "label": "Claudication"
+              },
+              {
+                "type": "button",
+                "label": "Leg swelling"
+              },
+              {
+                "type": "button",
+                "label": "PND"
+              }
+            ]
+          },
+          {
+            "name": "Respiratory",
+            "items": [
+              {
+                "type": "button",
+                "label": "Cough"
+              },
+              {
+                "type": "button",
+                "label": "Hemoptysis"
+              },
+              {
+                "type": "button",
+                "label": "Sputum production"
+              },
+              {
+                "type": "button",
+                "label": "Shortness of breath"
+              },
+              {
+                "type": "button",
+                "label": "Wheezing"
+              }
+            ]
+          },
+          {
+            "name": "GI",
+            "items": [
+              {
+                "type": "button",
+                "label": "Heartburn"
+              },
+              {
+                "type": "button",
+                "label": "Nausea"
+              },
+              {
+                "type": "button",
+                "label": "Vomiting"
+              },
+              {
+                "type": "button",
+                "label": "Abdominal pain"
+              },
+              {
+                "type": "button",
+                "label": "Diarrhea"
+              },
+              {
+                "type": "button",
+                "label": "Constipation"
+              },
+              {
+                "type": "button",
+                "label": "Blood in stool"
+              },
+              {
+                "type": "button",
+                "label": "Melena"
+              }
+            ]
+          },
+          {
+            "name": "GU",
+            "items": [
+              {
+                "type": "button",
+                "label": "Dysuria"
+              },
+              {
+                "type": "button",
+                "label": "Urgency"
+              },
+              {
+                "type": "button",
+                "label": "Frequency"
+              },
+              {
+                "type": "button",
+                "label": "Hematuria"
+              },
+              {
+                "type": "button",
+                "label": "Flank pain"
+              }
+            ]
+          },
+          {
+            "name": "Musculoskeletal",
+            "items": [
+              {
+                "type": "button",
+                "label": "Myalgias"
+              },
+              {
+                "type": "button",
+                "label": "Neck pain"
+              },
+              {
+                "type": "button",
+                "label": "Back pain"
+              },
+              {
+                "type": "button",
+                "label": "Joint pain"
+              },
+              {
+                "type": "button",
+                "label": "Falls"
+              }
+            ]
+          },
+          {
+            "name": "Endo/Heme/Allergy",
+            "items": [
+              {
+                "type": "button",
+                "label": "Easy bruising/bleeding"
+              },
+              {
+                "type": "button",
+                "label": "Environmental allergies"
+              },
+              {
+                "type": "button",
+                "label": "Polydipsia"
+              }
+            ]
+          },
+          {
+            "name": "Neurological",
+            "items": [
+              {
+                "type": "button",
+                "label": "Dizziness"
+              },
+              {
+                "type": "button",
+                "label": "Headaches"
+              },
+              {
+                "type": "button",
+                "label": "Tingling"
+              },
+              {
+                "type": "button",
+                "label": "Tremor"
+              },
+              {
+                "type": "button",
+                "label": "Sensory change"
+              },
+              {
+                "type": "button",
+                "label": "Speech change"
+              },
+              {
+                "type": "button",
+                "label": "Focal weakness"
+              },
+              {
+                "type": "button",
+                "label": "Weakness"
+              },
+              {
+                "type": "button",
+                "label": "Seizures"
+              },
+              {
+                "type": "button",
+                "label": "LOC"
+              }
+            ]
+          },
+          {
+            "name": "Psychiatric",
+            "items": [
+              {
+                "type": "button",
+                "label": "Depression"
+              },
+              {
+                "type": "button",
+                "label": "Suicidal ideas"
+              },
+              {
+                "type": "button",
+                "label": "Substance abuse"
+              },
+              {
+                "type": "button",
+                "label": "Hallucinations"
+              },
+              {
+                "type": "button",
+                "label": "Nervous/Anxious"
+              },
+              {
+                "type": "button",
+                "label": "Insomnia"
+              },
+              {
+                "type": "button",
+                "label": "Memory loss"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "Physical Exam": {
+    "tab": "Physical Exam",
+    "sub_tabs": [
+      {
+        "name": "Basic",
+        "groups": [
+          {
+            "name": "Constitutional",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "alert"
+              },
+              {
+                "type": "checkbox",
+                "label": "nl appearance"
+              },
+              {
+                "type": "checkbox",
+                "label": "nl weight"
+              },
+              {
+                "type": "checkbox",
+                "label": "obese"
+              },
+              {
+                "type": "selectable",
+                "label": "acute distress"
+              },
+              {
+                "type": "selectable",
+                "label": "ill-appearing"
+              },
+              {
+                "type": "selectable",
+                "label": "toxic-appearing"
+              },
+              {
+                "type": "selectable",
+                "label": "diaphoretic"
+              }
+            ]
+          },
+          {
+            "name": "HENT",
+            "sub_groups": [
+              {
+                "name": "Head",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normocephalic"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "atraumatic"
+                  }
+                ]
+              },
+              {
+                "name": "Ears",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "TM nl"
+                    },
+                    {
+                      "type": "checkbox",
+                      "label": "canal nl"
+                    },
+                    {
+                      "type": "checkbox",
+                      "label": "external ear nl"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "TM nl"
+                    },
+                    {
+                      "type": "checkbox",
+                      "label": "canal nl"
+                    },
+                    {
+                      "type": "checkbox",
+                      "label": "external ear nl"
+                    }
+                  ]
+                },
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "impacted cerumen"
+                  }
+                ]
+              },
+              {
+                "name": "Nose",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "nose nl"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "congestion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "rhinorrhea"
+                  }
+                ]
+              },
+              {
+                "name": "Mouth/Throat",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "moist"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "dry"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "clear"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "exudate"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Eyes",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "PERRL"
+              },
+              {
+                "type": "checkbox",
+                "label": "EOM intact"
+              },
+              {
+                "type": "checkbox",
+                "label": "conjunctivae nl"
+              },
+              {
+                "type": "selectable",
+                "label": "right eye discharge"
+              },
+              {
+                "type": "selectable",
+                "label": "left eye discharge"
+              },
+              {
+                "type": "selectable",
+                "label": "scleral icterus"
+              }
+            ]
+          },
+          {
+            "name": "Neck",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "ROM nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "supple"
+              },
+              {
+                "type": "selectable",
+                "label": "neck rigidity"
+              },
+              {
+                "type": "selectable",
+                "label": "tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "cervical adenopathy"
+              },
+              {
+                "type": "selectable",
+                "label": "carotid bruit"
+              }
+            ]
+          },
+          {
+            "name": "Cardiovascular",
+            "sub_groups": [
+              {
+                "name": "Rate",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal rate"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "tachycardia"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "bradycardia"
+                  }
+                ]
+              },
+              {
+                "name": "Rhythm",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "regular rhythm"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "irregular"
+                  }
+                ]
+              },
+              {
+                "name": "Pulses and Heart Sounds",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "pulses nl"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "heart sounds nl"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "murmur"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "friction rub"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "gallop"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Pulmonary",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "effort nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "breath sounds nl"
+              },
+              {
+                "type": "selectable",
+                "label": "respiratory distress"
+              },
+              {
+                "type": "selectable",
+                "label": "stridor"
+              },
+              {
+                "type": "selectable",
+                "label": "wheezes"
+              },
+              {
+                "type": "selectable",
+                "label": "rhonchi"
+              },
+              {
+                "type": "selectable",
+                "label": "rales"
+              },
+              {
+                "type": "selectable",
+                "label": "chest tenderness"
+              }
+            ]
+          },
+          {
+            "name": "Abdominal",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "flat"
+              },
+              {
+                "type": "checkbox",
+                "label": "soft"
+              },
+              {
+                "type": "checkbox",
+                "label": "bowel sounds nl"
+              },
+              {
+                "type": "selectable",
+                "label": "distension"
+              },
+              {
+                "type": "selectable",
+                "label": "mass"
+              },
+              {
+                "type": "selectable",
+                "label": "tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "hernia"
+              },
+              {
+                "type": "selectable",
+                "label": "guarding"
+              },
+              {
+                "type": "selectable",
+                "label": "rebound"
+              },
+              {
+                "type": "selectable",
+                "label": "right CVA tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "left CVA tenderness"
+              }
+            ]
+          },
+          {
+            "name": "Genitourinary/Anorectal",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "vulva nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "rectum nl"
+              },
+              {
+                "type": "selectable",
+                "label": "guaiac result"
+              },
+              {
+                "type": "selectable",
+                "label": "vaginal discharge"
+              }
+            ]
+          },
+          {
+            "name": "Musculoskeletal",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "ROM nl"
+              },
+              {
+                "type": "selectable",
+                "label": "swelling"
+              },
+              {
+                "type": "selectable",
+                "label": "tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "deformity"
+              },
+              {
+                "type": "selectable",
+                "label": "injury"
+              },
+              {
+                "type": "selectable",
+                "label": "RLE edema"
+              },
+              {
+                "type": "selectable",
+                "label": "LLE edema"
+              }
+            ]
+          },
+          {
+            "name": "Skin",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "warm"
+              },
+              {
+                "type": "checkbox",
+                "label": "dry"
+              },
+              {
+                "type": "selectable",
+                "label": "jaundiced"
+              },
+              {
+                "type": "selectable",
+                "label": "pale"
+              },
+              {
+                "type": "selectable",
+                "label": "bruising"
+              },
+              {
+                "type": "selectable",
+                "label": "erythema"
+              },
+              {
+                "type": "selectable",
+                "label": "lesion"
+              },
+              {
+                "type": "selectable",
+                "label": "rash"
+              }
+            ]
+          },
+          {
+            "name": "Capillary Refill (seconds)",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "< 2"
+              },
+              {
+                "type": "checkbox",
+                "label": "2-3"
+              },
+              {
+                "type": "checkbox",
+                "label": "> 3"
+              }
+            ]
+          },
+          {
+            "name": "Neurological",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "no focal deficit"
+              },
+              {
+                "type": "checkbox",
+                "label": "oriented x3"
+              },
+              {
+                "type": "checkbox",
+                "label": "at baseline"
+              },
+              {
+                "type": "checkbox",
+                "label": "disoriented"
+              },
+              {
+                "type": "selectable",
+                "label": "cranial nerve deficit"
+              },
+              {
+                "type": "selectable",
+                "label": "sensory deficit"
+              },
+              {
+                "type": "selectable",
+                "label": "weakness"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl coordination"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl gait"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl DTRs"
+              }
+            ]
+          },
+          {
+            "name": "Psychiatric/Behavioral",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "mood nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "behavior nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "thought content nl"
+              },
+              {
+                "type": "checkbox",
+                "label": "judgment nl"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Constitutional",
+        "groups": [
+          {
+            "name": "General",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "cooperative"
+              },
+              {
+                "type": "checkbox",
+                "label": "alert"
+              },
+              {
+                "type": "checkbox",
+                "label": "awake"
+              },
+              {
+                "type": "checkbox",
+                "label": "easily aroused"
+              },
+              {
+                "type": "selectable",
+                "label": "acute distress"
+              },
+              {
+                "type": "checkbox",
+                "label": "uncooperative"
+              },
+              {
+                "type": "checkbox",
+                "label": "lethargic"
+              },
+              {
+                "type": "checkbox",
+                "label": "sleeping"
+              }
+            ]
+          },
+          {
+            "name": "Appearance",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal appearance"
+              },
+              {
+                "type": "checkbox",
+                "label": "well-developed"
+              },
+              {
+                "type": "checkbox",
+                "label": "normal weight"
+              },
+              {
+                "type": "checkbox",
+                "label": "underweight"
+              },
+              {
+                "type": "checkbox",
+                "label": "cachectic"
+              },
+              {
+                "type": "checkbox",
+                "label": "well-groomed"
+              },
+              {
+                "type": "checkbox",
+                "label": "overweight"
+              },
+              {
+                "type": "checkbox",
+                "label": "obese"
+              },
+              {
+                "type": "checkbox",
+                "label": "morbidly obese"
+              },
+              {
+                "type": "selectable",
+                "label": "ill-appearing"
+              },
+              {
+                "type": "selectable",
+                "label": "toxic-appearing"
+              },
+              {
+                "type": "selectable",
+                "label": "diaphoretic"
+              }
+            ]
+          },
+          {
+            "name": "Interventions in Place",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "sedated"
+              },
+              {
+                "type": "checkbox",
+                "label": "intubated"
+              },
+              {
+                "type": "checkbox",
+                "label": "cervical collar"
+              },
+              {
+                "type": "checkbox",
+                "label": "backboard"
+              },
+              {
+                "type": "checkbox",
+                "label": "chemical paralysis"
+              },
+              {
+                "type": "checkbox",
+                "label": "restrained"
+              },
+              {
+                "type": "checkbox",
+                "label": "nasal cannula"
+              },
+              {
+                "type": "checkbox",
+                "label": "face mask"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "HENT",
+        "sub_sub_tabs": [
+          {
+            "name": "Nose",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "nose normal"
+              },
+              {
+                "type": "selectable",
+                "label": "nasal deformity"
+              },
+              {
+                "type": "selectable",
+                "label": "injury"
+              },
+              {
+                "type": "selectable",
+                "label": "tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "congestion"
+              },
+              {
+                "type": "selectable",
+                "label": "septal deviation"
+              },
+              {
+                "type": "selectable",
+                "label": "laceration"
+              },
+              {
+                "type": "selectable",
+                "label": "mucosal edema"
+              },
+              {
+                "type": "selectable",
+                "label": "rhinorrhea"
+              }
+            ],
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "foreign body"
+                },
+                {
+                  "type": "selectable",
+                  "label": "epistaxis"
+                },
+                {
+                  "type": "selectable",
+                  "label": "septal hematoma"
+                },
+                {
+                  "type": "selectable",
+                  "label": "occluded"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "foreign body"
+                },
+                {
+                  "type": "selectable",
+                  "label": "epistaxis"
+                },
+                {
+                  "type": "selectable",
+                  "label": "septal hematoma"
+                },
+                {
+                  "type": "selectable",
+                  "label": "occluded"
+                }
+              ]
+            },
+            "groups": [
+              {
+                "name": "Turbinates",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "enlarged"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swollen"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "pale"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "enlarged"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swollen"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "pale"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Sinus Tenderness",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "frontal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "maxillary"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "frontal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "maxillary"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Ears",
+            "sides": {
+              "Right": [
+                {
+                  "type": "checkbox",
+                  "label": "Hearing normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "TM normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "canal normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "external ear normal"
+                },
+                {
+                  "type": "selectable",
+                  "label": "decreased hea..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "laceration"
+                },
+                {
+                  "type": "selectable",
+                  "label": "drainage"
+                },
+                {
+                  "type": "selectable",
+                  "label": "swelling"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tenderness"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mid ear effusion"
+                },
+                {
+                  "type": "selectable",
+                  "label": "impacted ceru..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "foreign body"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mastoid tender..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "PE tube"
+                },
+                {
+                  "type": "selectable",
+                  "label": "hemotympanum"
+                },
+                {
+                  "type": "selectable",
+                  "label": "injected TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "scarred TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "perforated TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "erythematous TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "retracted TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "bulging TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "decr TM mobility"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "checkbox",
+                  "label": "Hearing normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "TM normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "canal normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "external ear normal"
+                },
+                {
+                  "type": "selectable",
+                  "label": "decreased hea..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "laceration"
+                },
+                {
+                  "type": "selectable",
+                  "label": "drainage"
+                },
+                {
+                  "type": "selectable",
+                  "label": "swelling"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tenderness"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mid ear effusion"
+                },
+                {
+                  "type": "selectable",
+                  "label": "impacted ceru..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "foreign body"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mastoid tender..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "PE tube"
+                },
+                {
+                  "type": "selectable",
+                  "label": "hemotympanum"
+                },
+                {
+                  "type": "selectable",
+                  "label": "injected TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "scarred TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "perforated TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "erythematous TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "retracted TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "bulging TM"
+                },
+                {
+                  "type": "selectable",
+                  "label": "decr TM mobility"
+                }
+              ]
+            },
+            "groups": [
+              {
+                "name": "Weber Exam Findings",
+                "items": [
+                  {
+                    "type": "button",
+                    "label": "does not lateralize"
+                  },
+                  {
+                    "type": "button",
+                    "label": "lateralizes left"
+                  },
+                  {
+                    "type": "button",
+                    "label": "lateralizes right"
+                  }
+                ]
+              },
+              {
+                "name": "Rinne",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "button",
+                      "label": "AC > BC"
+                    },
+                    {
+                      "type": "button",
+                      "label": "BC > AC"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "button",
+                      "label": "AC > BC"
+                    },
+                    {
+                      "type": "button",
+                      "label": "BC > AC"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Right Rinne",
+                "items": [
+                  {
+                    "type": "button",
+                    "label": "AC > BC"
+                  },
+                  {
+                    "type": "button",
+                    "label": "BC > AC"
+                  }
+                ]
+              },
+              {
+                "name": "Left Rinne",
+                "items": [
+                  {
+                    "type": "button",
+                    "label": "AC > BC"
+                  },
+                  {
+                    "type": "button",
+                    "label": "BC > AC"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Head",
+            "groups": [
+              {
+                "name": "Head",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normocephalic"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "macrocephalic"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "right periorbital erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "left periorbital erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "raccoon eyes"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "abrasion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "mass"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "hair abnormal"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "atraumatic"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "microcephalic"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "Battle's sign"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "contusion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "laceration"
+                  }
+                ]
+              },
+              {
+                "name": "Jaw",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "occlusion normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "trismus"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "malocclusion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "pain on movement"
+                  }
+                ]
+              },
+              {
+                "name": "Salivary Glands",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "enlarged"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tender"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "enlarged"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tender"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Mouth/Throat",
+            "groups": [
+              {
+                "name": "Lips",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "pink"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lesions"
+                  }
+                ]
+              },
+              {
+                "name": "Mouth",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "moist"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "dry"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "injury"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "oral lesions"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "pale"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "cyanotic"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "laceration"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "angioedema"
+                  }
+                ]
+              },
+              {
+                "name": "Dentition/Gums",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "dentition abnormal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dental tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dental caries"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "gum lesions"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dentures"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "gingival swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dental abscess"
+                  }
+                ]
+              },
+              {
+                "name": "Tongue",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "lesions"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deviation"
+                  }
+                ]
+              },
+              {
+                "name": "Palate",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "mass"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lesions"
+                  }
+                ]
+              },
+              {
+                "name": "Pharynx",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "clear"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "uvula midline"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "exudate"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "uvula swelling"
+                  }
+                ]
+              },
+              {
+                "name": "Tonsils",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "exudate"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tonsillar abscess"
+                  }
+                ],
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "button",
+                      "label": "0"
+                    },
+                    {
+                      "type": "button",
+                      "label": "1+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "2+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "3+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "4+"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "button",
+                      "label": "0"
+                    },
+                    {
+                      "type": "button",
+                      "label": "1+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "2+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "3+"
+                    },
+                    {
+                      "type": "button",
+                      "label": "4+"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Eyes",
+        "sub_sub_tabs": [
+          {
+            "name": "General/EOM/Conjunctivae",
+            "groups": [
+              {
+                "name": "General",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "lids normal"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "lids everted, no foreign bodies appreciated"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "vision grossly intact"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "gaze aligned appropriately"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "allergic shiners"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "visual field deficit"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "scleral icterus"
+                  }
+                ],
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "foreign body"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "discharge"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hordeolum"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "foreign body"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "discharge"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hordeolum"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Intraocular Pressure",
+                "sides": {
+                  "Right": {
+                    "type": "text_input",
+                    "unit": "mmHg"
+                  },
+                  "Left": {
+                    "type": "text_input",
+                    "unit": "mmHg"
+                  }
+                },
+                "controls": [
+                  {
+                    "label": "Tonometer method",
+                    "buttons": [
+                      "handheld",
+                      "automated"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Extraocular Movements",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "extraocular movements intact"
+                  }
+                ],
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "abnormal EOM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "nystagmus"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "abnormal EOM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "nystagmus"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Conjunctivae/Sclerae",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  }
+                ],
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "injected"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "chemosis"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "exudate"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hemorrhage"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "injected"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "chemosis"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "exudate"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hemorrhage"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Pupils/Funduscopic/Slit Lamp",
+            "groups": [
+              {
+                "name": "Pupils/Cornea",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "PERRL"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "unequal"
+                  }
+                ],
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "sluggish"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "not reactive"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "not round"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal abrasion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "fluorescein uptake"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "Seidel exam posi..."
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "sluggish"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "not reactive"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "not round"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal abrasion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "fluorescein uptake"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "Seidel exam posi..."
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Funduscopic",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "red reflex absent"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hemorrhage"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "exudate"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "AV nicking"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ven pulsation ab..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "arteriolar narrowi..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "papilledema"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "red reflex absent"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hemorrhage"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "exudate"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "AV nicking"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ven pulsation ab..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "arteriolar narrowi..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "papilledema"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Slit Lamp",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "ant. chamber quiet"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal flare"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal ulcer"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "foreign body"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hyphema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hypopyon"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ant. chamber bulge"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ant. chamber flares"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "photophobia"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "ant. chamber quiet"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal flare"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "corneal ulcer"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "foreign body"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hyphema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "hypopyon"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ant. chamber bulge"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "ant. chamber flares"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "photophobia"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Visual Fields",
+            "sides": {
+              "Right": {
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "right eye normal"
+                  },
+                  {
+                    "type": "button",
+                    "label": "clear entries"
+                  }
+                ],
+                "grid": {
+                  "labels": [
+                    "temporal",
+                    "nasal"
+                  ],
+                  "buttons": [
+                    "ABS",
+                    "DL",
+                    "DM",
+                    "CF"
+                  ]
+                }
+              },
+              "Left": {
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "left eye normal"
+                  },
+                  {
+                    "type": "button",
+                    "label": "clear entries"
+                  }
+                ],
+                "grid": {
+                  "labels": [
+                    "nasal",
+                    "temporal"
+                  ],
+                  "buttons": [
+                    "ABS",
+                    "DL",
+                    "DM",
+                    "CF"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Neck",
+        "groups": [
+          {
+            "name": "Musculoskeletal",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "full passive ROM without pain"
+              },
+              {
+                "type": "checkbox",
+                "label": "ROM normal"
+              },
+              {
+                "type": "selectable",
+                "label": "edema"
+              },
+              {
+                "type": "selectable",
+                "label": "neck rigidity"
+              },
+              {
+                "type": "selectable",
+                "label": "crepitus"
+              },
+              {
+                "type": "selectable",
+                "label": "movement pain"
+              },
+              {
+                "type": "selectable",
+                "label": "spinous process tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "muscular tenderness"
+              },
+              {
+                "type": "checkbox",
+                "label": "supple"
+              },
+              {
+                "type": "selectable",
+                "label": "erythema"
+              },
+              {
+                "type": "selectable",
+                "label": "decreased ROM"
+              },
+              {
+                "type": "selectable",
+                "label": "injury"
+              },
+              {
+                "type": "selectable",
+                "label": "torticollis"
+              }
+            ]
+          },
+          {
+            "name": "Thyroid",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "mass"
+              },
+              {
+                "type": "selectable",
+                "label": "thyroid tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "thyromegaly"
+              }
+            ]
+          },
+          {
+            "name": "Lymphadenopathy",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "cervical adenopathy"
+              }
+            ],
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "superficial cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "deep cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior cervical"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "superficial cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "deep cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior cervical"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Vascular",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "carotid bruit"
+              },
+              {
+                "type": "selectable",
+                "label": "hepatojugular reflux"
+              },
+              {
+                "type": "selectable",
+                "label": "decr. carotid pulse"
+              },
+              {
+                "type": "selectable",
+                "label": "JVD"
+              }
+            ]
+          },
+          {
+            "name": "Trachea",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "trachea normal"
+              },
+              {
+                "type": "selectable",
+                "label": "tracheal tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "abnormal secretions"
+              },
+              {
+                "type": "checkbox",
+                "label": "phonation normal"
+              },
+              {
+                "type": "selectable",
+                "label": "tracheostomy"
+              },
+              {
+                "type": "selectable",
+                "label": "tracheal deviation"
+              }
+            ]
+          },
+          {
+            "name": "Meningeal",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "Brudzinski's"
+              },
+              {
+                "type": "selectable",
+                "label": "Kernig's"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Cardio",
+        "groups": [
+          {
+            "name": "Rate",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal rate"
+              },
+              {
+                "type": "checkbox",
+                "label": "tachycardia"
+              },
+              {
+                "type": "checkbox",
+                "label": "bradycardia"
+              }
+            ]
+          },
+          {
+            "name": "Rhythm",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "regular rhythm"
+              },
+              {
+                "type": "checkbox",
+                "label": "irregular"
+              },
+              {
+                "type": "checkbox",
+                "label": "regularly irregular"
+              },
+              {
+                "type": "checkbox",
+                "label": "irregularly irregular"
+              },
+              {
+                "type": "selectable",
+                "label": "extrasystoles",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "frequent"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "occasional"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Chest Wall",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "PMI displaced"
+              },
+              {
+                "type": "selectable",
+                "label": "thrill"
+              }
+            ]
+          },
+          {
+            "name": "Pulses",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal pulses"
+              },
+              {
+                "type": "selectable",
+                "label": "decreased pulses",
+                "controls": [
+                  {
+                    "type": "button",
+                    "label": "Set all 2+"
+                  },
+                  {
+                    "type": "button",
+                    "label": "Set all 1+"
+                  },
+                  {
+                    "type": "button",
+                    "label": "Clear all"
+                  }
+                ],
+                "sides": {
+                  "Right": {
+                    "Carotid": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "bruit"
+                      ]
+                    },
+                    "Radial": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "Femoral": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "bruit"
+                      ]
+                    },
+                    "Popliteal": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "DP": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+",
+                        "detected w/ Doppler"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "PT": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+",
+                        "detected w/ Doppler"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    }
+                  },
+                  "Left": {
+                    "Carotid": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "bruit"
+                      ]
+                    },
+                    "Radial": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "Femoral": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "bruit"
+                      ]
+                    },
+                    "Popliteal": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "DP": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+",
+                        "detected w/ Doppler"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    },
+                    "PT": {
+                      "buttons": [
+                        "0",
+                        "1+",
+                        "2+",
+                        "3+",
+                        "detected w/ Doppler"
+                      ],
+                      "checkboxes": [
+                        "N/A"
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "Heart Sounds",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal sounds"
+              },
+              {
+                "type": "checkbox",
+                "label": "S1 normal"
+              },
+              {
+                "type": "checkbox",
+                "label": "S2 normal"
+              },
+              {
+                "type": "selectable",
+                "label": "distant sounds"
+              },
+              {
+                "type": "selectable",
+                "label": "murmur",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "systolic",
+                    "controls": [
+                      {
+                        "label": "Grade:",
+                        "buttons": [
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6"
+                        ]
+                      }
+                    ],
+                    "checkboxes": [
+                      "crescendo",
+                      "decrescendo"
+                    ]
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "diastolic",
+                    "controls": [
+                      {
+                        "label": "Grade:",
+                        "buttons": [
+                          "1",
+                          "2",
+                          "3",
+                          "4"
+                        ]
+                      }
+                    ],
+                    "checkboxes": [
+                      "crescendo",
+                      "decrescendo"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "selectable",
+                "label": "friction rub"
+              },
+              {
+                "type": "selectable",
+                "label": "gallop",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "S3"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "S4"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Lower Extremity Edema",
+            "controls": [
+              {
+                "type": "button",
+                "label": "no edema"
+              },
+              {
+                "type": "button",
+                "label": "bil 1+ pitting edema"
+              },
+              {
+                "type": "button",
+                "label": "bil 2+ pitting edema"
+              }
+            ],
+            "items": [
+              {
+                "type": "selectable",
+                "label": "RLE edema",
+                "controls": [
+                  {
+                    "label": "Grade:",
+                    "buttons": [
+                      "1+",
+                      "2+",
+                      "3+",
+                      "4+"
+                    ]
+                  }
+                ],
+                "checkboxes": [
+                  "pitting"
+                ]
+              },
+              {
+                "type": "selectable",
+                "label": "LLE edema",
+                "controls": [
+                  {
+                    "label": "Grade:",
+                    "buttons": [
+                      "1+",
+                      "2+",
+                      "3+",
+                      "4+"
+                    ]
+                  }
+                ],
+                "checkboxes": [
+                  "pitting"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Arteriovenous Access",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "right access"
+              },
+              {
+                "type": "checkbox",
+                "label": "left access"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Pulmonary",
+        "groups": [
+          {
+            "name": "Effort",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal"
+              },
+              {
+                "type": "selectable",
+                "label": "tachypnea"
+              },
+              {
+                "type": "selectable",
+                "label": "bradypnea"
+              },
+              {
+                "type": "selectable",
+                "label": "accessory muscle usage"
+              },
+              {
+                "type": "selectable",
+                "label": "prolonged expiration"
+              },
+              {
+                "type": "selectable",
+                "label": "respiratory distress"
+              },
+              {
+                "type": "selectable",
+                "label": "retraction"
+              },
+              {
+                "type": "selectable",
+                "label": "intubated"
+              }
+            ]
+          },
+          {
+            "name": "Breath Sounds",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "breath sounds normal"
+              },
+              {
+                "type": "checkbox",
+                "label": "air entry normal"
+              },
+              {
+                "type": "selectable",
+                "label": "stridor"
+              },
+              {
+                "type": "selectable",
+                "label": "decreased air movement"
+              },
+              {
+                "type": "selectable",
+                "label": "transmitted upper airway sounds"
+              }
+            ],
+            "sub_groups": [
+              {
+                "name": "decreased breath sounds",
+                "rows": [
+                  "Upper",
+                  "Mid",
+                  "Lower"
+                ],
+                "columns": [
+                  "Left",
+                  "Right"
+                ]
+              },
+              {
+                "name": "wheezes",
+                "rows": [
+                  "Upper",
+                  "Mid",
+                  "Lower"
+                ],
+                "columns": [
+                  "Left",
+                  "Right"
+                ]
+              },
+              {
+                "name": "rhonchi",
+                "rows": [
+                  "Upper",
+                  "Mid",
+                  "Lower"
+                ],
+                "columns": [
+                  "Left",
+                  "Right"
+                ]
+              },
+              {
+                "name": "rales",
+                "rows": [
+                  "Upper",
+                  "Mid",
+                  "Lower"
+                ],
+                "columns": [
+                  "Left",
+                  "Right"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Chest",
+        "groups": [
+          {
+            "name": "General",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "chaperone present"
+              }
+            ]
+          },
+          {
+            "name": "Chest Wall",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "mass"
+              },
+              {
+                "type": "selectable",
+                "label": "lacerations"
+              },
+              {
+                "type": "selectable",
+                "label": "deformity"
+              },
+              {
+                "type": "selectable",
+                "label": "swelling"
+              },
+              {
+                "type": "selectable",
+                "label": "tenderness"
+              },
+              {
+                "type": "selectable",
+                "label": "crepitus"
+              },
+              {
+                "type": "selectable",
+                "label": "edema"
+              },
+              {
+                "type": "selectable",
+                "label": "dull to percussion"
+              }
+            ]
+          },
+          {
+            "name": "Breast",
+            "controls": [
+              {
+                "label": "Tanner",
+                "buttons": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ]
+              }
+            ],
+            "items": [
+              {
+                "type": "selectable",
+                "label": "asymmetry"
+              }
+            ],
+            "sides": {
+              "Right": [
+                {
+                  "type": "checkbox",
+                  "label": "normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "absent"
+                },
+                {
+                  "type": "selectable",
+                  "label": "swelling"
+                },
+                {
+                  "type": "selectable",
+                  "label": "bleeding"
+                },
+                {
+                  "type": "selectable",
+                  "label": "inverted nipple"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mass"
+                },
+                {
+                  "type": "selectable",
+                  "label": "nipple discharge"
+                },
+                {
+                  "type": "selectable",
+                  "label": "skin change"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tenderness"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "checkbox",
+                  "label": "normal"
+                },
+                {
+                  "type": "checkbox",
+                  "label": "absent"
+                },
+                {
+                  "type": "selectable",
+                  "label": "swelling"
+                },
+                {
+                  "type": "selectable",
+                  "label": "bleeding"
+                },
+                {
+                  "type": "selectable",
+                  "label": "inverted nipple"
+                },
+                {
+                  "type": "selectable",
+                  "label": "mass"
+                },
+                {
+                  "type": "selectable",
+                  "label": "nipple discharge"
+                },
+                {
+                  "type": "selectable",
+                  "label": "skin change"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tenderness"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Adenopathy",
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "supraclavicular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "axillary"
+                },
+                {
+                  "type": "selectable",
+                  "label": "pectoral"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "supraclavicular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "axillary"
+                },
+                {
+                  "type": "selectable",
+                  "label": "pectoral"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Abdominal",
+        "groups": [
+          {
+            "name": "General",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "flat"
+              },
+              {
+                "type": "checkbox",
+                "label": "protuberant"
+              },
+              {
+                "type": "checkbox",
+                "label": "ostomy site clean"
+              },
+              {
+                "type": "checkbox",
+                "label": "scaphoid"
+              },
+              {
+                "type": "checkbox",
+                "label": "surgical scar"
+              },
+              {
+                "type": "selectable",
+                "label": "distension"
+              },
+              {
+                "type": "selectable",
+                "label": "injury"
+              },
+              {
+                "type": "selectable",
+                "label": "abdominal bruit"
+              }
+            ]
+          },
+          {
+            "name": "Palpation",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "soft"
+              },
+              {
+                "type": "selectable",
+                "label": "shifting dullness"
+              },
+              {
+                "type": "selectable",
+                "label": "hepatomegaly"
+              },
+              {
+                "type": "selectable",
+                "label": "mass"
+              },
+              {
+                "type": "checkbox",
+                "label": "rigid"
+              },
+              {
+                "type": "selectable",
+                "label": "fluid wave"
+              },
+              {
+                "type": "selectable",
+                "label": "splenomegaly"
+              },
+              {
+                "type": "selectable",
+                "label": "pulsatile mass"
+              }
+            ]
+          },
+          {
+            "name": "Bowel Sounds",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal"
+              },
+              {
+                "type": "checkbox",
+                "label": "absent"
+              },
+              {
+                "type": "checkbox",
+                "label": "increased"
+              },
+              {
+                "type": "checkbox",
+                "label": "decreased"
+              }
+            ]
+          },
+          {
+            "name": "Tenderness",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "tenderness",
+                "sub_items": [
+                  {
+                    "type": "checkbox",
+                    "label": "generalized"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "RUQ"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "epigastric"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "LUQ"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "periumbilical"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "RLQ"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "suprapubic"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "LLQ"
+                  }
+                ]
+              },
+              {
+                "type": "selectable",
+                "label": "R CVA tender"
+              },
+              {
+                "type": "selectable",
+                "label": "guarding"
+              },
+              {
+                "type": "selectable",
+                "label": "Murphy's sign"
+              },
+              {
+                "type": "selectable",
+                "label": "McBurney's sign"
+              },
+              {
+                "type": "selectable",
+                "label": "obturator sign"
+              },
+              {
+                "type": "selectable",
+                "label": "L CVA tender"
+              },
+              {
+                "type": "selectable",
+                "label": "rebound"
+              },
+              {
+                "type": "selectable",
+                "label": "Rovsing's sign"
+              },
+              {
+                "type": "selectable",
+                "label": "psoas sign"
+              }
+            ]
+          },
+          {
+            "name": "Hernia",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "hernia",
+                "sub_items": [
+                  {
+                    "type": "selectable",
+                    "label": "umbilical"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "right inguinal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "right femoral"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "ventral"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "left inguinal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "left femoral"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "GU",
+        "sub_sub_tabs": [
+          {
+            "name": "External",
+            "groups": [
+              {
+                "name": "General",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "chaperone present"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "vulva normal"
+                  }
+                ]
+              },
+              {
+                "name": "Knee Position",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "knee chest"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "prone"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "lithotomy"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "supine"
+                  }
+                ]
+              },
+              {
+                "name": "Pubic Area",
+                "controls": [
+                  {
+                    "label": "Tanner",
+                    "buttons": [
+                      "1",
+                      "2",
+                      "3",
+                      "4",
+                      "5"
+                    ]
+                  }
+                ],
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "rash"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lice"
+                  }
+                ]
+              },
+              {
+                "name": "Inguinal Canal",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "hernia"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "adenopathy"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "hernia"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "adenopathy"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Labia",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "selectable",
+                      "label": "rash"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "lesion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "injury"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "selectable",
+                      "label": "rash"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "lesion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "injury"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Urethra",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "prolapsed"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "pain"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lesion"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Internal",
+            "groups": [
+              {
+                "name": "Vagina",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "injury"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "discharge"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lesions"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "foreign body"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bleeding"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "prolapsed"
+                  }
+                ]
+              },
+              {
+                "name": "Cervix",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "CMT"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "friability"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "eversion"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "os dilated"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "discharge"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "lesion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bleeding"
+                  }
+                ]
+              },
+              {
+                "name": "Uterus",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deviated"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "fixed"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "prolapsed"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "absent"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "enlarged"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tender"
+                  }
+                ]
+              },
+              {
+                "name": "Adnexa",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "mass"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "fullness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "mass"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "fullness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Rectum",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "guaiac result"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "ext hemorrhoid"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "abnl anal tone"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "mass"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "anal fissure"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "int hemorrhoid"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Musculoskeletal",
+        "sub_sub_tabs": [
+          {
+            "name": "Upper",
+            "groups": [
+              {
+                "name": "Shoulders",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased stre..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased str..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased strength"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased stre..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased str..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased strength"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Upper Arms",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Elbows",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Forearms",
+                "collapsed": true,
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Wrists",
+                "collapsed": true,
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "snuff box tender"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "effusion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "snuff box tender"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Hands",
+                "collapsed": true,
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr strength"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr sensation"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "disruption 2 pt ..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr cap refill"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr strength"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr sensation"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "disruption 2 pt ..."
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr cap refill"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Lower",
+            "controls": [
+              {
+                "type": "button",
+                "label": "Expand all"
+              },
+              {
+                "type": "button",
+                "label": "Collapse all"
+              }
+            ],
+            "groups": [
+              {
+                "name": "Hips",
+                "collapsed": true,
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased strength"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased strength"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Upper Legs",
+                "collapsed": true,
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Knees",
+                "sides": {
+                  "Right": {
+                    "items": [
+                      {
+                        "type": "checkbox",
+                        "label": "normal"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "swelling"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "deformity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "effusion"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "erythema"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ecchymosis"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "laceration"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "decreased ROM"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "bony tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "crepitus"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl alignment"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl meniscus"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl patellar m..."
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "LCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "MCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ACL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "PCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl pulse"
+                      }
+                    ],
+                    "sub_group": {
+                      "name": "Instability Tests",
+                      "items": [
+                        {
+                          "type": "selectable",
+                          "label": "anterior drawer"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "posterior drawer"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "anterior Lach..."
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "medial McMur..."
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "lateral McMur..."
+                        }
+                      ]
+                    }
+                  },
+                  "Left": {
+                    "items": [
+                      {
+                        "type": "checkbox",
+                        "label": "normal"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "swelling"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "deformity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "effusion"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "erythema"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ecchymosis"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "laceration"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "decreased ROM"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "bony tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "crepitus"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl alignment"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl meniscus"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl patellar m..."
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "LCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "MCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ACL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "PCL laxity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl pulse"
+                      }
+                    ],
+                    "sub_group": {
+                      "name": "Instability Tests",
+                      "items": [
+                        {
+                          "type": "selectable",
+                          "label": "anterior drawer"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "posterior drawer"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "anterior Lach..."
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "medial McMur..."
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "lateral McMur..."
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "name": "Lower Legs",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema",
+                      "controls": [
+                        {
+                          "label": "Grade:",
+                          "buttons": [
+                            "1+",
+                            "2+",
+                            "3+",
+                            "4+"
+                          ]
+                        }
+                      ],
+                      "checkboxes": [
+                        "pitting"
+                      ]
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "edema",
+                      "controls": [
+                        {
+                          "label": "Grade:",
+                          "buttons": [
+                            "1+",
+                            "2+",
+                            "3+",
+                            "4+"
+                          ]
+                        }
+                      ],
+                      "checkboxes": [
+                        "pitting"
+                      ]
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Ankles",
+                "sides": {
+                  "Right": {
+                    "items": [
+                      {
+                        "type": "checkbox",
+                        "label": "normal"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "swelling"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "deformity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ecchymosis"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "laceration"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "decreased ROM"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "anterior drawer"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl pulse"
+                      }
+                    ],
+                    "sub_group": {
+                      "name": "Right Achilles Tendon",
+                      "items": [
+                        {
+                          "type": "checkbox",
+                          "label": "normal"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "tenderness"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "Thompson's test"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "defect"
+                        }
+                      ]
+                    }
+                  },
+                  "Left": {
+                    "items": [
+                      {
+                        "type": "checkbox",
+                        "label": "normal"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "swelling"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "deformity"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "ecchymosis"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "laceration"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "decreased ROM"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "tenderness"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "anterior drawer"
+                      },
+                      {
+                        "type": "selectable",
+                        "label": "abnl pulse"
+                      }
+                    ],
+                    "sub_group": {
+                      "name": "Left Achilles Tendon",
+                      "items": [
+                        {
+                          "type": "checkbox",
+                          "label": "normal"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "tenderness"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "Thompson's test"
+                        },
+                        {
+                          "type": "selectable",
+                          "label": "defect"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "name": "Feet",
+                "sides": {
+                  "Right": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bunion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "Charcot foot"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "foot drop"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "prom MT heads"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr cap refill"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ],
+                  "Left": [
+                    {
+                      "type": "checkbox",
+                      "label": "normal"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "swelling"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "deformity"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bunion"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "Charcot foot"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "foot drop"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "prom MT heads"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "laceration"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decreased ROM"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "bony tenderness"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "crepitus"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "decr cap refill"
+                    },
+                    {
+                      "type": "selectable",
+                      "label": "abnl pulse"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Amputation",
+                "collapsed": true,
+                "items": [
+                  {
+                    "type": "button",
+                    "label": "R Lower Extremity: above knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "R Lower Extremity: below knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "R Lower Extremity: above ankle"
+                  },
+                  {
+                    "type": "button",
+                    "label": "R Lower Extremity: below ankle"
+                  },
+                  {
+                    "type": "button",
+                    "label": "L Lower Extremity: above knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "L Lower Extremity: below knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "L Lower Extremity: above ankle"
+                  },
+                  {
+                    "type": "button",
+                    "label": "L Lower Extremity: below ankle"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Back",
+            "groups": [
+              {
+                "name": "Cervical",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deformity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "trauma"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "decreased ROM"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "spasms"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "crepitus"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "edema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "laceration"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "rigidity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "torticollis"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bony tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "movement pain"
+                  }
+                ]
+              },
+              {
+                "name": "Thoracic",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deformity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "laceration"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "spasms"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "edema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "trauma"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "decreased ROM"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "scoliosis"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bony tenderness"
+                  }
+                ]
+              },
+              {
+                "name": "Lumbar",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "swelling"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deformity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "laceration"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "spasms"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "positive R SLR"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "edema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "trauma"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "decreased ROM"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "scoliosis"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bony tenderness"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "positive L SLR"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Foot",
+        "sides": {
+          "Right Foot": {
+            "groups": [
+              {
+                "name": "Amputation",
+                "controls": [
+                  {
+                    "type": "button",
+                    "label": "above knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "below knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "above ankle"
+                  },
+                  {
+                    "type": "button",
+                    "label": "below ankle"
+                  }
+                ]
+              },
+              {
+                "name": "Protective Sensation",
+                "controls": [
+                  {
+                    "label": "Sites tested",
+                    "buttons": [
+                      "0",
+                      "1",
+                      "2",
+                      "3",
+                      "4",
+                      "5",
+                      "6",
+                      "7",
+                      "8",
+                      "9",
+                      "10"
+                    ]
+                  },
+                  {
+                    "label": "Sites Sensed",
+                    "buttons": [
+                      "0",
+                      "1",
+                      "2",
+                      "3",
+                      "4",
+                      "5",
+                      "6",
+                      "7",
+                      "8",
+                      "9",
+                      "10"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Foot Structure and Biomechanics",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "decreased ROM"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deformity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bunion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "Charcot foot"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "foot drop"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "prom metatarsal heads"
+                  }
+                ]
+              },
+              {
+                "name": "Vascular Status",
+                "controls": [
+                  {
+                    "label": "Dorsalis pedis",
+                    "buttons": [
+                      "0",
+                      "detected w/ Doppler",
+                      "1+",
+                      "2+",
+                      "3+"
+                    ]
+                  },
+                  {
+                    "label": "Post tibialis",
+                    "buttons": [
+                      "0",
+                      "detected w/ Doppler",
+                      "1+",
+                      "2+",
+                      "3+"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Skin Integrity",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal skin integrity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "ulcer"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "blister"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "skin breakdown"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "warmth"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "callus"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dry skin"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "fissure"
+                  }
+                ]
+              },
+              {
+                "name": "Toenail Condition",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal toenail"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "abnormally thick"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "long"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "ingrown"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "fungal disease"
+                  }
+                ]
+              }
+            ]
+          },
+          "Left Foot": {
+            "groups": [
+              {
+                "name": "Amputation",
+                "controls": [
+                  {
+                    "type": "button",
+                    "label": "above knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "below knee"
+                  },
+                  {
+                    "type": "button",
+                    "label": "above ankle"
+                  },
+                  {
+                    "type": "button",
+                    "label": "below ankle"
+                  }
+                ]
+              },
+              {
+                "name": "Protective Sensation",
+                "controls": [
+                  {
+                    "label": "Sites tested",
+                    "buttons": [
+                      "0",
+                      "1",
+                      "2",
+                      "3",
+                      "4",
+                      "5",
+                      "6",
+                      "7",
+                      "8",
+                      "9",
+                      "10"
+                    ]
+                  },
+                  {
+                    "label": "Sites Sensed",
+                    "buttons": [
+                      "0",
+                      "1",
+                      "2",
+                      "3",
+                      "4",
+                      "5",
+                      "6",
+                      "7",
+                      "8",
+                      "9",
+                      "10"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Foot Structure and Biomechanics",
+                "items": [
+                  {
+                    "type": "selectable",
+                    "label": "decreased ROM"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "deformity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "bunion"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "Charcot foot"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "foot drop"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "prom metatarsal heads"
+                  }
+                ]
+              },
+              {
+                "name": "Vascular Status",
+                "controls": [
+                  {
+                    "label": "Dorsalis pedis",
+                    "buttons": [
+                      "0",
+                      "detected w/ Doppler",
+                      "1+",
+                      "2+",
+                      "3+"
+                    ]
+                  },
+                  {
+                    "label": "Post tibialis",
+                    "buttons": [
+                      "0",
+                      "detected w/ Doppler",
+                      "1+",
+                      "2+",
+                      "3+"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Skin Integrity",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal skin integrity"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "ulcer"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "blister"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "skin breakdown"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "erythema"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "warmth"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "callus"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "dry skin"
+                  },
+                  {
+                    "type": "selectable",
+                    "label": "fissure"
+                  }
+                ]
+              },
+              {
+                "name": "Toenail Condition",
+                "items": [
+                  {
+                    "type": "checkbox",
+                    "label": "normal toenail"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "abnormally thick"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "long"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "ingrown"
+                  },
+                  {
+                    "type": "checkbox",
+                    "label": "fungal disease"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Lymph",
+        "groups": [
+          {
+            "name": "Head",
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "submental"
+                },
+                {
+                  "type": "selectable",
+                  "label": "submandibular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tonsillar"
+                },
+                {
+                  "type": "selectable",
+                  "label": "preauricular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior auric..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "occipital"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "submental"
+                },
+                {
+                  "type": "selectable",
+                  "label": "submandibular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "tonsillar"
+                },
+                {
+                  "type": "selectable",
+                  "label": "preauricular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior auric..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "occipital"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Cervical",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "cervical adeno..."
+              }
+            ],
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "superficial cerv..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "deep cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior cervical"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "superficial cerv..."
+                },
+                {
+                  "type": "selectable",
+                  "label": "deep cervical"
+                },
+                {
+                  "type": "selectable",
+                  "label": "posterior cervical"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Upper Body",
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "supraclavicular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "axillary"
+                },
+                {
+                  "type": "selectable",
+                  "label": "pectoral"
+                },
+                {
+                  "type": "selectable",
+                  "label": "epitrochlear"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "supraclavicular"
+                },
+                {
+                  "type": "selectable",
+                  "label": "axillary"
+                },
+                {
+                  "type": "selectable",
+                  "label": "pectoral"
+                },
+                {
+                  "type": "selectable",
+                  "label": "epitrochlear"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Lower Body",
+            "sides": {
+              "Right": [
+                {
+                  "type": "selectable",
+                  "label": "inguinal"
+                }
+              ],
+              "Left": [
+                {
+                  "type": "selectable",
+                  "label": "inguinal"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Skin",
+        "groups": [
+          {
+            "name": "General",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "warm"
+              },
+              {
+                "type": "checkbox",
+                "label": "cool"
+              },
+              {
+                "type": "checkbox",
+                "label": "moist"
+              },
+              {
+                "type": "checkbox",
+                "label": "dry"
+              }
+            ]
+          },
+          {
+            "name": "Capillary Refill (seconds)",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "< 2"
+              },
+              {
+                "type": "checkbox",
+                "label": "2-3"
+              },
+              {
+                "type": "checkbox",
+                "label": "> 3"
+              }
+            ]
+          },
+          {
+            "name": "Skin Coloration",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "ashen"
+              },
+              {
+                "type": "selectable",
+                "label": "cyanotic"
+              },
+              {
+                "type": "selectable",
+                "label": "jaundiced"
+              },
+              {
+                "type": "selectable",
+                "label": "mottled"
+              },
+              {
+                "type": "selectable",
+                "label": "pale"
+              },
+              {
+                "type": "selectable",
+                "label": "sallow"
+              }
+            ]
+          },
+          {
+            "name": "Findings",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "abrasion"
+              },
+              {
+                "type": "selectable",
+                "label": "abscess"
+              },
+              {
+                "type": "selectable",
+                "label": "acne"
+              },
+              {
+                "type": "selectable",
+                "label": "bruising"
+              },
+              {
+                "type": "selectable",
+                "label": "burn"
+              },
+              {
+                "type": "selectable",
+                "label": "ecchymosis"
+              },
+              {
+                "type": "selectable",
+                "label": "erythema"
+              },
+              {
+                "type": "selectable",
+                "label": "injury"
+              },
+              {
+                "type": "selectable",
+                "label": "laceration"
+              },
+              {
+                "type": "selectable",
+                "label": "lesion"
+              },
+              {
+                "type": "selectable",
+                "label": "petechiae"
+              },
+              {
+                "type": "selectable",
+                "label": "rash"
+              },
+              {
+                "type": "selectable",
+                "label": "wound"
+              }
+            ]
+          },
+          {
+            "name": "Rash",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "crusting"
+              },
+              {
+                "type": "selectable",
+                "label": "macular"
+              },
+              {
+                "type": "selectable",
+                "label": "nodular"
+              },
+              {
+                "type": "selectable",
+                "label": "papular"
+              },
+              {
+                "type": "selectable",
+                "label": "purpuric"
+              },
+              {
+                "type": "selectable",
+                "label": "pustular"
+              },
+              {
+                "type": "selectable",
+                "label": "scaling"
+              },
+              {
+                "type": "selectable",
+                "label": "urticarial"
+              },
+              {
+                "type": "selectable",
+                "label": "vesicular"
+              }
+            ]
+          },
+          {
+            "name": "Nails",
+            "items": [
+              {
+                "type": "selectable",
+                "label": "clubbing"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Psychiatric",
+        "groups": [
+          {
+            "name": "Attention and Perception",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal attention"
+              },
+              {
+                "type": "selectable",
+                "label": "inattentive"
+              },
+              {
+                "type": "selectable",
+                "label": "visual hallucinations"
+              },
+              {
+                "type": "checkbox",
+                "label": "normal perception"
+              },
+              {
+                "type": "selectable",
+                "label": "auditory hallucinations"
+              }
+            ]
+          },
+          {
+            "name": "Mood and Affect",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal mood"
+              },
+              {
+                "type": "selectable",
+                "label": "anxious mood"
+              },
+              {
+                "type": "selectable",
+                "label": "elated mood"
+              },
+              {
+                "type": "selectable",
+                "label": "blunt affect"
+              },
+              {
+                "type": "selectable",
+                "label": "angry affect"
+              },
+              {
+                "type": "selectable",
+                "label": "inappropriate affect"
+              },
+              {
+                "type": "checkbox",
+                "label": "normal affect"
+              },
+              {
+                "type": "selectable",
+                "label": "depressed mood"
+              },
+              {
+                "type": "selectable",
+                "label": "labile affect"
+              },
+              {
+                "type": "selectable",
+                "label": "flat affect"
+              },
+              {
+                "type": "selectable",
+                "label": "tearful affect"
+              }
+            ]
+          },
+          {
+            "name": "Speech",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal speech"
+              },
+              {
+                "type": "selectable",
+                "label": "noncommunicative"
+              },
+              {
+                "type": "selectable",
+                "label": "delayed"
+              },
+              {
+                "type": "selectable",
+                "label": "tangential"
+              },
+              {
+                "type": "selectable",
+                "label": "rapid and pressured"
+              },
+              {
+                "type": "selectable",
+                "label": "slurred"
+              }
+            ]
+          },
+          {
+            "name": "Behavior",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal behavior"
+              },
+              {
+                "type": "checkbox",
+                "label": "cooperative"
+              },
+              {
+                "type": "selectable",
+                "label": "agitated"
+              },
+              {
+                "type": "selectable",
+                "label": "aggressive"
+              },
+              {
+                "type": "selectable",
+                "label": "hyperactive"
+              },
+              {
+                "type": "checkbox",
+                "label": "uncooperative"
+              },
+              {
+                "type": "selectable",
+                "label": "slowed"
+              },
+              {
+                "type": "selectable",
+                "label": "withdrawn"
+              },
+              {
+                "type": "selectable",
+                "label": "combative"
+              }
+            ]
+          },
+          {
+            "name": "Thought Content",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal thought content"
+              },
+              {
+                "type": "selectable",
+                "label": "paranoid"
+              },
+              {
+                "type": "selectable",
+                "label": "homicidal"
+              },
+              {
+                "type": "selectable",
+                "label": "suicidal"
+              },
+              {
+                "type": "selectable",
+                "label": "delusional"
+              },
+              {
+                "type": "selectable",
+                "label": "plan of homicide"
+              },
+              {
+                "type": "selectable",
+                "label": "plan of suicide"
+              }
+            ]
+          },
+          {
+            "name": "Cognition and Memory",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal cognition"
+              },
+              {
+                "type": "selectable",
+                "label": "impaired cognition"
+              },
+              {
+                "type": "selectable",
+                "label": "impaired memory"
+              },
+              {
+                "type": "selectable",
+                "label": "impaired recent memory"
+              },
+              {
+                "type": "selectable",
+                "label": "impaired remote memory"
+              },
+              {
+                "type": "checkbox",
+                "label": "normal memory"
+              }
+            ]
+          },
+          {
+            "name": "Judgment",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "normal judgment"
+              },
+              {
+                "type": "selectable",
+                "label": "impulsive"
+              },
+              {
+                "type": "selectable",
+                "label": "inappropriate"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Neurological",
+        "groups": [
+          {
+            "name": "General",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "no focal deficit"
+              }
+            ]
+          },
+          {
+            "name": "Mental Status",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "alert"
+              },
+              {
+                "type": "checkbox",
+                "label": "oriented x3"
+              },
+              {
+                "type": "checkbox",
+                "label": "at baseline"
+              },
+              {
+                "type": "checkbox",
+                "label": "lethargic"
+              },
+              {
+                "type": "checkbox",
+                "label": "disoriented"
+              },
+              {
+                "type": "checkbox",
+                "label": "confused"
+              },
+              {
+                "type": "checkbox",
+                "label": "unresponsive"
+              }
+            ]
+          },
+          {
+            "name": "Glasgow Coma Scale",
+            "items": [
+              {
+                "label": "Eye",
+                "buttons": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ]
+              },
+              {
+                "label": "Verbal",
+                "buttons": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5"
+                ]
+              },
+              {
+                "label": "Motor",
+                "buttons": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6"
+                ]
+              },
+              {
+                "label": "GCS 15"
+              }
+            ]
+          },
+          {
+            "name": "Cranial Nerves",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "CN 2-12 intact"
+              },
+              {
+                "type": "selectable",
+                "label": "deficit"
+              },
+              {
+                "type": "selectable",
+                "label": "dysarthria"
+              },
+              {
+                "type": "selectable",
+                "label": "facial asymmetry"
+              },
+              {
+                "type": "selectable",
+                "label": "visual field deficit"
+              }
+            ]
+          },
+          {
+            "name": "Sensory",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "sensation intact"
+              },
+              {
+                "type": "selectable",
+                "label": "deficit"
+              }
+            ]
+          },
+          {
+            "name": "Motor",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "motor function intact"
+              },
+              {
+                "type": "selectable",
+                "label": "weakness"
+              },
+              {
+                "type": "selectable",
+                "label": "tremor"
+              },
+              {
+                "type": "selectable",
+                "label": "atrophy"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl tone"
+              },
+              {
+                "type": "selectable",
+                "label": "seizure activity"
+              },
+              {
+                "type": "selectable",
+                "label": "pronator drift"
+              }
+            ]
+          },
+          {
+            "name": "Coordination",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "coordination intact"
+              },
+              {
+                "type": "selectable",
+                "label": "Romberg positive"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl coordination"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl finger to nose"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl heel to shin"
+              },
+              {
+                "type": "selectable",
+                "label": "impaired RAM"
+              }
+            ]
+          },
+          {
+            "name": "Gait",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "gait intact"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl gait"
+              },
+              {
+                "type": "selectable",
+                "label": "abnl tandem walk"
+              }
+            ]
+          },
+          {
+            "name": "Deep Tendon Reflexes",
+            "items": [
+              {
+                "type": "checkbox",
+                "label": "DTRs normal and symmetric"
+              },
+              {
+                "type": "selectable",
+                "label": "abnormal DTRs"
+              },
+              {
+                "type": "button",
+                "label": "set all reflexes to 2+"
+              },
+              {
+                "type": "button",
+                "label": "clear reflex scores"
+              }
+            ],
+            "sides": {
+              "Right": [
+                {
+                  "name": "Tricep",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Bicep",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Brachioradialis",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Patellar",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Achilles",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "type": "selectable",
+                  "label": "Babinski sign"
+                }
+              ],
+              "Left": [
+                {
+                  "name": "Tricep",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Bicep",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Brachioradialis",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Patellar",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "name": "Achilles",
+                  "buttons": [
+                    "0",
+                    "1+",
+                    "2+",
+                    "3+",
+                    "4+"
+                  ]
+                },
+                {
+                  "type": "selectable",
+                  "label": "Babinski sign"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
