@@ -242,8 +242,8 @@ const SORT_KEYS: Record<string, string> = {
 export const ChartReview = ({ ...props }: any) => {
   const navigate = useNavigate();
   const { useChart, useEncounter } = usePatient()
-  const [chart, setChart] = useChart()()
-  const [encounter, setEncounter] = useEncounter()()
+  const [chart] = useChart()()
+  const [encounter] = useEncounter()()
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders([])
   const [departments] = useDatabase().departments()
@@ -270,7 +270,9 @@ export const ChartReview = ({ ...props }: any) => {
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   const currentEncDate = encounter.startDate ?? "1970-01-01T00:00:00Z"
-  const documents2 = Object.values(chart.encounters)
+  const validEncounters = Object.values(chart.encounters).filter((x: any) => !!x.id)
+
+  const documents2 = validEncounters
     .toSorted((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")))
     .filter((x) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(currentEncDate)) <= 0)
     .flatMap((x) => [
@@ -281,7 +283,7 @@ export const ChartReview = ({ ...props }: any) => {
 
   const documents = filterDocuments(documents2, conditionals, orders)
 
-  const encountersData = Object.values(chart.encounters).map((x: any) => {
+  const encountersData = validEncounters.map((x: any) => {
     const dept = departments.find((d: any) => d.id === x.department)
     const prov = providers.find((p: any) => p.id === x.provider)
     return {
