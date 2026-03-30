@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, DataGrid, Label, Button, Window, IconButton } from 'components/ui/Core';
-import { useDatabase, usePatient } from 'components/contexts/PatientContext';
+import { Database, useDatabase, usePatient } from 'components/contexts/PatientContext';
 import { SchedulePatientModal } from './components/SchedulePatientModal';
 
 export const AppointmentDesk = () => {
@@ -23,8 +23,8 @@ export const AppointmentDesk = () => {
     if (!chart || !appointmentsDB) return [];
 
     return appointmentsDB
-      .filter((appt: any) => appt.patient?.mrn === chart.id) // Filter by MRN
-      .map((appt: any) => {
+      .filter((appt) => appt.patient?.mrn === chart.id) // Filter by MRN
+      .map((appt) => {
         // Resolve related entities
         const deptDetails = departments.find((d: any) => d.id === appt.department);
         const encounter = chart.encounters?.[appt.patient.enc];
@@ -35,7 +35,7 @@ export const AppointmentDesk = () => {
         return {
           id: appt.id,
           date: appt.apptTime,
-          status: appt.officeStatus || appt.status,
+          status: appt.status,
           type: appt.type,
           department: appt.department,
           provider: providerId || '',
@@ -86,7 +86,6 @@ export const AppointmentDesk = () => {
             cc: cc,
             provider: provider !== undefined ? provider : appt.provider,
             location: location !== undefined ? location : appt.location,
-            officeStatus: status || appt.officeStatus || 'Scheduled',
             status: status || appt.status || 'Scheduled',
             checkinTime: checkinTime !== undefined ? checkinTime : appt.checkinTime,
             checkoutTime: checkoutTime !== undefined ? checkoutTime : appt.checkoutTime
@@ -96,13 +95,12 @@ export const AppointmentDesk = () => {
       }));
     } else {
       // Create new
-      const newAppointment = {
-        id: Math.floor(Math.random() * 100000),
+      const newAppointment: Database.Appointment = {
+        id: Database.Appointment.ID.create(),
         department: department,
         apptTime: date,
         status: status || "Scheduled",
         patient: { mrn: patientId, enc: encounterId },
-        officeStatus: status || "Scheduled",
         checkinTime: checkinTime || "",
         checkoutTime: checkoutTime || "",
         location: location || null,

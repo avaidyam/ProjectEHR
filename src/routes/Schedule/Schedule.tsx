@@ -81,79 +81,79 @@ function changeTextColor(statusColor: React.CSSProperties['color'], statusName: 
 }
 
 // decide on color of bar based on what status is
-function changeBarColorByStatus(officeStatus: Database.Appointment.Status) {
-  if (officeStatus === Database.Appointment.Status.Scheduled) {
+function changeBarColorByStatus(status: Database.Appointment.Status) {
+  if (status === Database.Appointment.Status.Scheduled) {
     return changeBarColor('blue');
   }
-  if (officeStatus === Database.Appointment.Status.Arrived) {
+  if (status === Database.Appointment.Status.Arrived) {
     return changeBarColor('indigo');
   }
-  if (officeStatus === Database.Appointment.Status.RoomingInProgress) {
+  if (status === Database.Appointment.Status.RoomingInProgress) {
     return changeBarColor('pink');
   }
-  if (officeStatus === Database.Appointment.Status.Waiting) {
+  if (status === Database.Appointment.Status.Waiting) {
     return changeBarColor('orange');
   }
-  if (officeStatus === Database.Appointment.Status.VisitInProgress) {
+  if (status === Database.Appointment.Status.VisitInProgress) {
     return changeBarColor('yellow');
   }
-  if (officeStatus === Database.Appointment.Status.VisitComplete) {
+  if (status === Database.Appointment.Status.VisitComplete) {
     return changeBarColor('purple');
   }
-  if (officeStatus === Database.Appointment.Status.CheckedOut) {
+  if (status === Database.Appointment.Status.CheckedOut) {
     return changeBarColor('green');
   }
-  if (officeStatus === Database.Appointment.Status.Signed) {
+  if (status === Database.Appointment.Status.Signed) {
     return changeBarColor('cyan');
   }
   return changeBarColor('gray');
 }
 
 // decide on color of text in status column based on what status is
-function changeTextByStatus(officeStatus: Database.Appointment.Status, checkinTime: string, checkoutTime: string, locationId: string, locations: Database.Location[]) {
+function changeTextByStatus(status: Database.Appointment.Status, checkinTime: string, checkoutTime: string, locationId: string, locations: Database.Location[]) {
   const roomName = locationId ? (locations.find((l: Database.Location) => l.id === locationId)?.name || 'Unknown Room') : 'Unknown Room';
 
-  if (officeStatus === Database.Appointment.Status.Scheduled) {
-    return changeTextColor('blue', officeStatus, '');
+  if (status === Database.Appointment.Status.Scheduled) {
+    return changeTextColor('blue', status, '');
   }
-  if (officeStatus === Database.Appointment.Status.Arrived) {
-    return changeTextColor('indigo', officeStatus, 'Checked In: '.concat(checkinTime));
+  if (status === Database.Appointment.Status.Arrived) {
+    return changeTextColor('indigo', status, 'Checked In: '.concat(checkinTime));
   }
-  if (officeStatus === Database.Appointment.Status.RoomingInProgress) {
+  if (status === Database.Appointment.Status.RoomingInProgress) {
     return changeTextColor(
       'pink',
-      officeStatus,
+      status,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === Database.Appointment.Status.Waiting) {
+  if (status === Database.Appointment.Status.Waiting) {
     return changeTextColor(
       'orange',
-      officeStatus,
+      status,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === Database.Appointment.Status.VisitInProgress) {
+  if (status === Database.Appointment.Status.VisitInProgress) {
     return changeTextColor(
       'yellow',
-      officeStatus,
+      status,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === Database.Appointment.Status.VisitComplete) {
+  if (status === Database.Appointment.Status.VisitComplete) {
     return changeTextColor(
       'green',
-      officeStatus,
+      status,
       'Exam Room: '.concat(roomName, ' (', checkinTime, ')')
     );
   }
-  if (officeStatus === Database.Appointment.Status.CheckedOut) {
-    return changeTextColor('green', officeStatus, 'Checked Out: '.concat(checkoutTime));
+  if (status === Database.Appointment.Status.CheckedOut) {
+    return changeTextColor('green', status, 'Checked Out: '.concat(checkoutTime));
   }
-  if (officeStatus === Database.Appointment.Status.Signed) {
-    return changeTextColor('cyan', officeStatus, '');
+  if (status === Database.Appointment.Status.Signed) {
+    return changeTextColor('cyan', status, '');
   }
-  return changeTextColor('gray', officeStatus, 'No Show');
+  return changeTextColor('gray', status, 'No Show');
 }
 
 // takes rows from json file and set columns to make table
@@ -265,7 +265,7 @@ export function Schedule() {
                 headerName: '',
                 width: 10,
                 renderCell: (params: any) => {
-                  return changeBarColorByStatus(params.row.officeStatus);
+                  return changeBarColorByStatus(params.row.status);
                 },
               },
               {
@@ -307,7 +307,7 @@ export function Schedule() {
                 renderCell: (params) => (
                   <div>
                     {changeTextByStatus(
-                      params.row.officeStatus,
+                      params.row.status,
                       params.row.checkinTime,
                       params.row.checkoutTime,
                       params.row.location,
