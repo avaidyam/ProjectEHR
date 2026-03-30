@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, GlobalStyles } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, GlobalStyles, colors } from '@mui/material';
 import 'util/helpers';
 
 import { App } from './routes/App';
@@ -9,9 +9,17 @@ import { AuthProvider } from './components/contexts/AuthContext';
 
 const theme = createTheme({
   colorSchemes: {
-    light: true,
-    dark: true,
-  },
+    light: {
+      palette: {
+        ...colors
+      }
+    },
+    dark: {
+      palette: {
+        ...colors
+      }
+    },
+  }
 });
 // document.body.style.overflow = "hidden"
 ReactDOM.createRoot(document.getElementById('root')!).render(

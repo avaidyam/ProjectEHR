@@ -407,17 +407,17 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
         '& .MuiDataGrid-virtualScroller': { overflow: 'auto' },
         '& .MuiDataGrid-columnHeaderTitle': { fontWeight: 600 },
         '& .flowsheet-header-row': {
-          bgcolor: '#f5f5f5',
-          '&:hover': { bgcolor: '#f5f5f5' },
+          bgcolor: 'divider',
+          '&:hover': { bgcolor: 'divider' },
         },
         '& .flowsheet-header-row .MuiDataGrid-cell': {
           borderBottom: 'none',
         },
         '& .flowsheet-header-row .MuiDataGrid-cell--pinnedRight': {
-          bgcolor: '#f5f5f5',
+          bgcolor: '#ffffff00',
         },
         '& .flowsheet-group-header': {
-          bgcolor: '#e0e0e0',
+          bgcolor: 'divider',
           fontWeight: 'bold',
           display: 'flex',
           justifyContent: 'center',
@@ -425,7 +425,6 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
           lineHeight: '28px'
         }
       }}
-      children={null}
     />
   );
 };
