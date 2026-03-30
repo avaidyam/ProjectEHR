@@ -69,73 +69,78 @@ const FlowsheetEditCell = (params: GridRenderEditCellParams) => {
 };
 
 export const FlowsheetColumnHeader = ({ column, onUpdate }: { column: TimeColumn, onUpdate: (id: string, updates: Partial<TimeColumn>) => void }) => {
-  const [isEditing, setIsEditing] = React.useState(false);
   const [tempValue, setTempValue] = React.useState<Database.JSONDate | null>(column.timestamp as Database.JSONDate);
-
-  const handleDoubleClick = () => {
-    setTempValue(column.timestamp as Database.JSONDate);
-    setIsEditing(true);
-  };
 
   const handleAccept = (newValue: Database.JSONDate | null) => {
     if (newValue) {
-      const newValueDate = Temporal.Instant.from(newValue).toZonedDateTimeISO('UTC')
+      const newValueDate = Temporal.Instant.from(newValue).toZonedDateTimeISO('UTC');
       onUpdate(column.id, {
         timestamp: newValue,
         displayTime: `${String(newValueDate.hour).padStart(2, '0')}${String(newValueDate.minute).padStart(2, '0')}`,
         ...(column.isCurrentTime ? { isCurrentTime: false } : {})
       });
     }
-    setIsEditing(false);
   };
 
-  const handleClose = () => {
-    setIsEditing(false);
-  }
-
-  if (isEditing) {
+  if (column.isCurrentTime) {
     return (
-      <Box sx={{ width: '100%', p: 0 }}>
-        <DateTimePicker
-          convertString
-          value={tempValue}
-          onChange={(newValue) => setTempValue(newValue)}
-          onAccept={handleAccept}
-          onClose={handleClose}
-          autoFocus
-          format="HHmm"
-          slotProps={{
-            textField: {
-              size: 'small',
-              fullWidth: true,
-              variant: 'standard',
-              autoFocus: true,
-              inputProps: {
-                style: { fontSize: 'inherit', textAlign: 'center' }
-              }
-            },
-            popper: {
-              sx: { zIndex: 99999 }
-            }
-          }}
-        />
+      <Box
+        sx={{
+          fontWeight: 'bold',
+          color: 'primary.main',
+          cursor: 'default',
+          width: '100%',
+          textAlign: 'center',
+          userSelect: 'none'
+        }}
+      >
+        {`${column.displayTime} (Now)`}
       </Box>
     );
   }
 
   return (
     <Box
-      onDoubleClick={handleDoubleClick}
       sx={{
-        fontWeight: column.isCurrentTime ? 'bold' : 'normal',
-        color: column.isCurrentTime ? 'primary.main' : 'inherit',
-        cursor: 'pointer',
         width: '100%',
-        textAlign: 'center',
-        userSelect: 'none'
+        p: 0,
+        '& .MuiInputAdornment-root': {
+          opacity: 0,
+          transition: 'opacity 0.2s',
+          marginLeft: 0,
+        },
+        '&:hover .MuiInputAdornment-root': {
+          opacity: 1,
+        },
+        '& .MuiIconButton-root': {
+          padding: 0,
+        }
       }}
     >
-      {column.displayTime + (column.isCurrentTime ? ' (Now)' : '')}
+      <DateTimePicker
+        fullWidth
+        convertString
+        value={tempValue}
+        onChange={(newValue) => setTempValue(newValue)}
+        onAccept={handleAccept}
+        format="HHmm"
+        slotProps={{
+          textField: {
+            size: 'small',
+            fullWidth: true,
+            variant: 'standard',
+            InputProps: {
+              disableUnderline: true,
+            },
+            inputProps: {
+              style: { fontSize: 'inherit', textAlign: 'center', cursor: 'pointer' }
+            }
+          },
+          popper: {
+            sx: { zIndex: 99999 }
+          }
+        }}
+      />
     </Box>
   );
 };
