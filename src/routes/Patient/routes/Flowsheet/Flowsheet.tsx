@@ -117,7 +117,7 @@ export const Flowsheet = () => {
         const dObj = Temporal.Instant.from(d.date).toZonedDateTimeISO(Temporal.Now.timeZoneId());
         const hours = String(dObj.hour).padStart(2, '0');
         const minutes = String(dObj.minute).padStart(2, '0');
-        return `${hours}${minutes} `;
+        return `${hours}${minutes}`;
       })(),
       isCurrentTime: false,
       index: index,
@@ -140,7 +140,7 @@ export const Flowsheet = () => {
         const key = row.name;
         if (d[key] !== undefined && d[key] !== null) {
           flattenedEntries.push({
-            id: `${d.id}::${key} `, // synthetic ID
+            id: `${d.id}::${key}`, // synthetic ID
             rowId: key,
             columnId: d.id,
             value: d[key],
@@ -174,7 +174,7 @@ export const Flowsheet = () => {
     });
 
     return lastValues;
-  }, [flowsheetData, activeGroup]);
+  }, [visibleFlowsheetData, activeGroup]);
 
   // --- Handlers ---
 
@@ -222,32 +222,50 @@ export const Flowsheet = () => {
   }, []);
 
   const handleAddEntry = React.useCallback((entry: Omit<FlowsheetEntry, 'id'>) => {
-    // entry: { rowId, columnId, value }
-    setFlowsheetData((prev: any[] | undefined) => {
-      // Find the time column object
-      const currentPrev = prev || [];
-      const exists = currentPrev.find(d => d.id === entry.columnId);
-      if (exists) {
-        return currentPrev.map(d => d.id === entry.columnId ? { ...d, [entry.rowId]: entry.value } : d);
+    // Helper to evaluate if a flowsheet entry has any data parameters initialized
+    const hasData = (record: any) => Object.entries(record).some(
+      ([k, v]) => !['id', 'date', 'flowsheet'].includes(k) && v != null && v !== ''
+    );
+
+    setFlowsheetData((prev: any[] = []) => {
+      // Find the time column object using flatMap for combined map/filter
+      const isExisting = prev.some(d => d.id === entry.columnId);
+
+      if (isExisting) {
+        return prev.flatMap(d => {
+          if (d.id !== entry.columnId) return [d];
+          
+          const updatedD = { ...d, [entry.rowId]: entry.value };
+          return hasData(updatedD) ? [updatedD] : [];
+        });
       }
 
-      const newObj = {
+      // If creating new column, discard immediately if no valid value is passed
+      if (entry.value == null || entry.value === '') return prev;
+
+      return [...prev, {
         id: entry.columnId,
         date: Temporal.Now.instant().toString(), // Fallback
         flowsheet: activeGroup?.id,
         [entry.rowId]: entry.value
-      };
-      return [...currentPrev, newObj];
+      }];
     });
   }, [activeGroup, setFlowsheetData]);
 
   const handleUpdateEntry = React.useCallback((id: string, updates: Partial<FlowsheetEntry>) => {
+    const hasData = (record: any) => Object.entries(record).some(
+      ([k, v]) => !['id', 'date', 'flowsheet'].includes(k) && v != null && v !== ''
+    );
+
     const [columnId, rowId] = id.split('::');
 
     if (columnId && rowId && updates.value !== undefined) {
-      setFlowsheetData((prev: any[] | undefined) => (prev || []).map(d =>
-        d.id === columnId ? { ...d, [rowId]: updates.value } : d
-      ));
+      setFlowsheetData((prev: any[] = []) => prev.flatMap(d => {
+        if (d.id !== columnId) return [d];
+        
+        const updatedD = { ...d, [rowId]: updates.value };
+        return hasData(updatedD) ? [updatedD] : [];
+      }));
     }
   }, [setFlowsheetData]);
 

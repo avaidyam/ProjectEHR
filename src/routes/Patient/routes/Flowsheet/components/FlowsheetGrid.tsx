@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Box, Autocomplete, DataGrid, DateTimePicker } from 'components/ui/Core'
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid-premium';
-import { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../Flowsheet';
+import type { FlowsheetEntry, TimeColumn, FlowsheetRow } from '../Flowsheet';
 import { Database } from 'components/contexts/PatientContext';
 
 interface FlowsheetGridProps {
@@ -286,11 +286,10 @@ export const FlowsheetGrid: React.FC<FlowsheetGridProps> = ({
       editable: false,
       sortable: false,
       resizable: true,
-      renderCell: (params: any) => (
+      renderCell: (params: any) => params.row.isHeader ? null : 
         <Box sx={{ color: 'text.secondary' }}>
-          {params.value}
+          {timeColumns.reduceRight((found, col) => found !== '' ? found : params.row[col.id] ?? '', '')}
         </Box>
-      )
     });
 
     return cols;

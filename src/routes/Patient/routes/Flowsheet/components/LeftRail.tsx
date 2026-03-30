@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Checkbox, Icon, Label, Autocomplete } from 'components/ui/Core';
-import { FlowsheetRow } from '../Flowsheet';
+import type { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
   rows: FlowsheetRow[];
