@@ -1,34 +1,9 @@
 import * as React from 'react';
 import { FormControlLabel, FormGroup, FormControl } from '@mui/material';
 import { Box, Button, Autocomplete, Label, DatePicker, Checkbox, Grid } from 'components/ui/Core';
-import { useDatabase } from 'components/contexts/PatientContext'
+import { Database } from 'components/contexts/PatientContext'
 
-const routesOfAdministration = [
-  'Oral',
-  'Sublingual',
-  'Buccal',
-  'Rectal',
-  'Vaginal',
-  'Topical',
-  'Inhalation',
-  'Intravenous (IV)',
-  'Intramuscular (IM)',
-  'Subcutaneous (SC)',
-  'Intradermal (ID)',
-  'Transdermal',
-  'Nasal',
-  'Ophthalmic',
-  'Otic'
-];
-
-const units = [
-  { full: 'Milligrams (mg)', abbrev: 'mg' },
-  { full: 'Grams (g)', abbrev: 'g' },
-  { full: 'Milliliters (mL)', abbrev: 'mL' },
-  { full: 'Puffs', abbrev: 'Puffs' }
-];
-
-const unitMap: any = units.reduce((acc: any, unit: any) => {
+const unitMap: any = Database.Medication.UNITS.reduce((acc: any, unit: any) => {
   acc[unit.abbrev] = unit.full;
   return acc;
 }, {});
@@ -48,7 +23,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel, onDelete }:
   };
 
   const handleUnitChange = (value: any) => {
-    const selectedUnit = units.find(unit => unit.full === value);
+    const selectedUnit = Database.Medication.UNITS.find((unit: any) => unit.full === value);
     setEditedMedication({
       ...editedMedication,
       unit: selectedUnit ? selectedUnit.full : value,
@@ -69,7 +44,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel, onDelete }:
   };
 
   const handleSave = () => {
-    const unitAbbrev = units.find(unit => unit.full === editedMedication.unit)?.abbrev || editedMedication.unit;
+    const unitAbbrev = Database.Medication.UNITS.find((unit: any) => unit.full === editedMedication.unit)?.abbrev || editedMedication.unit;
     const updatedMedication = {
       ...editedMedication,
       unit: unitAbbrev,
@@ -95,7 +70,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel, onDelete }:
         </Grid>
         <Grid size={{ xs: 3 }}>
           <Autocomplete
-            options={units.map(u => u.full)}
+            options={Database.Medication.UNITS.map((u: any) => u.full)}
             value={editedMedication.unit}
             onChange={(_e, newValue: any) => handleUnitChange(newValue)}
             sx={{ minWidth: 100 }}
@@ -106,7 +81,7 @@ export function MedicationItemEditor({ medication, onSave, onCancel, onDelete }:
         </Grid>
         <Grid size={{ xs: 9 }}>
           <Autocomplete
-            options={routesOfAdministration}
+            options={Object.values(Database.Medication.Route)}
             getOptionLabel={(option) => option}
             value={editedMedication.route}
             onChange={(_e, newValue) => handleEditorChange('route', newValue)}

@@ -694,6 +694,31 @@ export namespace Medication {
     export const create = (): ID => crypto.randomUUID() as ID
   }
 
+  export enum Route {
+    Oral = 'Oral',
+    Sublingual = 'Sublingual',
+    Buccal = 'Buccal',
+    Rectal = 'Rectal',
+    Vaginal = 'Vaginal',
+    Topical = 'Topical',
+    Inhalation = 'Inhalation',
+    Intravenous = 'Intravenous (IV)',
+    Intramuscular = 'Intramuscular (IM)',
+    Subcutaneous = 'Subcutaneous (SC)',
+    Intradermal = 'Intradermal (ID)',
+    Transdermal = 'Transdermal',
+    Nasal = 'Nasal',
+    Ophthalmic = 'Ophthalmic',
+    Otic = 'Otic'
+  }
+
+  export const UNITS = [
+    { full: 'Milligrams (mg)', abbrev: 'mg' },
+    { full: 'Grams (g)', abbrev: 'g' },
+    { full: 'Milliliters (mL)', abbrev: 'mL' },
+    { full: 'Puffs', abbrev: 'Puffs' }
+  ];
+
   export interface DispenseLog {
     id: DispenseLog.ID
     dispensed: string
