@@ -1,25 +1,8 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Window, Stack, Label, Icon, IconButton, Divider, Autocomplete, TabView, TabList, Tab, TabPanel, Grid, Checkbox, DatePicker, Spacer } from '../../components/ui/Core';
-import { useDatabase } from '../../components/contexts/PatientContext';
-import * as Database from '../../components/contexts/Database';
+import { Database, useDatabase } from 'components/contexts/PatientContext';
 import { List, ListItem, ListItemText, ListItemButton, InputAdornment } from '@mui/material';
-
-const placeholders = [
-  "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
-  "Knife", "Towel", "Pencil", "Globe", "Cloud", "River", "Mountain", "Ocean",
-  "Forest", "Desert", "Castle", "Bridge", "Mirror", "Candle", "Glove", "Button",
-  "Zipper", "Basket", "Feather", "String", "Rope", "Lantern", "Telescope", "Anvil",
-  "Crayon", "Window", "Curtain", "Doorknob", "Carpet", "Pillow", "Blanket", "Clock",
-  "Vase", "Statue", "Scroll", "Compass", "Shovel", "Rake", "Ladder", "Bucket",
-  "Wrench", "Screwdriver", "Engine", "Wheel", "Bumper", "Hose", "Valve", "Gauge",
-  "Filter", "Nozzle", "Gasket", "Lever", "Pulley", "Spring", "Gear", "Spanner",
-  "Trowel", "Helmet", "Jacket", "Vest", "Scarf", "Boots", "Slipper", "Lace",
-  "Marble", "Cobblestone", "Pebble", "Granite", "Copper", "Bronze", "Steel", "Saddle",
-  "Harness", "Reins", "Wagon", "Cart", "Ferry", "Sailboat", "Bicycle", "Skateboard",
-  "Headphone", "Speaker", "Monitor", "Keyboard", "Mouse", "Router", "Battery", "Charger",
-  "Wallet", "Purse", "Backpack", "Couch", "Stool", "Fountain", "Crystal", "Obsidian"
-]
 
 export const PatientLookup = ({ open, onClose }: {
   open: boolean;
@@ -47,13 +30,35 @@ export const PatientLookup = ({ open, onClose }: {
 
   const patientList = React.useMemo(() => {
     if (!searchQuery) return Object.values(patients);
-    const lowerQuery = searchQuery.toLowerCase();
-    return Object.values(patients).filter((p: Database.Patient) =>
-      (p.firstName || "").toLowerCase().includes(lowerQuery) ||
-      (p.lastName || "").toLowerCase().includes(lowerQuery) ||
-      (p.id || "").toString().includes(lowerQuery)
-    );
+    const query = searchQuery.trim().toLowerCase();
+    const isNumber = /^\d+$/.test(query);
+
+    return Object.values(patients).filter((p: Database.Patient) => {
+      if (isNumber) {
+        return (p.id || "").toString().includes(query);
+      }
+      return (p.firstName || "").toLowerCase().includes(query) ||
+             (p.lastName || "").toLowerCase().includes(query) ||
+             (p.id || "").toString().includes(query);
+    });
   }, [patients, searchQuery]);
+
+  const handleFindPatient = () => {
+    if (!searchName) return;
+    const query = searchName.trim();
+    const isNumber = /^\d+$/.test(query);
+
+    if (isNumber) {
+      const match = Object.values(patients).find(p => p.id === query);
+      if (match) {
+        handlePatientSelect(match.id);
+        return;
+      }
+    }
+
+    setSearchQuery(query);
+    setTabValue("2");
+  };
 
   const handlePatientSelect = (mrn: Database.Patient.ID) => {
     setSelectedPatientMRN(mrn);
@@ -69,19 +74,31 @@ export const PatientLookup = ({ open, onClose }: {
   };
 
   const handleCreatePatient = () => {
-    const mrnID = Database.Patient.ID.create()
+    let mrnID = Database.Patient.ID.create()
 
     let firstName = "Doe";
-    let lastName = placeholders[Math.floor(Math.random() * placeholders.length)];
+    let lastName = Database.Patient.RANDOM_DOE_NAME();
 
-    if (searchName) {
-      const parts = searchName.trim().split(/\s+/);
+    const query = searchName.trim();
+    const isNumber = /^\d+$/.test(query);
+
+    if (query && !isNumber) {
+      const parts = query.split(/\s+/);
       if (parts.length > 1) {
         firstName = parts[0];
         lastName = parts.slice(1).join(" ");
       } else {
         lastName = parts[0];
       }
+    } else if (query && isNumber) {
+      // Ensure we don't treat numeric input as a name; just use it as the proposed MRN
+      // or jump to patient if exact match exists.
+      const existing = Object.values(patients).find(p => p.id === query);
+      if (existing) {
+        handlePatientSelect(existing.id);
+        return;
+      }
+      mrnID = query as Database.Patient.ID;
     }
 
     setPatientsDB((prev: Record<string, Database.Patient>) => ({
@@ -91,7 +108,7 @@ export const PatientLookup = ({ open, onClose }: {
         firstName,
         lastName,
         birthdate: searchBirthDate || "1890-01-01T00:00:00.000Z",
-        gender: searchSex || "Unknown",
+        gender: searchSex as Database.Patient.Gender || "Unknown",
         encounters: {}
       }
     }))
@@ -160,6 +177,9 @@ export const PatientLookup = ({ open, onClose }: {
             label="Name/MRN"
             value={searchName}
             onInputChange={(_e, val) => setSearchName(val)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleFindPatient();
+            }}
           />
         </Grid>
         <Grid size={6}>
@@ -225,7 +245,7 @@ export const PatientLookup = ({ open, onClose }: {
 
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
         <Button variant="outlined" onClick={handleCreatePatient}>New</Button>
-        <Button variant="outlined">Find Patient</Button>
+        <Button variant="outlined" onClick={handleFindPatient}>Find Patient</Button>
         <Button variant="outlined" onClick={handleClear}>Clear</Button>
         <Spacer />
         <Button variant="outlined" disabled>Accept</Button>

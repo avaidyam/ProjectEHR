@@ -302,6 +302,24 @@ export namespace Patient {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 6)).toString() as ID
   }
 
+  export const DOE_NAMES = [
+    "Hammer", "Broom", "Table", "Chair", "Mug", "Plate", "Spoon", "Fork",
+    "Knife", "Towel", "Pencil", "Globe", "Cloud", "River", "Mountain", "Ocean",
+    "Forest", "Desert", "Castle", "Bridge", "Mirror", "Candle", "Glove", "Button",
+    "Zipper", "Basket", "Feather", "String", "Rope", "Lantern", "Telescope", "Anvil",
+    "Crayon", "Window", "Curtain", "Doorknob", "Carpet", "Pillow", "Blanket", "Clock",
+    "Vase", "Statue", "Scroll", "Compass", "Shovel", "Rake", "Ladder", "Bucket",
+    "Wrench", "Screwdriver", "Engine", "Wheel", "Bumper", "Hose", "Valve", "Gauge",
+    "Filter", "Nozzle", "Gasket", "Lever", "Pulley", "Spring", "Gear", "Spanner",
+    "Trowel", "Helmet", "Jacket", "Vest", "Scarf", "Boots", "Slipper", "Lace",
+    "Marble", "Cobblestone", "Pebble", "Granite", "Copper", "Bronze", "Steel", "Saddle",
+    "Harness", "Reins", "Wagon", "Cart", "Ferry", "Sailboat", "Bicycle", "Skateboard",
+    "Headphone", "Speaker", "Monitor", "Keyboard", "Mouse", "Router", "Battery", "Charger",
+    "Wallet", "Purse", "Backpack", "Couch", "Stool", "Fountain", "Crystal", "Obsidian"
+  ]
+
+  export const RANDOM_DOE_NAME = () => DOE_NAMES[Math.floor(Math.random() * DOE_NAMES.length)]
+
   export enum Gender {
     Male = 'Male',
     Female = 'Female',
