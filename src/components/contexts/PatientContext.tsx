@@ -46,6 +46,7 @@ const STORAGE = {
 
 //
 export const initialStore: Database.Root = {
+  version: (patient_sample as unknown as Database.Root).version,
   departments: (patient_sample as unknown as Database.Root).departments,
   patients: (patient_sample as unknown as Database.Root).patients,
   appointments: (patient_sample as unknown as Database.Root).appointments,
@@ -82,10 +83,18 @@ export const DatabaseProvider: React.FC<{
   React.useEffect(() => {
     STORAGE.load().then(data => {
       if (data) {
-        isRestoring = true;
-        setGlobalStore(data as any);
-        isRestoring = false;
-        console.log("[Storage] Database initialized from disk.");
+        // If the stored version is different from the initial version, we should 
+        // probably reset the store to the initial state to avoid data corruption.
+        if (data.version !== initialStore.version) {
+          console.warn(`[Storage] Version mismatch: stored=${data.version}, initial=${initialStore.version}. Resetting database.`);
+          STORAGE.save(initialStore);
+          // initialStore is already being used as the default value in createStore
+        } else {
+          isRestoring = true;
+          setGlobalStore(data as any);
+          isRestoring = false;
+          console.log(`[Storage] Database version=${data.version} initialized from disk.`);
+        }
       }
       setIsReady(true);
     });
