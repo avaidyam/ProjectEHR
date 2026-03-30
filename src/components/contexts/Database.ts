@@ -277,6 +277,14 @@ export interface Patient {
     carrierName: string
   }
   careTeam?: CareTeam[]
+  contacts?: {
+    name: string
+    relationship: string
+    phone: string
+    address: string
+    emergency: boolean
+    guardian: boolean
+  }[]
   encounters: {
     [key: Encounter.ID]: Encounter;
   }

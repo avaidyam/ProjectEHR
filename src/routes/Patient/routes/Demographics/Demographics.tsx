@@ -40,6 +40,8 @@ export const Demographics = () => {
     insurance
   }, setChart] = useChart()();
 
+  const [contacts, setContacts] = useChart().contacts([]);
+
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
   const socioeconomicData: any = socialHistory[0] || {};
   const demographics: any = socioeconomicData.demographics || {};
@@ -108,59 +110,18 @@ export const Demographics = () => {
     // Contacts section (managed separately in contacts state)
   })
 
-  // State for contacts management
-  const [contacts, setContacts] = React.useState({
-    emergency: [
-      {
-        id: 1,
-        name: 'John Smith',
-        relationship: 'Father',
-        primaryPhone: '(555) 123-4567',
-        workPhone: '(555) 123-4569',
-        isEmergency: true,
-        isLegalGuardian: true
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        relationship: 'Mother',
-        primaryPhone: '(555) 123-4568',
-        workPhone: '(555) 123-4570',
-        isEmergency: true,
-        isLegalGuardian: true
-      }
-    ],
-    other: [
-      {
-        id: 3,
-        name: 'Bob Johnson',
-        relationship: 'Uncle',
-        primaryPhone: '(555) 987-6543',
-        workPhone: '(555) 987-6544',
-        isEmergency: false,
-        isLegalGuardian: false
-      }
-    ]
-  })
   const [showAddContactPopup, setShowAddContactPopup] = React.useState(false)
   const [newContact, setNewContact] = React.useState({
     name: '',
     relationship: '',
-    primaryPhone: '',
-    workPhone: '',
-    isEmergency: false,
-    isLegalGuardian: false
+    phone: '',
+    address: '',
+    emergency: false,
+    guardian: false
   })
-
-
 
   const [activeTab, setActiveTab] = React.useState(sections[0].id)
   const tabsRef = React.useRef<HTMLDivElement>(null)
-
-  // Helper functions for edit functionality
-  const handleEditClick = (cardId: string) => {
-    setEditingCard(cardId)
-  }
 
   const handleCancel = () => {
     setEditingCard(null)
@@ -276,14 +237,6 @@ export const Demographics = () => {
         // permanentComments: formData.permanentComments,
       }))
 
-      // For contacts, we could save to a contacts field in the data structure
-      // For now, contacts are managed in local state
-      // In the future, you could add:
-      // setSocioeconomicData(prev => ({
-      //   ...prev,
-      //   contacts: contacts
-      // }))
-
       setEditingCard(null)
     } catch (error) {
       console.error('Error saving demographics data:', error)
@@ -294,70 +247,37 @@ export const Demographics = () => {
   // Contact management functions
   const handleAddContact = async () => {
     // Validate required fields
-    if (!newContact.name.trim()) {
-      await alert('Contact name is required', 'Validation Error')
-      return
-    }
-    if (!newContact.relationship.trim()) {
-      await alert('Contact relationship is required', 'Validation Error')
-      return
-    }
-    if (!newContact.primaryPhone.trim()) {
-      await alert('Primary phone number is required', 'Validation Error')
+    if (!newContact.name.trim() || !newContact.relationship.trim() || !newContact.phone.trim()) {
+      await alert('Name, relationship, and phone are required.', 'Validation Error')
       return
     }
 
-    const contact = {
-      id: Date.now(), // Simple ID generation
-      ...newContact
-    }
-
-    if (newContact.isEmergency) {
-      setContacts(prev => ({
-        ...prev,
-        emergency: [...prev.emergency, contact]
-      }))
-    } else {
-      setContacts(prev => ({
-        ...prev,
-        other: [...prev.other, contact]
-      }))
-    }
+    setContacts((prev: any) => [...(prev || []), { ...newContact }])
 
     // Reset form
     setNewContact({
       name: '',
       relationship: '',
-      primaryPhone: '',
-      workPhone: '',
-      isEmergency: false,
-      isLegalGuardian: false
+      phone: '',
+      address: '',
+      emergency: false,
+      guardian: false
     })
     setShowAddContactPopup(false)
   }
 
-  const handleDeleteContact = (contactId: any, isEmergency: boolean) => {
-    if (isEmergency) {
-      setContacts((prev: any) => ({
-        ...prev,
-        emergency: prev.emergency.filter((contact: any) => contact.id !== contactId)
-      }))
-    } else {
-      setContacts((prev: any) => ({
-        ...prev,
-        other: prev.other.filter((contact: any) => contact.id !== contactId)
-      }))
-    }
+  const handleDeleteContact = (contactName: string) => {
+    setContacts((prev: any) => (prev || []).filter((c: any) => c.name !== contactName))
   }
 
   const handleCancelAddContact = () => {
     setNewContact({
       name: '',
       relationship: '',
-      primaryPhone: '',
-      workPhone: '',
-      isEmergency: false,
-      isLegalGuardian: false
+      phone: '',
+      address: '',
+      emergency: false,
+      guardian: false
     })
     setShowAddContactPopup(false)
   }
@@ -949,15 +869,14 @@ export const Demographics = () => {
             // ----- READ-ONLY VIEW -----
             <>
               <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Emergency Contacts</Label>
-              {contacts.emergency.length > 0 ? (
-                contacts.emergency.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+              {(contacts || []).filter((c: any) => c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -966,15 +885,14 @@ export const Demographics = () => {
               )}
 
               <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, mt: 3 }}>Other Contacts</Label>
-              {contacts.other.length > 0 ? (
-                contacts.other.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+              {(contacts || []).filter((c: any) => !c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => !c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -998,14 +916,14 @@ export const Demographics = () => {
                 </Button>
               </Box>
 
-              {contacts.emergency.length > 0 ? (
-                contacts.emergency.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
+              {(contacts || []).filter((c: any) => c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
                     <Button
                       variant="text"
                       color="error"
                       size="small"
-                      onClick={() => handleDeleteContact(contact.id, true)}
+                      onClick={() => handleDeleteContact(contact.name)}
                       sx={{
                         position: 'absolute',
                         top: 8,
@@ -1020,9 +938,8 @@ export const Demographics = () => {
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1043,14 +960,14 @@ export const Demographics = () => {
                 </Button>
               </Box>
 
-              {contacts.other.length > 0 ? (
-                contacts.other.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
+              {(contacts || []).filter((c: any) => !c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => !c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
                     <Button
                       variant="text"
                       color="error"
                       size="small"
-                      onClick={() => handleDeleteContact(contact.id, false)}
+                      onClick={() => handleDeleteContact(contact.name)}
                       sx={{
                         position: 'absolute',
                         top: 8,
@@ -1065,9 +982,8 @@ export const Demographics = () => {
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1191,18 +1107,18 @@ export const Demographics = () => {
                   freeSolo
                   label="Primary Phone"
                   fullWidth
-                  value={newContact.primaryPhone}
-                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, primaryPhone: newValue })}
+                  value={newContact.phone}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, phone: newValue })}
                   options={[]}
                 />
               </Grid>
               <Grid size={12}>
                 <Autocomplete
                   freeSolo
-                  label="Work Phone"
+                  label="Address"
                   fullWidth
-                  value={newContact.workPhone}
-                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, workPhone: newValue })}
+                  value={newContact.address}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, address: newValue })}
                   options={[]}
                 />
               </Grid>
@@ -1210,18 +1126,18 @@ export const Demographics = () => {
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Emergency Contact</Label>
                 <Stack direction="row" spacing={1}>
                   <Button
-                    variant={newContact.isEmergency ? "contained" : "outlined"}
+                    variant={newContact.emergency ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isEmergency: true })}
+                    onClick={() => setNewContact({ ...newContact, emergency: true })}
                   >
                     Yes
                   </Button>
                   <Button
-                    variant={!newContact.isEmergency ? "contained" : "outlined"}
+                    variant={!newContact.emergency ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isEmergency: false })}
+                    onClick={() => setNewContact({ ...newContact, emergency: false })}
                   >
                     No
                   </Button>
@@ -1231,18 +1147,18 @@ export const Demographics = () => {
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Legal Guardian?</Label>
                 <Stack direction="row" spacing={1}>
                   <Button
-                    variant={newContact.isLegalGuardian ? "contained" : "outlined"}
+                    variant={newContact.guardian ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: true })}
+                    onClick={() => setNewContact({ ...newContact, guardian: true })}
                   >
                     Yes
                   </Button>
                   <Button
-                    variant={!newContact.isLegalGuardian ? "contained" : "outlined"}
+                    variant={!newContact.guardian ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: false })}
+                    onClick={() => setNewContact({ ...newContact, guardian: false })}
                   >
                     No
                   </Button>
