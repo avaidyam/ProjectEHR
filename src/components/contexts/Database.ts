@@ -25,7 +25,7 @@ export namespace JSONDate {
   }
   export const toDateString = (date?: JSONDate, tz: Temporal.TimeZoneLike = 'UTC'): string | undefined => {
     try {
-      if (!!date) {
+      if (date) {
         return Temporal.Instant.from(date).toZonedDateTimeISO(tz).toPlainDate().toLocaleString()
       }
       return undefined
@@ -269,10 +269,10 @@ export interface Patient {
   firstName: string
   lastName: string
   birthdate: JSONDate
-  gender: string
+  gender: Patient.Gender
   avatarUrl?: string
   address?: any
-  preferredLanguage?: string
+  preferredLanguage?: Patient.Language
   insurance?: {
     carrierName: string
   }
@@ -292,6 +292,33 @@ export namespace Patient {
   export type Fragment = Partial<Omit<Patient, 'id'>>
   export namespace ID {
     export const create = (): ID => Math.floor((Math.random() * 9 + 1) * (10 ** 6)).toString() as ID
+  }
+
+  export enum Gender {
+    Male = 'Male',
+    Female = 'Female',
+    Other = 'Other',
+    Unknown = 'Unknown'
+  }
+
+  export enum Language {
+    English = 'English',
+    Spanish = 'Spanish',
+    French = 'French',
+    German = 'German',
+    Italian = 'Italian',
+    Portuguese = 'Portuguese',
+    ChineseMandarin = 'Chinese (Mandarin)',
+    ChineseCantonese = 'Chinese (Cantonese)',
+    Japanese = 'Japanese',
+    Korean = 'Korean',
+    Arabic = 'Arabic',
+    Hindi = 'Hindi',
+    Russian = 'Russian',
+    Polish = 'Polish',
+    Vietnamese = 'Vietnamese',
+    Tagalog = 'Tagalog',
+    Other = 'Other'
   }
 }
 
@@ -896,6 +923,7 @@ export interface SocialHistoryItem {
     devices?: (SocialHistoryItem.VapingDevice | string)[]
   }
   occupational?: {
+    //status?: SocialHistoryItem.EmploymentStatus
     employer?: string
     occupation?: string
     history?: {
@@ -906,11 +934,16 @@ export interface SocialHistoryItem {
   }
   demographics?: {
     maritalStatus?: SocialHistoryItem.MaritalStatus
+    //religion?: SocialHistoryItem.Religion
+    //genderIdentity?: SocialHistoryItem.GenderIdentity
+    //sexAssignedAtBirth?: SocialHistoryItem.SexAssignedAtBirth
+    //sexualOrientation?: SocialHistoryItem.SexualOrientation
+    //pronouns?: SocialHistoryItem.Pronouns
     spouseName?: string
     numberOfChildren?: number
     yearsOfEducation?: number
     highestEducationLevel?: SocialHistoryItem.HighestEducationLevel
-    preferredLanguage?: SocialHistoryItem.PreferredLanguage | string
+    preferredLanguage?: Patient.Language | string
     ethnicGroup?: SocialHistoryItem.EthnicGroup | string
     race?: SocialHistoryItem.Race | string
   }
@@ -989,13 +1022,34 @@ export namespace SocialHistoryItem {
   }
 
   export enum MaritalStatus {
-    Divorced = 'Divorced',
-    LegallySeparated = 'Legally Separated',
-    LifePartner = 'Life Partner',
-    Married = 'Married',
     Single = 'Single',
+    Married = 'Married',
+    Divorced = 'Divorced',
+    Widowed = 'Widowed',
+    Separated = 'Separated',
+    DomesticPartnership = 'Domestic Partnership'
+  }
+
+  export enum Religion {
+    Christianity = 'Christianity',
+    Islam = 'Islam',
+    Judaism = 'Judaism',
+    Hinduism = 'Hinduism',
+    Buddhism = 'Buddhism',
+    Atheist = 'Atheist',
+    Agnostic = 'Agnostic',
+    Other = 'Other',
+    None = 'None'
+  }
+
+  export enum EmploymentStatus {
     Unknown = 'Unknown',
-    WidowWidower = 'Widow/Widower'
+    Employed = 'Employed',
+    Unemployed = 'Unemployed',
+    Retired = 'Retired',
+    Student = 'Student',
+    Disabled = 'Disabled',
+    SelfEmployed = 'Self-Employed'
   }
 
   export enum HighestEducationLevel {
@@ -1006,29 +1060,64 @@ export namespace SocialHistoryItem {
     DoctoralDegree = 'Doctoral Degree'
   }
 
-  export enum PreferredLanguage {
-    English = 'English',
-    Spanish = 'Spanish',
-    French = 'French',
-    German = 'German',
-    Chinese = 'Chinese',
-    Japanese = 'Japanese',
-    Korean = 'Korean'
-  }
-
   export enum EthnicGroup {
-    NonHispanic = 'Non-Hispanic',
-    Latino = 'Latino',
-    Hispanic = 'Hispanic'
+    HispanicOrLatino = 'Hispanic or Latino',
+    NotHispanicOrLatino = 'Not Hispanic or Latino',
+    Unknown = 'Unknown',
+    PreferNotToAnswer = 'Prefer not to answer'
   }
 
   export enum Race {
     White = 'White',
     BlackOrAfricanAmerican = 'Black or African American',
     Asian = 'Asian',
-    AmericanIndian = 'American Indian',
-    NativeHawaiian = 'Native Hawaiian',
-    Other = 'Other'
+    NativeAmerican = 'Native American',
+    PacificIslander = 'Pacific Islander',
+    Other = 'Other',
+    PreferNotToAnswer = 'Prefer not to answer'
+  }
+
+  export enum GenderIdentity {
+    Male = 'Male',
+    Female = 'Female',
+    NonBinary = 'Non-binary',
+    Genderqueer = 'Genderqueer',
+    Transgender = 'Transgender',
+    Agender = 'Agender',
+    Genderfluid = 'Genderfluid',
+    Other = 'Other',
+    PreferNotToAnswer = 'Prefer not to answer'
+  }
+
+  export enum SexAssignedAtBirth {
+    Male = 'Male',
+    Female = 'Female',
+    Intersex = 'Intersex',
+    Unknown = 'Unknown',
+    PreferNotToAnswer = 'Prefer not to answer'
+  }
+
+  export enum SexualOrientation {
+    Heterosexual = 'Heterosexual',
+    Homosexual = 'Homosexual',
+    Bisexual = 'Bisexual',
+    Pansexual = 'Pansexual',
+    Asexual = 'Asexual',
+    Demisexual = 'Demisexual',
+    Queer = 'Queer',
+    Questioning = 'Questioning',
+    Other = 'Other',
+    PreferNotToAnswer = 'Prefer not to answer'
+  }
+
+  export enum Pronouns {
+    HeHim = 'He/Him',
+    SheHer = 'She/Her',
+    TheyThem = 'They/Them',
+    HeThey = 'He/They',
+    SheThey = 'She/They',
+    Other = 'Other',
+    PreferNotToAnswer = 'Prefer not to answer'
   }
 
   export enum SmokingStatus {

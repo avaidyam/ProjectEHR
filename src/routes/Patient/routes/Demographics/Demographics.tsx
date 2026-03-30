@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, usePrompts } from 'components/ui/Core';
 import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
+import { scrollToSection, useSectionObserver } from 'util/helpers';
 
 /*
  * FIELDS NOT IN CURRENT DATA STRUCTURE (commented out for future use):
@@ -13,6 +14,17 @@ import { usePatient, Database } from 'components/contexts/PatientContext';
  * These fields are included in the form but not saved to the data structure yet.
  * Uncomment the relevant lines in handleSave() when the data structure is updated.
  */
+const sections = [
+  { id: 'basics', label: 'Basics' },
+  { id: 'employer-identification', label: 'Employer & Identification' },
+  { id: 'insurance', label: 'Insurance' },
+  { id: 'patient-contacts', label: 'Contacts' },
+  { id: 'pharm-labs', label: 'Pharmacies & Labs' },
+  { id: 'patient-lists', label: 'Patient Lists' },
+  { id: 'advance-directives', label: 'Advance Directives' },
+  { id: 'code-status', label: 'Code Status' },
+  { id: 'po-npo', label: 'PO/NPO' }
+]
 
 export const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
@@ -140,137 +152,7 @@ export const Demographics = () => {
     isLegalGuardian: false
   })
 
-  const employmentStatusOptions = [
-    'Unknown',
-    'Employed',
-    'Unemployed',
-    'Retired',
-    'Student',
-    'Disabled',
-    'Self-Employed'
-  ]
 
-  const maritalStatusOptions = [
-    'Single',
-    'Married',
-    'Divorced',
-    'Widowed',
-    'Separated',
-    'Domestic Partnership'
-  ]
-
-  const religionOptions = [
-    'Christianity',
-    'Islam',
-    'Judaism',
-    'Hinduism',
-    'Buddhism',
-    'Atheist',
-    'Agnostic',
-    'Other',
-    'None'
-  ]
-
-  const raceOptions = [
-    'White',
-    'Black or African American',
-    'Asian',
-    'Native American',
-    'Pacific Islander',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  // New comprehensive option lists
-  const legalSexOptions = [
-    'Male',
-    'Female',
-    'Other',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const genderIdentityOptions = [
-    'Male',
-    'Female',
-    'Non-binary',
-    'Genderqueer',
-    'Transgender',
-    'Agender',
-    'Genderfluid',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const sexAssignedAtBirthOptions = [
-    'Male',
-    'Female',
-    'Intersex',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const sexualOrientationOptions = [
-    'Heterosexual',
-    'Homosexual',
-    'Bisexual',
-    'Pansexual',
-    'Asexual',
-    'Demisexual',
-    'Queer',
-    'Questioning',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const pronounsOptions = [
-    'He/Him',
-    'She/Her',
-    'They/Them',
-    'He/They',
-    'She/They',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const ethnicGroupOptions = [
-    'Hispanic or Latino',
-    'Not Hispanic or Latino',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const languageOptions = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Italian',
-    'Portuguese',
-    'Chinese (Mandarin)',
-    'Chinese (Cantonese)',
-    'Japanese',
-    'Korean',
-    'Arabic',
-    'Hindi',
-    'Russian',
-    'Polish',
-    'Vietnamese',
-    'Tagalog',
-    'Other'
-  ]
-
-  const sections = [
-    { id: 'basics', label: 'Basics' },
-    { id: 'employer-identification', label: 'Employer & Identification' },
-    { id: 'insurance', label: 'Insurance' },
-    { id: 'patient-contacts', label: 'Contacts' },
-    { id: 'pharm-labs', label: 'Pharmacies & Labs' },
-    { id: 'patient-lists', label: 'Patient Lists' },
-    { id: 'advance-directives', label: 'Advance Directives' },
-    { id: 'code-status', label: 'Code Status' },
-    { id: 'po-npo', label: 'PO/NPO' }
-  ]
 
   const [activeTab, setActiveTab] = React.useState(sections[0].id)
   const tabsRef = React.useRef<HTMLDivElement>(null)
@@ -482,37 +364,12 @@ export const Demographics = () => {
 
   const handleTabChange = (_event: any, newValue: any) => {
     if (!newValue) return
-    const el = document.getElementById(newValue)
-    if (el) {
-      const offset = (tabsRef.current?.clientHeight ?? 0) + 8
-      const top = el.getBoundingClientRect().top + window.scrollY - offset
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
+    const offset = (tabsRef.current?.clientHeight ?? 0) + 8
+    scrollToSection(newValue, offset)
     setActiveTab(newValue)
   }
 
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries: IntersectionObserverEntry[]) => {
-        const visible = entries
-          .filter((e: IntersectionObserverEntry) => e.isIntersecting)
-          .sort((a: IntersectionObserverEntry, b: IntersectionObserverEntry) => a.boundingClientRect.top - b.boundingClientRect.top)
-        if (visible.length > 0) {
-          setActiveTab(visible[0].target.id)
-        }
-      },
-      {
-        root: null,
-        rootMargin: `-${(tabsRef.current?.clientHeight ?? 0) + 12}px 0px -60% 0px`,
-        threshold: [0, 0.25, 0.5, 0.75, 1]
-      }
-    )
-    for (const { id } of sections) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    }
-    return () => observer.disconnect()
-  }, [])
+  useSectionObserver(sections.map(s => s.id), setActiveTab, tabsRef)
 
   const TitledCardItem = ({ label, value }: { label: string; value?: any }) => (
     <Stack spacing={0.5}>
@@ -641,7 +498,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Legal Sex"
                     fullWidth
-                    options={legalSexOptions}
+                    options={Object.values(Database.Patient.Gender)}
                     value={formData.gender}
                     onChange={(event, newValue) => handleFormDataChange('gender', newValue)}
                   />
@@ -654,7 +511,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Gender Identity"
                     fullWidth
-                    options={genderIdentityOptions}
+                    options={Object.values(Database.SocialHistoryItem.GenderIdentity)}
                     value={formData.genderIdentity}
                     onInputChange={(event, newInputValue) => handleFormDataChange('genderIdentity', newInputValue)}
                   />
@@ -663,7 +520,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Sex Assigned at Birth"
                     fullWidth
-                    options={sexAssignedAtBirthOptions}
+                    options={Object.values(Database.SocialHistoryItem.SexAssignedAtBirth)}
                     value={formData.sexAssignedAtBirth}
                     onChange={(event, newValue) => handleFormDataChange('sexAssignedAtBirth', newValue)}
                   />
@@ -672,7 +529,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Sexual Orientation"
                     fullWidth
-                    options={sexualOrientationOptions}
+                    options={Object.values(Database.SocialHistoryItem.SexualOrientation)}
                     value={formData.sexualOrientation}
                     onChange={(event, newValue) => handleFormDataChange('sexualOrientation', newValue)}
                   />
@@ -682,7 +539,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Pronouns"
                     fullWidth
-                    options={pronounsOptions}
+                    options={Object.values(Database.SocialHistoryItem.Pronouns)}
                     value={formData.pronouns}
                     onInputChange={(event, newInputValue) => handleFormDataChange('pronouns', newInputValue)}
                   />
@@ -736,7 +593,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Language"
                     fullWidth
-                    options={languageOptions}
+                    options={Object.values(Database.Patient.Language)}
                     value={formData.language}
                     onInputChange={(event, newInputValue) => handleFormDataChange('language', newInputValue)}
                   />
@@ -754,7 +611,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Marital Status"
                     fullWidth
-                    options={maritalStatusOptions}
+                    options={Object.values(Database.SocialHistoryItem.MaritalStatus)}
                     value={formData.maritalStatus}
                     onChange={(event, newValue) => handleFormDataChange('maritalStatus', newValue)}
                   />
@@ -764,7 +621,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Religion"
                     fullWidth
-                    options={religionOptions}
+                    options={Object.values(Database.SocialHistoryItem.Religion)}
                     value={formData.religion}
                     onInputChange={(event, newInputValue) => handleFormDataChange('religion', newInputValue)}
                   />
@@ -773,7 +630,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Ethnic Group"
                     fullWidth
-                    options={ethnicGroupOptions}
+                    options={Object.values(Database.SocialHistoryItem.EthnicGroup)}
                     value={formData.ethnicGroup}
                     onChange={(event, newValue) => handleFormDataChange('ethnicGroup', newValue)}
                   />
@@ -782,7 +639,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Race"
                     fullWidth
-                    options={raceOptions}
+                    options={Object.values(Database.SocialHistoryItem.Race)}
                     value={formData.race}
                     onChange={(event, newValue) => handleFormDataChange('race', newValue)}
                   />
@@ -876,7 +733,7 @@ export const Demographics = () => {
                       <Autocomplete
                         label="Employment Status"
                         fullWidth
-                        options={employmentStatusOptions}
+                        options={Object.values(Database.SocialHistoryItem.EmploymentStatus)}
                         value={formData.employmentStatus}
                         onChange={(event, newValue) => handleFormDataChange('employmentStatus', newValue)}
                       />
