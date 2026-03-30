@@ -234,12 +234,12 @@ export interface Appointment {
   }
   type: string
   location?: Location.ID
+  status: Appointment.Status
   apptTime: string
   cc: string
   notes: string
   checkinTime?: string
   checkoutTime: any
-  officeStatus: Appointment.Status
 }
 
 export namespace Appointment {

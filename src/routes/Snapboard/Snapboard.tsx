@@ -149,7 +149,7 @@ export function Snapboard() {
                     </Box>
 
                     <Label variant="body2" sx={{ mb: 1 }}>
-                      <strong>Status:</strong> {appointment.officeStatus}
+                      <strong>Status:</strong> {appointment.status}
                     </Label>
                     <Label variant="body2" sx={{ mb: 1 }}>
                       <strong>Time:</strong> {Temporal.Instant.from(appointment.apptTime).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
