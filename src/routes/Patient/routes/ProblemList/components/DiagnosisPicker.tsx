@@ -185,6 +185,14 @@ export const DiagnosisPicker = ({ searchTerm, open, onSelect, ...props }: { sear
   const [selection, setSelection] = React.useState<any>(null)
   const [queuedDiagnoses, setQueuedDiagnoses] = React.useState<any[]>([])
 
+  React.useEffect(() => {
+    if (open) {
+      setValue(searchTerm);
+      setInputValue(searchTerm);
+      if (searchTerm) setTab("preference");
+    }
+  }, [open, searchTerm]);
+
   const selectedItem = React.useMemo(() => data.find((x: any) => x.conceptId === selection), [data, selection])
 
   useLazyEffect(() => {

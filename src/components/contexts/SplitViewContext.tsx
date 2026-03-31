@@ -13,14 +13,17 @@ export interface SplitViewContextType {
   setMainTabs: React.Dispatch<React.SetStateAction<TabObject[]>>;
   sideTabs: TabObject[];
   setSideTabs: React.Dispatch<React.SetStateAction<TabObject[]>>;
+  windowTabs: TabObject[];
+  setWindowTabs: React.Dispatch<React.SetStateAction<TabObject[]>>;
   selectedMainTab: number;
   setSelectedMainTab: React.Dispatch<React.SetStateAction<number>>;
   selectedSideTab: number;
   setSelectedSideTab: React.Dispatch<React.SetStateAction<number>>;
   closeMainTab: (index: number) => void;
   closeSideTab: (index: number) => void;
-  closeTab: (name: string, pane?: "main" | "side" | null) => boolean;
-  openTab: (name: string, data: any, pane?: "main" | "side", selectIfExists?: boolean) => number;
+  closeWindowTab: (index: number) => void;
+  closeTab: (name: string, pane?: "main" | "side" | "window" | null) => boolean;
+  openTab: (name: string, data: any, pane?: "main" | "side" | "window", selectIfExists?: boolean) => number;
 }
 
 export const SplitViewContext = React.createContext<SplitViewContextType>({} as SplitViewContextType)

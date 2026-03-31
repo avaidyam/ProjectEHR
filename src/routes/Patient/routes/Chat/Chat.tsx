@@ -7,14 +7,15 @@ import { XORcrypt } from "util/helpers";
 import { Database, usePatient } from "components/contexts/PatientContext";
 import { Modality, StartSensitivity } from '@google/genai';
 
+// if string -> user entered password
+// if null -> user declined/cancelled
+// if undefined -> user never prompted
+let _PWD: string | null | undefined;
 const _API_KEY = `# \u0019\u0004#\u001b-$5\u0016\u0011+<*\u0018\u0001\u001cV\u0003)O!<P\t\u000e&:V\u001fSDTW2(\u000e\u00020`;
-let _PWD: string | null = null;
 
 export function Chat() {
   const { prompt, alert } = usePrompts();
   const [apiKey, setApiKey] = React.useState(XORcrypt(_API_KEY, _PWD ?? ""));
-  // Default to "voice" now that LLM chat is disabled
-  const [tab, setTab] = React.useState("voice");
   const [configUnlocked, setConfigUnlocked] = React.useState(false);
   const [voiceName, setVoiceName] = React.useState("Charon");
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -279,16 +280,14 @@ and avoid medical jargon unless the patient would reasonably use it.
 
 Here is the standardized patient's chart information:`);
 
+  const hasPromptedRef = React.useRef(false);
   React.useEffect(() => {
-    if (!_PWD) {
-      (async () => {
-        const code = await prompt("Authorization Code", "", "Authorization Required");
-        if (code) {
-          _PWD = code;
-          setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
-        }
-      })();
-    }
+    if ((_PWD !== undefined && _PWD !== null) || hasPromptedRef.current) return;    
+    (async () => {
+      hasPromptedRef.current = true;
+      _PWD = await prompt("Authorization Code", "", "Authorization Required");
+      setApiKey(XORcrypt(_API_KEY, _PWD ?? ""));
+    })();
   }, [prompt]);
 
   const geminiOptions: LiveClientOptions = React.useMemo(() => ({
@@ -335,7 +334,19 @@ Here is the standardized patient's chart information:`);
     }
   };
 
-  if (!_PWD) return <></>;
+  if (_PWD === null || _PWD === undefined) {
+    return (
+      <Box sx={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", p: 3, textAlign: "center", color: "text.secondary" }}>
+        <Icon sx={{ fontSize: 48, mb: 2, opacity: 0.5 }}>lock</Icon>
+        <Box sx={{ fontSize: '1.25rem', fontWeight: 500, mb: 1, color: "text.primary" }}>
+          Authorization Required
+        </Box>
+        <Box>
+          Reopen this tab to enter your authorization code.
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <GeminiAPIProvider

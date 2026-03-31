@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Tabs, Tab, Tooltip } from '@mui/material'; // FIXME: REMOVE!
+import { Tabs, Tab, Tooltip, ToggleButtonGroup, ToggleButton } from '@mui/material'; // FIXME: REMOVE!
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColDef } from '@mui/x-data-grid-premium';
 import { Box, Button, Label, DataGrid, Icon, IconButton } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext';
@@ -242,8 +242,8 @@ const SORT_KEYS: Record<string, string> = {
 export const ChartReview = ({ ...props }: any) => {
   const navigate = useNavigate();
   const { useChart, useEncounter } = usePatient()
-  const [chart, setChart] = useChart()()
-  const [encounter, setEncounter] = useEncounter()()
+  const [chart] = useChart()()
+  const [encounter] = useEncounter()()
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders([])
   const [departments] = useDatabase().departments()
@@ -251,6 +251,7 @@ export const ChartReview = ({ ...props }: any) => {
   const { openTab } = useSplitView()
   const [selectedTabLabel, setSelectedTabLabel] = React.useState('Encounters');
   const [rowSelectionModel, setRowSelectionModel] = React.useState<any>({ type: 'include' as const, ids: new Set() });
+  const [openTarget, setOpenTarget] = React.useState<"main" | "side" | "window">("side");
 
   const enrichDocs = (docs: any, kind: string, enc: any) => (docs || []).map((d: any) => {
     const authorProv = d.author ? providers.find((p: any) => p.id === d.author) : null;
@@ -270,7 +271,9 @@ export const ChartReview = ({ ...props }: any) => {
 
   // display all chart documents from the current encounter AND ALL PRIOR ENCOUNTERS
   const currentEncDate = encounter.startDate ?? "1970-01-01T00:00:00Z"
-  const documents2 = Object.values(chart.encounters)
+  const validEncounters = Object.values(chart.encounters).filter((x: any) => !!x.id)
+
+  const documents2 = validEncounters
     .toSorted((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")))
     .filter((x) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(currentEncDate)) <= 0)
     .flatMap((x) => [
@@ -281,7 +284,7 @@ export const ChartReview = ({ ...props }: any) => {
 
   const documents = filterDocuments(documents2, conditionals, orders)
 
-  const encountersData = Object.values(chart.encounters).map((x: any) => {
+  const encountersData = validEncounters.map((x: any) => {
     const dept = departments.find((d: any) => d.id === x.department)
     const prov = providers.find((p: any) => p.id === x.provider)
     return {
@@ -310,9 +313,9 @@ export const ChartReview = ({ ...props }: any) => {
 
   const handleRowClick = (row: any) => {
     if (["Lab", "Cardiac", "Imaging", "Specialty Tests"].includes(selectedTabLabel)) {
-      openTab("Report", { data: row }, "main", false)
+      openTab("Report", { data: row }, openTarget, false)
     } else if (["Notes"].includes(selectedTabLabel)) {
-      openTab("Note", { data: row }, "side", false)
+      openTab("Note", { data: row }, openTarget, false)
     }
   }
 
@@ -349,9 +352,23 @@ export const ChartReview = ({ ...props }: any) => {
               showToolbar
               slots={{
                 toolbar: () => (
-                  <GridToolbarContainer sx={{ justifyContent: 'flex-start' }}>
+                  <GridToolbarContainer sx={{ justifyContent: 'flex-start', alignItems: 'center' }}>
                     <GridToolbarFilterButton />
                     <GridToolbarColumnsButton />
+                    <Box sx={{ flex: '1' }} />
+                    <ToggleButtonGroup
+                      value={openTarget}
+                      exclusive
+                      onChange={(e, newTarget) => {
+                        if (newTarget) setOpenTarget(newTarget);
+                      }}
+                      size="small"
+                      sx={{ ml: 2, height: 28 }}
+                    >
+                      <ToggleButton value="main" sx={{ px: 1, py: 0 }}><Tooltip title="Open in Main Pane"><Icon fontSize="small">vertical_split</Icon></Tooltip></ToggleButton>
+                      <ToggleButton value="side" sx={{ px: 1, py: 0 }}><Tooltip title="Open in Sidebar"><Icon fontSize="small">view_sidebar</Icon></Tooltip></ToggleButton>
+                      <ToggleButton value="window" sx={{ px: 1, py: 0 }}><Tooltip title="Open in Window"><Icon fontSize="small">open_in_new</Icon></Tooltip></ToggleButton>
+                    </ToggleButtonGroup>
                     <Box sx={{ flex: '1' }} />
                     {selectedTabLabel === 'Encounters' && (
                       <Button
@@ -369,6 +386,9 @@ export const ChartReview = ({ ...props }: any) => {
                       >
                         Open Encounter
                       </Button>
+                    )}
+                    {selectedTabLabel !== 'Encounters' && (
+                      <Box sx={{ flex: '1' }} />
                     )}
                   </GridToolbarContainer>
                 )

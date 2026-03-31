@@ -43,7 +43,7 @@ export const VitalsPopup = ({ vitals, definition }: { vitals: Database.Flowsheet
       <span
         style={vitals[0]?.bmi > 30 ? { backgroundColor: 'rgb(219, 40, 40, 0.7)', borderColor: 'rgb(219, 40, 40, 1)' } : {}}
       >
-        BMI: {vitals[0]?.bmi} ({vitals[0]?.weight} lbs)
+        BMI: {vitals[0]?.bmi} ({vitals[0]?.weight} kgs)
       </span>
       <Popper open={open} anchorEl={anchorEl} placement="right" transition>
         {({ TransitionProps }) => (

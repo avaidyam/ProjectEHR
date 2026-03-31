@@ -5,6 +5,7 @@ import { Box, Tab, Stack, Menu, MenuItem, IconButton, useMediaQuery, useTheme } 
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { SplitViewProvider, TabObject, TabsDirectory } from '../contexts/SplitViewContext';
+import { Window } from './Core';
 
 const DraggableTab: React.FC<{ index: number; value: number; label: string; child: React.ReactElement }> = ({ index, child, ...props }) => {
   return (
@@ -104,6 +105,7 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
 
   const [mainTabs, setMainTabs] = React.useState<TabObject[]>(defaultMainTabs)
   const [sideTabs, setSideTabs] = React.useState<TabObject[]>(defaultSideTabs)
+  const [windowTabs, setWindowTabs] = React.useState<TabObject[]>([])
   const [selectedMainTab, setSelectedMainTab] = React.useState(0)
   const [selectedSideTab, setSelectedSideTab] = React.useState(0)
   const [overflowMenuAnchor, setOverflowMenuAnchor] = React.useState<null | HTMLElement>(null)
@@ -140,13 +142,17 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
     })
   }
 
+  const closeWindowTab = (index: number) => {
+    setWindowTabs(prev => prev.filter((_, i) => i !== index))
+  }
+
   /**
    * Close a tab by name
    * @param {string} name - The name of the tab to close
-   * @param {"main"|"side"|null} pane - Which pane to search ("main", "side", or null for either)
+   * @param {"main"|"side"|"window"|null} pane - Which pane to search ("main", "side", "window", or null for either)
    * @returns {boolean} - True if a tab was closed, false otherwise
    */
-  const closeTab = (name: string, pane: "main" | "side" | null = null): boolean => {
+  const closeTab = (name: string, pane: "main" | "side" | "window" | null = null): boolean => {
     if (pane === null || pane === "main") {
       const index = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
       if (index !== -1) {
@@ -163,6 +169,14 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
       }
     }
 
+    if (pane === null || pane === "window") {
+      const index = windowTabs.findIndex(tab => Object.keys(tab)[0] === name)
+      if (index !== -1) {
+        closeWindowTab(index)
+        return true
+      }
+    }
+
     return false
   }
 
@@ -170,11 +184,11 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
    * Open a tab, or select it if it already exists
    * @param {string} name - The name of the tab
    * @param {any} data - The data to pass to the tab
-   * @param {"main"|"side"} pane - Which pane to open in ("main" or "side")
+   * @param {"main"|"side"|"window"} pane - Which pane to open in ("main" or "side" or "window")
    * @param {boolean} selectIfExists - If true and tab exists, select it instead of opening duplicate
    * @returns {number} - The index of the opened/selected tab
    */
-  const openTab = (name: string, data: any, pane: "main" | "side" = "main", selectIfExists = true): number => {
+  const openTab = (name: string, data: any, pane: "main" | "side" | "window" = "main", selectIfExists = true): number => {
     if (pane === "main") {
       const existingIndex = mainTabs.findIndex(tab => Object.keys(tab)[0] === name)
       if (existingIndex !== -1 && selectIfExists) {
@@ -199,6 +213,15 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
       const newIndex = sideTabs.length
       setSelectedSideTab(newIndex)
       return newIndex
+    } else if (pane === "window") {
+      const existingIndex = windowTabs.findIndex(tab => Object.keys(tab)[0] === name)
+      if (existingIndex !== -1 && selectIfExists) {
+        return existingIndex
+      }
+
+      const newTab = { [name]: data }
+      setWindowTabs(prev => [...prev, newTab])
+      return windowTabs.length
     }
 
     return -1
@@ -207,10 +230,12 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
   const providerState = {
     mainTabs, setMainTabs,
     sideTabs, setSideTabs,
+    windowTabs, setWindowTabs,
     selectedMainTab, setSelectedMainTab,
     selectedSideTab, setSelectedSideTab,
     closeMainTab,
     closeSideTab,
+    closeWindowTab,
     closeTab,
     openTab,
   }
@@ -454,6 +479,13 @@ export const SplitView = ({ defaultMainTabs, defaultSideTabs, overflowMenuTabs =
           }
         </PanelGroup>
       </DragDropContext>
+      {windowTabs.flatMap(x => Object.entries(x)).map(([k, v], i) => (
+        <Window key={i} resizable open={true} onClose={() => closeWindowTab(i)} title={k} fullWidth maxWidth="md" ContentProps={{ sx: { p: 0 } }}>
+          <ErrorBoundary fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>⚠️ Something went wrong</Box>}>
+            {tabsDirectory[k](v)}
+          </ErrorBoundary>
+        </Window>
+      ))}
     </SplitViewProvider>
   )
 }

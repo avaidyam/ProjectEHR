@@ -7,6 +7,7 @@ import {
   Icon,
   Autocomplete,
   DatePicker,
+  TimePicker,
   AutocompleteButtons,
   Grid,
   RichTextEditor
@@ -17,7 +18,7 @@ import { filterDocuments } from 'util/helpers';
 
 export function BirthHistory() {
   const { useChart, useEncounter } = usePatient();
-  const [{ birthdate }] = useChart()();
+  const [birthdate, setBirthdate] = useChart().birthdate();
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
   const [conditionals] = useEncounter().conditionals();
   const [orders] = useEncounter().orders();
@@ -119,19 +120,22 @@ export function BirthHistory() {
           <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Autocomplete
+                <DatePicker
                   size="small"
-                  freeSolo
+                  convertString
+                  disabled
                   label="Birth Date"
                   fullWidth
                   value={birthdate || ''}
-                  options={[]}
-                  TextFieldProps={{
-                    disabled: true,
-                    sx: {
-                      '& .MuiInputBase-input.Mui-disabled': {
-                        WebkitTextFillColor: 'black',
-                        color: 'black'
+                  slotProps={{
+                    textField: {
+                      size: "small",
+                      helperText: `Age: ${Database.JSONDate.toAge(birthdate)} years old`,
+                      sx: {
+                        '& .MuiInputBase-input.Mui-disabled': {
+                          WebkitTextFillColor: 'black',
+                          color: 'black'
+                        }
                       }
                     }
                   }}
@@ -139,35 +143,13 @@ export function BirthHistory() {
               </Grid>
 
               <Grid size={{ xs: 12, sm: 6 }}>
-                <Autocomplete
+                <TimePicker
                   size="small"
-                  freeSolo
-                  label="Age"
-                  fullWidth
-                  value={Database.JSONDate.toAge(birthdate)}
-                  options={[]}
-                  TextFieldProps={{
-                    disabled: true,
-                    sx: {
-                      '& .MuiInputBase-input.Mui-disabled': {
-                        WebkitTextFillColor: 'black',
-                        color: 'black'
-                      }
-                    }
-                  }}
-                />
-              </Grid>
-
-              <Grid size={12}>
-                <Autocomplete
-                  size="small"
-                  freeSolo
+                  convertString
                   label="Birth Time"
                   fullWidth
-                  value={birthHistoryData?.birthTime || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('birthTime', newValue)}
-                  options={[]}
-                  TextFieldProps={{ type: 'time', InputLabelProps: { shrink: true } }}
+                  value={birthdate.split('T')[1].slice(0, 8)}
+                  onChange={(t: string) => t && setBirthdate(Temporal.Instant.from(birthdate).toZonedDateTimeISO('UTC').with(Temporal.PlainTime.from(t)).toInstant().toString() as Database.JSONDate)}
                 />
               </Grid>
 
@@ -178,7 +160,7 @@ export function BirthHistory() {
                   label="Gestation age (Weeks)"
                   fullWidth
                   value={birthHistoryData?.gestationWeeks || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('gestationWeeks', parseInt(newValue) || 0)}
+                  onInputChange={(_e, newValue) => handleFieldChange('gestationWeeks', parseInt(newValue, 10) || 0)}
                   options={[]}
                   TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 50 } }}
                 />
@@ -191,7 +173,7 @@ export function BirthHistory() {
                   label="Gestation age (Days)"
                   fullWidth
                   value={birthHistoryData?.gestationDays || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('gestationDays', parseInt(newValue) || 0)}
+                  onInputChange={(_e, newValue) => handleFieldChange('gestationDays', parseInt(newValue, 10) || 0)}
                   options={[]}
                   TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 6 } }}
                 />
@@ -204,7 +186,7 @@ export function BirthHistory() {
                   label="APGAR 1"
                   fullWidth
                   value={birthHistoryData?.apgar1 || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('apgar1', parseInt(newValue) || 0)}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar1', parseInt(newValue, 10) || 0)}
                   options={[]}
                   TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />
@@ -217,7 +199,7 @@ export function BirthHistory() {
                   label="APGAR 5"
                   fullWidth
                   value={birthHistoryData?.apgar5 || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('apgar5', parseInt(newValue) || 0)}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar5', parseInt(newValue, 10) || 0)}
                   options={[]}
                   TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />
@@ -230,7 +212,7 @@ export function BirthHistory() {
                   label="APGAR 10"
                   fullWidth
                   value={birthHistoryData?.apgar10 || ''}
-                  onInputChange={(_e, newValue) => handleFieldChange('apgar10', parseInt(newValue) || 0)}
+                  onInputChange={(_e, newValue) => handleFieldChange('apgar10', parseInt(newValue, 10) || 0)}
                   options={[]}
                   TextFieldProps={{ type: 'number', inputProps: { min: 0, max: 10 } }}
                 />

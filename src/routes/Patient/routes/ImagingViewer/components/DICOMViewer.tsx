@@ -3,6 +3,7 @@ import * as cornerstone from '@cornerstonejs/core';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import cornerstoneDICOMImageLoader from '@cornerstonejs/dicom-image-loader';
 import { init as initNiftiLoader } from '@cornerstonejs/nifti-volume-loader';
+import * as dicomParser from 'dicom-parser';
 import { Buffer } from 'buffer';
 import { Jimp } from "jimp";
 import dcmjs from "dcmjs";
@@ -115,7 +116,7 @@ async function initCornerstone() {
   registerTools();
 }
 
-export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initialSettings, onUpdate }: { images: any[]; convertMonochrome?: boolean; viewerId: string; tool: string; initialSettings?: any; onUpdate?: (settings: any) => void }) => {
+export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, currentSliceIndex, initialSettings, onUpdate }: { images: any[]; convertMonochrome?: boolean; viewerId: string; tool: string; currentSliceIndex?: number; initialSettings?: any; onUpdate?: (settings: any) => void }) => {
   const [loadProgress, setLoadProgress] = React.useState(0);
   const [isReady, setIsReady] = React.useState(false);
   const viewerRef = React.useRef<HTMLDivElement>(null);
@@ -190,13 +191,46 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
     const loadImages = async () => {
       setLoadProgress(10);
       if (images && images.length > 0) {
-        if (images[0]?.startsWith?.("data:image/")) {
-           const image = await image2DICOM(images[0], convertMonochrome ?? true, !(convertMonochrome ?? true));
-           const file = new File([image], "file.dcm", { type: "application/dicom" });
-           const imageId = cornerstoneDICOMImageLoader.wadouri.fileManager.add(file);
-           imageIds.push(imageId);
-        } else {
-           imageIds = images.map(url => `wadouri:${url}`);
+        imageIds = [];
+        for (const url of images) {
+          try {
+            let baseImageId = `wadouri:${url}`;
+            
+            if (url.startsWith("data:")) {
+              let file: File;
+              if (url.startsWith("data:image/")) {
+                const generatedDicom = await image2DICOM(url, convertMonochrome ?? true, !(convertMonochrome ?? true));
+                file = new File([generatedDicom], "file.dcm", { type: "application/dicom" });
+              } else {
+                file = b64ToFile(url);
+              }
+              baseImageId = cornerstoneDICOMImageLoader.wadouri.fileManager.add(file);
+
+              // Read the file's bytes directly — no rendering engine touched, no crash possible
+              const arrayBuffer = await file.arrayBuffer();
+              let numFrames = 1;
+              try {
+                const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer);
+                const naturalDataset = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomDict.dict);
+                const nf = Number(naturalDataset.NumberOfFrames);
+                if (nf && nf > 1) numFrames = nf;
+              } catch (_) { /* fallback: single frame */ }
+
+              if (numFrames > 1) {
+                for (let i = 0; i < numFrames; i++) {
+                  imageIds.push(`${baseImageId}?frame=${i + 1}`);
+                }
+              } else {
+                imageIds.push(baseImageId);
+              }
+            } else {
+              // HTTP URL — push directly; Cornerstone's XHR loads it
+              imageIds.push(baseImageId);
+            }
+          } catch (e) {
+            console.error("Error preloading DICOM:", e);
+            imageIds.push(`wadouri:${url}`);
+          }
         }
       }
 
@@ -247,12 +281,19 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
            ww = props.voiRange.upper - props.voiRange.lower;
            wl = props.voiRange.lower + ww / 2;
          }
-         onUpdateRef.current({ ww, wl, zoom });
+         let slice = 1;
+         let totalSlices = 1;
+         if (typeof vp.getCurrentImageIdIndex === 'function') {
+           slice = vp.getCurrentImageIdIndex() + 1;
+           totalSlices = vp.getImageIds().length;
+         }
+         onUpdateRef.current({ ww, wl, zoom, slice, totalSlices });
       }
     };
     
     element.addEventListener(cornerstone.Enums.Events.CAMERA_MODIFIED, handleCameraModified);
     element.addEventListener(cornerstone.Enums.Events.VOI_MODIFIED, handleCameraModified);
+    element.addEventListener(cornerstone.Enums.Events.STACK_NEW_IMAGE, handleCameraModified);
 
     const observer = new ResizeObserver(() => {
       renderingEngine?.resize(true);
@@ -264,6 +305,7 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
       observer.disconnect();
       element.removeEventListener(cornerstone.Enums.Events.CAMERA_MODIFIED, handleCameraModified);
       element.removeEventListener(cornerstone.Enums.Events.VOI_MODIFIED, handleCameraModified);
+      element.removeEventListener(cornerstone.Enums.Events.STACK_NEW_IMAGE, handleCameraModified);
       
       if (toolGroup) {
          cornerstoneTools.ToolGroupManager.destroyToolGroup(toolGroupId);
@@ -271,6 +313,20 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
       renderingEngine?.disableElement(viewportId);
     };
   }, [isReady, viewerId, images]);
+
+  React.useEffect(() => {
+    if (!isReady || currentSliceIndex === undefined) return;
+    const renderingEngine = cornerstone.getRenderingEngine(`myRenderingEngine_${viewerId}`);
+    if (renderingEngine) {
+      const vp = renderingEngine.getViewport(`CT_VIEWPORT_${viewerId}`) as cornerstone.Types.IStackViewport;
+      if (vp && typeof vp.setImageIdIndex === 'function') {
+         if (vp.getCurrentImageIdIndex() !== currentSliceIndex - 1) {
+            vp.setImageIdIndex(currentSliceIndex - 1);
+            vp.render();
+         }
+      }
+    }
+  }, [isReady, viewerId, currentSliceIndex]);
 
   React.useEffect(() => {
     if (!isReady) return;
@@ -297,6 +353,16 @@ export const DICOMViewer = ({ images, convertMonochrome, viewerId, tool, initial
 
     toolGroup.setToolActive(mappedToolName, {
       bindings: [{ mouseButton: cornerstoneTools.Enums.MouseBindings.Primary }],
+    });
+
+    // Always keep scroll-wheel bound to StackScroll regardless of active tool
+    toolGroup.setToolActive(cornerstoneTools.StackScrollTool.toolName, {
+      bindings: [
+        ...(mappedToolName === cornerstoneTools.StackScrollTool.toolName
+          ? [{ mouseButton: cornerstoneTools.Enums.MouseBindings.Primary }]
+          : []),
+        { mouseButton: cornerstoneTools.Enums.MouseBindings.Wheel },
+      ],
     });
 
     if (mappedToolName !== cornerstoneTools.PanTool.toolName) {

@@ -296,6 +296,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     if (await confirm("Are you SURE you want to delete the entire database? This cannot be undone and will erase EVERYTHING.", "Erase Database")) {
       // Reset to empty state matching Database.Root structure
       setDb({
+        version: initialStore.version,
         departments: [],
         patients: {},
         appointments: [],
@@ -346,7 +347,6 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
             </Box>
             <Divider />
             <JSONTree
-              aria-label="database explorer"
               data={db}
               label="Root"
               path="root"

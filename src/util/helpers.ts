@@ -1,5 +1,6 @@
 import 'temporal-polyfill/global';
 
+import * as React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Database } from 'components/contexts/PatientContext';
 import icd10Data from '../util/data/icd10cm.json';
@@ -565,4 +566,85 @@ export function debounce<T extends (...args: any[]) => any>(func: T, wait: numbe
   };
 
   return debounced;
+}
+
+/**
+ * Traverses the DOM tree to find the nearest scrollable parent.
+ * 
+ * @param el The element to start searching from
+ * @returns The nearest scrollable parent element, or null
+ */
+export const getScrollContainer = (el: HTMLElement | null): HTMLElement | null => {
+  let container = el?.parentElement || null;
+  while (container && container !== document.body) {
+    const style = window.getComputedStyle(container);
+    if (style.overflowY === 'auto' || style.overflowY === 'scroll') return container;
+    container = container.parentElement;
+  }
+  return null;
+}
+
+/**
+ * Smoothly scrolls a scrollable container to a specific section element,
+ * accounting for a provided offset for fixed/sticky headers.
+ * 
+ * @param id The ID of the target element to scroll to
+ * @param offset The height offset to account for
+ */
+export const scrollToSection = (id: string, offset: number) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const container = getScrollContainer(el);
+  if (container) {
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const top = container.scrollTop + (elRect.top - containerRect.top) - offset;
+    container.scrollTo({ top, behavior: 'smooth' });
+  } else {
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+/**
+ * A custom hook that observes a list of sections and updates the active tab state
+ * based on the user's scroll position within a specific scrollable container.
+ * 
+ * @param sectionIds Array of section IDs to observe
+ * @param setActiveTab Callback to update the active tab state
+ * @param offsetRef Reference to the header/tab bar for dynamic offset calculation
+ */
+export const useSectionObserver = (
+  sectionIds: string[],
+  setActiveTab: (id: string) => void,
+  offsetRef: React.RefObject<HTMLElement | null>
+) => {
+  React.useEffect(() => {
+    const el = sectionIds.length > 0 ? document.getElementById(sectionIds[0]) : null;
+    const container = getScrollContainer(el);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          setActiveTab(visible[0].target.id);
+        }
+      },
+      {
+        root: container,
+        rootMargin: `-${(offsetRef.current?.clientHeight ?? 0) + 12}px 0px -60% 0px`,
+        threshold: [0, 0.25, 0.5, 0.75, 1]
+      }
+    );
+
+    for (const id of sectionIds) {
+      const target = document.getElementById(id);
+      if (target) observer.observe(target);
+    }
+    
+    return () => observer.disconnect();
+  }, [sectionIds, setActiveTab, offsetRef]);
 }

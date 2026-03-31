@@ -13,7 +13,6 @@ import { usePatient, Database } from 'components/contexts/PatientContext';
  * These fields are included in the form but not saved to the data structure yet.
  * Uncomment the relevant lines in handleSave() when the data structure is updated.
  */
-
 export const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
   const { alert } = usePrompts();
@@ -27,6 +26,8 @@ export const Demographics = () => {
     gender,
     insurance
   }, setChart] = useChart()();
+
+  const [contacts, setContacts] = useChart().contacts([]);
 
   const [socialHistory, setSocialHistory] = useEncounter().history.social([]);
   const socioeconomicData: any = socialHistory[0] || {};
@@ -96,189 +97,18 @@ export const Demographics = () => {
     // Contacts section (managed separately in contacts state)
   })
 
-  // State for contacts management
-  const [contacts, setContacts] = React.useState({
-    emergency: [
-      {
-        id: 1,
-        name: 'John Smith',
-        relationship: 'Father',
-        primaryPhone: '(555) 123-4567',
-        workPhone: '(555) 123-4569',
-        isEmergency: true,
-        isLegalGuardian: true
-      },
-      {
-        id: 2,
-        name: 'Jane Smith',
-        relationship: 'Mother',
-        primaryPhone: '(555) 123-4568',
-        workPhone: '(555) 123-4570',
-        isEmergency: true,
-        isLegalGuardian: true
-      }
-    ],
-    other: [
-      {
-        id: 3,
-        name: 'Bob Johnson',
-        relationship: 'Uncle',
-        primaryPhone: '(555) 987-6543',
-        workPhone: '(555) 987-6544',
-        isEmergency: false,
-        isLegalGuardian: false
-      }
-    ]
-  })
   const [showAddContactPopup, setShowAddContactPopup] = React.useState(false)
   const [newContact, setNewContact] = React.useState({
     name: '',
     relationship: '',
-    primaryPhone: '',
-    workPhone: '',
-    isEmergency: false,
-    isLegalGuardian: false
+    phone: '',
+    address: '',
+    emergency: false,
+    guardian: false
   })
 
-  const employmentStatusOptions = [
-    'Unknown',
-    'Employed',
-    'Unemployed',
-    'Retired',
-    'Student',
-    'Disabled',
-    'Self-Employed'
-  ]
-
-  const maritalStatusOptions = [
-    'Single',
-    'Married',
-    'Divorced',
-    'Widowed',
-    'Separated',
-    'Domestic Partnership'
-  ]
-
-  const religionOptions = [
-    'Christianity',
-    'Islam',
-    'Judaism',
-    'Hinduism',
-    'Buddhism',
-    'Atheist',
-    'Agnostic',
-    'Other',
-    'None'
-  ]
-
-  const raceOptions = [
-    'White',
-    'Black or African American',
-    'Asian',
-    'Native American',
-    'Pacific Islander',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  // New comprehensive option lists
-  const legalSexOptions = [
-    'Male',
-    'Female',
-    'Other',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const genderIdentityOptions = [
-    'Male',
-    'Female',
-    'Non-binary',
-    'Genderqueer',
-    'Transgender',
-    'Agender',
-    'Genderfluid',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const sexAssignedAtBirthOptions = [
-    'Male',
-    'Female',
-    'Intersex',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const sexualOrientationOptions = [
-    'Heterosexual',
-    'Homosexual',
-    'Bisexual',
-    'Pansexual',
-    'Asexual',
-    'Demisexual',
-    'Queer',
-    'Questioning',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const pronounsOptions = [
-    'He/Him',
-    'She/Her',
-    'They/Them',
-    'He/They',
-    'She/They',
-    'Other',
-    'Prefer not to answer'
-  ]
-
-  const ethnicGroupOptions = [
-    'Hispanic or Latino',
-    'Not Hispanic or Latino',
-    'Unknown',
-    'Prefer not to answer'
-  ]
-
-  const languageOptions = [
-    'English',
-    'Spanish',
-    'French',
-    'German',
-    'Italian',
-    'Portuguese',
-    'Chinese (Mandarin)',
-    'Chinese (Cantonese)',
-    'Japanese',
-    'Korean',
-    'Arabic',
-    'Hindi',
-    'Russian',
-    'Polish',
-    'Vietnamese',
-    'Tagalog',
-    'Other'
-  ]
-
-  const sections = [
-    { id: 'basics', label: 'Basics' },
-    { id: 'employer-identification', label: 'Employer & Identification' },
-    { id: 'insurance', label: 'Insurance' },
-    { id: 'patient-contacts', label: 'Contacts' },
-    { id: 'pharm-labs', label: 'Pharmacies & Labs' },
-    { id: 'patient-lists', label: 'Patient Lists' },
-    { id: 'advance-directives', label: 'Advance Directives' },
-    { id: 'code-status', label: 'Code Status' },
-    { id: 'po-npo', label: 'PO/NPO' }
-  ]
-
-  const [activeTab, setActiveTab] = React.useState(sections[0].id)
+  const [activeTab, setActiveTab] = React.useState("Basics")
   const tabsRef = React.useRef<HTMLDivElement>(null)
-
-  // Helper functions for edit functionality
-  const handleEditClick = (cardId: string) => {
-    setEditingCard(cardId)
-  }
 
   const handleCancel = () => {
     setEditingCard(null)
@@ -394,14 +224,6 @@ export const Demographics = () => {
         // permanentComments: formData.permanentComments,
       }))
 
-      // For contacts, we could save to a contacts field in the data structure
-      // For now, contacts are managed in local state
-      // In the future, you could add:
-      // setSocioeconomicData(prev => ({
-      //   ...prev,
-      //   contacts: contacts
-      // }))
-
       setEditingCard(null)
     } catch (error) {
       console.error('Error saving demographics data:', error)
@@ -412,107 +234,45 @@ export const Demographics = () => {
   // Contact management functions
   const handleAddContact = async () => {
     // Validate required fields
-    if (!newContact.name.trim()) {
-      await alert('Contact name is required', 'Validation Error')
-      return
-    }
-    if (!newContact.relationship.trim()) {
-      await alert('Contact relationship is required', 'Validation Error')
-      return
-    }
-    if (!newContact.primaryPhone.trim()) {
-      await alert('Primary phone number is required', 'Validation Error')
+    if (!newContact.name.trim() || !newContact.relationship.trim() || !newContact.phone.trim()) {
+      await alert('Name, relationship, and phone are required.', 'Validation Error')
       return
     }
 
-    const contact = {
-      id: Date.now(), // Simple ID generation
-      ...newContact
-    }
-
-    if (newContact.isEmergency) {
-      setContacts(prev => ({
-        ...prev,
-        emergency: [...prev.emergency, contact]
-      }))
-    } else {
-      setContacts(prev => ({
-        ...prev,
-        other: [...prev.other, contact]
-      }))
-    }
+    setContacts((prev: any) => [...(prev || []), { ...newContact }])
 
     // Reset form
     setNewContact({
       name: '',
       relationship: '',
-      primaryPhone: '',
-      workPhone: '',
-      isEmergency: false,
-      isLegalGuardian: false
+      phone: '',
+      address: '',
+      emergency: false,
+      guardian: false
     })
     setShowAddContactPopup(false)
   }
 
-  const handleDeleteContact = (contactId: any, isEmergency: boolean) => {
-    if (isEmergency) {
-      setContacts((prev: any) => ({
-        ...prev,
-        emergency: prev.emergency.filter((contact: any) => contact.id !== contactId)
-      }))
-    } else {
-      setContacts((prev: any) => ({
-        ...prev,
-        other: prev.other.filter((contact: any) => contact.id !== contactId)
-      }))
-    }
+  const handleDeleteContact = (contactName: string) => {
+    setContacts((prev: any) => (prev || []).filter((c: any) => c.name !== contactName))
   }
 
   const handleCancelAddContact = () => {
     setNewContact({
       name: '',
       relationship: '',
-      primaryPhone: '',
-      workPhone: '',
-      isEmergency: false,
-      isLegalGuardian: false
+      phone: '',
+      address: '',
+      emergency: false,
+      guardian: false
     })
     setShowAddContactPopup(false)
   }
 
   const handleTabChange = (_event: any, newValue: any) => {
     if (!newValue) return
-    const el = document.getElementById(newValue)
-    if (el) {
-      const offset = (tabsRef.current?.clientHeight ?? 0) + 8
-      const top = el.getBoundingClientRect().top + window.scrollY - offset
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
     setActiveTab(newValue)
   }
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries: IntersectionObserverEntry[]) => {
-        const visible = entries
-          .filter((e: IntersectionObserverEntry) => e.isIntersecting)
-          .sort((a: IntersectionObserverEntry, b: IntersectionObserverEntry) => a.boundingClientRect.top - b.boundingClientRect.top)
-        if (visible.length > 0) {
-          setActiveTab(visible[0].target.id)
-        }
-      },
-      {
-        root: null,
-        rootMargin: `-${(tabsRef.current?.clientHeight ?? 0) + 12}px 0px -60% 0px`,
-        threshold: [0, 0.25, 0.5, 0.75, 1]
-      }
-    )
-    for (const { id } of sections) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    }
-    return () => observer.disconnect()
-  }, [])
 
   const TitledCardItem = ({ label, value }: { label: string; value?: any }) => (
     <Stack spacing={0.5}>
@@ -524,19 +284,19 @@ export const Demographics = () => {
   );
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box>
       {/* Sticky Tabs */}
-      <Box ref={tabsRef} sx={{ position: 'sticky', top: 0, zIndex: 5, bgcolor: 'background.paper', pb: 1, pt: 1 }}>
+      <Box ref={tabsRef} sx={{ position: 'sticky', top: 0, zIndex: 5, bgcolor: 'background.paper' }}>
         <TabView value={activeTab}>
-          <TabList onChange={handleTabChange} aria-label="Demographics sections">
-            {sections.map((s: any) => (
-              <Tab key={s.id} value={s.id} label={s.label} />
+          <TabList onChange={handleTabChange}>
+            {["Basics", "Employer & Identification", "Insurance", "Contacts", "Pharmacies & Labs", "Advance Directives", "Code Status", "PO/NPO"].map(s => (
+              <Tab key={s} value={s} label={s} />
             ))}
           </TabList>
         </TabView>
       </Box>
 
-      <Grid masonry sequential columns={{ md: 1 }} spacing={2}>
+      <Grid masonry sequential columns={{ md: 1 }} spacing={2} sx={{ p: 1 }}>
 
         {/* BASICS */}
         <TitledCard
@@ -641,7 +401,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Legal Sex"
                     fullWidth
-                    options={legalSexOptions}
+                    options={Object.values(Database.Patient.Gender)}
                     value={formData.gender}
                     onChange={(event, newValue) => handleFormDataChange('gender', newValue)}
                   />
@@ -654,7 +414,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Gender Identity"
                     fullWidth
-                    options={genderIdentityOptions}
+                    options={Object.values(Database.SocialHistoryItem.GenderIdentity)}
                     value={formData.genderIdentity}
                     onInputChange={(event, newInputValue) => handleFormDataChange('genderIdentity', newInputValue)}
                   />
@@ -663,7 +423,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Sex Assigned at Birth"
                     fullWidth
-                    options={sexAssignedAtBirthOptions}
+                    options={Object.values(Database.SocialHistoryItem.SexAssignedAtBirth)}
                     value={formData.sexAssignedAtBirth}
                     onChange={(event, newValue) => handleFormDataChange('sexAssignedAtBirth', newValue)}
                   />
@@ -672,7 +432,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Sexual Orientation"
                     fullWidth
-                    options={sexualOrientationOptions}
+                    options={Object.values(Database.SocialHistoryItem.SexualOrientation)}
                     value={formData.sexualOrientation}
                     onChange={(event, newValue) => handleFormDataChange('sexualOrientation', newValue)}
                   />
@@ -682,7 +442,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Pronouns"
                     fullWidth
-                    options={pronounsOptions}
+                    options={Object.values(Database.SocialHistoryItem.Pronouns)}
                     value={formData.pronouns}
                     onInputChange={(event, newInputValue) => handleFormDataChange('pronouns', newInputValue)}
                   />
@@ -736,7 +496,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Language"
                     fullWidth
-                    options={languageOptions}
+                    options={Object.values(Database.Patient.Language)}
                     value={formData.language}
                     onInputChange={(event, newInputValue) => handleFormDataChange('language', newInputValue)}
                   />
@@ -754,7 +514,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Marital Status"
                     fullWidth
-                    options={maritalStatusOptions}
+                    options={Object.values(Database.SocialHistoryItem.MaritalStatus)}
                     value={formData.maritalStatus}
                     onChange={(event, newValue) => handleFormDataChange('maritalStatus', newValue)}
                   />
@@ -764,7 +524,7 @@ export const Demographics = () => {
                     freeSolo
                     label="Religion"
                     fullWidth
-                    options={religionOptions}
+                    options={Object.values(Database.SocialHistoryItem.Religion)}
                     value={formData.religion}
                     onInputChange={(event, newInputValue) => handleFormDataChange('religion', newInputValue)}
                   />
@@ -773,7 +533,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Ethnic Group"
                     fullWidth
-                    options={ethnicGroupOptions}
+                    options={Object.values(Database.SocialHistoryItem.EthnicGroup)}
                     value={formData.ethnicGroup}
                     onChange={(event, newValue) => handleFormDataChange('ethnicGroup', newValue)}
                   />
@@ -782,7 +542,7 @@ export const Demographics = () => {
                   <Autocomplete
                     label="Race"
                     fullWidth
-                    options={raceOptions}
+                    options={Object.values(Database.SocialHistoryItem.Race)}
                     value={formData.race}
                     onChange={(event, newValue) => handleFormDataChange('race', newValue)}
                   />
@@ -876,7 +636,7 @@ export const Demographics = () => {
                       <Autocomplete
                         label="Employment Status"
                         fullWidth
-                        options={employmentStatusOptions}
+                        options={Object.values(Database.SocialHistoryItem.EmploymentStatus)}
                         value={formData.employmentStatus}
                         onChange={(event, newValue) => handleFormDataChange('employmentStatus', newValue)}
                       />
@@ -1092,15 +852,14 @@ export const Demographics = () => {
             // ----- READ-ONLY VIEW -----
             <>
               <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Emergency Contacts</Label>
-              {contacts.emergency.length > 0 ? (
-                contacts.emergency.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+              {(contacts || []).filter((c: any) => c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1109,15 +868,14 @@ export const Demographics = () => {
               )}
 
               <Label variant="h6" sx={{ fontWeight: 'bold', mb: 2, mt: 3 }}>Other Contacts</Label>
-              {contacts.other.length > 0 ? (
-                contacts.other.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+              {(contacts || []).filter((c: any) => !c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => !c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1141,14 +899,14 @@ export const Demographics = () => {
                 </Button>
               </Box>
 
-              {contacts.emergency.length > 0 ? (
-                contacts.emergency.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
+              {(contacts || []).filter((c: any) => c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
                     <Button
                       variant="text"
                       color="error"
                       size="small"
-                      onClick={() => handleDeleteContact(contact.id, true)}
+                      onClick={() => handleDeleteContact(contact.name)}
                       sx={{
                         position: 'absolute',
                         top: 8,
@@ -1163,9 +921,8 @@ export const Demographics = () => {
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1186,14 +943,14 @@ export const Demographics = () => {
                 </Button>
               </Box>
 
-              {contacts.other.length > 0 ? (
-                contacts.other.map((contact, index) => (
-                  <Box key={contact.id} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
+              {(contacts || []).filter((c: any) => !c.emergency).length > 0 ? (
+                (contacts || []).filter((c: any) => !c.emergency).map((contact: any) => (
+                  <Box key={contact.name} sx={{ mb: 2, p: 2, border: '1px solid #e0e0e0', borderRadius: 1, position: 'relative' }}>
                     <Button
                       variant="text"
                       color="error"
                       size="small"
-                      onClick={() => handleDeleteContact(contact.id, false)}
+                      onClick={() => handleDeleteContact(contact.name)}
                       sx={{
                         position: 'absolute',
                         top: 8,
@@ -1208,9 +965,8 @@ export const Demographics = () => {
                     <Grid container spacing={2}>
                       <Grid size={2}><TitledCardItem label="Name" value={contact.name} /></Grid>
                       <Grid size={2}><TitledCardItem label="Relationship" value={contact.relationship} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.isLegalGuardian ? 'Yes' : 'No'} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.primaryPhone} /></Grid>
-                      <Grid size={2}><TitledCardItem label="Work Phone" value={contact.workPhone || "—"} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Legal Guardian?" value={contact.guardian ? 'Yes' : 'No'} /></Grid>
+                      <Grid size={2}><TitledCardItem label="Primary Phone" value={contact.phone} /></Grid>
                     </Grid>
                   </Box>
                 ))
@@ -1334,18 +1090,18 @@ export const Demographics = () => {
                   freeSolo
                   label="Primary Phone"
                   fullWidth
-                  value={newContact.primaryPhone}
-                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, primaryPhone: newValue })}
+                  value={newContact.phone}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, phone: newValue })}
                   options={[]}
                 />
               </Grid>
               <Grid size={12}>
                 <Autocomplete
                   freeSolo
-                  label="Work Phone"
+                  label="Address"
                   fullWidth
-                  value={newContact.workPhone}
-                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, workPhone: newValue })}
+                  value={newContact.address}
+                  onInputChange={(_e, newValue) => setNewContact({ ...newContact, address: newValue })}
                   options={[]}
                 />
               </Grid>
@@ -1353,18 +1109,18 @@ export const Demographics = () => {
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Emergency Contact</Label>
                 <Stack direction="row" spacing={1}>
                   <Button
-                    variant={newContact.isEmergency ? "contained" : "outlined"}
+                    variant={newContact.emergency ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isEmergency: true })}
+                    onClick={() => setNewContact({ ...newContact, emergency: true })}
                   >
                     Yes
                   </Button>
                   <Button
-                    variant={!newContact.isEmergency ? "contained" : "outlined"}
+                    variant={!newContact.emergency ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isEmergency: false })}
+                    onClick={() => setNewContact({ ...newContact, emergency: false })}
                   >
                     No
                   </Button>
@@ -1374,18 +1130,18 @@ export const Demographics = () => {
                 <Label variant="body2" sx={{ mb: 1, color: '#000' }}>Legal Guardian?</Label>
                 <Stack direction="row" spacing={1}>
                   <Button
-                    variant={newContact.isLegalGuardian ? "contained" : "outlined"}
+                    variant={newContact.guardian ? "contained" : "outlined"}
                     color="success"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: true })}
+                    onClick={() => setNewContact({ ...newContact, guardian: true })}
                   >
                     Yes
                   </Button>
                   <Button
-                    variant={!newContact.isLegalGuardian ? "contained" : "outlined"}
+                    variant={!newContact.guardian ? "contained" : "outlined"}
                     color="error"
                     size="small"
-                    onClick={() => setNewContact({ ...newContact, isLegalGuardian: false })}
+                    onClick={() => setNewContact({ ...newContact, guardian: false })}
                   >
                     No
                   </Button>
