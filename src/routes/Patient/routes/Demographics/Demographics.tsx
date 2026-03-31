@@ -2,7 +2,6 @@ import * as React from 'react';
 import { TitledCard, Grid, Box, Icon, Label, Stack, Button, TabView, TabList, Tab, Autocomplete, DatePicker, usePrompts } from 'components/ui/Core';
 import { MarkReviewed } from 'components/ui/MarkReviewed';
 import { usePatient, Database } from 'components/contexts/PatientContext';
-import { scrollToSection, useSectionObserver } from 'util/helpers';
 
 /*
  * FIELDS NOT IN CURRENT DATA STRUCTURE (commented out for future use):
@@ -14,18 +13,6 @@ import { scrollToSection, useSectionObserver } from 'util/helpers';
  * These fields are included in the form but not saved to the data structure yet.
  * Uncomment the relevant lines in handleSave() when the data structure is updated.
  */
-const sections = [
-  { id: 'basics', label: 'Basics' },
-  { id: 'employer-identification', label: 'Employer & Identification' },
-  { id: 'insurance', label: 'Insurance' },
-  { id: 'patient-contacts', label: 'Contacts' },
-  { id: 'pharm-labs', label: 'Pharmacies & Labs' },
-  { id: 'patient-lists', label: 'Patient Lists' },
-  { id: 'advance-directives', label: 'Advance Directives' },
-  { id: 'code-status', label: 'Code Status' },
-  { id: 'po-npo', label: 'PO/NPO' }
-]
-
 export const Demographics = () => {
   const { useChart, useEncounter } = usePatient();
   const { alert } = usePrompts();
@@ -120,7 +107,7 @@ export const Demographics = () => {
     guardian: false
   })
 
-  const [activeTab, setActiveTab] = React.useState(sections[0].id)
+  const [activeTab, setActiveTab] = React.useState("Basics")
   const tabsRef = React.useRef<HTMLDivElement>(null)
 
   const handleCancel = () => {
@@ -284,12 +271,8 @@ export const Demographics = () => {
 
   const handleTabChange = (_event: any, newValue: any) => {
     if (!newValue) return
-    const offset = (tabsRef.current?.clientHeight ?? 0) + 8
-    scrollToSection(newValue, offset)
     setActiveTab(newValue)
   }
-
-  useSectionObserver(sections.map(s => s.id), setActiveTab, tabsRef)
 
   const TitledCardItem = ({ label, value }: { label: string; value?: any }) => (
     <Stack spacing={0.5}>
@@ -301,19 +284,19 @@ export const Demographics = () => {
   );
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box>
       {/* Sticky Tabs */}
-      <Box ref={tabsRef} sx={{ position: 'sticky', top: 0, zIndex: 5, bgcolor: 'background.paper', pb: 1, pt: 1 }}>
+      <Box ref={tabsRef} sx={{ position: 'sticky', top: 0, zIndex: 5, bgcolor: 'background.paper' }}>
         <TabView value={activeTab}>
-          <TabList onChange={handleTabChange} aria-label="Demographics sections">
-            {sections.map((s: any) => (
-              <Tab key={s.id} value={s.id} label={s.label} />
+          <TabList onChange={handleTabChange}>
+            {["Basics", "Employer & Identification", "Insurance", "Contacts", "Pharmacies & Labs", "Advance Directives", "Code Status", "PO/NPO"].map(s => (
+              <Tab key={s} value={s} label={s} />
             ))}
           </TabList>
         </TabView>
       </Box>
 
-      <Grid masonry sequential columns={{ md: 1 }} spacing={2}>
+      <Grid masonry sequential columns={{ md: 1 }} spacing={2} sx={{ p: 1 }}>
 
         {/* BASICS */}
         <TitledCard

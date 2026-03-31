@@ -262,7 +262,6 @@ export const ManageFlowsheetsWindow: React.FC<ManageFlowsheetsWindowProps> = ({ 
 
     return (
       <TreeView
-        aria-label="flowsheet definitions"
         defaultCollapseIcon={<Icon>expand_more</Icon>}
         defaultExpandIcon={<Icon>chevron_right</Icon>}
         sx={{ overflowY: 'auto', flexGrow: 1 }}

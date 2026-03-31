@@ -313,7 +313,7 @@ export const PatientLookup = ({ open, onClose }: {
       ) : (
         <TabView value={tabValue}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <TabList onChange={(_e, val) => setTabValue(val)} aria-label="patient lookup tabs">
+            <TabList onChange={(_e, val) => setTabValue(val)}>
               <Tab label="Patient Search" value="1" />
               <Tab label="Recent Patients" value="2" />
             </TabList>

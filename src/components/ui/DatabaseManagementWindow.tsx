@@ -347,7 +347,6 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
             </Box>
             <Divider />
             <JSONTree
-              aria-label="database explorer"
               data={db}
               label="Root"
               path="root"
