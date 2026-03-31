@@ -367,14 +367,14 @@ const ToolSelectMenu = ({ anchorEl, onToolChange }: { anchorEl: any; onToolChang
       <IconButton onClick={() => onToolChange('Zoom')}><Icon>search</Icon></IconButton>
       <IconButton onClick={() => onToolChange('Pan')}><Icon>open_with</Icon></IconButton>
       <IconButton onClick={() => onToolChange('Draw')}><Icon>straighten</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>architecture</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>collections</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>timeline</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>share</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>view_week</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>gesture</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>control_camera</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>refresh</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>architecture</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>collections</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>timeline</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>share</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>view_week</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>gesture</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>control_camera</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>refresh</Icon></IconButton>
     </Grid>
   </Popover>
 );
