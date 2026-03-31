@@ -1041,12 +1041,19 @@ function _MUIDraggablePaperComponent(props: PaperProps) {
   );
 }
 
-export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any }> = ({ title, open, onClose, header, footer, HeaderProps, ContentProps, FooterProps, children, ...props }) => {
+export const Window: React.FC<Omit<DialogProps, 'title'> & { title?: React.ReactNode, header?: React.ReactNode, footer?: React.ReactNode, HeaderProps?: any, ContentProps?: any, FooterProps?: any, resizable?: boolean }> = ({ title, open, onClose, header, footer, HeaderProps, ContentProps, FooterProps, resizable, children, PaperProps, ...props }) => {
   return (
     <MUIDialog
       open={open}
       onClose={onClose}
       PaperComponent={_MUIDraggablePaperComponent}
+      PaperProps={{
+        ...PaperProps,
+        sx: {
+          ...(resizable ? { resize: 'both', overflow: 'hidden' } : {}),
+          ...PaperProps?.sx
+        }
+      }}
       {...props}
     >
       <MUIDialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title" {...HeaderProps}>
