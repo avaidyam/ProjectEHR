@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Box, Checkbox, Icon, Label, Autocomplete } from 'components/ui/Core';
-import { FlowsheetRow } from '../Flowsheet';
+import type { FlowsheetRow } from '../Flowsheet';
 
 interface LeftRailProps {
   rows: FlowsheetRow[];
@@ -65,7 +65,7 @@ export const LeftRail: React.FC<LeftRailProps> = ({
   return (
     <Box sx={{ position: 'relative', display: 'flex', height: '100%', width: "100%" }} className={className}>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-        <Box sx={{ p: 1, borderBottom: '1px solid #e0e0e0', bgcolor: '#fff' }}>
+        <Box sx={{ p: 1 }}>
           <Autocomplete
             freeSolo
             size="small"
@@ -79,7 +79,6 @@ export const LeftRail: React.FC<LeftRailProps> = ({
                 startAdornment: <Icon size={20} sx={{ color: 'text.secondary', mr: 1 }}>search</Icon>,
               }
             }}
-            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 10, bgcolor: '#f0f2f5' }, '& fieldset': { border: 'none' } }}
           />
           {(searchTerm !== '') && (
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>

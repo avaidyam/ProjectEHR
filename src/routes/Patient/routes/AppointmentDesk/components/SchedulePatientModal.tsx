@@ -155,7 +155,6 @@ export const SchedulePatientModal = ({ open, onClose, onSubmit, patientsDB, depa
           <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 2, maxHeight: 200, overflowY: 'auto', bgcolor: 'background.paper' }}>
             {targetPatient ? (
               <TreeView
-                aria-label="encounter navigator"
                 defaultCollapseIcon={<Icon>expand_more</Icon>}
                 defaultExpandIcon={<Icon>chevron_right</Icon>}
                 onSelectedItemsChange={handleNodeSelect}

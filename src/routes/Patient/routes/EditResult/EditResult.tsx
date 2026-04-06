@@ -202,7 +202,7 @@ export const EditResult = ({ ...props }) => {
 
         <Box sx={{ mt: 2, border: '1px dashed grey', p: 2, borderRadius: 1, textAlign: 'center' }}>
           <input
-            accept="image/*,.dicom"
+            accept="image/*,.dicom,.dcm"
             style={{ display: 'none' }}
             id="raised-button-file"
             multiple={false}

@@ -117,7 +117,7 @@ export const ProblemListEditor = ({ data, index, expandedRows, onDelete, onOpenM
                   }
                 }}
               />
-              <Button outlined sx={{ minWidth: 40, p: 0, height: 40 }} onClick={() => onOpenModal(index)}>
+              <Button outlined sx={{ minWidth: 40, p: 0, height: 40 }} onClick={() => onOpenModal(index, tempData.diagnosis)}>
                 <Icon>search</Icon>
               </Button>
             </Stack>

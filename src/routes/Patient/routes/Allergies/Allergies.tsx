@@ -50,7 +50,7 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
       </Label>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 5.5 }}>
+        <Grid size={{ xs: 12, md: 7 }}>
           <Stack spacing={1.5}>
             {formData.isNew || !formData.allergen ? (
               <Autocomplete
@@ -148,7 +148,7 @@ function AllergiesDetailPanel({ row, onSave, onCancel, onDelete }: {
           </Stack>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6.5 }}>
+        <Grid size={{ xs: 12, md: 5 }}>
           <Stack spacing={1} sx={{ height: '100%' }}>
             <Autocomplete
               freeSolo

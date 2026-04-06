@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel, GridRowId } from '@mui/x-data-grid';
+import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColumnVisibilityModel, GridRowId, GridToolbarProps } from '@mui/x-data-grid';
 import { GRID_DETAIL_PANEL_TOGGLE_COL_DEF } from '@mui/x-data-grid-pro';
 import { DataGrid, useGridApiRef, Button, Icon, Box, Stack, Label, Autocomplete, Checkbox, IconButton, TitledCard } from 'components/ui/Core';
 import { MarkReviewed } from 'components/ui/MarkReviewed';
@@ -8,11 +8,17 @@ import { getICD10CodeDescription, filterDocuments } from 'util/helpers';
 import { ProblemListEditor } from './components/ProblemListEditor';
 import { DiagnosisPicker } from './components/DiagnosisPicker';
 
-const CustomToolbar = () => {
+const CustomToolbar = (props: any) => {
+  const { showPastProblems, setShowPastProblems } = props;
   return (
     <GridToolbarContainer sx={{ justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
       <Stack direction="row" alignItems="center">
-        <Checkbox name="showPastProblems" size="small" />
+        <Checkbox 
+          name="showPastProblems" 
+          size="small" 
+          checked={!!showPastProblems}
+          onChange={(e) => setShowPastProblems?.(e.target.checked)}
+        />
         <Label sx={{ fontSize: '0.875rem' }}>Show Past Problems</Label>
       </Stack>
       <Box>
@@ -36,9 +42,12 @@ export const ProblemListTabContent: React.FC = () => {
   const [idToUpdate, setIdToUpdate] = React.useState<Database.Problem.ID | null>(null);
   const apiRef = useGridApiRef();
 
+  const [showPastProblems, setShowPastProblems] = React.useState(false);
   const visibleProblems = React.useMemo(() => {
-    return filterDocuments(problems || [], conditionals, orders);
-  }, [problems, conditionals, orders]);
+    const filtered = filterDocuments(problems || [], conditionals, orders);
+    if (showPastProblems) return filtered;
+    return (filtered || []).filter((p: any) => !p.resolvedDate);
+  }, [problems, conditionals, orders, showPastProblems]);
 
   // Ensure all items have an ID
   React.useEffect(() => {
@@ -140,6 +149,15 @@ export const ProblemListTabContent: React.FC = () => {
     }
 
     handleExpandRow(id);
+  };
+
+  const handleResolveProblem = (id: Database.Problem.ID) => {
+    setProblems((prev: any) =>
+      prev.map((row: any) => (row.id === id ? { 
+        ...row, 
+        resolvedDate: (new Date()).toISOString() as Database.JSONDate
+      } : row))
+    );
   };
 
   const handleDeleteProblem = (id: Database.Problem.ID) => {
@@ -256,7 +274,7 @@ export const ProblemListTabContent: React.FC = () => {
       headerName: 'Resolved',
       width: 100,
       renderCell: (params: any) => (
-        <Button size="small" onClick={() => handleDeleteProblem(params.row.id)}>
+        <Button size="small" onClick={() => handleResolveProblem(params.row.id)}>
           <Icon>clear</Icon>
         </Button>
       )
@@ -318,6 +336,15 @@ export const ProblemListTabContent: React.FC = () => {
             onRowDoubleClick={handleRowDoubleClick}
             detailPanelExpandedRowIds={expandedRowIds}
             onDetailPanelExpandedRowIdsChange={ids => setExpandedRowIds(new Set(ids))}
+            getRowClassName={(params) => (params.row.resolvedDate) ? 'resolved-row' : ''}
+            sx={{
+              '& .resolved-row': {
+                color: 'text.disabled',
+                backgroundColor: (theme) => theme.palette.action.hover,
+                fontStyle: 'italic',
+                textDecoration: 'line-through',
+              }
+            }}
             getDetailPanelContent={({ row }) => (
               <Box sx={{ p: 2, width: '100%', bgcolor: 'background.paper' }}>
                 <ProblemListEditor
@@ -334,6 +361,9 @@ export const ProblemListTabContent: React.FC = () => {
             getDetailPanelHeight={() => 'auto'}
             showToolbar
             slots={{ toolbar: CustomToolbar }}
+            slotProps={{
+              toolbar: { showPastProblems, setShowPastProblems }
+            } as any}
             hideFooter
             disableColumnMenu
           />

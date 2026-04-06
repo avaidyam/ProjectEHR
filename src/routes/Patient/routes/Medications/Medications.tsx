@@ -12,7 +12,8 @@ import {
   TitledCard,
   Grid,
   Autocomplete,
-  Checkbox
+  Checkbox,
+  DatePicker
 } from 'components/ui/Core';
 import { MedicationItemEditor } from './components/MedicationItemEditor';
 import { Database, usePatient } from 'components/contexts/PatientContext';
@@ -37,32 +38,28 @@ export function Medications() {
 
   const handleRowDoubleClick = React.useCallback((params: any) => apiRef.current?.toggleDetailPanel(params.id), [apiRef]);
 
-  const handleEdit = (id: Database.Medication.ID) => {
-    setExpandedRowIds(new Set([id]));
-  };
-
-  const handleSave = (updatedMedication: Database.Medication) => {
+  const handleSave = React.useCallback((updatedMedication: Database.Medication) => {
     setMedications((prev) =>
       prev?.map((med) => (med.id === updatedMedication.id ? updatedMedication : med))
     );
     setExpandedRowIds(new Set());
-  };
+  }, [setMedications]);
 
-  const handleCancel = () => {
+  const handleCancel = React.useCallback(() => {
     setExpandedRowIds(new Set());
-  };
+  }, []);
 
-  const handleDelete = (id: Database.Medication.ID) => {
+  const handleDelete = React.useCallback((id: Database.Medication.ID) => {
     setMedications((prev) => prev?.filter((med) => med.id !== id));
-  };
+  }, [setMedications]);
 
-  const handleAdd = () => {
+  const handleAdd = React.useCallback(() => {
     setOpenOrderPicker(true);
-  };
+  }, []);
 
   const mapResultToMedication = (result: any): Database.Medication => {
     let baseName = result.originalName || result.name;
-    let doseStr = result.dose || '';
+    const doseStr = result.dose || '';
     let doseValue = 0;
     let doseUnit = '';
 
@@ -72,7 +69,7 @@ export function Medications() {
       if (match) {
         doseValue = parseFloat(match[1]);
         doseUnit = match[2];
-        if (match[3]) doseUnit += ' ' + match[3];
+        if (match[3]) doseUnit += ` ${match[3]}`;
       } else {
         doseValue = parseFloat(doseStr) || 0;
         doseUnit = doseStr.replace(/[0-9.]/g, '').trim();
@@ -85,7 +82,7 @@ export function Medications() {
         baseName = match[1].trim();
         doseValue = parseFloat(match[2]);
         doseUnit = match[3];
-        if (match[4]) doseUnit += ' ' + match[4];
+        if (match[4]) doseUnit += ` ${match[4]}`;
       }
     }
 
@@ -103,6 +100,12 @@ export function Medications() {
       status: 'Active'
     };
   };
+
+  const handleUpdateLastDose = React.useCallback((id: Database.Medication.ID, lastDose?: string) => {
+    setMedications((prev) =>
+      prev?.map((med) => (med.id === id ? { ...med, lastDose: lastDose as any } : med))
+    );
+  }, [setMedications]);
 
   const columns: GridColDef[] = [
     {
@@ -128,30 +131,34 @@ export function Medications() {
     {
       field: 'timeActions',
       headerName: 'Timing',
-      width: 400,
-      renderCell: () => (
-        <Stack direction="row" spacing={0.5}>
-          <Button variant="outlined" size="small">Today</Button>
-          <Button variant="outlined" size="small">Yesterday</Button>
-          <Button variant="outlined" size="small">Past Week</Button>
-          <Button variant="outlined" size="small">Past Month</Button>
-          <Button variant="outlined" size="small">{'>'} Month</Button>
-          <Button variant="outlined" size="small">Unknown</Button>
+      width: 300,
+      renderCell: (params) => (
+        <Stack direction="row" useFlexGap flexWrap="wrap" sx={{ gap: 0.5, py: 0.5 }}>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, Temporal.Now.zonedDateTimeISO().toInstant().toString())}>Today</Button>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, Temporal.Now.zonedDateTimeISO().subtract({ days: 1 }).toInstant().toString())}>Yesterday</Button>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, Temporal.Now.zonedDateTimeISO().subtract({ days: 7 }).toInstant().toString())}>Past Week</Button>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, Temporal.Now.zonedDateTimeISO().subtract({ months: 1 }).toInstant().toString())}>Past Month</Button>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, Temporal.Now.zonedDateTimeISO().subtract({ months: 6 }).toInstant().toString())}>{'>'} Month</Button>
+          <Button variant="outlined" size="small" onClick={() => handleUpdateLastDose(params.row.id, undefined)}>Unknown</Button>
         </Stack>
       )
     },
     {
       field: 'lastDose',
       headerName: 'Last Dose',
-      width: 150,
-      renderCell: () => (
-        <Autocomplete
-          disabled
+      width: 180,
+      renderCell: (params) => (
+        <DatePicker
+          convertString
           size="small"
-          fullWidth
-          value=""
-          options={[]}
-          TextFieldProps={{ color: 'error' }}
+          value={params.row.lastDose || null}
+          onChange={(newValue: string | null) => handleUpdateLastDose(params.row.id, newValue || undefined)}
+          slotProps={{
+            textField: {
+              placeholder: 'Unknown',
+              color: params.row.lastDose ? 'primary' : 'error'
+            }
+          }}
         />
       )
     },
@@ -162,20 +169,10 @@ export function Medications() {
       renderCell: () => <Checkbox />
     },
     {
-      field: 'actions',
+      field: '__detail_panel_toggle__',
       headerName: 'Actions',
-      width: 100,
-      sortable: false,
-      renderCell: (params) => (
-        <Stack direction="row" spacing={0.5}>
-          <IconButton onClick={() => handleEdit(params.row.id)} color="primary" size="small">
-            edit
-          </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)} color="error" size="small">
-            delete
-          </IconButton>
-        </Stack>
-      )
+      width: 48,
+      sortable: false
     }
   ];
 
@@ -186,10 +183,11 @@ export function Medications() {
           medication={row}
           onSave={handleSave}
           onCancel={handleCancel}
+          onDelete={handleDelete}
         />
       </Box>
     ),
-    [handleSave, handleCancel],
+    [handleSave, handleCancel, handleDelete],
   );
 
   return (
@@ -222,7 +220,6 @@ export function Medications() {
             getRowId={(row: any) => row.id || `medication-${row.name}-${row.dose}`}
             rowHeight={70}
             getRowHeight={() => 'auto'}
-            initialState={{ columns: { columnVisibilityModel: { __detail_panel_toggle__: false } } }}
             hideFooter
             disableRowSelectionOnClick
             onRowDoubleClick={handleRowDoubleClick}

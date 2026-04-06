@@ -211,7 +211,7 @@ export function SocialHistorySocioeconomic() {
               freeSolo
               fullWidth
               label="Preferred Language:"
-              options={Object.values(Database.SocialHistoryItem.PreferredLanguage)}
+              options={Object.values(Database.Patient.Language)}
               value={socioeconomicData?.demographics?.preferredLanguage}
               onInputChange={(_e, val) => handleDemographicsChange('preferredLanguage', val)}
             />

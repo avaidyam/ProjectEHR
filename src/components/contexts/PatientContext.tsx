@@ -44,9 +44,18 @@ const STORAGE = {
 // Contexts moved below types for proper initialization
 //
 
-//
+// Calculate a version number from the database based on number of items
+const computeVersion = (data: Database.Root): number =>
+  (data.departments?.length ?? 0) +
+  Object.keys(data.patients ?? {}).length +
+  Object.values(data.patients ?? {}).reduce((sum, p) => sum + Object.keys(p.encounters ?? {}).length, 0) +
+  (data.appointments?.length ?? 0) +
+  (data.lists?.length ?? 0) +
+  (data.providers?.length ?? 0) +
+  (data.locations?.length ?? 0);
+
+// 
 export const initialStore: Database.Root = {
-  version: (patient_sample as unknown as Database.Root).version,
   departments: (patient_sample as unknown as Database.Root).departments,
   patients: (patient_sample as unknown as Database.Root).patients,
   appointments: (patient_sample as unknown as Database.Root).appointments,
@@ -83,17 +92,19 @@ export const DatabaseProvider: React.FC<{
   React.useEffect(() => {
     STORAGE.load().then(data => {
       if (data) {
-        // If the stored version is different from the initial version, we should 
-        // probably reset the store to the initial state to avoid data corruption.
-        if (data.version !== initialStore.version) {
-          console.warn(`[Storage] Version mismatch: stored=${data.version}, initial=${initialStore.version}. Resetting database.`);
+        // If the computed version of the stored data differs from the initial store's
+        // computed version, a schema change has occurred — reset to avoid data corruption.
+        const storedVersion = computeVersion(data);
+        const initialVersion = computeVersion(initialStore);
+        if (storedVersion !== initialVersion) {
+          console.warn(`[Storage] Version mismatch: stored=${storedVersion}, initial=${initialVersion}. Resetting database.`);
           STORAGE.save(initialStore);
           // initialStore is already being used as the default value in createStore
         } else {
           isRestoring = true;
           setGlobalStore(data as any);
           isRestoring = false;
-          console.log(`[Storage] Database version=${data.version} initialized from disk.`);
+          console.log(`[Storage] Database version=${storedVersion} initialized from disk.`);
         }
       }
       setIsReady(true);

@@ -367,14 +367,14 @@ const ToolSelectMenu = ({ anchorEl, onToolChange }: { anchorEl: any; onToolChang
       <IconButton onClick={() => onToolChange('Zoom')}><Icon>search</Icon></IconButton>
       <IconButton onClick={() => onToolChange('Pan')}><Icon>open_with</Icon></IconButton>
       <IconButton onClick={() => onToolChange('Draw')}><Icon>straighten</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>architecture</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>collections</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>timeline</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>share</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>view_week</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>gesture</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>control_camera</Icon></IconButton>
-      <IconButton onClick={() => onToolChange(null)}><Icon>refresh</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>architecture</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>collections</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>timeline</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>share</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>view_week</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>gesture</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>control_camera</Icon></IconButton>
+      <IconButton disabled onClick={() => onToolChange(null)}><Icon>refresh</Icon></IconButton>
     </Grid>
   </Popover>
 );
@@ -399,22 +399,29 @@ const ImageView = ({
   const [selectedTool, setSelectedTool] = React.useState('Scroll');
   const [contextMenu, setContextMenu] = React.useState<any>(null);
   const [settings, setSettings] = React.useState<Record<string, any>>({});
+  const isDraggingSlider = React.useRef(false);
 
   const zoom = settings.zoom ? settings.zoom.toFixed(2) : '1.00';
   const ww = settings.ww ? Math.round(settings.ww) : 100;
   const wl = settings.wl ? Math.round(settings.wl) : 100;
+  const slice = settings.slice || 1;
+  const totalSlices = settings.totalSlices || Math.max(images.length, 1);
 
   const handleViewerUpdate = React.useCallback((newSettings: any) => {
     setSettings((prev: Record<string, any>) => {
-      // Avoid unnecessary updates if values haven't changed significantly
+      // While user is dragging the slider, ignore slice updates from Cornerstone
+      // to prevent the feedback loop (drag → viewport changes → onUpdate → slider fights back)
+      const skipSlice = isDraggingSlider.current;
       if (
         Math.abs((prev.ww || 0) - newSettings.ww) < 0.1 &&
         Math.abs((prev.wl || 0) - newSettings.wl) < 0.1 &&
-        Math.abs((prev.zoom || 0) - newSettings.zoom) < 0.01
+        Math.abs((prev.zoom || 0) - newSettings.zoom) < 0.01 &&
+        (skipSlice || prev.slice === newSettings.slice) &&
+        prev.totalSlices === newSettings.totalSlices
       ) {
         return prev;
       }
-      return newSettings;
+      return { ...prev, ...newSettings, ...(skipSlice ? { slice: prev.slice } : {}) };
     });
   }, []);
 
@@ -471,6 +478,7 @@ const ImageView = ({
         viewerId={viewerId}
         convertMonochrome={convertMonochrome}
         tool={selectedTool}
+        currentSliceIndex={slice}
         onUpdate={handleViewerUpdate}
       />
 
@@ -488,7 +496,7 @@ const ImageView = ({
 
           {/* Top Right */}
           <Stack alignItems="flex-end" sx={{ position: 'absolute', top: 0, right: 0, p: 1, pointerEvents: 'none', zIndex: 1 }}>
-            <Label variant="caption">Series 1 Image 1</Label>
+            <Label variant="caption">Series 1 Image {slice} / {totalSlices}</Label>
             <Label variant="caption">120 kV 335 mA</Label>
           </Stack>
 
@@ -527,7 +535,7 @@ const ImageView = ({
             }
           }}
         >
-          <Label variant="caption" sx={{ mb: 1, fontWeight: 'bold' }}>10</Label>
+          <Label variant="caption" sx={{ mb: 1, fontWeight: 'bold' }}>{totalSlices}</Label>
           <Box
             sx={{
               flexGrow: 1,
@@ -544,9 +552,17 @@ const ImageView = ({
             <Slider
               orientation="vertical"
               valueLabelDisplay="auto"
-              defaultValue={1}
+              value={slice}
+              onChange={(e, val) => {
+                isDraggingSlider.current = true;
+                setSettings(prev => ({ ...prev, slice: val as number }));
+              }}
+              onChangeCommitted={(e, val) => {
+                isDraggingSlider.current = false;
+                setSettings(prev => ({ ...prev, slice: val as number }));
+              }}
               min={1}
-              max={10}
+              max={totalSlices}
               sx={{
                 padding: 0,
                 color: 'transparent',

@@ -329,7 +329,6 @@ export const ManageDepartmentsWindow = ({ open, onClose }: {
 
     return (
       <TreeView
-        aria-label="file system navigator"
         defaultCollapseIcon={<Icon>expand_more</Icon>}
         defaultExpandIcon={<Icon>chevron_right</Icon>}
         sx={{ overflowY: 'auto', flexGrow: 1 }}

@@ -24,6 +24,21 @@ const COMMON_COMPLAINTS = [
 export const VisitInfo = () => {
   const { useEncounter, isChartReview } = usePatient();
   const [encounter, setEncounter] = useEncounter()();
+  const [complaints, setComplaints] = React.useState<string[]>([]);
+  const [comments, setComments] = React.useState<string>('');
+
+  React.useEffect(() => {
+    const concerns = (encounter as any)?.concerns || [];
+    setComplaints(concerns.filter((c: string) => !c.startsWith('!')));
+    setComments(concerns.find((c: string) => c.startsWith('!'))?.substring(1) || '');
+  }, [encounter]);
+
+  const handleSave = () => {
+    setEncounter((prev: any) => ({
+      ...prev,
+      concerns: [...complaints, ...(comments.trim() ? [`!${comments}`] : [])]
+    }));
+  };
 
   // Handle case where encounter might not be available
   if (isChartReview || !encounter) {
@@ -36,62 +51,37 @@ export const VisitInfo = () => {
     );
   }
 
-  const concerns = (encounter as any).concerns || [];
-  const complaints = concerns.filter((c: string) => !c.startsWith('!'));
-  const comments = concerns.find((c: string) => c.startsWith('!'))?.substring(1) || '';
-
-  const handleComplaintsChange = (newValue: string[]) => {
-    setEncounter((prev: any) => {
-      const currentConcerns = prev.concerns || [];
-      const currentComment = currentConcerns.find((c: string) => c.startsWith('!'));
-      return {
-        ...prev,
-        concerns: [...newValue.filter(c => !c.startsWith('!')), ...(currentComment ? [currentComment] : [])]
-      };
-    });
-  };
-
-  const handleCommentsChange = (newValue: string) => {
-    setEncounter((prev: any) => {
-      const currentConcerns = prev.concerns || [];
-      const baseConcerns = currentConcerns.filter((c: string) => !c.startsWith('!'));
-      return {
-        ...prev,
-        concerns: newValue.trim() ? [...baseConcerns, `!${newValue}`] : baseConcerns
-      };
-    });
-  };
-
   return (
     <Box sx={{ p: 2 }}>
       <TitledCard title="Reason for Visit" emphasized color="#5EA1F8">
-        <Grid container spacing={4} sx={{ mt: 1 }}>
-          <Grid size={12}>
-            <Stack spacing={4}>
-              <Autocomplete
-                multiple
-                label="Reasons for Visit"
-                fullWidth
-                options={COMMON_COMPLAINTS}
-                value={complaints}
-                onChange={(_e, newValue) => handleComplaintsChange(newValue)}
-                freeSolo
-              />
-              <Autocomplete
-                label="Comments"
-                fullWidth
-                freeSolo
-                options={[]}
-                value={comments}
-                onInputChange={(_e, newValue) => handleCommentsChange(newValue)}
-                TextFieldProps={{
-                  multiline: true,
-                  rows: 4
-                }}
-              />
-            </Stack>
-          </Grid>
-        </Grid>
+        <Stack spacing={2}>
+          <Autocomplete
+            multiple
+            label="Reasons for Visit"
+            fullWidth
+            options={COMMON_COMPLAINTS}
+            value={complaints}
+            onChange={(_e, newValue) => setComplaints(newValue)}
+            freeSolo
+          />
+          <Autocomplete
+            label="Comments"
+            fullWidth
+            freeSolo
+            options={[]}
+            value={comments}
+            onInputChange={(_e, newValue) => setComments(newValue)}
+            TextFieldProps={{
+              multiline: true,
+              rows: 4
+            }}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="contained" color="primary" onClick={handleSave}>
+              Save
+            </Button>
+          </Box>
+        </Stack>
       </TitledCard>
     </Box>
   );
