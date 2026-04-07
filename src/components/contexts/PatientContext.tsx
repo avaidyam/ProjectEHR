@@ -88,7 +88,6 @@ const { useStore, setStore: setGlobalStore } = createStore(initialStore, ({ stor
 
 export type DatabaseContextValue = typeof useStore;
 export interface PatientContextValue {
-  isChartReview: boolean;
   useChart: () => DatabaseContextValue['patients'][Database.Patient.ID];
   useEncounter: () => DatabaseContextValue['patients'][Database.Patient.ID]['encounters'][Database.Encounter.ID];
 }
@@ -155,7 +154,6 @@ export const PatientProvider: React.FC<{
   // Memoize the hook value by patient and encounter IDs so it doesn't change on every single render!
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const value: PatientContextValue = React.useMemo(() => ({
-    isChartReview: !encounter,
     useChart: () => {
       //if (!patient) throw new Error("No patient ID provided to useChart hook.");
       return useStore1.patients[patient as any]
@@ -164,7 +162,7 @@ export const PatientProvider: React.FC<{
       //if (!patient || !encounter) throw new Error("No patient or encounter ID provided to useEncounter hook.");
       return useStore1.patients[patient as any].encounters[encounter as any]
     }
-  }), [patient, encounter, useStore1.patients])
+  }), [patient, encounter])
 
   return (
     <PatientContext.Provider value={value}>

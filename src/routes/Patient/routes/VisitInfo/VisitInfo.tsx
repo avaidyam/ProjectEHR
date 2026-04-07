@@ -22,7 +22,7 @@ const COMMON_COMPLAINTS = [
 ];
 
 export const VisitInfo = () => {
-  const { useEncounter, isChartReview } = usePatient();
+  const { useEncounter } = usePatient();
   const [encounter, setEncounter] = useEncounter()();
   const [complaints, setComplaints] = React.useState<string[]>([]);
   const [comments, setComments] = React.useState<string>('');
@@ -41,7 +41,7 @@ export const VisitInfo = () => {
   };
 
   // Handle case where encounter might not be available
-  if (isChartReview || !encounter) {
+  if (!encounter?.id) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
         <TitledCard title="Reason for Visit">

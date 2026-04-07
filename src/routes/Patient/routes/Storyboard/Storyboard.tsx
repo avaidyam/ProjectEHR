@@ -15,9 +15,6 @@ export const Storyboard = () => {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
 
-  console.log("sidebar got encounter:")
-  console.dir(encounter)
-
   return (
     <>
       <ErrorBoundary><SidebarPatientInfo /></ErrorBoundary>
@@ -27,7 +24,7 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <ErrorBoundary><SidebarAllergies /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
-      {!!encounter?.id ?
+      {encounter?.id ?
         <ErrorBoundary>
           <Label variant="h6">Encounter</Label>
           <Label>Type: {encounter?.type}</Label>
