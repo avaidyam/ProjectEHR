@@ -258,7 +258,12 @@ export const PatientLookup = ({ open, onClose }: {
     const patient = patients[selectedPatientMRN!];
     if (!patient) return <Box>Error: Patient not found</Box>;
 
-    const encounters = Object.values(patient.encounters || {}).sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from((b.startDate)), Temporal.Instant.from((a.startDate))));
+    const encounters = Object.values(patient.encounters || {})
+      .filter(a => !!a.id) // remove undefined encounters
+      .sort((a, b) => Temporal.Instant.compare(
+        Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), 
+        Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")
+      ));
 
     return (
       <Stack spacing={2} sx={{ height: '100%' }}>
