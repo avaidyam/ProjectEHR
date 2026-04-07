@@ -22,10 +22,22 @@ const STORAGE = {
       req.onerror = () => rej(req.error);
     });
   },
-  async save(data: any) {
+  async save(data: any, initialVersion?: number) {
     const db = await this.db();
-    db.transaction('store', 'readwrite').objectStore('store').put(JSON.parse(JSON.stringify(data)), this.key);
+    const tx = db.transaction('store', 'readwrite');
+    tx.objectStore('store').put(JSON.parse(JSON.stringify(data)), this.key);
+    if (initialVersion !== undefined)
+      tx.objectStore('store').put(initialVersion, `${this.key}:version`);
     console.debug('[Storage] Checkpoint saved.');
+  },
+  async loadVersion(): Promise<number | null> {
+    const db = await this.db();
+    if (!db.objectStoreNames.contains('store')) return null;
+    return new Promise<number | null>(res => {
+      const req = db.transaction('store', 'readonly').objectStore('store').get(`${this.key}:version`);
+      req.onsuccess = () => res(req.result ?? null);
+      req.onerror = () => res(null);
+    });
   },
   async load() {
     const db = await this.db();
@@ -89,23 +101,27 @@ export const DatabaseProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [isReady, setIsReady] = React.useState(false);
+
+  // Compare the persisted initial-seed version against the current seed version.
+  // This means user-added patients/encounters never trigger a spurious reset —
+  // only a change in the bundled sample data (schema change) causes a reset.
+  // On first run, persist the initial version alongside the seed data.
   React.useEffect(() => {
-    STORAGE.load().then(data => {
+    Promise.all([STORAGE.load(), STORAGE.loadVersion()]).then(([data, persistedVersion]) => {
+      const initialVersion = computeVersion(initialStore);
       if (data) {
-        // If the computed version of the stored data differs from the initial store's
-        // computed version, a schema change has occurred — reset to avoid data corruption.
-        const storedVersion = computeVersion(data);
-        const initialVersion = computeVersion(initialStore);
-        if (storedVersion !== initialVersion) {
-          console.warn(`[Storage] Version mismatch: stored=${storedVersion}, initial=${initialVersion}. Resetting database.`);
-          STORAGE.save(initialStore);
+        if (persistedVersion !== initialVersion) {
+          console.warn(`[Storage] Version mismatch: persisted=${persistedVersion}, initial=${initialVersion}. Resetting database.`);
+          STORAGE.save(initialStore, initialVersion);
           // initialStore is already being used as the default value in createStore
         } else {
           isRestoring = true;
           setGlobalStore(data as any);
           isRestoring = false;
-          console.log(`[Storage] Database version=${storedVersion} initialized from disk.`);
+          console.log(`[Storage] Database version=${persistedVersion} initialized from disk.`);
         }
+      } else {
+        STORAGE.save(initialStore, initialVersion);
       }
       setIsReady(true);
     });
