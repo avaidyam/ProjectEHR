@@ -15,6 +15,9 @@ export const Storyboard = () => {
   const { useEncounter } = usePatient();
   const [encounter] = useEncounter()();
 
+  console.log("sidebar got encounter:")
+  console.dir(encounter)
+
   return (
     <>
       <ErrorBoundary><SidebarPatientInfo /></ErrorBoundary>
