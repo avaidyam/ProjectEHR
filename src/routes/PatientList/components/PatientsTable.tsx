@@ -190,11 +190,18 @@ export const PatientsTable = ({
           columns={columns}
           onRowClick={(params, event) => {
             //if (event.target.closest('button')) return;
+            
             const patient = params.row as Database.Patient;
-            if (patient.encounters && Object.keys(patient.encounters).length > 0) {
-              const encounters = Object.values(patient.encounters);
-              const sortedEncounters = encounters.sort((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate), Temporal.Instant.from(a.startDate)));
-              const latestEncounter = sortedEncounters[0];
+            const latestEncounter = Object.values(patient.encounters ?? {})
+              .filter(a => !!a.id) // remove undefined encounters
+              .sort((a, b) => Temporal.Instant.compare(
+                Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), 
+                Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")
+              ))
+              .at(0)
+            
+            // Open the latest encounter if there is one, otherwise chart review
+            if (latestEncounter) {
               navigate(`/patient/${patient.id}/encounter/${latestEncounter.id}`);
             } else {
               navigate(`/patient/${patient.id}`);

@@ -274,8 +274,14 @@ export const ChartReview = ({ ...props }: any) => {
   const validEncounters = Object.values(chart.encounters).filter((x: any) => !!x.id)
 
   const documents2 = validEncounters
-    .toSorted((a, b) => Temporal.Instant.compare(Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")))
-    .filter((x) => x.id === encounter.id || Temporal.Instant.compare(Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), Temporal.Instant.from(currentEncDate)) <= 0)
+    .toSorted((a, b) => Temporal.Instant.compare(
+      Temporal.Instant.from(b.startDate ?? "1970-01-01T00:00:00Z"), 
+      Temporal.Instant.from(a.startDate ?? "1970-01-01T00:00:00Z")
+    ))
+    .filter((x) => x.id === encounter.id || Temporal.Instant.compare(
+      Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), 
+      Temporal.Instant.from(currentEncDate)
+    ) <= 0)
     .flatMap((x) => [
       ...enrichDocs(x.notes, 'Notes', x),
       ...enrichDocs(x.labs, 'Lab', x),
