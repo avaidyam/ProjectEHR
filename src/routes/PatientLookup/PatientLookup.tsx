@@ -296,6 +296,12 @@ export const PatientLookup = ({ open, onClose }: {
               <ListItemText primary="No encounters found" sx={{ textAlign: 'center', color: 'text.secondary' }} />
             </ListItem>
           )}
+          <ListItemButton onClick={() => { navigate(`/patient/${selectedPatientMRN}`); handleClose(); }}>
+            <ListItemText
+              primary="Chart Review"
+            />
+            <Icon>manage_search</Icon>
+          </ListItemButton>
         </List>
       </Stack>
     );
