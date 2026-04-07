@@ -24,7 +24,7 @@ export const Storyboard = () => {
       <Divider sx={{ bgcolor: "primary.light" }} />
       <ErrorBoundary><SidebarAllergies /></ErrorBoundary>
       <Divider sx={{ bgcolor: "primary.light" }} />
-      {!!encounter ?
+      {!!encounter?.id ?
         <ErrorBoundary>
           <Label variant="h6">Encounter</Label>
           <Label>Type: {encounter?.type}</Label>
