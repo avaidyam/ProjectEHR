@@ -632,16 +632,16 @@ export namespace Immunization {
 }
 
 export interface Imaging {
-  id?: Imaging.ID
+  id: Imaging.ID
   date: JSONDate
-  abnormal?: string
-  acuity?: string
-  image?: string
-  performedBy?: string
-  provider: Provider.ID
   status: string
   statusDate: JSONDate
   test: string
+  provider: Provider.ID
+  performedBy?: string
+  abnormal?: boolean
+  acuity?: string
+  image?: string
   narrative?: string
   impression?: string
 }
@@ -655,21 +655,21 @@ export namespace Imaging {
 }
 
 export interface Lab {
-  id?: Lab.ID
+  id: Lab.ID
   date: JSONDate
-  abnormal: string
-  acuity?: string
-  collected: string
-  comment?: any
-  components: Lab.Component[]
-  expectedDate?: JSONDate
-  expirationDate?: JSONDate
-  provider?: Provider.ID
-  resulted?: any
-  resultingAgency: any
-  status: string
-  statusDate?: JSONDate
   test: string
+  status: string
+  statusDate?: JSONDate | null
+  abnormal: boolean
+  acuity?: string
+  collected: JSONDate | null
+  comment?: string | null
+  components: Lab.Component[]
+  expectedDate?: JSONDate | null
+  expirationDate?: JSONDate | null
+  provider?: Provider.ID
+  resulted?: any | null
+  resultingAgency: any
 }
 
 export namespace Lab {
