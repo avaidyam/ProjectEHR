@@ -17,7 +17,7 @@ import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 
 
-const ComponentEditCell = ({ id, value, field, api }: { id: any; value: any; field: string; api: any }) => {
+const ComponentEditCell = ({ id, value, field, api }: { id: any; value?: any; field: string; api: any }) => {
   return (
     <ComponentSelectField
       value={value}
@@ -39,7 +39,7 @@ export const EditResult = ({ ...props }) => {
   const [imaging, setImaging] = useEncounter().imaging();
   const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
 
-  const [testDate, setTestDate] = React.useState<string>(Temporal.Now.instant().toString());
+  const [testDate, setTestDate] = React.useState<Database.JSONDate>(Temporal.Now.instant().toString() as Database.JSONDate);
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
   const [results, setResults] = React.useState<any[]>([]);
 
@@ -56,7 +56,7 @@ export const EditResult = ({ ...props }) => {
   React.useEffect(() => {
     if (!selectedTest?.id || !orderables?.result_map) return;
 
-    const targetIds = (orderables.result_map as any)[selectedTest.id] || [];
+    const targetIds = (orderables.result_map)[selectedTest.id] || [];
     if (targetIds.length === 0) return;
 
     setResults(prev => {
@@ -118,26 +118,28 @@ export const EditResult = ({ ...props }) => {
   const handleSave = () => {
     if (!selectedTest && !imageBase64) return;
     if (imageBase64) { // Imaging
-      setImaging((prev: any) => [...(prev || []), {
+      setImaging((prev) => [...(prev || []), {
+        "id": Database.Imaging.ID.create(),
         "date": testDate,
         "status": status,
-        "statusDate": Temporal.Now.instant().toString(),
+        "statusDate": Temporal.Now.instant().toString() as Database.JSONDate,
         "test": selectedTest ? selectedTest.label : "Unknown Exam",
         "abnormal": false,
         "acuity": "",
-        "provider": provider,
+        "provider": provider!,
         "image": imageBase64
       }])
     } else { // Labs
-      setLabs((prev: any) => [...(prev || []), {
+      setLabs((prev) => [...(prev || []), {
+        "id": Database.Lab.ID.create(),
         "date": testDate,
         "test": selectedTest ? selectedTest.label : "Unknown Test",
         "status": "Completed",
         "abnormal": false,
         "expectedDate": null,
         "expirationDate": null,
-        "components": results.map((r: any) => {
-          const comp = componentList.find((c: any) => c.id === r.component);
+        "components": results.map((r) => {
+          const comp = componentList.find((c) => c.id === r.component);
           return {
             name: comp ? comp.label : '',
             value: r.value,
@@ -146,11 +148,11 @@ export const EditResult = ({ ...props }) => {
             high: r.high,
             comment: r.comment
           };
-        }).filter((r: any) => r.name !== ''),
+        }).filter((r) => r.name !== ''),
         "collected": null,
         "resulted": null,
         "comment": null,
-        "provider": provider,
+        "provider": provider!,
         "resultingAgency": null
       }])
     }
@@ -169,7 +171,7 @@ export const EditResult = ({ ...props }) => {
               convertString
               label="Date/Time"
               value={testDate}
-              onChange={(date: any) => setTestDate(date)}
+              onChange={(date) => setTestDate(date)}
             />
           </Grid>
           <Grid size={6}>
@@ -187,14 +189,14 @@ export const EditResult = ({ ...props }) => {
               fullWidth
               options={["Final Result", "Preliminary"]}
               value={status}
-              onChange={(event: any, newValue: any) => setStatus(newValue)}
+              onChange={(event, newValue) => setStatus(newValue)}
             />
           </Grid>
           <Grid size={6}>
             <ProviderSelectField
               label="Provider"
               fullWidth
-              value={provider as any}
+              value={provider}
               onChange={(val) => setProvider(val)}
             />
           </Grid>
@@ -235,11 +237,11 @@ export const EditResult = ({ ...props }) => {
                 headerName: 'Component',
                 width: 200,
                 editable: true,
-                renderCell: (params: any) => {
-                  const comp = componentList.find((c: any) => c.id === params.value);
+                renderCell: (params) => {
+                  const comp = componentList.find((c) => c.id === params.value);
                   return comp ? comp.label : params.value;
                 },
-                renderEditCell: (params: any) => <ComponentEditCell {...params} />
+                renderEditCell: (params) => <ComponentEditCell {...params} />
               },
               { field: 'value', headerName: 'Value', width: 120, editable: true },
               { field: 'units', headerName: 'Units', width: 100, editable: true },
@@ -250,15 +252,15 @@ export const EditResult = ({ ...props }) => {
                 field: 'actions',
                 headerName: '',
                 width: 50,
-                renderCell: (params: any) => (
+                renderCell: (params) => (
                   <IconButton onClick={() => handleRemoveRow(params.id)} color="error" size="small">
                     <Icon>delete</Icon>
                   </IconButton>
                 )
               }
             ]}
-            processRowUpdate={(newRow: any) => {
-              setResults(prev => prev.map((r: any) => r.id === newRow.id ? newRow : r));
+            processRowUpdate={(newRow) => {
+              setResults(prev => prev.map((r) => r.id === newRow.id ? newRow : r));
               return newRow;
             }}
           />

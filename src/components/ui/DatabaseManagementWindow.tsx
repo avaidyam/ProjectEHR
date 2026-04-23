@@ -218,7 +218,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
   }
 
   const mergeDatabase = (importedData: Database.Root) => {
-    let stats = {
+    const stats = {
       patientsAdded: 0,
       encountersAdded: 0,
       departmentsAdded: 0,
@@ -358,7 +358,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         </Grid>
 
         {/* Right Pane: Actions */}
-        <Grid size={4} sx={{ height: '100%', p: 3, bgcolor: 'grey.50' }}>
+        <Grid size={4} sx={{ height: '100%', p: 3, bgcolor: 'grey.50', overflowY: 'auto' }}>
           <Stack spacing={4}>
             <Box>
               <Label variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
