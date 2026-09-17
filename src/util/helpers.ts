@@ -168,36 +168,63 @@ export const useRouter = ({ onAfterRoute = null, preserveQueryParams = true } = 
  * @param {Array} orders The list of available orders.
  * @returns {Array} The filtered list of documents.
  */
-export const filterDocuments = (documents: any[], conditionals: any[], orders: any[]) => {
+export const filterDocuments = (documents: any[], conditionals: any, orders: any[]) => {
+  if (!documents || !Array.isArray(documents)) return [];
+  if (!conditionals || typeof conditionals !== 'object') return documents;
 
   // 1. Pre-process available orders into a frequency map (Count of available items)
-  // This is necessary to verify required multiplicity (e.g., needing 2 'xyz')
-  const availableCounts = (orders ?? []).reduce((acc, order) => {
-    acc[order.code] = (acc[order.code] || 0) + 1;
-    return acc;
-  }, {});
+  // Each order item can contribute to the count of its code, name, originalName, or id.
+  const availableCounts: Record<string, number> = {};
+
+  for (const order of (orders ?? [])) {
+    if (!order) continue;
+    const matchedKeys = new Set<string>();
+
+    const addKey = (val: any) => {
+      if (val != null && typeof val === 'string' && val.trim()) {
+        const trimmed = val.trim();
+        matchedKeys.add(trimmed);
+        matchedKeys.add(trimmed.toLowerCase());
+      } else if (typeof val === 'number') {
+        matchedKeys.add(String(val));
+      }
+    };
+
+    addKey(order.code);
+    addKey(order.name);
+    addKey(order.originalName);
+    addKey(order.id);
+
+    for (const key of matchedKeys) {
+      availableCounts[key] = (availableCounts[key] || 0) + 1;
+    }
+  }
 
   // 2. Use the Array.filter method to check each document's validity
-  return (documents ?? []).filter(doc => {
+  return documents.filter(doc => {
     if (!doc) return false;
-    const requiredOrders = conditionals?.[doc.id];
+    const docId = doc.id || doc.mrn || doc.diagnosis;
+    const requiredOrders = (docId ? conditionals[docId] : null) || (doc.id ? conditionals[doc.id] : null);
 
     // If the document ID has no entry in the conditionals, it passes the filter by default.
-    if (!requiredOrders) {
+    if (!requiredOrders || !Array.isArray(requiredOrders) || requiredOrders.length === 0) {
       return true;
     }
 
     // 3. For the current document, calculate the frequency map of *required* orders
-    const requiredCounts = requiredOrders.reduce((acc: any, name: any) => {
-      acc[name] = (acc[name] || 0) + 1;
-      return acc;
-    }, {});
+    const requiredCounts: Record<string, number> = {};
+    for (const name of requiredOrders) {
+      if (name != null) {
+        const key = String(name).trim();
+        requiredCounts[key] = (requiredCounts[key] || 0) + 1;
+      }
+    }
 
     // 4. Check if *all* required counts are met by the available counts
     // Object.keys gets the names of required orders, and .every checks them all.
     return Object.keys(requiredCounts).every(orderName => {
       const required = requiredCounts[orderName];
-      const available = availableCounts[orderName] || 0; // Default to 0 if the order is not available
+      const available = availableCounts[orderName] || availableCounts[orderName.toLowerCase()] || 0;
 
       // The condition is met only if the available count is greater than or equal to the required count
       return available >= required;

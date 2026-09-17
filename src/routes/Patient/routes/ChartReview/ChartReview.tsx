@@ -283,12 +283,12 @@ export const ChartReview = ({ ...props }: any) => {
       Temporal.Instant.from(currentEncDate)
     ) <= 0)
     .flatMap((x) => [
-      ...enrichDocs(x.notes, 'Notes', x),
-      ...enrichDocs(x.labs, 'Lab', x),
-      ...enrichDocs(x.imaging, 'Imaging', x),
+      ...enrichDocs(filterDocuments(x.notes || [], x.conditionals || {}, x.orders || []), 'Notes', x),
+      ...enrichDocs(filterDocuments(x.labs || [], x.conditionals || {}, x.orders || []), 'Lab', x),
+      ...enrichDocs(filterDocuments(x.imaging || [], x.conditionals || {}, x.orders || []), 'Imaging', x),
     ])
 
-  const documents = filterDocuments(documents2, conditionals, orders)
+  const documents = documents2
 
   const encountersData = validEncounters.map((x: any) => {
     const dept = departments.find((d: any) => d.id === x.department)

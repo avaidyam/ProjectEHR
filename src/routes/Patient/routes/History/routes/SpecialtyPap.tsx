@@ -24,10 +24,8 @@ export function PapTracking() {
     const visibleLabs = filterDocuments(labs, conditionals, orders);
 
     return visibleLabs.filter((doc: any) => {
-      if (doc.Test) {
-        return doc.Test.toLowerCase().includes('pap');
-      }
-      return false;
+      const testName = doc.test || doc.Test;
+      return testName ? testName.toLowerCase().includes('pap') : false;
     });
   }, [encounter?.labs, encounter?.notes]);
 
