@@ -177,7 +177,7 @@ export const filterDocuments = (documents: any[], conditionals: any, orders: any
   const availableCounts: Record<string, number> = {};
 
   for (const order of (orders ?? [])) {
-    if (!order) continue;
+    if (!order || order.discontinueDate || order.status === 'discontinued') continue;
     const matchedKeys = new Set<string>();
 
     const addKey = (val: any) => {
