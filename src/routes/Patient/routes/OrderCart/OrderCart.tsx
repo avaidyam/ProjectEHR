@@ -86,9 +86,9 @@ export const OrderCart = () => {
     setWindowTabs?.((prev: any[]) => prev.filter(t => !isResultTab(t)))
   }
 
-  const startSearch = () => {
-    setSearchTerm(inputRef.current?.value ?? '')
-    if (inputRef.current) inputRef.current.value = ''
+  const startSearch = (term?: string) => {
+    const termValue = term !== undefined ? term : (searchTerm || inputRef.current?.value || '')
+    setSearchTerm(termValue)
     setOpenOrderSearch(true)
   }
 
@@ -139,17 +139,23 @@ export const OrderCart = () => {
                 options={[]}
                 value={searchTerm}
                 onChange={(_e, newValue: any) => {
-                  setSearchTerm(newValue || '')
-                  if (newValue) startSearch();
+                  const val = newValue || ''
+                  setSearchTerm(val)
+                  if (val) startSearch(val)
                 }}
                 onInputChange={(_e, newInputValue) => setSearchTerm(newInputValue)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter')
-                    startSearch()
+                  if (event.key === 'Enter') {
+                    event.preventDefault()
+                    startSearch(searchTerm || inputRef.current?.value || '')
+                  }
+                }}
+                TextFieldProps={{
+                  inputRef: inputRef
                 }}
                 sx={{ flexGrow: 1 }}
               />
-              <Button variant="outlined" onClick={startSearch}>
+              <Button variant="outlined" onClick={() => startSearch(searchTerm || inputRef.current?.value || '')}>
                 <Icon color="success">add</Icon> New
               </Button>
             </Stack>
@@ -264,6 +270,8 @@ export const OrderCart = () => {
       {!!openOrderSearch &&
         <OrderSearch open={openOrderSearch} searchTerm={searchTerm} onSelect={(item: any) => {
           setOpenOrderSearch(null)
+          setSearchTerm('')
+          if (inputRef.current) inputRef.current.value = ''
           if (item !== null) {
             if (Array.isArray(item)) {
               const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: Temporal.Now.instant().toString(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
