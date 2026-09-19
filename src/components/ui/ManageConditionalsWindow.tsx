@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Window, Grid, Box, Stack, Label, Icon, Divider, TreeView, TreeItem, Autocomplete, IconButton, Tooltip } from './Core'
+import { Window, Grid, Box, Stack, Label, Icon, Divider, TreeView, TreeItem, Autocomplete, IconButton, Tooltip, Chip } from './Core'
 import { OrderSelectField } from './DataUI'
 import { useDatabase } from '../contexts/PatientContext'
 import * as Database from '../contexts/Database'
@@ -27,13 +27,40 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
   mrn: Database.Patient.ID;
   encounterId: Database.Encounter.ID;
 }) => {
-  const [encounter, setEncounter] = useDatabase().patients[mrn]?.encounters[encounterId]()
+  return (
+    <Window
+      title={(
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Icon color="primary">settings_suggest</Icon>
+          <Label variant="h6">Manage Conditionals</Label>
+        </Stack>
+      ) as any}
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      ContentProps={{ sx: { p: 0, overflow: 'hidden' } }}
+    >
+      {open && mrn && encounterId ? (
+        <ManageConditionalsContent mrn={mrn} encounterId={encounterId} />
+      ) : (
+        <Box p={3}>
+          <Label>Please open a patient encounter to manage conditionals.</Label>
+        </Box>
+      )}
+    </Window>
+  )
+}
+
+const ManageConditionalsContent = ({ mrn, encounterId }: {
+  mrn: Database.Patient.ID;
+  encounterId: Database.Encounter.ID;
+}) => {
+  const [encounter, setEncounter] = useDatabase().patients[mrn].encounters[encounterId]()
   const [orderables] = useDatabase().orderables()
   const [flowsheets] = useDatabase().flowsheets()
   const [selectedPath, setSelectedPath] = React.useState<string | null>(null)
   const [treeFilter, setTreeFilter] = React.useState('')
-
-  if (!encounter) return null
 
   const getFlowsheetName = (definitionId: Database.Flowsheet.Definition.ID) => {
     return (flowsheets as Database.Flowsheet.Definition[] || []).find(f => f.id === definitionId)?.name || 'Unknown Flowsheet'
@@ -59,9 +86,9 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
         {filteredItems.map((item, idx) => {
           const realIdx = items.indexOf(item)
           const itemPath = `${path}.${realIdx}`
-          const itemId = item?.id || item?.mrn || item?.diagnosis || 'N/A'
-          const itemKey = (itemId !== 'N/A' ? itemId : itemPath) || ''
-          const count = (encounter.conditionals as any)?.[itemKey]?.length || 0
+          const candidateKeys = [item?.id, itemPath, item?.test, item?.mrn, item?.diagnosis, item?.accessionNumber].filter(Boolean) as string[]
+          const resolvedKey = candidateKeys.find(k => (encounter.conditionals as any)?.[k]?.length > 0) || (item?.id ? item.id : itemPath)
+          const count = (encounter.conditionals as any)?.[resolvedKey]?.length || 0
 
           return (
             <TreeItem
@@ -92,76 +119,97 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
   }
 
   const selectedItem = getSelectedItem(selectedPath) as any
-  const selectedId = selectedItem?.id || selectedItem?.mrn || selectedItem?.diagnosis || 'N/A'
-  const keyToUse = (selectedId !== 'N/A' ? selectedId : selectedPath) || ''
+  const candidateKeys = [selectedItem?.id, selectedPath, selectedItem?.test, selectedItem?.mrn, selectedItem?.diagnosis, selectedItem?.accessionNumber].filter(Boolean) as string[]
+  const keyToUse = candidateKeys.find(k => (encounter?.conditionals as any)?.[k]?.length > 0) || (selectedItem?.id ? selectedItem.id : selectedPath) || ''
 
-  // Conditional orders logic - check both ID and path
-  const conditionalOrders = encounter?.conditionals?.[keyToUse] || []
+  // Conditional orders logic - normalized into groups of alternative orders: string[][]
+  const conditionGroups: string[][] = React.useMemo(() => {
+    const raw = encounter?.conditionals?.[keyToUse]
+    if (!raw || !Array.isArray(raw)) return []
+    return raw.map(item => Array.isArray(item) ? item : [item]).filter(g => g.length > 0)
+  }, [encounter?.conditionals, keyToUse])
 
   const resolveOrderName = (orderId: string) => {
     if ((orderables as any)?.procedures?.[orderId]) return (orderables as any).procedures[orderId]
-    const medication = (orderables as any)?.rxnorm?.find((rx: any) => rx.name === orderId)
+    const medication = (orderables as any)?.rxnorm?.find((rx: any) => rx.name === orderId || rx.code === orderId)
     if (medication) return medication.name
     return orderId
   }
 
-  const updateConditionals = (newOrders: string[]) => {
+  const updateConditionals = (newGroups: string[][]) => {
     if (!keyToUse) return
+    const cleanGroups = newGroups
+      .map(g => g.filter(Boolean))
+      .filter(g => g.length > 0)
+
+    // Backward-compatible serialization: single orders saved as string, multiple alternatives saved as string[]
+    const serialized = cleanGroups.map(g => g.length === 1 ? g[0] : g)
+
     setEncounter(prev => ({
       ...(prev as any),
       conditionals: {
         ...(prev?.conditionals || {}),
-        [keyToUse]: newOrders
+        [keyToUse]: serialized
       }
     }))
   }
 
-  const handleAddConditional = (newValue: any) => {
+  const handleAddCondition = (newValue: any) => {
     if (!newValue || !keyToUse) return
-    const orderId = typeof newValue === 'string' ? newValue : newValue.id
+    const orderId = typeof newValue === 'string' ? newValue : (newValue.id || newValue.code || newValue.name)
     if (!orderId) return
-    updateConditionals([...conditionalOrders, orderId])
+    updateConditionals([...conditionGroups, [orderId]])
   }
 
-  const handleMoveUp = (index: number) => {
+  const handleAddAlternative = (groupIndex: number, newValue: any) => {
+    if (!newValue || !keyToUse) return
+    const orderId = typeof newValue === 'string' ? newValue : (newValue.id || newValue.code || newValue.name)
+    if (!orderId) return
+    if (conditionGroups[groupIndex]?.includes(orderId)) return
+    const newGroups = conditionGroups.map((g, i) => i === groupIndex ? [...g, orderId] : g)
+    updateConditionals(newGroups)
+  }
+
+  const handleDeleteAlternative = (groupIndex: number, orderIndex: number) => {
+    const newGroups = conditionGroups
+      .map((g, i) => i === groupIndex ? g.filter((_, oi) => oi !== orderIndex) : g)
+      .filter(g => g.length > 0)
+    updateConditionals(newGroups)
+  }
+
+  const handleDeleteCondition = (groupIndex: number) => {
+    const newGroups = conditionGroups.filter((_, i) => i !== groupIndex)
+    updateConditionals(newGroups)
+  }
+
+  const handleMoveGroupUp = (index: number) => {
     if (index === 0) return
-    const newOrders = [...conditionalOrders]
-    const temp = newOrders[index]
-    newOrders[index] = newOrders[index - 1]
-    newOrders[index - 1] = temp
-    updateConditionals(newOrders)
+    const newGroups = [...conditionGroups]
+    const temp = newGroups[index]
+    newGroups[index] = newGroups[index - 1]
+    newGroups[index - 1] = temp
+    updateConditionals(newGroups)
   }
 
-  const handleMoveDown = (index: number) => {
-    if (index === conditionalOrders.length - 1) return
-    const newOrders = [...conditionalOrders]
-    const temp = newOrders[index]
-    newOrders[index] = newOrders[index + 1]
-    newOrders[index + 1] = temp
-    updateConditionals(newOrders)
+  const handleMoveGroupDown = (index: number) => {
+    if (index === conditionGroups.length - 1) return
+    const newGroups = [...conditionGroups]
+    const temp = newGroups[index]
+    newGroups[index] = newGroups[index + 1]
+    newGroups[index + 1] = temp
+    updateConditionals(newGroups)
   }
 
-  const handleDelete = (index: number) => {
-    const newOrders = [...conditionalOrders]
-    newOrders.splice(index, 1)
-    updateConditionals(newOrders)
+  if (!encounter) {
+    return (
+      <Box p={3}>
+        <Label>Loading encounter data...</Label>
+      </Box>
+    )
   }
 
   return (
-    <Window
-      title={(
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Icon color="primary">settings_suggest</Icon>
-          <Label variant="h6">Manage Conditionals</Label>
-        </Stack>
-      ) as any}
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      ContentProps={{ sx: { p: 0, overflow: 'hidden' } }}
-    >
-      <Grid container sx={{ height: '70vh' }}>
+    <Grid container sx={{ height: '70vh' }}>
         {/* Left Pane: Filtered Encounter Tree */}
         <Grid size={6} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRight: '1px solid', borderColor: 'divider' }}>
           <Box sx={{ p: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
@@ -270,52 +318,172 @@ export const ManageConditionalsWindow = ({ open, onClose, mrn, encounterId }: {
                   </Stack>
                 </Box>
 
-                <OrderSelectField
-                  value={null}
-                  onChange={() => { }}
-                  onSelect={handleAddConditional}
-                  size="small"
-                  fullWidth
-                />
+                {/* Add new condition (AND) */}
+                <Box sx={{ mb: 1 }}>
+                  <Label variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 0.5, letterSpacing: 0.5 }}>
+                    ADD NEW REQUIRED CONDITION (AND)
+                  </Label>
+                  <OrderSelectField
+                    value={null}
+                    onChange={() => { }}
+                    onSelect={handleAddCondition}
+                    label="Search to add new condition (AND)..."
+                    size="small"
+                    fullWidth
+                  />
+                </Box>
 
-                {conditionalOrders.length === 0 ? (
+                {conditionGroups.length === 0 ? (
                   <Box sx={{ p: 2, bgcolor: 'background.paper', border: '1px dashed', borderColor: 'divider', borderRadius: 1 }}>
                     <Label variant="body2" color="textSecondary" align="center">
                       No conditional orders defined for this item.
                     </Label>
                   </Box>
                 ) : (
-                  <TreeView sx={{ bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider' }}>
-                    {conditionalOrders.map((order: any, idx: number) => {
-                      const orderName = resolveOrderName(order)
-                      const isPlaced = encounter.orders?.some((o: any) => o.id === order || o.name === orderName)
+                  <Stack spacing={1.5}>
+                    {conditionGroups.map((group, gIdx) => {
+                      const isOrderPlaced = (order: string) => {
+                        const orderName = resolveOrderName(order)
+                        return encounter.orders?.some((o: any) =>
+                          (!o.discontinueDate && o.status !== 'discontinued') &&
+                          (o.id === order || o.code === order || o.name === orderName || o.name === order)
+                        )
+                      }
+                      const isGroupSatisfied = group.some(isOrderPlaced)
+
                       return (
-                        <TreeItem
-                          key={`${order}-${idx}`}
-                          itemId={`${order}-${idx}`}
-                          label={
-                            <Stack direction="row" alignItems="center" sx={{ width: '100%', py: 0.5 }}>
-                              <Icon size={16} color={isPlaced ? "success" : "action"} sx={{ mr: 1 }}>
-                                {isPlaced ? "check_circle" : "radio_button_unchecked"}
-                              </Icon>
-                              <Label bold variant="body2" sx={{ flexGrow: 1 }}>{orderName}</Label>
-                              <Stack direction="row">
-                                <IconButton size="small" disabled={idx === 0} onClick={() => handleMoveUp(idx)} iconProps={{ size: 18 }}>expand_less</IconButton>
-                                <IconButton size="small" disabled={idx === conditionalOrders.length - 1} onClick={() => handleMoveDown(idx)} iconProps={{ size: 18 }}>expand_more</IconButton>
-                                <IconButton size="small" color="error" onClick={() => handleDelete(idx)} iconProps={{ size: 18 }}>delete</IconButton>
+                        <React.Fragment key={`group-${gIdx}`}>
+                          {gIdx > 0 && (
+                            <Stack direction="row" alignItems="center" spacing={1} sx={{ my: 0.5 }}>
+                              <Divider sx={{ flexGrow: 1 }} />
+                              <Chip
+                                size="small"
+                                sx={{
+                                  fontWeight: 'bold',
+                                  fontSize: '0.75rem',
+                                  bgcolor: 'primary.main',
+                                  color: 'primary.contrastText',
+                                  height: 22
+                                }}
+                              >
+                                AND
+                              </Chip>
+                              <Divider sx={{ flexGrow: 1 }} />
+                            </Stack>
+                          )}
+
+                          <Box
+                            sx={{
+                              bgcolor: 'background.paper',
+                              borderRadius: 1,
+                              border: '1px solid',
+                              borderColor: isGroupSatisfied ? 'success.light' : 'divider',
+                              p: 1.5,
+                              boxShadow: 1
+                            }}
+                          >
+                            {/* Condition Header */}
+                            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1, pb: 0.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+                              <Stack direction="row" alignItems="center" spacing={1}>
+                                <Icon size={18} color={isGroupSatisfied ? "success" : "action"}>
+                                  {isGroupSatisfied ? "check_circle" : "pending"}
+                                </Icon>
+                                <Label bold variant="body2">
+                                  Condition {gIdx + 1}
+                                </Label>
+                                {group.length > 1 && (
+                                  <Chip
+                                    size="small"
+                                    color="secondary"
+                                    sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }}
+                                  >
+                                    Any order fulfills this condition (OR)
+                                  </Chip>
+                                )}
+                              </Stack>
+                              <Stack direction="row" spacing={0.5}>
+                                <IconButton size="small" disabled={gIdx === 0} onClick={() => handleMoveGroupUp(gIdx)} iconProps={{ size: 18 }}>expand_less</IconButton>
+                                <IconButton size="small" disabled={gIdx === conditionGroups.length - 1} onClick={() => handleMoveGroupDown(gIdx)} iconProps={{ size: 18 }}>expand_more</IconButton>
+                                <IconButton size="small" color="error" onClick={() => handleDeleteCondition(gIdx)} iconProps={{ size: 18 }}>delete</IconButton>
                               </Stack>
                             </Stack>
-                          }
-                        />
+
+                            {/* Alternative Orders in this Condition */}
+                            <Stack spacing={1}>
+                              {group.map((order, oIdx) => {
+                                const orderName = resolveOrderName(order)
+                                const isPlaced = isOrderPlaced(order)
+
+                                return (
+                                  <React.Fragment key={`${order}-${oIdx}`}>
+                                    {oIdx > 0 && (
+                                      <Stack direction="row" alignItems="center" spacing={1} sx={{ pl: 2, my: -0.25 }}>
+                                        <Divider sx={{ width: 16 }} />
+                                        <Label variant="caption" sx={{ fontWeight: 700, color: 'secondary.main', fontSize: '0.7rem' }}>
+                                          OR
+                                        </Label>
+                                        <Divider sx={{ flexGrow: 1 }} />
+                                      </Stack>
+                                    )}
+                                    <Stack
+                                      direction="row"
+                                      alignItems="center"
+                                      sx={{
+                                        p: 0.75,
+                                        borderRadius: 1,
+                                        bgcolor: isPlaced ? 'success.50' : 'grey.100',
+                                        border: '1px solid',
+                                        borderColor: isPlaced ? 'success.main' : 'transparent'
+                                      }}
+                                    >
+                                      <Icon size={16} color={isPlaced ? "success" : "action"} sx={{ mr: 1 }}>
+                                        {isPlaced ? "check_circle" : "radio_button_unchecked"}
+                                      </Icon>
+                                      <Stack direction="column" sx={{ flexGrow: 1 }}>
+                                        <Label bold variant="body2">{orderName}</Label>
+                                        {order !== orderName && (
+                                          <Label variant="caption" color="textSecondary" sx={{ fontFamily: 'monospace', fontSize: '0.7rem' }}>
+                                            Code: {order}
+                                          </Label>
+                                        )}
+                                      </Stack>
+                                      <IconButton
+                                        size="small"
+                                        color="error"
+                                        onClick={() => handleDeleteAlternative(gIdx, oIdx)}
+                                        iconProps={{ size: 18 }}
+                                        title="Remove this order alternative"
+                                      >
+                                        close
+                                      </IconButton>
+                                    </Stack>
+                                  </React.Fragment>
+                                )
+                              })}
+
+                              {/* Inline adder for alternative order (OR) */}
+                              <Box sx={{ pt: 0.5 }}>
+                                <OrderSelectField
+                                  value={null}
+                                  onChange={() => { }}
+                                  onSelect={(val) => handleAddAlternative(gIdx, val)}
+                                  size="small"
+                                  label="+ Add alternative order to this condition (OR)..."
+                                  fullWidth
+                                />
+                              </Box>
+                            </Stack>
+                          </Box>
+                        </React.Fragment>
                       )
                     })}
-                  </TreeView>
+                  </Stack>
                 )}
               </>
             )}
           </Stack>
         </Grid>
       </Grid>
-    </Window>
   )
 }
+

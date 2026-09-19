@@ -47,7 +47,7 @@ export function OrdersMgmt() {
           <TitledCard emphasized title="Orders" color="#5EA1F8">
             <Stack direction="column">
               {visibleList.map((order: any, idx: number) => (
-                <Grid container>
+                <Grid container key={order.id || `order-${idx}`}>
                   <Grid size={{ xs: 12, sm: 3 }} sx={{ textAlign: 'left' }}>
                     <Label variant="body2">
                       {!!order.holdDate && <Chip size="small" color="primary" label="HELD" sx={{ mr: 1 }} />}

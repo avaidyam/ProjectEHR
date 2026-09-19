@@ -31,8 +31,8 @@ function useNormalizedResults() {
   const [conditionals] = useEncounter().conditionals();
   const [orders] = useEncounter().orders();
 
-  const visibleLabs = filterDocuments(labDocs!, conditionals, orders);
-  const visibleImaging = filterDocuments(imagingDocs!, conditionals, orders);
+  const visibleLabs = filterDocuments(labDocs!, conditionals, orders, 'labs');
+  const visibleImaging = filterDocuments(imagingDocs!, conditionals, orders, 'imaging');
 
   return React.useMemo(() => {
     const categories: Record<string, any> = {

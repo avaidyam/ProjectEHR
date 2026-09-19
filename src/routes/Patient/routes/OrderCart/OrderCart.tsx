@@ -175,9 +175,9 @@ export const OrderCart = () => {
         {(Object.keys(categories) as (keyof typeof categories)[])
           .filter(category => orderCart.filter((x: any) => getCategoryForOrder(x) === category).length > 0)
           .map(category => (
-            <TitledCard emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
+            <TitledCard key={category} emphasized title={<><Icon sx={{ verticalAlign: "text-top", mr: "4px" }}>{categories[category].icon}</Icon> {categories[category].title}</>} color={categories[category].color}>
               {orderCart.filter((x: any) => getCategoryForOrder(x) === category).map((order: any) => (
-                <Box key={order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
+                <Box key={order.id || order.name} sx={{ marginLeft: 3, marginBottom: 2, '&:hover': { backgroundColor: alpha(categories[category].color, 0.25) } }}>
                   <Label variant="body1">{order.name}</Label>
                   <Label fontSize="9pt" sx={{ color: categories[category].color }}>
                     {order.dose}
@@ -231,7 +231,7 @@ export const OrderCart = () => {
                 if (!docId || !conditionals || !conditionals[docId]) return false
                 const reqs = conditionals[docId]
                 if (!Array.isArray(reqs)) return false
-                return reqs.some((r: any) => discontinuedKeys.has(String(r).toLowerCase()))
+                return reqs.flat().some((r: any) => discontinuedKeys.has(String(r).toLowerCase()))
               }
 
               const isAssociatedTab = (tab: any) => {
@@ -256,7 +256,7 @@ export const OrderCart = () => {
           }}>
             <Icon>check</Icon> Sign
           </Button>
-          {Object.values(conditionals ?? {}).flat().includes('__BICEP__') && (
+          {Object.values(conditionals ?? {}).flat(2).includes('__BICEP__') && (
             <Button variant="contained" color="success" onClick={() => {
               setOrderList((prev: any) => prev.upsert([
                 { id: crypto.randomUUID(), name: "__ADVANCE_PATIENT_BICEP_SLIDE__", code: "__BICEP__" }
@@ -274,13 +274,19 @@ export const OrderCart = () => {
           if (inputRef.current) inputRef.current.value = ''
           if (item !== null) {
             if (Array.isArray(item)) {
-              const newItems = item.map((x: any) => ({ ...x, id: crypto.randomUUID(), date: Temporal.Now.instant().toString(), code: x.code, name: x.name, dose: x.dose, route: x.route, frequency: x.frequency }))
+              const newItems = item.map((x: any) => ({
+                ...x,
+                id: crypto.randomUUID(),
+                date: Temporal.Now.instant().toString()
+              }))
               setOrderCart((prev: any) => prev.upsert(newItems, "id"))
             } else {
-              if (!item.id) {
-                item.id = crypto.randomUUID()
+              const newItem = {
+                ...item,
+                id: crypto.randomUUID(),
+                date: Temporal.Now.instant().toString()
               }
-              setOrderCart((prev: any) => prev.upsert(item, "id"))
+              setOrderCart((prev: any) => prev.upsert(newItem, "id"))
             }
           }
         }} />

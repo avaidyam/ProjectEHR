@@ -260,9 +260,8 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
             }}
             onRowDoubleClick={(params: any) => {
               if (queuedOrders.length > 0) {
-                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                  setQueuedOrders((prev: any[]) => [...prev, params.row])
-                }
+                setQueuedOrders((prev: any[]) => [...prev, { ...params.row, id: crypto.randomUUID() }])
+                setSelection(null)
               } else {
                 onSelect(params.row)
               }
@@ -295,9 +294,8 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
             }}
             onRowDoubleClick={(params: any) => {
               if (queuedOrders.length > 0) {
-                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                  setQueuedOrders((prev: any[]) => [...prev, params.row])
-                }
+                setQueuedOrders((prev: any[]) => [...prev, { ...params.row, id: crypto.randomUUID() }])
+                setSelection(null)
               } else {
                 onSelect(params.row)
               }
@@ -398,7 +396,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                       sx={{ justifyContent: 'flex-start', textAlign: 'left', height: 'auto', py: 1 }}
                       onClick={() => {
                         const queueItem = {
-                          id: `browse_${code}`,
+                          id: crypto.randomUUID(),
                           code: code,
                           name: item.name,
                           type: item.type,
@@ -406,9 +404,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                           dose: item.doseDescription,
                           ...(item.type === 'medication' ? { frequency: 'ONE TIME', route: 'Oral' } : {})
                         }
-                        if (!queuedOrders.some((x: any) => x.code === code)) {
-                          setQueuedOrders((prev: any[]) => [...prev, queueItem])
-                        }
+                        setQueuedOrders((prev: any[]) => [...prev, queueItem])
                       }}
                     >
                       <Icon sx={{ mr: 1, color: 'text.secondary' }}>add</Icon>
@@ -514,12 +510,24 @@ export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }
       footer={
         <>
           <Button variant="outlined" onClick={() => {
-            if (selectedItem && !queuedOrders.some((x: any) => x.id === selectedItem.id)) {
-              setQueuedOrders((prev: any[]) => [...prev, selectedItem])
+            if (selectedItem) {
+              setQueuedOrders((prev: any[]) => [...prev, { ...selectedItem, id: crypto.randomUUID() }])
+              setSelection(null)
             }
           }}>Select and Stay</Button>
           <Button variant="outlined" onClick={() => onSelect(null)}>Cancel</Button>
-          <Button variant="contained" onClick={() => onSelect(queuedOrders.length > 0 ? queuedOrders : selectedItem)}>Accept</Button>
+          <Button variant="contained" onClick={() => {
+            if (selectedItem) {
+              const newSelected = { ...selectedItem, id: crypto.randomUUID() }
+              if (queuedOrders.length > 0) {
+                onSelect([...queuedOrders, newSelected])
+              } else {
+                onSelect(selectedItem)
+              }
+            } else {
+              onSelect(queuedOrders.length > 0 ? queuedOrders : null)
+            }
+          }}>Accept</Button>
         </>
       }
     >

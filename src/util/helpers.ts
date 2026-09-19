@@ -168,13 +168,13 @@ export const useRouter = ({ onAfterRoute = null, preserveQueryParams = true } = 
  * @param {Array} orders The list of available orders.
  * @returns {Array} The filtered list of documents.
  */
-export const filterDocuments = (documents: any[], conditionals: any, orders: any[]) => {
+export const filterDocuments = (documents: any[], conditionals: any, orders: any[], category?: string) => {
   if (!documents || !Array.isArray(documents)) return [];
   if (!conditionals || typeof conditionals !== 'object') return documents;
 
-  // 1. Pre-process available orders into a frequency map (Count of available items)
-  // Each order item can contribute to the count of its code, name, originalName, or id.
-  const availableCounts: Record<string, number> = {};
+  // 1. Pre-process active, non-discontinued orders into key sets
+  // Each order item contributes its code, name, originalName, or id.
+  const activeOrderKeySets: Set<string>[] = [];
 
   for (const order of (orders ?? [])) {
     if (!order || order.discontinueDate || order.status === 'discontinued') continue;
@@ -195,40 +195,143 @@ export const filterDocuments = (documents: any[], conditionals: any, orders: any
     addKey(order.originalName);
     addKey(order.id);
 
-    for (const key of matchedKeys) {
-      availableCounts[key] = (availableCounts[key] || 0) + 1;
+    activeOrderKeySets.push(matchedKeys);
+  }
+
+  // Collect alternative equivalence groups across all conditionals in this encounter
+  const altEquivalence = new Map<string, Set<string>>();
+  const linkAlternatives = (a: string, b: string) => {
+    const normA = a.trim().toLowerCase();
+    const normB = b.trim().toLowerCase();
+    if (!normA || !normB) return;
+    let setA = altEquivalence.get(normA);
+    if (!setA) {
+      setA = new Set([normA]);
+      altEquivalence.set(normA, setA);
+    }
+    let setB = altEquivalence.get(normB);
+    if (!setB) {
+      setB = new Set([normB]);
+      altEquivalence.set(normB, setB);
+    }
+    if (setA !== setB) {
+      for (const item of setB) {
+        setA.add(item);
+        altEquivalence.set(item, setA);
+      }
+    }
+  };
+
+  for (const docConditions of Object.values(conditionals || {})) {
+    if (!Array.isArray(docConditions)) continue;
+    for (const cond of docConditions) {
+      if (Array.isArray(cond) && cond.length > 1) {
+        const first = String(cond[0]);
+        for (let i = 1; i < cond.length; i++) {
+          linkAlternatives(first, String(cond[i]));
+        }
+      }
     }
   }
 
-  // 2. Use the Array.filter method to check each document's validity
-  return documents.filter(doc => {
-    if (!doc) return false;
-    const docId = doc.id || doc.mrn || doc.diagnosis;
-    const requiredOrders = (docId ? conditionals[docId] : null) || (doc.id ? conditionals[doc.id] : null);
+  // Helper: check if a list of condition requirements can be satisfied by active orders.
+  // Each condition requirement can be a single order (string) or an array of alternative orders (OR).
+  // A distinct active placed order must fulfill each condition requirement.
+  const canFulfillConditions = (conditionReqs: (string | string[])[]): boolean => {
+    const normalizedConditions: string[][] = conditionReqs.map(cond => {
+      let rawOptions: string[] = [];
+      if (Array.isArray(cond)) {
+        rawOptions = cond.filter(Boolean).map(c => String(c).trim().toLowerCase());
+      } else if (cond != null) {
+        rawOptions = [String(cond).trim().toLowerCase()];
+      }
 
-    // If the document ID has no entry in the conditionals, it passes the filter by default.
-    if (!requiredOrders || !Array.isArray(requiredOrders) || requiredOrders.length === 0) {
-      return true;
+      const expandedOptions = new Set<string>();
+      for (const opt of rawOptions) {
+        if (!opt) continue;
+        expandedOptions.add(opt);
+        const alts = altEquivalence.get(opt);
+        if (alts) {
+          for (const a of alts) expandedOptions.add(a);
+        }
+      }
+      return Array.from(expandedOptions);
+    }).filter(c => c.length > 0);
+
+    if (normalizedConditions.length === 0) return true;
+    if (activeOrderKeySets.length < normalizedConditions.length) return false;
+
+    // Standard maximum bipartite matching (Kuhn's algorithm)
+    const matchForOrder = new Map<number, number>(); // orderIndex -> conditionIndex
+
+    const tryMatch = (condIdx: number, visitedOrders: Set<number>): boolean => {
+      const condOptions = normalizedConditions[condIdx];
+      for (let ordIdx = 0; ordIdx < activeOrderKeySets.length; ordIdx++) {
+        if (visitedOrders.has(ordIdx)) continue;
+        const orderKeys = activeOrderKeySets[ordIdx];
+
+        const matches = condOptions.some(opt => orderKeys.has(opt));
+        if (matches) {
+          visitedOrders.add(ordIdx);
+          const prevCond = matchForOrder.get(ordIdx);
+          if (prevCond === undefined || tryMatch(prevCond, visitedOrders)) {
+            matchForOrder.set(ordIdx, condIdx);
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    for (let c = 0; c < normalizedConditions.length; c++) {
+      if (!tryMatch(c, new Set<number>())) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // 2. Use the Array.filter method to check each document's validity
+  return documents.filter((doc, idx) => {
+    if (!doc) return false;
+
+    // Detect category if not explicitly provided
+    let cat = category;
+    if (!cat) {
+      if (doc.components) cat = 'labs';
+      else if (doc.image !== undefined || doc.accessionNumber !== undefined || doc.narrative !== undefined || doc.impression !== undefined || doc.performedBy !== undefined) cat = 'imaging';
+      else if (doc.flowsheet !== undefined) cat = 'flowsheets';
+      else if (doc.orderNumber !== undefined || doc.orderables !== undefined) cat = 'orders';
+      else if (doc.note !== undefined || (doc.author !== undefined && doc.type !== undefined)) cat = 'notes';
+      else if (doc.allergen !== undefined) cat = 'allergies';
+      else if (doc.medication !== undefined || doc.sig !== undefined) cat = 'medications';
+      else if (doc.vaccine !== undefined) cat = 'immunizations';
+      else if (doc.diagnosis !== undefined) cat = 'problems';
     }
 
-    // 3. For the current document, calculate the frequency map of *required* orders
-    const requiredCounts: Record<string, number> = {};
-    for (const name of requiredOrders) {
-      if (name != null) {
-        const key = String(name).trim();
-        requiredCounts[key] = (requiredCounts[key] || 0) + 1;
+    const candidateKeys: string[] = [];
+    if (doc.id) candidateKeys.push(String(doc.id));
+    if (cat) candidateKeys.push(`${cat}.${idx}`);
+    if (doc.test) candidateKeys.push(String(doc.test));
+    if (doc.accessionNumber) candidateKeys.push(String(doc.accessionNumber));
+    if (doc.mrn) candidateKeys.push(String(doc.mrn));
+    if (doc.diagnosis) candidateKeys.push(String(doc.diagnosis));
+    if (doc.flowsheet) candidateKeys.push(String(doc.flowsheet));
+
+    let requiredOrders = null;
+    for (const key of candidateKeys) {
+      if (conditionals[key] && Array.isArray(conditionals[key]) && conditionals[key].length > 0) {
+        requiredOrders = conditionals[key];
+        break;
       }
     }
 
-    // 4. Check if *all* required counts are met by the available counts
-    // Object.keys gets the names of required orders, and .every checks them all.
-    return Object.keys(requiredCounts).every(orderName => {
-      const required = requiredCounts[orderName];
-      const available = availableCounts[orderName] || availableCounts[orderName.toLowerCase()] || 0;
+    // If the document has no entry in the conditionals, it passes the filter by default.
+    if (!requiredOrders) {
+      return true;
+    }
 
-      // The condition is met only if the available count is greater than or equal to the required count
-      return available >= required;
-    });
+    return canFulfillConditions(requiredOrders);
   });
 };
 
