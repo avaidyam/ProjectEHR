@@ -15,7 +15,8 @@ import orderables from 'util/data/orderables.json'
 const STORAGE = {
   key: 'ehr-database',
   async db() {
-    return new Promise<IDBDatabase>((res, rej) => {
+    if (typeof indexedDB === 'undefined') return null;
+    return new Promise<IDBDatabase | null>((res, rej) => {
       const req = indexedDB.open('ProjectEHR', 1);
       req.onupgradeneeded = () => req.result.objectStoreNames.contains('store') || req.result.createObjectStore('store');
       req.onsuccess = () => res(req.result);
@@ -24,6 +25,7 @@ const STORAGE = {
   },
   async save(data: any, initialVersion?: number) {
     const db = await this.db();
+    if (!db) return;
     const tx = db.transaction('store', 'readwrite');
     tx.objectStore('store').put(JSON.parse(JSON.stringify(data)), this.key);
     if (initialVersion !== undefined)
@@ -32,7 +34,7 @@ const STORAGE = {
   },
   async loadVersion(): Promise<number | null> {
     const db = await this.db();
-    if (!db.objectStoreNames.contains('store')) return null;
+    if (!db || !db.objectStoreNames.contains('store')) return null;
     return new Promise<number | null>(res => {
       const req = db.transaction('store', 'readonly').objectStore('store').get(`${this.key}:version`);
       req.onsuccess = () => res(req.result ?? null);
@@ -41,7 +43,7 @@ const STORAGE = {
   },
   async load() {
     const db = await this.db();
-    if (!db.objectStoreNames.contains('store')) return null;
+    if (!db || !db.objectStoreNames.contains('store')) return null;
     return new Promise<Database.Root | null>(res => {
       const req = db.transaction('store', 'readonly').objectStore('store').get(this.key);
       req.onsuccess = () => res(req.result || null);
@@ -114,6 +116,10 @@ export const DatabaseProvider: React.FC<{
           STORAGE.save(initialStore, initialVersion);
           // initialStore is already being used as the default value in createStore
         } else {
+          // Ensure essential master catalogs like orderables are preserved if empty in storage
+          if (!data.orderables || !data.orderables.components || !data.orderables.procedures) {
+            data.orderables = { ...initialStore.orderables, ...(data.orderables || {}) };
+          }
           isRestoring = true;
           setGlobalStore(data as any);
           isRestoring = false;

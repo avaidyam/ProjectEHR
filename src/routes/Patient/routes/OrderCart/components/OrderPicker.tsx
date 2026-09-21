@@ -40,39 +40,119 @@ const COLUMN_DEFS = {
   ]
 }
 
-const search_orders = (orderables: Database.Root['orderables'], value = "", limit: number | null = null, category: string | null = null) => {
-  const query = value?.toLocaleLowerCase()?.trim() ?? ""
-  if (!query && !category) return []
+const normalizeAlphaNumeric = (str: string) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+export const search_orders = (
+  orderables: Database.Root['orderables'],
+  value = "",
+  limit: number | null = null,
+  category: string | null = null
+) => {
+  const rawQuery = value?.toLowerCase()?.trim() ?? "";
+  const cleanQuery = normalizeAlphaNumeric(rawQuery);
+  if (!rawQuery && !category) return [];
+
+  const queryTokens = rawQuery.split(/\s+/).filter(Boolean);
+  const cleanQueryTokens = queryTokens.map(normalizeAlphaNumeric);
+
+  const matchesQuery = (name: string, code: string = '', extra: string = '') => {
+    if (!rawQuery) return true;
+    const lowerName = (name || '').toLowerCase();
+    const lowerCode = (code || '').toLowerCase();
+    const lowerExtra = (extra || '').toLowerCase();
+    const fullText = `${lowerName} ${lowerCode} ${lowerExtra}`;
+    const cleanText = normalizeAlphaNumeric(fullText);
+
+    if (cleanQuery && cleanText.includes(cleanQuery)) return true;
+
+    return queryTokens.every((token, idx) => {
+      if (fullText.includes(token)) return true;
+      const cleanToken = cleanQueryTokens[idx];
+      return cleanToken ? cleanText.includes(cleanToken) : false;
+    });
+  };
+
+  const getRelevanceScore = (name: string, code: string) => {
+    const lowerName = (name || '').toLowerCase();
+    const lowerCode = (code || '').toLowerCase();
+    const cleanName = normalizeAlphaNumeric(lowerName);
+
+    // Exact matches on code or name
+    if (lowerCode === rawQuery || (cleanQuery && lowerCode === cleanQuery)) return 0;
+    if (lowerName === rawQuery || (cleanQuery && cleanName === cleanQuery)) return 1;
+
+    // Phrase prefix match in name (e.g. "XR Chest 1 View" starts with "xr chest")
+    if (lowerName.startsWith(rawQuery)) return 2;
+
+    // Code starts with query
+    if (lowerCode.startsWith(rawQuery) || (cleanQuery && lowerCode.startsWith(cleanQuery))) return 3;
+
+    // Clean name starts with clean query
+    if (cleanQuery && cleanName.startsWith(cleanQuery)) return 4;
+
+    // Word boundary / token prefix matches in name
+    if (queryTokens.some(t => lowerName.startsWith(t))) return 5;
+
+    // Name contains all query tokens
+    if (queryTokens.every(t => lowerName.includes(t))) return 6;
+
+    return 7;
+  };
 
   // Helper getters
-  const getMeds = () => orderables!.rxnorm
-    .map((x: any, i: number) => ({ ...x, _idx: i, type: 'medication' }))
+  const getMeds = () => {
+    if (!orderables?.rxnorm) return [];
+    return orderables.rxnorm
+      .map((x: any, i: number) => ({ ...x, _idx: i, type: 'medication' }))
+      .filter((x: any) => {
+        const aliases = Array.isArray(x.alias) ? x.alias.join(' ') : '';
+        let routeForms = '';
+        let routeCodes = '';
+        if (x.route) {
+          for (const [r, f] of Object.entries(x.route) as [string, any][]) {
+            routeCodes += ' ' + Object.keys(f).join(' ');
+            routeForms += ' ' + r + ' ' + Object.values(f).join(' ');
+          }
+        }
+        return matchesQuery(x.name, routeCodes, `${aliases} ${routeForms}`);
+      });
+  };
 
-  const getProcs = () => Object.entries(orderables!.procedures)
-    .map(([k, v]: [string, any], i: number) => {
-      const isImaging = ["CT", "MRI", "XR"].some((t: string) => (v as string).toUpperCase().includes(t))
-      return { id: `proc_${k}`, code: k, name: v, type: isImaging ? 'Imaging' : 'Lab' }
-    })
+  const getProcs = () => {
+    if (!orderables?.procedures) return [];
+    return Object.entries(orderables.procedures)
+      .filter(([k, v]: [string, any]) => matchesQuery(v, k))
+      .map(([k, v]: [string, any]) => {
+        const isImaging = ["CT", "MRI", "XR"].some((t: string) => (v as string).toUpperCase().includes(t));
+        return { id: `proc_${k}`, code: k, name: v, type: isImaging ? 'Imaging' : 'Lab' };
+      });
+  };
 
-  let source: any[] = []
+  let source: any[] = [];
   if (category === "medications") {
-    source = getMeds().filter((x: any) => x.name.toLocaleLowerCase().includes(query))
+    source = getMeds();
   } else if (category === "procedures") {
-    source = getProcs().filter((x: any) => x.name.toLocaleLowerCase().includes(query))
+    source = getProcs();
   } else {
-    source = [
-      ...getMeds().filter((x: any) => x.name.toLocaleLowerCase().includes(query)),
-      ...getProcs().filter((x: any) => x.name.toLocaleLowerCase().includes(query))
-    ]
+    source = [...getMeds(), ...getProcs()];
   }
 
+  // Sort by relevance
+  source.sort((a, b) => {
+    const sA = getRelevanceScore(a.name, a.code);
+    const sB = getRelevanceScore(b.name, b.code);
+    if (sA !== sB) return sA - sB;
+    if (a.name.length !== b.name.length) return a.name.length - b.name.length;
+    return a.name.localeCompare(b.name);
+  });
+
   // Apply limit to parent items
-  const sliced = limit ? source.slice(0, limit) : source
+  const sliced = limit ? source.slice(0, limit) : source;
 
   // Expand medications
   const expanded = sliced.flatMap((item: any) => {
     if (item.type === 'medication') {
-      if (!item.route) return []
+      if (!item.route) return [];
       return Object.entries(item.route).flatMap(([routeType, forms]: [string, any]) => {
         return Object.entries(forms).map(([code, desc]: [string, any]) => ({
           id: `med_${code}`,
@@ -84,13 +164,13 @@ const search_orders = (orderables: Database.Root['orderables'], value = "", limi
           route: routeType,
           routesMap: item.route, // Pass the full map for the composer
           frequency: "ONE TIME"
-        }))
-      })
+        }));
+      });
     }
-    return item
-  })
-  return expanded
-}
+    return item;
+  });
+  return expanded;
+};
 
 const OrderQueue = ({ orders, onRemove }: { orders: any[]; onRemove: (id: any) => void }) => {
   return (
@@ -180,9 +260,8 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
             }}
             onRowDoubleClick={(params: any) => {
               if (queuedOrders.length > 0) {
-                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                  setQueuedOrders((prev: any[]) => [...prev, params.row])
-                }
+                setQueuedOrders((prev: any[]) => [...prev, { ...params.row, id: crypto.randomUUID() }])
+                setSelection(null)
               } else {
                 onSelect(params.row)
               }
@@ -215,9 +294,8 @@ const OrderSearchResults = ({ data, selection, setSelection, onSelect, queuedOrd
             }}
             onRowDoubleClick={(params: any) => {
               if (queuedOrders.length > 0) {
-                if (!queuedOrders.some((x: any) => x.id === params.row.id)) {
-                  setQueuedOrders((prev: any[]) => [...prev, params.row])
-                }
+                setQueuedOrders((prev: any[]) => [...prev, { ...params.row, id: crypto.randomUUID() }])
+                setSelection(null)
               } else {
                 onSelect(params.row)
               }
@@ -318,7 +396,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                       sx={{ justifyContent: 'flex-start', textAlign: 'left', height: 'auto', py: 1 }}
                       onClick={() => {
                         const queueItem = {
-                          id: `browse_${code}`,
+                          id: crypto.randomUUID(),
                           code: code,
                           name: item.name,
                           type: item.type,
@@ -326,9 +404,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
                           dose: item.doseDescription,
                           ...(item.type === 'medication' ? { frequency: 'ONE TIME', route: 'Oral' } : {})
                         }
-                        if (!queuedOrders.some((x: any) => x.code === code)) {
-                          setQueuedOrders((prev: any[]) => [...prev, queueItem])
-                        }
+                        setQueuedOrders((prev: any[]) => [...prev, queueItem])
                       }}
                     >
                       <Icon sx={{ mr: 1, color: 'text.secondary' }}>add</Icon>
@@ -347,7 +423,7 @@ export const OrderBrowse = ({ orderables, onSelect, queuedOrders, setQueuedOrder
 
 export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }: { searchTerm: string; open: any; onSelect: (selection: any) => void; categories?: string[];[key: string]: any }) => {
   const [orderables] = useDatabase().orderables()
-  const [value, setValue] = React.useState(searchTerm)
+  const [value, setValue] = React.useState(searchTerm || '')
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [tab, setTab] = React.useState(searchTerm ? "preference" : "browse")
   const [category, setCategory] = React.useState<any>(null)
@@ -356,6 +432,25 @@ export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }
   const [queuedOrders, setQueuedOrders] = React.useState<any[]>([])
 
   const selectedItem = React.useMemo(() => data.find((x: any) => x.id === selection), [data, selection])
+
+  // Synchronize incoming search term and automatically focus input when opened
+  React.useEffect(() => {
+    if (open) {
+      const term = searchTerm || ''
+      setValue(term)
+      if (term.trim()) {
+        setTab("preference")
+      }
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus()
+          const len = inputRef.current.value?.length || 0
+          inputRef.current.setSelectionRange(len, len)
+        }
+      }, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [open, searchTerm])
 
   useLazyEffect(() => {
     let searchCategory = null;
@@ -394,6 +489,7 @@ export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }
             }}
             TextFieldProps={{
               inputRef: inputRef,
+              autoFocus: true,
               InputProps: {
                 endAdornment: <Icon sx={{ cursor: "pointer", fontSize: 20 }} onClick={() => {
                   setValue(inputRef.current?.value ?? '')
@@ -414,12 +510,24 @@ export const OrderPicker = ({ searchTerm, open, onSelect, categories, ...props }
       footer={
         <>
           <Button variant="outlined" onClick={() => {
-            if (selectedItem && !queuedOrders.some((x: any) => x.id === selectedItem.id)) {
-              setQueuedOrders((prev: any[]) => [...prev, selectedItem])
+            if (selectedItem) {
+              setQueuedOrders((prev: any[]) => [...prev, { ...selectedItem, id: crypto.randomUUID() }])
+              setSelection(null)
             }
           }}>Select and Stay</Button>
           <Button variant="outlined" onClick={() => onSelect(null)}>Cancel</Button>
-          <Button variant="contained" onClick={() => onSelect(queuedOrders.length > 0 ? queuedOrders : selectedItem)}>Accept</Button>
+          <Button variant="contained" onClick={() => {
+            if (selectedItem) {
+              const newSelected = { ...selectedItem, id: crypto.randomUUID() }
+              if (queuedOrders.length > 0) {
+                onSelect([...queuedOrders, newSelected])
+              } else {
+                onSelect(selectedItem)
+              }
+            } else {
+              onSelect(queuedOrders.length > 0 ? queuedOrders : null)
+            }
+          }}>Accept</Button>
         </>
       }
     >

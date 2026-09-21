@@ -303,7 +303,7 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
         lists: [],
         providers: [],
         locations: [],
-        orderables: {} as Database.Root['orderables'],
+        orderables: initialStore.orderables,
         flowsheets: []
       })
       await alert("Database has been erased.", "Database Erased")

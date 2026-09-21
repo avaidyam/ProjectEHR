@@ -2,6 +2,8 @@
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
+import path from "path";
+
 export default defineConfig({
   plugins: [react(), viteCommonjs()],
   base: './',
@@ -9,7 +11,10 @@ export default defineConfig({
     outDir: "build"
   },
   resolve: {
-    tsconfigPaths: true
+    tsconfigPaths: true,
+    alias: {
+      'react-is': path.resolve(__dirname, 'test/react-is-shim.mjs'),
+    },
   },
   server: {
     port: 3000,
@@ -26,5 +31,11 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './test/setup.js',
+    css: true,
+    server: {
+      deps: {
+        inline: [/@mui/, 'react-is'],
+      },
+    },
   },
 });

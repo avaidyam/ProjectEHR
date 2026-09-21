@@ -11,10 +11,17 @@ describe('something truthy and falsy', () => {
   });
 });
 
+import { MemoryRouter } from 'react-router-dom';
+import { AuthProvider } from 'components/contexts/AuthContext';
+
 describe('App', () => {
   it('renders stuff', () => {
-    render(<App />);
-    screen.debug();
-    // check stuff here...
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </MemoryRouter>
+    );
   });
 });

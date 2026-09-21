@@ -19,14 +19,18 @@ export function OrdersMgmt() {
       item.holdDate = undefined
       item.signedDate = Temporal.Now.instant().epochMilliseconds
     }
-    if (changeType === "Discontinue")
+    if (changeType === "Discontinue") {
       item.discontinueDate = Temporal.Now.instant().epochMilliseconds
+    }
     setOrderCart((prev: any) => prev.upsert(item, "id"))
   }
 
-  // only display active (i.e. non-discontinued) orders
+  // only display active (i.e. non-discontinued) orders, including those staged for discontinuation in cart
   // ALSO filter out any secret hidden BICEP orders...
-  const visibleList = orderList.filter((x: any) => !x.discontinueDate).filter((x: any) => x.name !== "__ADVANCE_PATIENT_BICEP_SLIDE__")
+  const visibleList = orderList
+    .filter((x: any) => !x.discontinueDate)
+    .filter((x: any) => !orderCart?.some((c: any) => c.id === x.id && c.discontinueDate))
+    .filter((x: any) => x.name !== "__ADVANCE_PATIENT_BICEP_SLIDE__")
 
   return (
     <TabView value={tab}>
@@ -43,7 +47,7 @@ export function OrdersMgmt() {
           <TitledCard emphasized title="Orders" color="#5EA1F8">
             <Stack direction="column">
               {visibleList.map((order: any, idx: number) => (
-                <Grid container>
+                <Grid container key={order.id || `order-${idx}`}>
                   <Grid size={{ xs: 12, sm: 3 }} sx={{ textAlign: 'left' }}>
                     <Label variant="body2">
                       {!!order.holdDate && <Chip size="small" color="primary" label="HELD" sx={{ mr: 1 }} />}

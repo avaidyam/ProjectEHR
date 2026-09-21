@@ -15,6 +15,7 @@ import { ProviderSelectField, OrderSelectField, ComponentSelectField } from 'com
 import { createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
+import orderablesData from 'util/data/orderables.json';
 
 
 const ComponentEditCell = ({ id, value, field, api }: { id: any; value?: any; field: string; api: any }) => {
@@ -37,7 +38,10 @@ export const EditResult = ({ ...props }) => {
   const { useEncounter } = usePatient();
   const [labs, setLabs] = useEncounter().labs();
   const [imaging, setImaging] = useEncounter().imaging();
-  const componentList = Object.entries(orderables!.components).map(([key, value]) => ({ label: value, id: key }));
+  const componentList = React.useMemo(() => {
+    const comps = orderables?.components || (orderablesData as any)?.components || {};
+    return Object.entries(comps).map(([key, value]) => ({ label: value, id: key }));
+  }, [orderables?.components]);
 
   const [testDate, setTestDate] = React.useState<Database.JSONDate>(Temporal.Now.instant().toString() as Database.JSONDate);
   const [selectedTest, setSelectedTest] = React.useState<any>(null);
@@ -54,9 +58,10 @@ export const EditResult = ({ ...props }) => {
   };
 
   React.useEffect(() => {
-    if (!selectedTest?.id || !orderables?.result_map) return;
+    const resultMap = orderables?.result_map || (orderablesData as any)?.result_map;
+    if (!selectedTest?.id || !resultMap) return;
 
-    const targetIds = (orderables.result_map)[selectedTest.id] || [];
+    const targetIds = resultMap[selectedTest.id] || [];
     if (targetIds.length === 0) return;
 
     setResults(prev => {

@@ -41,8 +41,10 @@ export const OrderSearch = ({ open, searchTerm, onSelect, ...props }: { open: an
           onSelect(null);
         } else if (Array.isArray(item)) {
           onSelect(item);
-        } else {
+        } else if (item.type === 'medication' || (!item.type && (item.route || item.routesMap))) {
           setComposingItem(item);
+        } else {
+          onSelect(item);
         }
       }}
       {...props}
