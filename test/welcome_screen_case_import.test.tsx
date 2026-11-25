@@ -12,6 +12,7 @@ import { Schedule } from '../src/routes/Schedule/Schedule';
 import { PatientsTable } from '../src/routes/PatientList/components/PatientsTable';
 import { Titlebar } from '../src/components/ui/Titlebar';
 import { Patient } from '../src/routes/Patient/Patient';
+import { DatabaseManagementWindow } from '../src/components/ui/DatabaseManagementWindow';
 
 describe('mergeSingleDataset', () => {
   it('merges a new patient into the database', () => {
@@ -600,5 +601,77 @@ describe('Welcome Screen (Login Route)', () => {
     // Erase All while on schedule -> no errors
     fireEvent.click(screen.getByRole('button', { name: 'Erase All' }));
     expect(screen.getByText('Schedule Page')).toBeInTheDocument();
+  });
+
+  it('pre-selects currentMrn in DatabaseManagementWindow when inside a patient chart and clears selection when closed or opened without currentMrn', async () => {
+    const DbMgmtHarness = () => {
+      const [, setDb] = useDatabase()();
+      const [open, setOpen] = React.useState(false);
+      const [mrn, setMrn] = React.useState<string | undefined>('9001');
+
+      const seedPatient = () => {
+        setDb((prev: any) => ({
+          ...prev,
+          patients: {
+            '9001': {
+              id: '9001',
+              mrn: '9001',
+              firstName: 'Test',
+              lastName: 'Alpha',
+              encounters: {},
+            },
+          },
+        }));
+      };
+
+      return (
+        <div>
+          <button onClick={seedPatient}>Seed Patient</button>
+          <button onClick={() => setMrn('9001')}>Set MRN 9001</button>
+          <button onClick={() => setMrn(undefined)}>Clear MRN</button>
+          <button onClick={() => setOpen(true)}>Open DB Mgmt</button>
+          <DatabaseManagementWindow open={open} onClose={() => setOpen(false)} currentMrn={mrn} />
+        </div>
+      );
+    };
+
+    render(
+      <DatabaseProvider>
+        <PromptProvider>
+          <DbMgmtHarness />
+        </PromptProvider>
+      </DatabaseProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Seed Patient' })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Seed Patient' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open DB Mgmt' }));
+
+    // With currentMrn='9001', patient 9001 should appear selected in the tree and Export Selected should be enabled
+    await waitFor(() => {
+      const exportSelectedBtn = screen.getByRole('button', { name: /export selected/i });
+      expect(exportSelectedBtn).toBeEnabled();
+      const selectedNode = screen.getByRole('treeitem', { name: /^9001/i });
+      expect(
+        selectedNode.getAttribute('aria-selected') === 'true' ||
+        selectedNode.getAttribute('aria-checked') === 'true'
+      ).toBe(true);
+    });
+
+    // Close DB Mgmt, clear currentMrn, and reopen -> Export Selected should be disabled (no stale selection)
+    fireEvent.click(screen.getByRole('button', { name: '' }));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Clear MRN' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open DB Mgmt' }));
+
+    await waitFor(() => {
+      const exportSelectedBtn = screen.getByRole('button', { name: /export selected/i });
+      expect(exportSelectedBtn).toBeDisabled();
+    });
   });
 });

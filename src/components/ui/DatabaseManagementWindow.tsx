@@ -3,9 +3,10 @@ import { Window, Button, Stack, Label, Icon, Box, Grid, Divider, Popover, Autoco
 import { useDatabaseOperations } from './databaseManagement/useDatabaseOperations'
 import { SinglePatientAppointmentModal } from './databaseManagement/SinglePatientAppointmentModal'
 
-export const DatabaseManagementWindow = ({ open, onClose }: {
+export const DatabaseManagementWindow = ({ open, onClose, currentMrn }: {
   open: boolean;
   onClose: () => void;
+  currentMrn?: string;
 }) => {
   const {
     db,
@@ -29,6 +30,23 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
     setSinglePatientPrompt,
     handleCreateAppointment,
   } = useDatabaseOperations()
+
+  const [expandedItems, setExpandedItems] = React.useState<string[]>(['root'])
+
+  React.useEffect(() => {
+    if (open) {
+      if (currentMrn && db?.patients?.[currentMrn]) {
+        setSelectedPath(`root.patients.${currentMrn}`)
+        setExpandedItems(['root', 'root.patients'])
+      } else {
+        setSelectedPath(null)
+        setExpandedItems(['root'])
+      }
+    } else {
+      setSelectedPath(null)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, currentMrn])
 
   return (
     <>
@@ -62,6 +80,8 @@ export const DatabaseManagementWindow = ({ open, onClose }: {
                 data={db}
                 label="Root"
                 path="root"
+                expandedItems={expandedItems}
+                onExpandedItemsChange={(_, ids) => setExpandedItems(ids)}
                 selectedItems={selectedPath}
                 onSelectedItemsChange={(_, id) => setSelectedPath(id as string)}
                 sx={{ flex: 1, overflow: 'auto' }}

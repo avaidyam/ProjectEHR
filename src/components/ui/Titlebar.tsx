@@ -30,7 +30,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const [manageConditionalsOpen, setManageConditionalsOpen] = React.useState(false)
 
   // Extract MRN and EncounterID from URL if present
-  const match = location.pathname.match(/^\/patient\/([^/]+)\/encounter\/([^/]+)/) as string[]
+  const match = location.pathname.match(/^\/patient\/([^/]+)(?:\/encounter\/([^/]+))?/) as string[]
   const currentMrn = match?.[1]
   const currentEncID = match?.[2]
 
@@ -226,6 +226,7 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
       <DatabaseManagementWindow
         open={dbManagementOpen}
         onClose={() => setDbManagementOpen(false)}
+        currentMrn={currentMrn}
       />
 
       {currentMrn && currentEncID && patientsDB?.[currentMrn]?.encounters?.[currentEncID] && (
