@@ -1190,7 +1190,7 @@ export const Confirm: React.FC<{
 export const PromptContext = React.createContext<{
   alert: (message: string, title?: string) => Promise<void>;
   confirm: (message: string, title?: string) => Promise<boolean>;
-  prompt: (message: string, defaultValue?: string, title?: string) => Promise<string | null>;
+  prompt: (message: string, defaultValue?: string, title?: string, type?: string) => Promise<string | null>;
   notify: (message: string, severity?: AlertColor) => void;
 } | null>(null);
 
@@ -1200,12 +1200,14 @@ export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     message: string;
     title: string;
     defaultValue: string;
+    inputType: string;
     resolve: (value: any) => void;
   }>({
     type: null,
     message: '',
     title: '',
     defaultValue: '',
+    inputType: 'text',
     resolve: () => { },
   });
 
@@ -1221,17 +1223,17 @@ export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const alert = (message: string, title = 'Alert') =>
     new Promise<void>((resolve) => {
-      setState({ type: 'alert', message, title, defaultValue: '', resolve });
+      setState({ type: 'alert', message, title, defaultValue: '', inputType: 'text', resolve });
     });
 
   const confirm = (message: string, title = 'Confirm') =>
     new Promise<boolean>((resolve) => {
-      setState({ type: 'confirm', message, title, defaultValue: '', resolve });
+      setState({ type: 'confirm', message, title, defaultValue: '', inputType: 'text', resolve });
     });
 
-  const prompt = (message: string, defaultValue = '', title = 'Prompt') =>
+  const prompt = (message: string, defaultValue = '', title = 'Prompt', inputType = 'text') =>
     new Promise<string | null>((resolve) => {
-      setState({ type: 'prompt', message, title, defaultValue, resolve });
+      setState({ type: 'prompt', message, title, defaultValue, inputType, resolve });
     });
 
   const notify = (message: string, severity: AlertColor = 'info') => {
@@ -1266,6 +1268,7 @@ export const PromptProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         title={state.title}
         label={state.message}
         defaultValue={state.defaultValue}
+        type={state.inputType}
       />
       <MUISnackbar
         open={notification.open}

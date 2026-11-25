@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { usePrompts } from 'components/ui/Core'
-import { useDatabase, initialStore } from 'components/contexts/PatientContext'
+import { useDatabase, initialStore, sampleStore } from 'components/contexts/PatientContext'
 import * as Database from 'components/contexts/Database'
 
 export interface DatabaseStats {
@@ -131,7 +131,7 @@ export const useDatabaseOperations = () => {
     patientName: string;
     encounterId: Database.Encounter.ID;
   } | null>(null)
-  const { alert, confirm } = usePrompts()
+  const { alert, confirm, prompt } = usePrompts()
 
   const getDateString = () => {
     try {
@@ -350,12 +350,12 @@ export const useDatabaseOperations = () => {
     if (await confirm("Are you SURE you want to delete the entire database? This cannot be undone and will erase EVERYTHING.", "Erase Database")) {
       setDb({
         version: initialStore.version,
-        departments: [],
+        departments: initialStore.departments,
         patients: {},
         appointments: [],
-        lists: [],
+        lists: initialStore.lists,
         providers: [],
-        locations: [],
+        locations: initialStore.locations,
         orderables: initialStore.orderables,
         flowsheets: []
       })
@@ -365,8 +365,20 @@ export const useDatabaseOperations = () => {
   }
 
   const handleLoadSample = async () => {
+    const enteredPassword = await prompt(
+      "",
+      "",
+      "Password Required",
+      "password"
+    )
+    if (enteredPassword === null) return
+    if (enteredPassword !== "cimed") {
+      await alert("Incorrect password. Access denied.", "Access Denied")
+      return
+    }
+
     if (await confirm("Are you SURE you want to reset to the sample database? All your current changes will be LOST.", "Reset to Sample")) {
-      setDb(initialStore as any)
+      setDb(sampleStore as any)
       setSelectedPath(null)
       await alert("Sample database has been loaded.", "Database Reset")
     }
@@ -453,8 +465,10 @@ export const useDatabaseOperations = () => {
         location: (locationId || prevDb.locations?.[0]?.id) as Database.Location.ID,
         status: Database.Appointment.Status.Scheduled,
         apptTime: `${date}T09:00:00Z`,
-        cc: 'Emergency',
-        notes: 'Automatically scheduled on case import',
+        cc: (currentPatient?.encounters?.[eId]?.concerns || [])
+          .filter((c) => typeof c === 'string' && !c.startsWith('!'))
+          .join(', '),
+        notes: '',
         checkoutTime: null,
       }
 

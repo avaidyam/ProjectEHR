@@ -4,7 +4,6 @@ import {
   Button,
   Box,
   Label,
-  Chip,
   Icon,
   DataGrid
 } from 'components/ui/Core';
@@ -13,22 +12,6 @@ import { Paper } from '@mui/material'
 import { Database, useDatabase } from 'components/contexts/PatientContext';
 import { AddToListModal } from './AddToListModal';
 import { GridColDef } from '@mui/x-data-grid';
-
-// Helper function to get status color
-const getStatusColor = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case 'admitted':
-      return 'success';
-    case 'discharged':
-      return 'default';
-    case 'waiting':
-      return 'warning';
-    case 'in treatment':
-      return 'info';
-    default:
-      return 'default';
-  }
-};
 
 export const PatientsTable = ({
   lists,
@@ -42,7 +25,6 @@ export const PatientsTable = ({
   const navigate = useNavigate();
   const [patientsDB] = useDatabase().patients();
   const [selectedPatient, setSelectedPatient] = React.useState<any>(null);
-  const [ready, setReady] = React.useState(false);
 
   const listPatients = React.useMemo(() => {
     if (!selectedList) return [];
@@ -56,25 +38,17 @@ export const PatientsTable = ({
     }).filter(Boolean);
   }, [selectedList, patientsDB]);
 
-  // Wait until patients with sticky notes are fully loaded
-  React.useEffect(() => {
-    if (listPatients.length) {
-      setReady(true);
-    }
-  }, [listPatients]);
-
   /* Safe defaults for hooks */
   const columnsConfig = selectedList?.columns || [
     { id: 'name', label: 'Patient Name', selected: true, order: 0 },
     { id: 'mrn', label: 'MRN', selected: true, order: 1 },
     { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
     { id: 'location', label: 'Location', selected: true, order: 3 },
-    { id: 'status', label: 'Status', selected: true, order: 4 },
   ];
 
   const columns: GridColDef[] = React.useMemo(() => {
     const defaultCols: any[] = columnsConfig
-      .filter((col: any) => col.selected)
+      .filter((col: any) => col.selected && col.id !== 'status')
       .sort((a: any, b: any) => a.order - b.order)
       .map((col: any) => {
         const baseCol = {
@@ -116,21 +90,6 @@ export const PatientsTable = ({
                 </Box>
               ),
             };
-          case 'status':
-            return {
-              ...baseCol,
-              renderCell: (params: any) => {
-                const status = params.row.status || 'No encounters';
-                return (
-                  <Chip
-                    label={status}
-                    size="small"
-                    color={getStatusColor(status)}
-                    sx={{ minWidth: 85 }}
-                  />
-                );
-              },
-            };
           default:
             return baseCol;
         }
@@ -160,7 +119,7 @@ export const PatientsTable = ({
     return defaultCols;
   }, [columnsConfig, selectedList?.type]);
 
-  if (!selectedList || !ready) {
+  if (!selectedList) {
     return (
       <Box
         sx={{
@@ -173,7 +132,7 @@ export const PatientsTable = ({
         }}
       >
         <Label variant='body1' color='text.secondary' align='center'>
-          Loading patients...
+          No patients
         </Label>
       </Box>
     );
@@ -188,6 +147,7 @@ export const PatientsTable = ({
         <DataGrid
           rows={listPatients}
           columns={columns}
+          localeText={{ noRowsLabel: 'No patients' }}
           onRowClick={(params, event) => {
             //if (event.target.closest('button')) return;
             

@@ -1,13 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Login } from '../src/routes/Login/Login';
 import { AuthProvider } from '../src/components/contexts/AuthContext';
-import { DatabaseProvider } from '../src/components/contexts/PatientContext';
+import { DatabaseProvider, initialStore, sampleStore, useDatabase } from '../src/components/contexts/PatientContext';
 import { PromptProvider } from '../src/components/ui/Core';
 import { mergeSingleDataset, extractSinglePatientInfo } from '../src/components/ui/databaseManagement/useDatabaseOperations';
 import { SinglePatientAppointmentModal } from '../src/components/ui/databaseManagement/SinglePatientAppointmentModal';
+import { Schedule } from '../src/routes/Schedule/Schedule';
+import { PatientsTable } from '../src/routes/PatientList/components/PatientsTable';
+import { Titlebar } from '../src/components/ui/Titlebar';
+import { Patient } from '../src/routes/Patient/Patient';
 
 describe('mergeSingleDataset', () => {
   it('merges a new patient into the database', () => {
@@ -389,5 +393,212 @@ describe('Welcome Screen (Login Route)', () => {
     const details = JSON.parse(localStorage.getItem('userLoginDetails') || '{}');
     expect(details.username).toBe('User');
     expect(details.department).toBeDefined();
+  });
+
+  it('allows selecting all 3 baseline departments in Schedule even when no patients or appointments exist', async () => {
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <DatabaseProvider>
+            <PromptProvider>
+              <Schedule />
+            </PromptProvider>
+          </DatabaseProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Schedule')).toBeInTheDocument();
+    });
+
+    // Open the department dropdown
+    const openBtn = screen.getByRole('button', { name: /open/i });
+    fireEvent.click(openBtn);
+
+    expect(await screen.findByText('ADULT MEDICINE PWAM PBB')).toBeInTheDocument();
+    expect(screen.getByText('EMERGENCY DEPARTMENT')).toBeInTheDocument();
+    expect(screen.getByText('FAMILY MEDICINE')).toBeInTheDocument();
+  });
+
+  it('displays "No patients" instead of "Loading patients..." or "No rows" and omits the Status column in PatientsTable', async () => {
+    const emptyList = initialStore.lists[0];
+    render(
+      <MemoryRouter>
+        <DatabaseProvider>
+          <PatientsTable
+            lists={initialStore.lists}
+            selectedList={emptyList}
+            setLists={vi.fn()}
+          />
+        </DatabaseProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('No patients')).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText(/loading patients/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('No rows')).not.toBeInTheDocument();
+    expect(screen.queryByRole('columnheader', { name: /status/i })).not.toBeInTheDocument();
+  });
+
+  it('starts with an empty database (no patient data) by default and locks sample database behind password cimed', async () => {
+    // Verify default initialStore has no patient data while sampleStore has sample patients
+    expect(Object.keys(initialStore.patients)).toHaveLength(0);
+    expect(initialStore.appointments).toHaveLength(0);
+    expect(Object.keys(sampleStore.patients).length).toBeGreaterThan(0);
+
+    // Baseline data includes ED (30), Adult (26), and FM (31) departments & locations
+    expect(initialStore.departments.map(d => d.id)).toEqual(expect.arrayContaining(['26', '30', '31']));
+    expect(initialStore.locations.map(l => l.departmentId)).toEqual(expect.arrayContaining(['26', '30', '31']));
+
+    // Baseline lists include 'all-patients' only (no lists with specific patients)
+    expect(initialStore.lists.map(l => l.id)).toEqual(['all-patients']);
+    expect(initialStore.lists[0].patients).toEqual([]);
+
+    const setIsLoggedIn = vi.fn();
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <DatabaseProvider>
+            <PromptProvider>
+              <Login setIsLoggedIn={setIsLoggedIn} />
+            </PromptProvider>
+          </DatabaseProvider>
+        </AuthProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('0 Cases Loaded')).toBeInTheDocument();
+    });
+
+    // Click Load Sample Database
+    fireEvent.click(screen.getByRole('button', { name: /load sample database/i }));
+
+    // Enter wrong password first
+    await screen.findByText(/password required/i);
+    const pwdInput = screen.getByRole('dialog').querySelector('input[type="password"]') as HTMLInputElement;
+    expect(pwdInput).toBeTruthy();
+    fireEvent.change(pwdInput, { target: { value: 'wrongpass' } });
+    fireEvent.click(screen.getByRole('button', { name: /^ok$/i }));
+
+    expect(await screen.findByText(/incorrect password/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^ok$/i }));
+    await waitFor(() => {
+      expect(screen.queryByText(/incorrect password/i)).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('0 Cases Loaded')).toBeInTheDocument();
+
+    // Now click Load Sample Database and enter 'cimed'
+    fireEvent.click(await screen.findByRole('button', { name: /load sample database/i }));
+    await screen.findByText(/password required/i);
+    const pwdInput2 = screen.getByRole('dialog').querySelector('input[type="password"]') as HTMLInputElement;
+    expect(pwdInput2).toBeTruthy();
+    fireEvent.change(pwdInput2, { target: { value: 'cimed' } });
+    fireEvent.click(screen.getByRole('button', { name: /^ok$/i }));
+
+    // Confirm reset dialog
+    expect(await screen.findByText(/are you sure you want to reset to the sample database/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^confirm$/i }));
+
+    // Sample database should now be loaded
+    expect(await screen.findByText(/sample database has been loaded/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^ok$/i }));
+    expect(screen.queryByText('0 Cases Loaded')).not.toBeInTheDocument();
+  });
+
+  it('closes open patient chart tab and avoids crashing when a patient is deleted or database is erased', async () => {
+    const TestHarness = () => {
+      const [, setDb] = useDatabase()();
+      const location = useLocation();
+      const navigate = useNavigate();
+      const seedTwoPatients = () => {
+        setDb((prev: any) => ({
+          ...prev,
+          patients: {
+            '9001': {
+              id: '9001',
+              mrn: '9001',
+              firstName: 'Test',
+              lastName: 'Alpha',
+              encounters: {
+                '1': { id: '1', startDate: '2026-03-01T08:00:00Z', department: '30', provider: '1', history: {}, problems: [], orders: [], labs: [], imaging: [], flowsheets: [] },
+              },
+            },
+            '9002': {
+              id: '9002',
+              mrn: '9002',
+              firstName: 'Test',
+              lastName: 'Beta',
+              encounters: {
+                '2': { id: '2', startDate: '2026-03-01T08:00:00Z', department: '30', provider: '1', history: {}, problems: [], orders: [], labs: [], imaging: [], flowsheets: [] },
+              },
+            },
+          },
+        }));
+      };
+      const deleteAlpha = () => {
+        setDb((prev: any) => {
+          const next = { ...prev.patients };
+          delete next['9001'];
+          return { ...prev, patients: next };
+        });
+      };
+      const eraseAll = () => {
+        setDb((prev: any) => ({ ...prev, patients: {}, appointments: [] }));
+      };
+
+      return (
+        <div>
+          <span data-testid="pathname">{location.pathname}</span>
+          <button onClick={seedTwoPatients}>Seed</button>
+          <button onClick={() => navigate('/patient/9001/encounter/1')}>Open Alpha</button>
+          <button onClick={deleteAlpha}>Delete Alpha</button>
+          <button onClick={eraseAll}>Erase All</button>
+          <Titlebar onLogout={vi.fn()} />
+          <Routes>
+            <Route path="/patient/:mrn/encounter/:enc" element={<Patient />} />
+            <Route path="/patient/:mrn" element={<Patient />} />
+            <Route path="/schedule" element={<div>Schedule Page</div>} />
+          </Routes>
+        </div>
+      );
+    };
+
+    render(
+      <MemoryRouter initialEntries={['/schedule']}>
+        <DatabaseProvider>
+          <PromptProvider>
+            <TestHarness />
+          </PromptProvider>
+        </DatabaseProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/schedule');
+    });
+
+    // Seed patients, then open Alpha's chart
+    fireEvent.click(screen.getByRole('button', { name: 'Seed' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Open Alpha' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/patient/9001/encounter/1');
+      expect(screen.getByRole('tab', { name: /Test Alpha/i })).toBeInTheDocument();
+    });
+
+    // Delete Alpha while currently viewing Alpha's chart -> tab closes and navigates cleanly to /schedule
+    fireEvent.click(screen.getByRole('button', { name: 'Delete Alpha' }));
+    await waitFor(() => {
+      expect(screen.queryByRole('tab', { name: /Test Alpha/i })).not.toBeInTheDocument();
+      expect(screen.getByTestId('pathname')).toHaveTextContent('/schedule');
+    });
+
+    // Erase All while on schedule -> no errors
+    fireEvent.click(screen.getByRole('button', { name: 'Erase All' }));
+    expect(screen.getByText('Schedule Page')).toBeInTheDocument();
   });
 });

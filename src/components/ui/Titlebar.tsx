@@ -30,17 +30,46 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const [manageConditionalsOpen, setManageConditionalsOpen] = React.useState(false)
 
   // Extract MRN and EncounterID from URL if present
-  const match = location.pathname.match(/^\/patient\/(\d+)\/encounter\/(\d+)/) as string[]
+  const match = location.pathname.match(/^\/patient\/([^/]+)\/encounter\/([^/]+)/) as string[]
   const currentMrn = match?.[1]
   const currentEncID = match?.[2]
 
+  const isValidPatientPath = React.useCallback((path: string) => {
+    if (!path.startsWith('/patient/')) return true;
+    const parts = path.split('/');
+    const mrn = parts[2] as Database.Patient.ID;
+    const patient = mrn ? patientsDB?.[mrn] : undefined;
+    if (!patient) return false;
+    if (parts[3] === 'encounter' && parts[4]) {
+      const encId = parts[4] as Database.Encounter.ID;
+      if (!patient.encounters?.[encId]) return false;
+    }
+    return true;
+  }, [patientsDB]);
 
   const [tabHistory, setTabHistory] = React.useState<string[]>([])
   React.useEffect(() => {
-    if (tabHistory.find(tab => tab === location.pathname) === undefined)
+    if (isValidPatientPath(location.pathname) && tabHistory.find(tab => tab === location.pathname) === undefined)
       setTabHistory((prev) => [...new Set([...prev, location.pathname])])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname])
+  }, [location.pathname, isValidPatientPath])
+
+  // Automatically close open patient chart tabs when their patient/encounter is deleted or DB is erased
+  React.useEffect(() => {
+    const validTabs = tabHistory.filter(isValidPatientPath);
+    if (validTabs.length !== tabHistory.length) {
+      setTabHistory(validTabs);
+    }
+
+    if (!isValidPatientPath(location.pathname)) {
+      const remainingPatientTabs = validTabs.filter((t) => t.startsWith('/patient/'));
+      if (remainingPatientTabs.length > 0) {
+        navigate(remainingPatientTabs[remainingPatientTabs.length - 1], { replace: true });
+      } else {
+        navigate('/schedule', { replace: true });
+      }
+    }
+  }, [patientsDB, tabHistory, location.pathname, isValidPatientPath, navigate]);
   const removePathnameFromHistory = (pathname: string) => {
     const newHistory = tabHistory.filter(t => t !== pathname)
     setTabHistory([...new Set(newHistory)])
@@ -199,19 +228,23 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
         onClose={() => setDbManagementOpen(false)}
       />
 
-      <PDMPManagerWindow
-        open={pdmpManagerOpen}
-        onClose={() => setPdmpManagerOpen(false)}
-        mrn={currentMrn as Database.Patient.ID}
-        encounterId={currentEncID as Database.Encounter.ID}
-      />
+      {currentMrn && currentEncID && patientsDB?.[currentMrn]?.encounters?.[currentEncID] && (
+        <>
+          <PDMPManagerWindow
+            open={pdmpManagerOpen}
+            onClose={() => setPdmpManagerOpen(false)}
+            mrn={currentMrn as Database.Patient.ID}
+            encounterId={currentEncID as Database.Encounter.ID}
+          />
 
-      <ManageConditionalsWindow
-        open={manageConditionalsOpen}
-        onClose={() => setManageConditionalsOpen(false)}
-        mrn={currentMrn as Database.Patient.ID}
-        encounterId={currentEncID as Database.Encounter.ID}
-      />
+          <ManageConditionalsWindow
+            open={manageConditionalsOpen}
+            onClose={() => setManageConditionalsOpen(false)}
+            mrn={currentMrn as Database.Patient.ID}
+            encounterId={currentEncID as Database.Encounter.ID}
+          />
+        </>
+      )}
     </>
   )
 }

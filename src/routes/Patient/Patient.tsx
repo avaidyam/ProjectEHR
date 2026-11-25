@@ -3,7 +3,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Box, Drawer, IconButton, useTheme, useMediaQuery, Button } from '@mui/material'
 import { Icon } from 'components/ui/Core';
 import { SplitView } from 'components/ui/SplitView';
-import { PatientProvider, usePatientMRN, useEncounterID } from 'components/contexts/PatientContext';
+import { PatientProvider, usePatientMRN, useEncounterID, useDatabase } from 'components/contexts/PatientContext';
 
 import { Storyboard } from './routes/Storyboard/Storyboard'
 import { ChartReview } from './routes/ChartReview/ChartReview'
@@ -88,12 +88,21 @@ const DEFAULT_SIDE_TABS = [
 export const Patient = ({ ...props }: any) => {
   const [enc] = useEncounterID();
   const [patientMRN] = usePatientMRN();
+  const [patientsDB] = useDatabase().patients();
 
   const drawerWidth = 250
   const [storyboardOpen, setStoryboardOpen] = React.useState(true)
   const [isOrderPickerOpen, setIsOrderPickerOpen] = React.useState(false)
   const [isDiagnosisPickerOpen, setIsDiagnosisPickerOpen] = React.useState(false)
   const isMobile = useMediaQuery(useTheme().breakpoints.down('sm'));
+
+  const patient = patientMRN ? patientsDB?.[patientMRN] : undefined;
+  const hasValidPatient = Boolean(patient);
+  const hasValidEncounter = !enc || Boolean(patient?.encounters?.[enc]);
+
+  if (!hasValidPatient || !hasValidEncounter) {
+    return null;
+  }
 
   return (
     <PatientProvider patient={patientMRN} encounter={enc} key={`${patientMRN}-${enc}`}>

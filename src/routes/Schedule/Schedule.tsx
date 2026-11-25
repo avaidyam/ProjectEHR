@@ -46,10 +46,11 @@ function customFilterBar({
       />
       <Autocomplete
         disableClearable
-        options={Array.from(new Set(appointmentsDB.map(a => a.department))).map(deptId => ({ id: deptId, label: departments.find(d => d.id === deptId)?.name || `Dept ${deptId}` }))}
-        value={selectedDept}
+        options={Array.from(new Set([...departments.map(d => d.id), ...appointmentsDB.map(a => a.department)])).map(deptId => ({ id: deptId, label: departments.find(d => d.id === deptId)?.name || `Dept ${deptId}` }))}
+        value={selectedDept || null}
         onChange={(_e, newValue: any) => setSelectedDept(newValue?.id)}
-        getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : option.label}
+        getOptionLabel={(option: any) => typeof option === 'string' ? (departments.find(d => d.id === option)?.name || option) : (option?.label || '')}
+        isOptionEqualToValue={(option: any, val: any) => (typeof val === 'string' ? option.id === val : option.id === val?.id)}
         sx={{ width: 250 }}
       />
       <FormControlLabel
