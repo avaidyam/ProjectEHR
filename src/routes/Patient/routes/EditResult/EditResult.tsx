@@ -16,6 +16,7 @@ import { createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import orderablesData from 'util/data/orderables.json';
+import { DICOMViewer } from '../ImagingViewer/components/DICOMViewer';
 
 
 const ComponentEditCell = ({ id, value, field, api }: { id: any; value?: any; field: string; api: any }) => {
@@ -223,7 +224,17 @@ export const EditResult = ({ ...props }) => {
           </label>
           {imagePreview && (
             <Box sx={{ mt: 2 }}>
-              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+              {imagePreview.startsWith('data:image/') ? (
+                <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+              ) : (
+                <Box sx={{ width: '100%', height: 300, bgcolor: 'black', borderRadius: 1, overflow: 'hidden' }}>
+                  <DICOMViewer
+                    images={[imagePreview]}
+                    viewerId="edit-result-preview"
+                    tool="WindowLevel"
+                  />
+                </Box>
+              )}
             </Box>
           )}
         </Box>
