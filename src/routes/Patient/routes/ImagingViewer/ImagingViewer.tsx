@@ -778,7 +778,7 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }: { data: any
 
   return (
     <ThemeProvider theme={dicomTheme}>
-      <Stack sx={{ height: '100%', width: '100%', overflow: 'hidden', color: 'text.secondary' }}>
+      <Stack sx={{ height: '100%', minHeight: '65vh', width: '100%', overflow: 'hidden', color: 'text.secondary' }}>
         <Box sx={{ flexShrink: 0 }}>
           <ImagingToolbar
             data={data}

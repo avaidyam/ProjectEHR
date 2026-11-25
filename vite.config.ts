@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import path from "path";
+import fs from "fs";
+
+const nodeModulesRealPath = fs.existsSync(path.resolve(__dirname, 'node_modules'))
+  ? [fs.realpathSync(path.resolve(__dirname, 'node_modules'))]
+  : [];
 
 export default defineConfig({
   plugins: [react(), viteCommonjs()],
@@ -18,13 +23,22 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    strictPort: true
+    strictPort: true,
+    fs: {
+      allow: ['.', ...nodeModulesRealPath],
+    },
   },
   worker: {
     format: 'es',
   },
   optimizeDeps: {
-    exclude: ['@cornerstonejs/dicom-image-loader'],
+    exclude: [
+      '@cornerstonejs/dicom-image-loader',
+      '@cornerstonejs/codec-charls',
+      '@cornerstonejs/codec-libjpeg-turbo-8bit',
+      '@cornerstonejs/codec-openjpeg',
+      '@cornerstonejs/codec-openjph',
+    ],
     include: ['dicom-parser'],
   },
   test: {

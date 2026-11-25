@@ -16,7 +16,6 @@ import { createFilterOptions } from '@mui/material';
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
 import orderablesData from 'util/data/orderables.json';
-import { DICOMViewer } from '../ImagingViewer/components/DICOMViewer';
 
 
 const ComponentEditCell = ({ id, value, field, api }: { id: any; value?: any; field: string; api: any }) => {
@@ -34,7 +33,7 @@ const ComponentEditCell = ({ id, value, field, api }: { id: any; value?: any; fi
 };
 
 export const EditResult = ({ ...props }) => {
-  const { closeTab } = useSplitView();
+  const { openTab, closeTab } = useSplitView();
   const [orderables] = useDatabase().orderables()
   const { useEncounter } = usePatient();
   const [labs, setLabs] = useEncounter().labs();
@@ -53,6 +52,7 @@ export const EditResult = ({ ...props }) => {
   const [provider, setProvider] = React.useState<Database.Provider.ID | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [imageBase64, setImageBase64] = React.useState('');
+  const [uploadedFileName, setUploadedFileName] = React.useState('');
 
   const handleAddRow = () => {
     setResults(prev => [...prev, { id: crypto.randomUUID(), component: null, value: '', units: '', low: '', high: '', comment: '' }]);
@@ -108,6 +108,8 @@ export const EditResult = ({ ...props }) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setUploadedFileName(file.name);
+      closeTab("Imaging Viewer", "window");
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageBase64(reader.result as string);
@@ -117,7 +119,23 @@ export const EditResult = ({ ...props }) => {
     }
   };
 
+  const handleOpenImagingPreview = () => {
+    if (!imageBase64) return;
+    const tempData = {
+      id: "temp-preview",
+      date: testDate,
+      status: status,
+      test: selectedTest ? selectedTest.label : (uploadedFileName || "Preview Exam"),
+      abnormal: false,
+      provider: provider!,
+      image: imageBase64,
+    };
+    const viewerId = `preview-${Temporal.Now.instant().epochMilliseconds}`;
+    openTab("Imaging Viewer", { data: tempData, viewerId, convertMonochrome: true }, "window", true);
+  };
+
   const handleCancel = () => {
+    closeTab("Imaging Viewer", "window");
     closeTab("Edit Result", "main");
   };
 
@@ -162,6 +180,7 @@ export const EditResult = ({ ...props }) => {
         "resultingAgency": null
       }])
     }
+    closeTab("Imaging Viewer", "window");
     closeTab("Edit Result", "main");
   };
 
@@ -222,19 +241,26 @@ export const EditResult = ({ ...props }) => {
               Upload Image (for Imaging)
             </Button>
           </label>
-          {imagePreview && (
+          {imagePreview && imagePreview.startsWith('data:image/') && (
             <Box sx={{ mt: 2 }}>
-              {imagePreview.startsWith('data:image/') ? (
-                <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
-              ) : (
-                <Box sx={{ width: '100%', height: 300, bgcolor: 'black', borderRadius: 1, overflow: 'hidden' }}>
-                  <DICOMViewer
-                    images={[imagePreview]}
-                    viewerId="edit-result-preview"
-                    tool="WindowLevel"
-                  />
-                </Box>
+              <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '300px' }} />
+            </Box>
+          )}
+          {imageBase64 && (
+            <Box sx={{ mt: 1.5 }}>
+              {uploadedFileName && (
+                <Label variant="caption" color="textSecondary" sx={{ display: 'block', mb: 0.5 }}>
+                  Uploaded: {uploadedFileName}
+                </Label>
               )}
+              <Button
+                variant="text"
+                size="small"
+                startIcon={<Icon>open_in_new</Icon>}
+                onClick={handleOpenImagingPreview}
+              >
+                Open in Imaging Viewer
+              </Button>
             </Box>
           )}
         </Box>
