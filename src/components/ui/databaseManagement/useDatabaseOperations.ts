@@ -10,6 +10,45 @@ export interface DatabaseStats {
   otherRecordsAdded: number;
 }
 
+export function extractSinglePatientInfo(datasets: any[]): {
+  patientId: Database.Patient.ID;
+  patientName: string;
+  encounterId: Database.Encounter.ID;
+} | null {
+  const patientMap = new Map<string, any>()
+  for (const rawData of datasets) {
+    const items = Array.isArray(rawData) ? rawData : [rawData]
+    for (const item of items) {
+      if (!item || typeof item !== 'object') continue
+      if (item.patients && typeof item.patients === 'object') {
+        Object.entries(item.patients).forEach(([pId, p]: [string, any]) => {
+          patientMap.set(pId, p)
+        })
+      } else if (item.mrn) {
+        patientMap.set(String(item.mrn), item)
+      }
+    }
+  }
+
+  if (patientMap.size !== 1) {
+    return null
+  }
+
+  const [patientId, patientObj] = Array.from(patientMap.entries())[0]
+  const patientName = patientObj
+    ? `${patientObj.lastName || ''}${patientObj.lastName && patientObj.firstName ? ', ' : ''}${patientObj.firstName || ''}`.trim() || `Patient ${patientId}`
+    : `Patient ${patientId}`
+
+  const encounterKeys = patientObj?.encounters ? Object.keys(patientObj.encounters) : []
+  const encounterId = encounterKeys.length > 0 ? encounterKeys[encounterKeys.length - 1] : '1'
+
+  return {
+    patientId: patientId as Database.Patient.ID,
+    patientName,
+    encounterId: encounterId as Database.Encounter.ID,
+  }
+}
+
 export function mergeSingleDataset(
   prevDb: any,
   importedData: any,
@@ -87,6 +126,11 @@ export const useDatabaseOperations = () => {
   const [urlImportAnchor, setUrlImportAnchor] = React.useState<HTMLElement | null>(null)
   const [importUrl, setImportUrl] = React.useState('')
   const [isFetchingUrl, setIsFetchingUrl] = React.useState(false)
+  const [singlePatientPrompt, setSinglePatientPrompt] = React.useState<{
+    patientId: Database.Patient.ID;
+    patientName: string;
+    encounterId: Database.Encounter.ID;
+  } | null>(null)
   const { alert, confirm } = usePrompts()
 
   const getDateString = () => {
@@ -359,6 +403,71 @@ export const useDatabaseOperations = () => {
     return stats
   }
 
+  const handleCreateAppointment = ({
+    date,
+    locationId,
+  }: {
+    date: string;
+    locationId: string;
+  }) => {
+    if (!singlePatientPrompt?.patientId) return
+
+    const pId = singlePatientPrompt.patientId
+    const eId = singlePatientPrompt.encounterId || ('1' as Database.Encounter.ID)
+
+    setDb((prevDb) => {
+      const loc = (prevDb.locations || []).find((l) => l.id === locationId)
+      const emergencyDept = (prevDb.departments || []).find((d) =>
+        d.name?.toLowerCase().includes('emergency')
+      )
+      const deptId = loc?.departmentId || emergencyDept?.id || ('30' as Database.Department.ID)
+
+      const currentPatients = { ...(prevDb.patients || {}) }
+      let currentPatient = currentPatients[pId]
+      if (currentPatient) {
+        currentPatient = { ...currentPatient }
+        const currentEncounters = { ...(currentPatient.encounters || {}) }
+        if (!currentEncounters[eId]) {
+          currentEncounters[eId] = {
+            id: eId,
+            date: `${date}T09:00:00Z` as Database.JSONDate,
+            department: deptId,
+            provider: (prevDb.providers?.[0]?.id || '1') as Database.Provider.ID,
+            type: 'ED Visit',
+            status: 'Scheduled',
+          } as any
+          currentPatient.encounters = currentEncounters
+          currentPatients[pId] = currentPatient
+        }
+      }
+
+      const newAppt: Database.Appointment = {
+        id: Database.Appointment.ID.create(),
+        department: deptId,
+        provider: (prevDb.providers?.[0]?.id || '1') as Database.Provider.ID,
+        patient: {
+          mrn: pId,
+          enc: eId,
+        },
+        type: 'ED Visit',
+        location: (locationId || prevDb.locations?.[0]?.id) as Database.Location.ID,
+        status: Database.Appointment.Status.Scheduled,
+        apptTime: `${date}T09:00:00Z`,
+        cc: 'Emergency',
+        notes: 'Automatically scheduled on case import',
+        checkoutTime: null,
+      }
+
+      return {
+        ...prevDb,
+        patients: currentPatients,
+        appointments: [...(prevDb.appointments || []), newAppt],
+      }
+    })
+
+    setSinglePatientPrompt(null)
+  }
+
   const importFiles = async (files: FileList | File[]) => {
     const fileArray = Array.from(files)
     if (fileArray.length === 0) return null
@@ -378,6 +487,7 @@ export const useDatabaseOperations = () => {
     }
 
     if (datasets.length > 0) {
+      const singlePatient = extractSinglePatientInfo(datasets)
       const stats = mergeMultipleDatabases(datasets)
       const fileSummary = fileArray.length === 1
         ? `File "${fileArray[0].name}" imported successfully!`
@@ -386,6 +496,10 @@ export const useDatabaseOperations = () => {
       const errorSummary = errors.length > 0 ? `\n\nErrors encountered:\n${errors.join('\n')}` : ''
 
       await alert(fileSummary + statsSummary + errorSummary, "Import Complete")
+
+      if (singlePatient) {
+        setSinglePatientPrompt(singlePatient)
+      }
       return stats
     } else if (errors.length > 0) {
       await alert(`Failed to import files:\n${errors.join('\n')}`, "Import Error")
@@ -408,10 +522,15 @@ export const useDatabaseOperations = () => {
       const response = await fetch(importUrl)
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
       const data = await response.json()
+      const singlePatient = extractSinglePatientInfo([data])
       const stats = mergeMultipleDatabases([data])
       setImportUrl('')
       setUrlImportAnchor(null)
       await alert(`Import Complete!\nPatients Added: ${stats.patientsAdded}\nEncounters Added: ${stats.encountersAdded}\nDepartments Added: ${stats.departmentsAdded}\nOther Records Added: ${stats.otherRecordsAdded}`, "Import Complete")
+
+      if (singlePatient) {
+        setSinglePatientPrompt(singlePatient)
+      }
       return true
     } catch (error) {
       console.error("Failed to fetch JSON from URL", error)
@@ -443,6 +562,9 @@ export const useDatabaseOperations = () => {
     handleImportFromUrl,
     handleFileChange,
     importFiles,
-    mergeMultipleDatabases
+    mergeMultipleDatabases,
+    singlePatientPrompt,
+    setSinglePatientPrompt,
+    handleCreateAppointment,
   }
 }

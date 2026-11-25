@@ -14,6 +14,7 @@ import {
 import { AuthContext, AuthContextType } from 'components/contexts/AuthContext';
 import { useDatabase, Database } from 'components/contexts/PatientContext';
 import { useDatabaseOperations } from 'components/ui/databaseManagement/useDatabaseOperations';
+import { SinglePatientAppointmentModal } from 'components/ui/databaseManagement/SinglePatientAppointmentModal';
 
 interface LoginProps {
   setIsLoggedIn: (value: boolean) => void;
@@ -47,6 +48,9 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
     handleImportFromUrl,
     handleFileChange,
     importFiles,
+    singlePatientPrompt,
+    setSinglePatientPrompt,
+    handleCreateAppointment,
   } = useDatabaseOperations();
 
   // Set default department when loaded (backend logic)
@@ -462,6 +466,14 @@ export const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
           </Label>
         </Box>
       </Box>
+
+      <SinglePatientAppointmentModal
+        open={Boolean(singlePatientPrompt)}
+        onClose={() => setSinglePatientPrompt(null)}
+        patientId={singlePatientPrompt?.patientId || null}
+        patientName={singlePatientPrompt?.patientName}
+        onConfirm={handleCreateAppointment}
+      />
     </Box>
   );
 };
