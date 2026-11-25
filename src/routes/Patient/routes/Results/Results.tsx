@@ -86,6 +86,7 @@ function useNormalizedResults() {
         isImage: true,
         test: testName,
         agency: doc.resultingAgency || "",
+        doc,
       });
     }
 
@@ -146,7 +147,7 @@ const ResultCell = ({ cell }: { cell: any }) => {
       }}
       enterDelay={150}
     >
-      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block", textAlign: cell.isImage ? "center" : "inherit" }}>
+      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block", textAlign: cell.isImage ? "center" : "inherit", cursor: cell.isImage ? "pointer" : "inherit" }}>
         {display}
       </span>
     </Tooltip>
@@ -254,6 +255,7 @@ function ResultsGraph({ components }: { components: any[] }) {
 }
 
 function ResultsGrid({ components }: { components: any[] }) {
+  const { openTab } = useSplitView();
   const timeKeys = React.useMemo(() => {
     const times = new Set<string>();
     components.forEach((t) => (t.results as any[]).forEach((r: any) => times.add(r.time)));
@@ -267,7 +269,7 @@ function ResultsGrid({ components }: { components: any[] }) {
         timeKeys.forEach((iso: string, i: number) => {
           const hit = (t.results as any[]).find((r: any) => r.time === iso);
           row[`t${i}`] = hit
-            ? { value: hit.value, isImage: hit.isImage, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short") }
+            ? { value: hit.value, isImage: hit.isImage, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short"), doc: hit.doc }
             : null;
         });
         return row;
@@ -290,6 +292,19 @@ function ResultsGrid({ components }: { components: any[] }) {
     return [{ field: "test", headerName: "Test", width: 160, sortable: false }, ...timeCols];
   }, [timeKeys]);
 
+  const handleCellDoubleClick = (params: any) => {
+    if (params.value?.isImage && params.value?.doc) {
+      openTab("Report", { data: params.value.doc }, "side", false);
+      return;
+    }
+    if (params.field === "test" && params.row) {
+      const firstImageCell = Object.values(params.row).find((v: any) => v?.isImage && v?.doc) as any;
+      if (firstImageCell?.doc) {
+        openTab("Report", { data: firstImageCell.doc }, "side", false);
+      }
+    }
+  };
+
   return (
     <DataGrid
       rows={rows}
@@ -297,6 +312,7 @@ function ResultsGrid({ components }: { components: any[] }) {
       hideFooter
       density="compact"
       disableRowSelectionOnClick
+      onCellDoubleClick={handleCellDoubleClick}
       sx={{ '& .MuiDataGrid-cell': { borderRight: '1px solid #f0f0f0' } }}
     />
   );
