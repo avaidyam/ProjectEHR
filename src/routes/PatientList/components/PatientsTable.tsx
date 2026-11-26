@@ -4,7 +4,6 @@ import {
   Button,
   Box,
   Label,
-  Chip,
   Icon,
   DataGrid
 } from 'components/ui/Core';
@@ -30,19 +29,62 @@ const getStatusColor = (status: string) => {
   }
 };
 
+/** Checks whether a patient row matches all whitespace-separated search terms across visible/searchable fields. */
+export const matchesPatientSearch = (
+  patient: any,
+  query: string,
+  columnsConfig: Database.PatientList.Column[] = []
+): boolean => {
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return true;
+
+  const terms = trimmed.split(/\s+/).filter(Boolean);
+  const formattedDob = patient.birthdate ? Database.JSONDate.toDateString(patient.birthdate) : '';
+  const age = patient.birthdate ? String(Database.JSONDate.toAge(patient.birthdate)) : '';
+  const locationText = patient.location || (typeof patient.address === 'string' ? patient.address : '') || 'Carle Foundation Hospital';
+  const statusText = patient.status || 'No encounters';
+
+  const parts: string[] = [
+    `${patient.lastName ?? ''}, ${patient.firstName ?? ''}`,
+    `${patient.firstName ?? ''} ${patient.lastName ?? ''}`,
+    patient.id != null ? String(patient.id) : '',
+    patient.birthdate ? String(patient.birthdate) : '',
+    formattedDob ?? '',
+    age,
+    patient.gender ?? '',
+    patient.sex ?? '',
+    locationText,
+    patient.bedStatus ? String(patient.bedStatus) : '',
+    statusText,
+    patient.insurance?.carrierName ?? '',
+  ];
+
+  for (const col of columnsConfig) {
+    if (!col.selected) continue;
+    const val = patient[col.id];
+    if (typeof val === 'string' || typeof val === 'number') {
+      parts.push(String(val));
+    }
+  }
+
+  const haystack = parts.filter(Boolean).join(' ').toLowerCase();
+  return terms.every((term) => haystack.includes(term));
+};
+
 export const PatientsTable = ({
   lists,
   selectedList,
   setLists,
+  searchQuery = '',
 }: {
   lists: Database.PatientList[];
   selectedList?: Database.PatientList;
   setLists: (lists: Database.PatientList[]) => void;
+  searchQuery?: string;
 }) => {
   const navigate = useNavigate();
   const [patientsDB] = useDatabase().patients();
   const [selectedPatient, setSelectedPatient] = React.useState<any>(null);
-  const [ready, setReady] = React.useState(false);
 
   const listPatients = React.useMemo(() => {
     if (!selectedList) return [];
@@ -56,25 +98,27 @@ export const PatientsTable = ({
     }).filter(Boolean);
   }, [selectedList, patientsDB]);
 
-  // Wait until patients with sticky notes are fully loaded
-  React.useEffect(() => {
-    if (listPatients.length) {
-      setReady(true);
-    }
-  }, [listPatients]);
-
   /* Safe defaults for hooks */
-  const columnsConfig = selectedList?.columns || [
-    { id: 'name', label: 'Patient Name', selected: true, order: 0 },
-    { id: 'mrn', label: 'MRN', selected: true, order: 1 },
-    { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
-    { id: 'location', label: 'Location', selected: true, order: 3 },
-    { id: 'status', label: 'Status', selected: true, order: 4 },
-  ];
+  const columnsConfig = React.useMemo(
+    () =>
+      selectedList?.columns || [
+        { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+        { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+        { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+        { id: 'location', label: 'Location', selected: true, order: 3 },
+        { id: 'status', label: 'Status', selected: true, order: 4 },
+      ],
+    [selectedList?.columns]
+  );
+
+  const filteredPatients = React.useMemo(
+    () => listPatients.filter((patient) => matchesPatientSearch(patient, searchQuery, columnsConfig)),
+    [listPatients, searchQuery, columnsConfig]
+  );
 
   const columns: GridColDef[] = React.useMemo(() => {
     const defaultCols: any[] = columnsConfig
-      .filter((col: any) => col.selected)
+      .filter((col: any) => col.selected && col.id !== 'status')
       .sort((a: any, b: any) => a.order - b.order)
       .map((col: any) => {
         const baseCol = {
@@ -116,21 +160,6 @@ export const PatientsTable = ({
                 </Box>
               ),
             };
-          case 'status':
-            return {
-              ...baseCol,
-              renderCell: (params: any) => {
-                const status = params.row.status || 'No encounters';
-                return (
-                  <Chip
-                    label={status}
-                    size="small"
-                    color={getStatusColor(status)}
-                    sx={{ minWidth: 85 }}
-                  />
-                );
-              },
-            };
           default:
             return baseCol;
         }
@@ -160,7 +189,7 @@ export const PatientsTable = ({
     return defaultCols;
   }, [columnsConfig, selectedList?.type]);
 
-  if (!selectedList || !ready) {
+  if (!selectedList) {
     return (
       <Box
         sx={{
@@ -173,7 +202,7 @@ export const PatientsTable = ({
         }}
       >
         <Label variant='body1' color='text.secondary' align='center'>
-          Loading patients...
+          No patients
         </Label>
       </Box>
     );
@@ -186,8 +215,14 @@ export const PatientsTable = ({
         sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
       >
         <DataGrid
-          rows={listPatients}
+          rows={filteredPatients}
           columns={columns}
+          localeText={{
+            noRowsLabel:
+              listPatients.length > 0 && searchQuery.trim()
+                ? 'No matching patients'
+                : 'No patients',
+          }}
           onRowClick={(params, event) => {
             //if (event.target.closest('button')) return;
             

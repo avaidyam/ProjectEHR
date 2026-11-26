@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Button, Typography, Toolbar, IconButton, Tooltip, Divider, Icon } from '@mui/material';
+import { Box, Button, Typography, Toolbar, IconButton, Tooltip, Divider, Icon, TextField, InputAdornment } from '@mui/material';
 import { useDatabase } from 'components/contexts/PatientContext';
 import { ListFormModal } from './components/ListFormModal';
 import { PatientsTable } from './components/PatientsTable';
@@ -14,7 +14,18 @@ export function PatientLists() {
   const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
   const selectedList = lists.find((list) => list.id === selectedListId);
+
+  const handleToggleSearch = () => {
+    setIsSearchOpen((prev) => {
+      if (prev) {
+        setSearchQuery('');
+      }
+      return !prev;
+    });
+  };
 
   // Cmd/Ctrl+P shortcut to open print preview
   React.useEffect(() => {
@@ -70,10 +81,49 @@ export function PatientLists() {
               </IconButton>
             </Tooltip>
             <Tooltip title="Search">
-              <IconButton size="small">
+              <IconButton
+                size="small"
+                aria-label="Search"
+                color={isSearchOpen ? 'primary' : 'default'}
+                onClick={handleToggleSearch}
+              >
                 <Icon>search</Icon>
               </IconButton>
             </Tooltip>
+            {isSearchOpen && (
+              <TextField
+                size="small"
+                autoFocus
+                placeholder="Search current list..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setSearchQuery('');
+                    setIsSearchOpen(false);
+                  }
+                }}
+                sx={{
+                  width: 240,
+                  ml: 0.5,
+                  '& .MuiInputBase-input': { py: 0.5, fontSize: '0.875rem' },
+                }}
+                InputProps={{
+                  endAdornment: searchQuery ? (
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        aria-label="Clear search"
+                        edge="end"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        <Icon fontSize="small">close</Icon>
+                      </IconButton>
+                    </InputAdornment>
+                  ) : undefined,
+                }}
+              />
+            )}
           </Box>
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title="More options">
@@ -93,6 +143,7 @@ export function PatientLists() {
             lists={lists}
             selectedList={selectedList}
             setLists={setLists}
+            searchQuery={searchQuery}
           />
         </Box>
       </Box>

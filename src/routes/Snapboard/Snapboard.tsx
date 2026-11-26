@@ -90,7 +90,7 @@ export function Snapboard() {
   }, [deptLocations, deptAppointments, patientsDB]);
 
   const deptOptions = React.useMemo(() => {
-    const deptIds = Array.from(new Set(appointmentsDB.map(a => a.department)));
+    const deptIds = Array.from(new Set([...departments.map(d => d.id), ...appointmentsDB.map(a => a.department)]));
     return deptIds.map((deptId) => ({
       id: deptId,
       label: departments.find((d) => d.id === deptId)?.name || `Dept ${deptId}`
@@ -109,9 +109,10 @@ export function Snapboard() {
           />
           <Autocomplete
             options={deptOptions}
-            value={deptOptions.find(o => o.id === selectedDept)}
+            value={deptOptions.find(o => o.id === selectedDept) || null}
             onChange={(_e, newValue: any) => handleSetSelectedDept(newValue?.id)}
-            getOptionLabel={(option: any) => option.label}
+            getOptionLabel={(option: any) => option?.label || ''}
+            isOptionEqualToValue={(option: any, val: any) => option.id === val?.id}
             sx={{ minWidth: 200 }}
           />
         </Box>

@@ -68,16 +68,51 @@ const computeVersion = (data: Database.Root): number =>
   (data.providers?.length ?? 0) +
   (data.locations?.length ?? 0);
 
-// 
-export const initialStore: Database.Root = {
-  departments: (patient_sample as unknown as Database.Root).departments,
-  patients: (patient_sample as unknown as Database.Root).patients,
-  appointments: (patient_sample as unknown as Database.Root).appointments,
-  lists: (patient_sample as unknown as Database.Root).lists,
-  providers: (patient_sample as unknown as Database.Root).providers,
-  locations: (patient_sample as unknown as Database.Root).locations,
+const BASELINE_DEPARTMENT_IDS = new Set(['26', '30', '31']);
+
+const ADULT_MEDICINE_LOCATION: Database.Location = {
+  id: '26000000-0000-4000-8000-000000000001' as Database.Location.ID,
+  name: 'ADULT MEDICINE PWAM PBB Room 1',
+  type: 'Clinic',
+  departmentId: '26' as Database.Department.ID,
+  status: 'Available',
+};
+
+const rawSample = patient_sample as unknown as Database.Root;
+const baselineDepartments = rawSample.departments.filter((d) => BASELINE_DEPARTMENT_IDS.has(d.id));
+const baselineLocations: Database.Location[] = [
+  ...(rawSample.locations || []),
+  ...((rawSample.locations || []).some((l) => l.departmentId === '26') ? [] : [ADULT_MEDICINE_LOCATION]),
+];
+const baselineLists = (rawSample.lists || [])
+  .filter((l) => l.id === 'all-patients')
+  .map((l) => ({
+    ...l,
+    columns: (l.columns || []).filter((c) => c.id !== 'status'),
+  }));
+
+// Sample database (loaded on demand behind password)
+export const sampleStore: Database.Root = {
+  departments: rawSample.departments,
+  patients: rawSample.patients,
+  appointments: rawSample.appointments,
+  lists: rawSample.lists,
+  providers: rawSample.providers,
+  locations: baselineLocations,
   orderables: orderables,
-  flowsheets: (patient_sample as unknown as Database.Root).flowsheets
+  flowsheets: rawSample.flowsheets
+}
+
+// Default empty store (no patient data loaded on first visit; includes baseline locations, departments, & All Patients list)
+export const initialStore: Database.Root = {
+  departments: baselineDepartments,
+  patients: {},
+  appointments: [],
+  lists: baselineLists,
+  providers: [],
+  locations: baselineLocations,
+  orderables: orderables,
+  flowsheets: []
 }
 
 let isRestoring = false
@@ -116,9 +151,20 @@ export const DatabaseProvider: React.FC<{
           STORAGE.save(initialStore, initialVersion);
           // initialStore is already being used as the default value in createStore
         } else {
-          // Ensure essential master catalogs like orderables are preserved if empty in storage
+          // Ensure essential baseline catalogs (orderables, departments, locations) are preserved if empty in storage
           if (!data.orderables || !data.orderables.components || !data.orderables.procedures) {
             data.orderables = { ...initialStore.orderables, ...(data.orderables || {}) };
+          }
+          if (!data.departments || data.departments.length === 0) {
+            data.departments = [...initialStore.departments];
+          }
+          if (!data.locations || data.locations.length === 0) {
+            data.locations = [...initialStore.locations];
+          }
+          if (!data.lists || data.lists.length === 0) {
+            data.lists = [...initialStore.lists];
+          } else if (!data.lists.some((l) => l.id === 'all-patients') && initialStore.lists.length > 0) {
+            data.lists = [...data.lists, ...initialStore.lists];
           }
           isRestoring = true;
           setGlobalStore(data as any);
