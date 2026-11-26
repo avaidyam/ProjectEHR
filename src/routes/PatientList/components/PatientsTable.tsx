@@ -13,14 +13,74 @@ import { Database, useDatabase } from 'components/contexts/PatientContext';
 import { AddToListModal } from './AddToListModal';
 import { GridColDef } from '@mui/x-data-grid';
 
+// Helper function to get status color
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'admitted':
+      return 'success';
+    case 'discharged':
+      return 'default';
+    case 'waiting':
+      return 'warning';
+    case 'in treatment':
+      return 'info';
+    default:
+      return 'default';
+  }
+};
+
+/** Checks whether a patient row matches all whitespace-separated search terms across visible/searchable fields. */
+export const matchesPatientSearch = (
+  patient: any,
+  query: string,
+  columnsConfig: Database.PatientList.Column[] = []
+): boolean => {
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return true;
+
+  const terms = trimmed.split(/\s+/).filter(Boolean);
+  const formattedDob = patient.birthdate ? Database.JSONDate.toDateString(patient.birthdate) : '';
+  const age = patient.birthdate ? String(Database.JSONDate.toAge(patient.birthdate)) : '';
+  const locationText = patient.location || (typeof patient.address === 'string' ? patient.address : '') || 'Carle Foundation Hospital';
+  const statusText = patient.status || 'No encounters';
+
+  const parts: string[] = [
+    `${patient.lastName ?? ''}, ${patient.firstName ?? ''}`,
+    `${patient.firstName ?? ''} ${patient.lastName ?? ''}`,
+    patient.id != null ? String(patient.id) : '',
+    patient.birthdate ? String(patient.birthdate) : '',
+    formattedDob ?? '',
+    age,
+    patient.gender ?? '',
+    patient.sex ?? '',
+    locationText,
+    patient.bedStatus ? String(patient.bedStatus) : '',
+    statusText,
+    patient.insurance?.carrierName ?? '',
+  ];
+
+  for (const col of columnsConfig) {
+    if (!col.selected) continue;
+    const val = patient[col.id];
+    if (typeof val === 'string' || typeof val === 'number') {
+      parts.push(String(val));
+    }
+  }
+
+  const haystack = parts.filter(Boolean).join(' ').toLowerCase();
+  return terms.every((term) => haystack.includes(term));
+};
+
 export const PatientsTable = ({
   lists,
   selectedList,
   setLists,
+  searchQuery = '',
 }: {
   lists: Database.PatientList[];
   selectedList?: Database.PatientList;
   setLists: (lists: Database.PatientList[]) => void;
+  searchQuery?: string;
 }) => {
   const navigate = useNavigate();
   const [patientsDB] = useDatabase().patients();
@@ -39,12 +99,22 @@ export const PatientsTable = ({
   }, [selectedList, patientsDB]);
 
   /* Safe defaults for hooks */
-  const columnsConfig = selectedList?.columns || [
-    { id: 'name', label: 'Patient Name', selected: true, order: 0 },
-    { id: 'mrn', label: 'MRN', selected: true, order: 1 },
-    { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
-    { id: 'location', label: 'Location', selected: true, order: 3 },
-  ];
+  const columnsConfig = React.useMemo(
+    () =>
+      selectedList?.columns || [
+        { id: 'name', label: 'Patient Name', selected: true, order: 0 },
+        { id: 'mrn', label: 'MRN', selected: true, order: 1 },
+        { id: 'dob', label: 'Date of Birth', selected: true, order: 2 },
+        { id: 'location', label: 'Location', selected: true, order: 3 },
+        { id: 'status', label: 'Status', selected: true, order: 4 },
+      ],
+    [selectedList?.columns]
+  );
+
+  const filteredPatients = React.useMemo(
+    () => listPatients.filter((patient) => matchesPatientSearch(patient, searchQuery, columnsConfig)),
+    [listPatients, searchQuery, columnsConfig]
+  );
 
   const columns: GridColDef[] = React.useMemo(() => {
     const defaultCols: any[] = columnsConfig
@@ -145,9 +215,14 @@ export const PatientsTable = ({
         sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
       >
         <DataGrid
-          rows={listPatients}
+          rows={filteredPatients}
           columns={columns}
-          localeText={{ noRowsLabel: 'No patients' }}
+          localeText={{
+            noRowsLabel:
+              listPatients.length > 0 && searchQuery.trim()
+                ? 'No matching patients'
+                : 'No patients',
+          }}
           onRowClick={(params, event) => {
             //if (event.target.closest('button')) return;
             
