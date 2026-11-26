@@ -4,6 +4,7 @@ import { Box, Stack, Divider, Label, Button, ButtonGroup, Icon, DataGrid, TreeVi
 import { CollapsiblePane } from "components/ui/CollapsiblePane";
 import { LineChart } from "@mui/x-charts-pro/LineChart";
 import { usePatient } from "components/contexts/PatientContext";
+import { useAuth } from "components/contexts/AuthContext";
 import { useSplitView } from "components/contexts/SplitViewContext";
 import { Tooltip } from "@mui/material";
 import { filterDocuments } from "util/helpers";
@@ -25,14 +26,20 @@ const formatDate = (iso: any, format?: string) => {
 };
 
 function useNormalizedResults() {
+  const isFacultyMode = useAuth()?.isFacultyMode ?? false;
   const { useEncounter } = usePatient();
   const [labDocs] = useEncounter().labs();
   const [imagingDocs] = useEncounter().imaging();
   const [conditionals] = useEncounter().conditionals();
   const [orders] = useEncounter().orders();
 
-  const visibleLabs = filterDocuments(labDocs!, conditionals, orders, 'labs');
-  const visibleImaging = filterDocuments(imagingDocs!, conditionals, orders, 'imaging');
+  const filteredLabs = React.useMemo(() => filterDocuments(labDocs!, conditionals, orders, 'labs'), [labDocs, conditionals, orders]);
+  const filteredImaging = React.useMemo(() => filterDocuments(imagingDocs!, conditionals, orders, 'imaging'), [imagingDocs, conditionals, orders]);
+  const visibleLabSet = React.useMemo(() => new Set(filteredLabs), [filteredLabs]);
+  const visibleImagingSet = React.useMemo(() => new Set(filteredImaging), [filteredImaging]);
+
+  const visibleLabs = isFacultyMode ? (labDocs || []) : filteredLabs;
+  const visibleImaging = isFacultyMode ? (imagingDocs || []) : filteredImaging;
 
   return React.useMemo(() => {
     const categories: Record<string, any> = {
@@ -45,6 +52,7 @@ function useNormalizedResults() {
     for (const doc of (visibleLabs || [])) {
       const panelName = doc.test || doc.Test || "Unknown Panel";
       const time = doc.date || doc.collected;
+      const isConditionalHidden = isFacultyMode && !visibleLabSet.has(doc);
       if (!categories.Laboratory[panelName]) categories.Laboratory[panelName] = {};
 
       for (const r of (doc.components || [])) {
@@ -64,6 +72,7 @@ function useNormalizedResults() {
           low: r.low ?? null,
           high: r.high ?? null,
           agency: doc.resultingAgency || "",
+          isConditionalHidden,
         });
       }
     }
@@ -72,6 +81,7 @@ function useNormalizedResults() {
     for (const doc of (visibleImaging || [])) {
       const testName = doc.test || doc.Test || "Unknown Study";
       const time = doc.date || doc.statusDate || doc.collected;
+      const isConditionalHidden = isFacultyMode && !visibleImagingSet.has(doc);
       if (!categories.Imaging[testName]) {
         categories.Imaging[testName] = {
           name: testName,
@@ -86,6 +96,7 @@ function useNormalizedResults() {
         isImage: true,
         test: testName,
         agency: doc.resultingAgency || "",
+        isConditionalHidden,
       });
     }
 
@@ -95,9 +106,10 @@ function useNormalizedResults() {
         return {
           name: key,
           tests: catName === "Imaging"
-            ? [tests]
+            ? [{ ...(tests as any), key: `${catName}:${key}:${(tests as any).name}` }]
             : Object.values(tests as Record<string, any>).map((t: any) => ({
               ...t,
+              key: `${catName}:${key}:${t.name}`,
               results: t.results.sort((a: any, b: any) => Temporal.Instant.from(a.time).epochMilliseconds - Temporal.Instant.from(b.time).epochMilliseconds),
             })),
         };
@@ -106,7 +118,7 @@ function useNormalizedResults() {
       const order: Record<string, number> = { Laboratory: 1, Imaging: 2, Cardiac: 3 };
       return (order[a.category] || 99) - (order[b.category] || 99);
     });
-  }, [visibleLabs, visibleImaging]);
+  }, [visibleLabs, visibleImaging, isFacultyMode, visibleLabSet, visibleImagingSet]);
 }
 
 const ResultCell = ({ cell }: { cell: any }) => {
@@ -125,6 +137,11 @@ const ResultCell = ({ cell }: { cell: any }) => {
           </Box>
           {cell.ref && <Box sx={{ fontSize: 12, opacity: 0.9, mb: 0.5 }}>Ref range: {cell.ref}</Box>}
           {cell.agency && <Box sx={{ fontSize: 12, opacity: 0.9 }}>Resulting agency: {cell.agency}</Box>}
+          {cell.isConditionalHidden && (
+            <Box sx={{ fontSize: 11, color: "#ed6c02", fontWeight: 700, mt: 0.5 }}>
+              Conditional (hidden from students)
+            </Box>
+          )}
         </Box>
       }
       arrow
@@ -146,7 +163,7 @@ const ResultCell = ({ cell }: { cell: any }) => {
       }}
       enterDelay={150}
     >
-      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block", textAlign: cell.isImage ? "center" : "inherit" }}>
+      <span style={{ color: isOut ? "#d32f2f" : "inherit", fontWeight: isOut ? 700 : 500, width: "100%", display: "inline-block", textAlign: cell.isImage ? "center" : "inherit", borderBottom: cell.isConditionalHidden ? "2px dotted #ed6c02" : undefined }}>
         {display}
       </span>
     </Tooltip>
@@ -263,11 +280,11 @@ function ResultsGrid({ components }: { components: any[] }) {
   const rows = React.useMemo(
     () =>
       components.map((t: any, idx: number) => {
-        const row: Record<string, any> = { id: idx + 1, test: t.name };
+        const row: Record<string, any> = { id: t.key ?? `${idx}:${t.name}`, test: t.name };
         timeKeys.forEach((iso: string, i: number) => {
           const hit = (t.results as any[]).find((r: any) => r.time === iso);
           row[`t${i}`] = hit
-            ? { value: hit.value, isImage: hit.isImage, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, label: formatDate(iso, "short") }
+            ? { value: hit.value, isImage: hit.isImage, flag: hit.flag, iso, test: t.name, ref: t.referenceRange, unit: t.unit, agency: hit.agency, isConditionalHidden: hit.isConditionalHidden, label: formatDate(iso, "short") }
             : null;
         });
         return row;
@@ -303,6 +320,7 @@ function ResultsGrid({ components }: { components: any[] }) {
 }
 
 export function ResultsReview() {
+  const isFacultyMode = useAuth()?.isFacultyMode ?? false;
   const categories: any[] = useNormalizedResults();
   const { openTab }: any = useSplitView();
   const [viewMode, setViewMode] = React.useState("table");
@@ -334,14 +352,18 @@ export function ResultsReview() {
           <Button {...{ toggle: true } as any} value="table" onClick={() => setViewMode("table")}>Lab</Button>
           <Button {...{ toggle: true } as any} value="graph" onClick={() => setViewMode("graph")}>Graph</Button>
         </ButtonGroup>
-        <Button
-          variant="contained"
-          size="small"
-          startIcon={<Icon>add</Icon>}
-          onClick={() => openTab("Edit Result", {}, "main", true)}
-        >
-          New Result
-        </Button>
+        {isFacultyMode ? (
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Icon>add</Icon>}
+            onClick={() => openTab("Edit Result", {}, "main", true)}
+          >
+            New Result
+          </Button>
+        ) : (
+          <Box />
+        )}
       </Stack>
       <Stack direction="row" sx={{ flex: 1, overflow: "hidden" }}>
         <CollapsiblePane width={280} side="left">
