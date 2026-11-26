@@ -12,6 +12,100 @@ const dicomTheme = createTheme({
   },
 });
 
+const MIME_TO_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+  'image/bmp': 'bmp',
+  'image/tiff': 'tiff',
+  'image/svg+xml': 'svg',
+  'application/dicom': 'dcm',
+};
+
+export function getExtensionFromDataUri(dataUri: string, bytes?: Uint8Array): string {
+  const mimeMatch = dataUri.match(/^data:([^;,]+)/i);
+  const mime = mimeMatch ? mimeMatch[1].toLowerCase() : '';
+  if (MIME_TO_EXT[mime]) {
+    return MIME_TO_EXT[mime];
+  }
+  // Check for DICOM magic bytes ('DICM' at offset 128)
+  if (bytes && bytes.length > 132 && bytes[128] === 0x44 && bytes[129] === 0x49 && bytes[130] === 0x43 && bytes[131] === 0x4d) {
+    return 'dcm';
+  }
+  if (mime.includes('/')) {
+    return mime.split('/')[1].split('+')[0] || 'bin';
+  }
+  return 'bin';
+}
+
+export async function downloadOriginalImage(imageSource: string, baseName = 'image') {
+  const safeName = baseName.replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || 'image';
+
+  if (imageSource.startsWith('data:')) {
+    const commaIdx = imageSource.indexOf(',');
+    if (commaIdx === -1) return;
+    const header = imageSource.slice(0, commaIdx);
+    const payload = imageSource.slice(commaIdx + 1);
+    const isBase64 = /;base64/i.test(header);
+    const mimeMatch = header.match(/^data:([^;,]+)/i);
+    const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+
+    let bytes: Uint8Array;
+    if (isBase64) {
+      const binary = atob(payload);
+      bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+    } else {
+      bytes = new TextEncoder().encode(decodeURIComponent(payload));
+    }
+
+    const ext = getExtensionFromDataUri(imageSource, bytes);
+    const blob = new Blob([bytes.buffer as ArrayBuffer], { type: mime });
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = objectUrl;
+    a.download = `${safeName}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(objectUrl);
+    return;
+  }
+
+  // HTTP / relative URL
+  const urlPath = imageSource.split('?')[0].split('#')[0];
+  const extMatch = urlPath.match(/\.([a-zA-Z0-9]+)$/);
+  const ext = extMatch ? extMatch[1] : 'dcm';
+  const filename = `${safeName}.${ext}`;
+
+  try {
+    const response = await fetch(imageSource);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = objectUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(objectUrl);
+  } catch {
+    const a = document.createElement('a');
+    a.href = imageSource;
+    a.download = filename;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+
 const ImagingToolbar = ({
   data,
   currentLayout,
@@ -108,7 +202,20 @@ const ImagingToolbar = ({
         <Divider orientation="vertical" flexItem />
         <IconButton title="Show/Hide" onClick={handleShowHideClick}><Icon>toggle_on</Icon></IconButton>
         <IconButton title="Localizer Lines"><Icon>person</Icon></IconButton>
-        <IconButton title="Linked Scrolling"><Icon>link</Icon></IconButton>
+        <IconButton
+          title="Download Original Image"
+          disabled={!data?.image}
+          onClick={() => {
+            if (!data?.image) return;
+            const sources = Array.isArray(data.image) ? data.image : [data.image];
+            sources.forEach((src: string, idx: number) => {
+              const name = sources.length > 1 ? `${data?.test || 'image'}_${idx + 1}` : (data?.test || 'image');
+              void downloadOriginalImage(src, name);
+            });
+          }}
+        >
+          <Icon>download</Icon>
+        </IconButton>
 
         {/* Show/Hide Menu */}
         <Menu
@@ -671,7 +778,7 @@ export const ImagingViewer = ({ data, viewerId, convertMonochrome }: { data: any
 
   return (
     <ThemeProvider theme={dicomTheme}>
-      <Stack sx={{ height: '100%', width: '100%', overflow: 'hidden', color: 'text.secondary' }}>
+      <Stack sx={{ height: '100%', minHeight: '65vh', width: '100%', overflow: 'hidden', color: 'text.secondary' }}>
         <Box sx={{ flexShrink: 0 }}>
           <ImagingToolbar
             data={data}
