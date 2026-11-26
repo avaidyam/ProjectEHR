@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
-import { Box, Label, Icon, Stack, Button } from 'components/ui/Core';
+import { Box, Label, Icon, Stack, Button, Chip, usePrompts } from 'components/ui/Core';
 import { useSplitView } from 'components/contexts/SplitViewContext';
-import { Database } from 'components/contexts/PatientContext';
+import { usePatient, Database } from 'components/contexts/PatientContext';
+import { useAuth } from 'components/contexts/AuthContext';
+import { filterDocuments, findResultLocation, removeEncounterResult, closeTabsForResult } from 'util/helpers';
 
 const formatReferenceInterval = (low?: number | null, high?: number | null, units?: string | null) => {
   let interval = '';
@@ -35,8 +37,53 @@ const isValueOutsideRange = (value: string | number, low?: number | null, high?:
 type Reportable = Database.Lab & Database.Imaging;
 
 export const ReportViewer = ({ data }: { data: Reportable }) => {
-  const { openTab } = useSplitView();
+  const isFacultyMode = useAuth()?.isFacultyMode ?? false;
+  const { confirm } = usePrompts();
+  const { useChart } = usePatient();
+  const [chart, setChart] = useChart()();
+  const splitView = useSplitView();
+  const { openTab } = splitView;
   const isAbnormal = hasLowOrHighValues(data?.components ?? [])
+
+  const location = React.useMemo(
+    () => findResultLocation(chart?.encounters, data as any),
+    [chart?.encounters, data]
+  );
+  const owningEncounter = location ? chart?.encounters?.[location.encounterId] : undefined;
+  const rawDoc = (data as any)?._rawDoc ?? data;
+  const isConditionalHidden = React.useMemo(() => {
+    if (!isFacultyMode || !owningEncounter || !location) return false;
+    const docs = (owningEncounter[location.collection] as any[]) || [];
+    const targetDoc = docs.find((d) => d === rawDoc || (location.id != null && d?.id === location.id));
+    if (!targetDoc) return (data as any)?._isConditionalHidden ?? false;
+    const visible = filterDocuments(docs, owningEncounter.conditionals || {}, owningEncounter.orders || [], location.collection);
+    return !visible.includes(targetDoc);
+  }, [isFacultyMode, owningEncounter, location, data, rawDoc]);
+
+  const handleDeleteResult = async () => {
+    if (!location) return;
+    const label = data?.test ?? 'this result';
+    if (!(await confirm(`Are you sure you want to delete "${label}"? This cannot be undone.`, 'Delete Result'))) {
+      return;
+    }
+    setChart((prev) => {
+      const targetEnc = prev?.encounters?.[location.encounterId];
+      if (!targetEnc) return prev;
+      const updatedEnc = removeEncounterResult(targetEnc, {
+        collection: location.collection,
+        id: location.id,
+        itemRef: location.itemRef ?? rawDoc,
+      });
+      return {
+        ...prev,
+        encounters: {
+          ...prev.encounters,
+          [location.encounterId]: updatedEnc,
+        },
+      };
+    });
+    closeTabsForResult(splitView, { id: location.id ?? data?.id, itemRef: location.itemRef ?? rawDoc });
+  };
 
   const handleOpenImaging = () => {
     const isPathologySlide = !!data?.components?.find(x => x.name === "CKPN3")
@@ -46,7 +93,27 @@ export const ReportViewer = ({ data }: { data: Reportable }) => {
 
   return (
     <Stack direction="column" spacing={2} sx={{ p: 2 }}>
-      <Label variant="h6">Results</Label>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+        <Label variant="h6">Results</Label>
+        {isFacultyMode && (
+          <Stack direction="row" alignItems="center" spacing={1}>
+            {isConditionalHidden && (
+              <Chip label="Conditional (Hidden)" size="small" color="warning" variant="outlined" />
+            )}
+            {location && (
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                startIcon={<Icon>delete</Icon>}
+                onClick={handleDeleteResult}
+              >
+                Delete Result
+              </Button>
+            )}
+          </Stack>
+        )}
+      </Stack>
       <Box paper sx={{
         borderLeft: isAbnormal ? '4px solid #fbc02d' : '1px solid #e0e0e0',
         borderTop: '1px solid #e0e0e0',

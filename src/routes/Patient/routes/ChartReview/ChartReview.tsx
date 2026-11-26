@@ -2,10 +2,23 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, Tab, Tooltip, ToggleButtonGroup, ToggleButton } from '@mui/material'; // FIXME: REMOVE!
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridColDef } from '@mui/x-data-grid-premium';
-import { Box, Button, Label, DataGrid, Icon, IconButton } from 'components/ui/Core'
+import { Box, Button, Label, DataGrid, Icon, IconButton, Chip, usePrompts } from 'components/ui/Core'
 import { useSplitView } from 'components/contexts/SplitViewContext';
 import { usePatient, useDatabase, Database } from 'components/contexts/PatientContext';
-import { filterDocuments, getICD10CodeDescription } from 'util/helpers'
+import { useAuth } from 'components/contexts/AuthContext';
+import { filterDocuments, getICD10CodeDescription, removeEncounterItem, closeTabsForItem } from 'util/helpers'
+
+const docKeyMap = new WeakMap<object, string>();
+let nextDocKey = 1;
+const getStableDocKey = (doc: any): string => {
+  if (!doc || typeof doc !== 'object') return String(doc);
+  let key = docKeyMap.get(doc);
+  if (!key) {
+    key = `doc-${nextDocKey++}`;
+    docKeyMap.set(doc, key);
+  }
+  return key;
+};
 
 const tabLabels = [
   "Encounters",
@@ -241,23 +254,32 @@ const SORT_KEYS: Record<string, string> = {
 
 export const ChartReview = ({ ...props }: any) => {
   const navigate = useNavigate();
+  const isFacultyMode = useAuth()?.isFacultyMode ?? false;
+  const { confirm } = usePrompts();
   const { useChart, useEncounter } = usePatient()
-  const [chart] = useChart()()
+  const [chart, setChart] = useChart()()
   const [encounter] = useEncounter()()
   const [conditionals] = useEncounter().conditionals()
   const [orders] = useEncounter().orders([])
   const [departments] = useDatabase().departments()
   const [providers] = useDatabase().providers()
-  const { openTab } = useSplitView()
+  const [, setAppointments] = useDatabase().appointments()
+  const splitView = useSplitView()
+  const { openTab } = splitView
   const [selectedTabLabel, setSelectedTabLabel] = React.useState('Encounters');
   const [rowSelectionModel, setRowSelectionModel] = React.useState<any>({ type: 'include' as const, ids: new Set() });
   const [openTarget, setOpenTarget] = React.useState<"main" | "side" | "window">("side");
 
-  const enrichDocs = (docs: any, kind: string, enc: any) => (docs || []).map((d: any) => {
+  const enrichDocs = (docs: any, kind: string, enc: any, visibleSet?: Set<any>) => (docs || []).map((d: any) => {
     const authorProv = d.author ? providers.find((p: any) => p.id === d.author) : null;
     return {
       ...d,
       kind,
+      _encounterId: enc?.id,
+      _docId: d.id,
+      _collection: kind === 'Lab' ? 'labs' : kind === 'Imaging' ? 'imaging' : kind === 'Notes' ? 'notes' : undefined,
+      _rawDoc: d,
+      _isConditionalHidden: visibleSet ? !visibleSet.has(d) : false,
       authorName: authorProv ? [authorProv.name, authorProv.role, authorProv.specialty].filter(Boolean).join(" - ") : d.author,
       authorSpecialty: authorProv?.specialty,
       provider: d.provider ? providers.find((p: any) => p.id === d.provider)?.name || d.provider : d.provider,
@@ -282,11 +304,19 @@ export const ChartReview = ({ ...props }: any) => {
       Temporal.Instant.from(x.startDate ?? "1970-01-01T00:00:00Z"), 
       Temporal.Instant.from(currentEncDate)
     ) <= 0)
-    .flatMap((x) => [
-      ...enrichDocs(filterDocuments(x.notes || [], x.conditionals || {}, x.orders || []), 'Notes', x),
-      ...enrichDocs(filterDocuments(x.labs || [], x.conditionals || {}, x.orders || []), 'Lab', x),
-      ...enrichDocs(filterDocuments(x.imaging || [], x.conditionals || {}, x.orders || []), 'Imaging', x),
-    ])
+    .flatMap((x) => {
+      const visibleNotes = filterDocuments(x.notes || [], x.conditionals || {}, x.orders || [], 'notes');
+      const visibleLabs = filterDocuments(x.labs || [], x.conditionals || {}, x.orders || [], 'labs');
+      const visibleImaging = filterDocuments(x.imaging || [], x.conditionals || {}, x.orders || [], 'imaging');
+      const visibleNoteSet = new Set(visibleNotes);
+      const visibleLabSet = new Set(visibleLabs);
+      const visibleImagingSet = new Set(visibleImaging);
+      return [
+        ...enrichDocs(isFacultyMode ? (x.notes || []) : visibleNotes, 'Notes', x, visibleNoteSet),
+        ...enrichDocs(isFacultyMode ? (x.labs || []) : visibleLabs, 'Lab', x, visibleLabSet),
+        ...enrichDocs(isFacultyMode ? (x.imaging || []) : visibleImaging, 'Imaging', x, visibleImagingSet),
+      ];
+    })
 
   const documents = documents2
 
@@ -315,7 +345,101 @@ export const ChartReview = ({ ...props }: any) => {
     return !isCardiac;
   }) : [];
 
-  const columns = [STAR_COLUMN, ...(COLUMN_DEFS[selectedTabLabel] || [])];
+  const handleDeleteItem = async (item: any) => {
+    if (item?.kind === 'Encounters' && item?.id) {
+      const encId = item.id as Database.Encounter.ID;
+      const encLabel = item.type || encId;
+      if (!(await confirm(`Are you sure you want to delete encounter "${encLabel}"? This cannot be undone.`, 'Delete Encounter'))) {
+        return;
+      }
+      const remainingIds = Object.keys(chart.encounters || {}).filter((id) => id !== encId);
+      setChart((prev) => {
+        const nextEncounters = { ...(prev?.encounters || {}) };
+        delete nextEncounters[encId];
+        return {
+          ...prev,
+          encounters: nextEncounters,
+        };
+      });
+      setAppointments((prev) => (prev || []).filter((a) => a.patient?.enc !== encId));
+      if (encId === encounter.id) {
+        navigate(remainingIds.length > 0 ? `/patient/${chart.id}/encounter/${remainingIds[0]}` : '/schedule');
+      }
+      return;
+    }
+
+    if (!item?._encounterId || !item?._collection) return;
+    const isNote = item._collection === 'notes';
+    const label = item.test || item.summary || item.type || (isNote ? 'this note' : 'this result');
+    const title = isNote ? 'Delete Note' : 'Delete Result';
+    if (!(await confirm(`Are you sure you want to delete "${label}"? This cannot be undone.`, title))) {
+      return;
+    }
+    setChart((prev) => {
+      const targetEnc = prev?.encounters?.[item._encounterId];
+      if (!targetEnc) return prev;
+      const updatedEnc = removeEncounterItem(targetEnc, {
+        collection: item._collection,
+        id: item._docId,
+        itemRef: item._rawDoc,
+      });
+      return {
+        ...prev,
+        encounters: {
+          ...prev.encounters,
+          [item._encounterId]: updatedEnc,
+        },
+      };
+    });
+    closeTabsForItem(splitView, { id: item._docId ?? item.id, itemRef: item._rawDoc });
+  };
+
+  const deleteAriaLabel =
+    selectedTabLabel === 'Notes'
+      ? 'Delete note'
+      : selectedTabLabel === 'Encounters'
+        ? 'Delete encounter'
+        : 'Delete result';
+
+  const facultyColumns: GridColDef[] = isFacultyMode ? [
+    ...(selectedTabLabel !== 'Encounters' ? [{
+      field: '_isConditionalHidden',
+      headerName: 'Visibility',
+      width: 120,
+      sortable: false,
+      renderCell: ({ value }: any) =>
+        value ? (
+          <Tooltip title="Hidden from students until required orders are placed">
+            <Chip label="Conditional" size="small" color="warning" variant="outlined" />
+          </Tooltip>
+        ) : null,
+    }] : []),
+    {
+      field: '_deleteAction',
+      headerName: '',
+      width: 56,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: ({ row }: any) => (
+        <Tooltip title={deleteAriaLabel}>
+          <IconButton
+            size="small"
+            color="error"
+            aria-label={deleteAriaLabel}
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              handleDeleteItem(row._obj);
+            }}
+          >
+            <Icon fontSize="small">delete</Icon>
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+  ] : [];
+
+  const columns = [STAR_COLUMN, ...facultyColumns, ...(COLUMN_DEFS[selectedTabLabel] || [])];
 
   const handleRowClick = (row: any) => {
     if (["Lab", "Cardiac", "Imaging", "Specialty Tests"].includes(selectedTabLabel)) {
@@ -401,7 +525,10 @@ export const ChartReview = ({ ...props }: any) => {
               }}
               columns={columns}
               rows={filteredData.map((x: any) => {
-                return { ...x, id: JSON.stringify(x), _obj: x }
+                const rowId = x._collection
+                  ? `${x._encounterId}-${x._collection}-${getStableDocKey(x._rawDoc)}`
+                  : JSON.stringify(x);
+                return { ...x, id: rowId, _obj: x }
               })}
               onCellDoubleClick={(params: any) => handleRowClick(params.row._obj)}
               onRowSelectionModelChange={(newRowSelectionModel: any) => {

@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar } from '@mui/material'
-import { Button, Stack, Label, IconButton, Divider, Icon } from './Core'
+import { AppBar, Toolbar, Tooltip, Tab, Tabs, Menu, MenuItem, Avatar, Switch } from '@mui/material'
+import { Button, Stack, Label, IconButton, Divider, Icon, Chip } from './Core'
 import { useDatabase } from '../contexts/PatientContext'
+import { useAuth } from '../contexts/AuthContext'
 import * as Database from '../contexts/Database'
 import { ManageDepartmentsWindow } from './ManageDepartmentsWindow'
 import { ManageFlowsheetsWindow } from './ManageFlowsheetsWindow'
@@ -16,6 +17,9 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
   const navigate = useNavigate()
   const [open, setOpen] = React.useState<HTMLElement | null>(null)
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
+  const auth = useAuth()
+  const isFacultyMode = auth?.isFacultyMode ?? false
+  const setFacultyMode = auth?.setFacultyMode
 
   // teaful hooks return [value, setValue]
   const [patientsDB, setPatientsDB] = useDatabase().patients()
@@ -65,10 +69,21 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
     <>
       <AppBar elevation={0} enableColorOnDark position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" disableGutters sx={{ justifyContent: 'space-between' }}>
-          <Stack direction="row" spacing={2} alignItems="center">
+          <Stack direction="row" spacing={1} alignItems="center">
             <Button color="inherit" sx={{ textTransform: 'none' }} onClick={(event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget)}>
               <Label bold italic variant="h6"><Icon sx={{ mb: -0.5 }}>menu</Icon>ProjectEHR</Label>
             </Button>
+            {isFacultyMode && (
+              <Tooltip title="Faculty Mode active: results can be viewed without orders, added, or deleted. Click × to exit.">
+                <Chip
+                  label="Faculty Mode"
+                  size="small"
+                  color="warning"
+                  onDelete={() => setFacultyMode?.(false)}
+                  sx={{ fontWeight: 600 }}
+                />
+              </Tooltip>
+            )}
             <Menu
               anchorEl={anchorEl}
               open={!!anchorEl}
@@ -76,7 +91,8 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
               slotProps={{
                 paper: {
                   style: {
-                    height: '48ch',
+                    minHeight: '48ch',
+                    maxHeight: '80vh',
                     width: '48ch',
                     marginLeft: -10
                   },
@@ -123,6 +139,20 @@ export const Titlebar = ({ onLogout }: { onLogout: () => void }) => {
                   setAnchorEl(null);
                 }}>
                 Manage Conditionals
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => setFacultyMode?.(!isFacultyMode)}
+                sx={{ justifyContent: 'space-between' }}
+              >
+                <span>Faculty Mode</span>
+                <Switch
+                  size="small"
+                  checked={isFacultyMode}
+                  tabIndex={-1}
+                  inputProps={{ 'aria-label': 'Faculty Mode' }}
+                  sx={{ pointerEvents: 'none', ml: 2 }}
+                />
               </MenuItem>
             </Menu>
           </Stack>

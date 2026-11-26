@@ -778,3 +778,180 @@ export const useSectionObserver = (
     return () => observer.disconnect();
   }, [sectionIds, setActiveTab, offsetRef]);
 }
+
+export type EncounterItemCollection = 'labs' | 'imaging' | 'notes';
+
+/**
+ * Removes a lab, imaging result, or note from an encounter and updates any
+ * conditional ordering rules (including index-based keys such as `labs.0`).
+ */
+export function removeEncounterItem(
+  encounter: Database.Encounter,
+  target: { collection: EncounterItemCollection; id?: string; itemRef?: any }
+): Database.Encounter {
+  const currentList = (encounter?.[target.collection] as any[]) || [];
+  let removedIndex = -1;
+
+  if (target.itemRef != null) {
+    removedIndex = currentList.indexOf(target.itemRef);
+  }
+  if (removedIndex === -1 && target.id != null) {
+    removedIndex = currentList.findIndex((item) => item?.id === target.id);
+  }
+
+  if (removedIndex === -1) {
+    return encounter;
+  }
+
+  const removedItem = currentList[removedIndex];
+  const nextList = currentList.filter((_, idx) => idx !== removedIndex);
+
+  let nextConditionals = encounter?.conditionals;
+  if (nextConditionals && typeof nextConditionals === 'object') {
+    const updatedConditionals: Record<string, any> = {};
+    const indexPrefix = `${target.collection}.`;
+    const removedId = removedItem?.id ?? target.id;
+    const removedAccession = removedItem?.accessionNumber;
+    const idStillUsed =
+      removedId != null && nextList.some((item) => item?.id === removedId);
+    const accessionStillUsed =
+      removedAccession != null &&
+      nextList.some((item) => item?.accessionNumber === removedAccession);
+
+    for (const [key, value] of Object.entries(nextConditionals)) {
+      if (removedId != null && !idStillUsed && key === String(removedId)) {
+        continue;
+      }
+      if (
+        removedAccession != null &&
+        !accessionStillUsed &&
+        key === String(removedAccession)
+      ) {
+        continue;
+      }
+      if (key.startsWith(indexPrefix)) {
+        const suffix = key.slice(indexPrefix.length);
+        if (/^\d+$/.test(suffix)) {
+          const idx = Number(suffix);
+          if (idx === removedIndex) {
+            continue;
+          }
+          if (idx > removedIndex) {
+            updatedConditionals[`${indexPrefix}${idx - 1}`] = value;
+            continue;
+          }
+        }
+      }
+      updatedConditionals[key] = value;
+    }
+
+    nextConditionals = updatedConditionals;
+  }
+
+  return {
+    ...encounter,
+    [target.collection]: nextList,
+    conditionals: nextConditionals,
+  };
+}
+
+export const removeEncounterResult = removeEncounterItem;
+
+/**
+ * Locates which encounter and collection (`labs`, `imaging`, or `notes`) owns an item.
+ */
+export function findEncounterItemLocation(
+  encounters: Record<string, Database.Encounter> | undefined,
+  item: { id?: string; _encounterId?: string; _collection?: EncounterItemCollection; _docId?: string; _rawDoc?: any } | null | undefined,
+  collections: EncounterItemCollection[] = ['labs', 'imaging', 'notes']
+): { encounterId: Database.Encounter.ID; collection: EncounterItemCollection; id?: string; itemRef?: any } | null {
+  if (!encounters || !item) return null;
+  const targetId = item._docId ?? item.id;
+  const rawRef = item._rawDoc ?? item;
+
+  if (item._encounterId && item._collection && encounters[item._encounterId]) {
+    return {
+      encounterId: item._encounterId as Database.Encounter.ID,
+      collection: item._collection,
+      id: targetId,
+      itemRef: rawRef,
+    };
+  }
+
+  for (const [encId, enc] of Object.entries(encounters)) {
+    for (const collection of collections) {
+      const list = (enc?.[collection] as any[]) || [];
+      const match = list.find(
+        (entry) => entry === rawRef || (targetId != null && entry?.id === targetId)
+      );
+      if (match) {
+        return {
+          encounterId: encId as Database.Encounter.ID,
+          collection,
+          id: targetId ?? match.id,
+          itemRef: match,
+        };
+      }
+    }
+  }
+  return null;
+}
+
+export function findResultLocation(
+  encounters: Record<string, Database.Encounter> | undefined,
+  result: { id?: string; _encounterId?: string; _collection?: 'labs' | 'imaging'; _docId?: string; _rawDoc?: any } | null | undefined
+): { encounterId: Database.Encounter.ID; collection: 'labs' | 'imaging'; id?: string; itemRef?: any } | null {
+  const loc = findEncounterItemLocation(encounters, result, ['labs', 'imaging']);
+  if (!loc || loc.collection === 'notes') return null;
+  return loc as { encounterId: Database.Encounter.ID; collection: 'labs' | 'imaging'; id?: string; itemRef?: any };
+}
+
+/**
+ * Closes any open Report, Imaging Viewer, or Note tabs matching the given item ID or object reference.
+ */
+export function closeTabsForItem(
+  splitView: {
+    mainTabs?: any[];
+    sideTabs?: any[];
+    windowTabs?: any[];
+    setMainTabs?: React.Dispatch<React.SetStateAction<any[]>>;
+    setSideTabs?: React.Dispatch<React.SetStateAction<any[]>>;
+    setWindowTabs?: React.Dispatch<React.SetStateAction<any[]>>;
+    setSelectedMainTab?: React.Dispatch<React.SetStateAction<number>>;
+    setSelectedSideTab?: React.Dispatch<React.SetStateAction<number>>;
+  },
+  target: string | { id?: string; itemRef?: any } | undefined
+) {
+  if (!target) return;
+  const targetId = typeof target === 'string' ? target : target.id;
+  const targetRef = typeof target === 'string' ? undefined : target.itemRef;
+  if (targetId == null && targetRef == null) return;
+
+  const matchesItem = (tab: any) => {
+    const payload = tab?.Report?.data ?? tab?.['Imaging Viewer']?.data ?? tab?.Note?.data;
+    if (!payload) return false;
+    if (targetId != null && (payload._docId ?? payload.id) === targetId) return true;
+    if (targetRef != null && (payload._rawDoc ?? payload) === targetRef) return true;
+    return false;
+  };
+
+  const closePane = (
+    tabs: any[] | undefined,
+    setTabs?: React.Dispatch<React.SetStateAction<any[]>>,
+    setSelected?: React.Dispatch<React.SetStateAction<number>>
+  ) => {
+    if (!tabs || !setTabs) return;
+    const next = tabs.filter((t) => !matchesItem(t));
+    if (next.length === tabs.length) return;
+    setTabs(next);
+    if (setSelected) {
+      setSelected((sel) => Math.min(sel, Math.max(0, next.length - 1)));
+    }
+  };
+
+  closePane(splitView.mainTabs, splitView.setMainTabs, splitView.setSelectedMainTab);
+  closePane(splitView.sideTabs, splitView.setSideTabs, splitView.setSelectedSideTab);
+  closePane(splitView.windowTabs, splitView.setWindowTabs);
+}
+
+export const closeTabsForResult = closeTabsForItem;

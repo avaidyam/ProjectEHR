@@ -5,7 +5,9 @@ import * as React from 'react';
 export interface AuthContextType {
   isAuthenticated: boolean;
   isPasswordSet: boolean;
+  isFacultyMode: boolean;
   enabledEncounters: Record<string, boolean>;
+  setFacultyMode: (enabled: boolean) => void;
   setPassword: (newPassword: string) => Promise<void>;
   verifyPassword: (inputPassword: string) => Promise<boolean>;
   updateEncounters: (newEncounters: Record<string, boolean>) => void;
@@ -15,10 +17,13 @@ export interface AuthContextType {
 
 export const AuthContext = React.createContext<AuthContextType | null>(null);
 
+export const useAuth = () => React.useContext(AuthContext);
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
     return !!localStorage.getItem('userLoginDetails')
   });
+  const [isFacultyMode, setIsFacultyMode] = React.useState(false);
 
   // Check if a password is already set in localStorage
   const [isPasswordSet, setIsPasswordSet] = React.useState(() => {
@@ -86,6 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     localStorage.removeItem('userLoginDetails')
     setIsAuthenticated(false)
+    setIsFacultyMode(false)
   }
 
   return (
@@ -93,7 +99,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         isAuthenticated,
         isPasswordSet,
+        isFacultyMode,
         enabledEncounters,
+        setFacultyMode: setIsFacultyMode,
         setPassword,
         verifyPassword,
         updateEncounters,
